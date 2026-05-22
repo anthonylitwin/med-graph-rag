@@ -10,7 +10,7 @@ ui:
 	python apps/ui/streamlit_app/app.py
 
 seed:
-	python /home/runner/work/med-graph-rag/med-graph-rag/pipelines/ingestion/seed_sample_graph.py
+	python pipelines/ingestion/seed_sample_graph.py
 
 train:
-	python /home/runner/work/med-graph-rag/med-graph-rag/pipelines/training/train_dummy.py
+	python pipelines/training/train_dummy.py
