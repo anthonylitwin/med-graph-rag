@@ -1,1 +1,11 @@
-// Placeholder initial schema for the med-graph-rag graph.
+CREATE CONSTRAINT paper_id_unique IF NOT EXISTS
+FOR (p:Paper)
+REQUIRE p.id IS UNIQUE;
+
+CREATE CONSTRAINT disease_name_unique IF NOT EXISTS
+FOR (d:Disease)
+REQUIRE d.name IS UNIQUE;
+
+CREATE CONSTRAINT drug_name_unique IF NOT EXISTS
+FOR (d:Drug)
+REQUIRE d.name IS UNIQUE;

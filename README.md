@@ -1,14 +1,19 @@
-# med-graph-rag
+# MedGraphRAG
 
-Minimal project skeleton for a medical graph RAG workspace.
+MedGraphRAG is a modular healthcare knowledge graph and GraphRAG platform.
 
-## Structure
+## Local development
 
-- `apps/api` - placeholder API service
-- `apps/ui/react-app` - placeholder React + Vite UI
-- `packages/graph` - graph schema assets
-- `pipelines` - ingestion and training scripts
-- `data/samples` - sample input data
-- `experiments` - experiment and DVC placeholders
-- `infra` - Terraform and Helm placeholders
-- `.github/workflows` - CI workflow placeholder
+### Prerequisites
+
+- Docker Desktop
+- Node.js 20+
+- Python 3.11+
+- Make
+
+### Start the platform
+
+```bash
+cp .env.example .env
+make bootstrap
+make up
