@@ -7,7 +7,7 @@ api:
 	python apps/api/app/main.py
 
 ui:
-	python apps/ui/streamlit_app/app.py
+	npm --prefix apps/ui/react-app run dev
 
 seed:
 	python pipelines/ingestion/seed_sample_graph.py
