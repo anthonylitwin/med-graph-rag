@@ -1,16 +1,30 @@
-.PHONY: help api ui seed train
+.PHONY: bootstrap up down logs test smoke-test web api
 
-help:
-	@echo "Available targets: help api ui seed train"
+bootstrap:
+	cp -n .env.example .env || true
+	docker compose build
+
+up:
+	docker compose up
+
+down:
+	docker compose down
+
+logs:
+	docker compose logs -f
+
+test:
+	cd apps/web && npm test -- --run || true
+	cd apps/api && python -m pytest || true
+
+smoke-test:
+	curl -f http://localhost:8000/health
+	curl -f -X POST http://localhost:8000/chat \
+		-H "Content-Type: application/json" \
+		-d '{"message":"Hello MedGraphRAG"}'
+
+web:
+	cd apps/web && npm run dev
 
 api:
-	python apps/api/app/main.py
-
-ui:
-	npm --prefix apps/ui/react-app run dev
-
-seed:
-	python pipelines/ingestion/seed_sample_graph.py
-
-train:
-	python pipelines/training/train_dummy.py
+	cd apps/api && uvicorn app.main:app --reload

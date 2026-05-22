@@ -2,21 +2,53 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+      - develop
+      - "feature/**"
   pull_request:
 
 jobs:
-  placeholder-check:
+  api:
+    name: API checks
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.11"
 
-      - name: Compile placeholder Python files
-        run: python -m compileall apps pipelines
+      - name: Install API dependencies
+        run: |
+          cd apps/api
+          pip install -r requirements.txt
+
+      - name: Import FastAPI app
+        run: |
+          cd apps/api
+          python -c "from app.main import app; print(app.title)"
+
+  web:
+    name: Web checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install web dependencies
+        run: |
+          cd apps/web
+          npm ci
+
+      - name: Build web app
+        run: |
+          cd apps/web
+          npm run build
