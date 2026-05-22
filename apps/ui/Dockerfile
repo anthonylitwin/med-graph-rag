@@ -1,5 +1,7 @@
-FROM python:3.12-slim
+FROM node:20-slim
 
-WORKDIR /streamlit_app
-COPY streamlit_app/app.py /streamlit_app/app.py
-CMD ["python", "/streamlit_app/app.py"]
+WORKDIR /react-app
+COPY react-app/package*.json /react-app/
+RUN npm ci
+COPY react-app/ /react-app/
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
