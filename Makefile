@@ -1,7 +1,7 @@
 .PHONY: bootstrap up down logs test smoke-test web api
 
 # Override at runtime, e.g. `make schema PYTHON=.venv-wsl/bin/python`
-PYTHON ?= python3
+PYTHON ?= .venv/Scripts/python.exe
 
 bootstrap:
 	cp -n .env.example .env || true
