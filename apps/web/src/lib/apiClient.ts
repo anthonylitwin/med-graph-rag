@@ -29,3 +29,31 @@ export async function sendChatMessage(
 
     return response.json();
 }
+
+export type GraphNode = {
+  id: string;
+  labels: string[];
+  properties: Record<string, unknown>;
+};
+
+export type GraphRelationship = {
+  source: string;
+  target: string;
+  type: string;
+  properties: Record<string, unknown>;
+};
+
+export type GraphResponse = {
+  nodes: GraphNode[];
+  relationships: GraphRelationship[];
+};
+
+export async function getSampleGraph(): Promise<GraphResponse> {
+  const response = await fetch(`${API_BASE_URL}/graph/sample`);
+
+  if (!response.ok) {
+    throw new Error(`Graph request failed: ${response.status}`);
+  }
+
+  return response.json();
+}

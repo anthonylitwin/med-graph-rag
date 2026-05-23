@@ -1,5 +1,8 @@
 .PHONY: bootstrap up down logs test smoke-test web api
 
+# Override at runtime, e.g. `make schema PYTHON=.venv-wsl/bin/python`
+PYTHON ?= python3
+
 bootstrap:
 	cp -n .env.example .env || true
 	docker compose build
@@ -15,7 +18,19 @@ logs:
 
 test:
 	cd apps/web && npm test -- --run || true
-	cd apps/api && python -m pytest || true
+	cd apps/api && $(PYTHON) -m pytest || true
+
+web:
+	cd apps/web && npm run dev
+
+api:
+	cd apps/api && $(PYTHON) -m uvicorn app.main:app --reload
+
+schema:
+	PYTHONPATH=. $(PYTHON) scripts/apply_neo4j_schema.py
+
+seed:
+	PYTHONPATH=. $(PYTHON) pipelines/ingestion/seed_sample_graph.py
 
 smoke-test:
 	curl -f http://localhost:8000/health
@@ -23,8 +38,5 @@ smoke-test:
 		-H "Content-Type: application/json" \
 		-d '{"message":"Hello MedGraphRAG"}'
 
-web:
-	cd apps/web && npm run dev
-
-api:
-	cd apps/api && uvicorn app.main:app --reload
+graph-smoke-test:
+	curl -f http://localhost:8000/graph/sample

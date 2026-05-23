@@ -2,10 +2,18 @@ CREATE CONSTRAINT paper_id_unique IF NOT EXISTS
 FOR (p:Paper)
 REQUIRE p.id IS UNIQUE;
 
-CREATE CONSTRAINT disease_name_unique IF NOT EXISTS
-FOR (d:Disease)
-REQUIRE d.name IS UNIQUE;
-
 CREATE CONSTRAINT drug_name_unique IF NOT EXISTS
 FOR (d:Drug)
 REQUIRE d.name IS UNIQUE;
+
+CREATE CONSTRAINT condition_name_unique IF NOT EXISTS
+FOR (d:Condition)
+REQUIRE d.name IS UNIQUE;
+
+CREATE CONSTRAINT symptom_name_unique IF NOT EXISTS
+FOR (d:Symptom)
+REQUIRE d.name IS UNIQUE;
+
+CREATE CONSTRAINT source_id_unique IF NOT EXISTS
+FOR (d:Source)
+REQUIRE d.id IS UNIQUE;
