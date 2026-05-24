@@ -59,10 +59,35 @@ export function ChatPage() {
           <p>{response.model}</p>
 
           <h3>Sources</h3>
-          <pre>{JSON.stringify(response.sources, null, 2)}</pre>
+          {response.sources.length === 0 ? (
+            <p>No sources returned.</p>
+          ) : (
+            <ul>
+              {response.sources.map((source, index) => (
+                <li key={index}>
+                  <strong>{String(source.title ?? "Untitled source")}</strong>
+                  <br />
+                  <span>{String(source.evidenceText ?? "No evidence text")}</span>
+                </li>
+              ))}
+            </ul>
+          )}
 
           <h3>Reasoning Path</h3>
-          <pre>{JSON.stringify(response.reasoningPath, null, 2)}</pre>
+          {response.reasoningPath.length === 0 ? (
+            <p>No reasoning path returned.</p>
+          ) : (
+            <ul>
+              {response.reasoningPath.map((step, index) => (
+                <li key={index}>
+                  {String(step.source)} --{" "}
+                  <strong>{String(step.relationship)}</strong>
+                  {" --> "}
+                  {String(step.target)}
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       )}
     </main>
