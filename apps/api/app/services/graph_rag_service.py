@@ -33,7 +33,7 @@ def get_entity_relationships(entity_name: str) -> list[dict]:
     #     doc.id AS documentId,
     #     doc.title AS documentTitle
     query = """
-    MATCH (n:Drug {name: $entity_name})-[relationship]->(target:Condition)
+    MATCH (n:Drug {name: $entity_name})-[relationship]->(target:Condition|Drug|Paper)
     RETURN
         n.name AS sourceName,
         labels(n) AS sourceLabels,
