@@ -19,7 +19,7 @@ def split_cypher_statements(cypher_text: str) -> list[str]:
     ]
 
 
-def main() -> None:
+def apply_neo4j_schema() -> None:
     schema_files = sorted(SCHEMA_DIR.glob("*.cypher"))
 
     if not schema_files:
@@ -36,6 +36,10 @@ def main() -> None:
                     session.run(statement)
 
     print("Neo4j schema applied successfully.")
+
+
+def main() -> None:
+    apply_neo4j_schema()
 
 
 if __name__ == "__main__":

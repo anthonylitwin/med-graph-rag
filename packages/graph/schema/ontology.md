@@ -1,8 +1,10 @@
-# MedGraphRAG Ontology v1
+# MedGraphRAG Ontology v1.0
 
 ## Purpose
 
 This ontology defines the initial entity types, relationships, and property conventions used by MedGraphRAG. The goal is to provide a consistent structure for converting biomedical literature into a knowledge graph that supports retrieval, reasoning, and question answering.
+
+The ontology is optimized for biomedical literature extraction involving diseases, therapeutics, biomarkers, cardiovascular risk, and clinical outcomes.
 
 ---
 
@@ -93,6 +95,37 @@ Represents an exposure, behavior, demographic factor, or condition that increase
 
 ---
 
+## Biomarker
+
+Represents a measurable biological or laboratory value relevant to diagnosis, treatment, or disease risk.
+
+### Required Properties
+
+| Property | Type   | Description       |
+| -------- | ------ | ----------------- |
+| id       | String | Unique identifier |
+| name     | String | Biomarker name    |
+
+### Optional Properties
+
+| Property     | Description                    |
+| ------------ | ------------------------------ |
+| category     | Lipid, inflammatory, metabolic |
+| unit         | Measurement unit               |
+| aliases      | Alternative names              |
+| normal_range | Reference range                |
+| description  | Biomarker description          |
+
+### Example
+
+```text
+LDL Cholesterol
+Triglycerides
+HDL Cholesterol
+```
+
+---
+
 ## Paper
 
 Represents a scientific publication or literature source.
@@ -134,6 +167,109 @@ A drug is used to treat a condition.
 
 ```text
 Fenofibrate TREATS Hypertriglyceridemia
+```
+
+---
+
+## PREVENTS
+
+### Definition
+
+A drug reduces the likelihood of a condition or clinical event occurring.
+
+### Pattern
+
+```text
+(Drug)-[:PREVENTS]->(Condition)
+```
+
+### Example
+
+```text
+Statins PREVENT Myocardial Infarction
+```
+
+---
+
+## REDUCES
+
+### Definition
+
+A drug lowers the level, severity, or activity of a biomarker or condition.
+
+### Pattern
+
+```text
+(Drug)-[:REDUCES]->(Biomarker)
+```
+
+### Examples
+
+```text
+Statins REDUCE LDL Cholesterol
+Fish Oil REDUCES Triglycerides
+Fenofibrate REDUCES Triglycerides
+```
+
+---
+
+## INCREASES
+
+### Definition
+
+A drug or condition increases the level or severity of a biomarker or condition.
+
+### Pattern
+
+```text
+(Drug)-[:INCREASES]->(Biomarker)
+```
+
+### Example
+
+```text
+Niacin INCREASES HDL Cholesterol
+```
+
+---
+
+## ASSOCIATED_WITH
+
+### Definition
+
+Two entities demonstrate a clinically or statistically significant association.
+
+### Pattern
+
+```text
+(Entity)-[:ASSOCIATED_WITH]->(Entity)
+```
+
+### Examples
+
+```text
+Elevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease
+Low HDL Cholesterol ASSOCIATED_WITH Heart Disease
+```
+
+---
+
+## HAS_ADVERSE_EFFECT
+
+### Definition
+
+A drug may cause an undesirable clinical effect or complication.
+
+### Pattern
+
+```text
+(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)
+```
+
+### Example
+
+```text
+Statins HAS_ADVERSE_EFFECT Myopathy
 ```
 
 ---
@@ -296,16 +432,21 @@ Potential future entity types:
 * Clinical Trial
 * Organization
 * Adverse Event
+* Population Cohort
+* Clinical Guideline
 
 Potential future relationships:
 
-* ASSOCIATED_WITH
-* PREVENTS
 * EXPRESSES
 * PARTICIPATES_IN
 * TARGETS
 * CITES
 * CO_OCCURS_WITH
+* BIOMARKER_OF
+* PREDICTS
+* RESPONDS_TO
+* INHIBITS
+* ACTIVATES
 
 ---
 
@@ -313,4 +454,4 @@ Potential future relationships:
 
 Ontology Version: 1.0
 
-Status: MVP / Initial Extraction Benchmarking
+Status: MVP / Expanded Biomedical Relationship Extraction
