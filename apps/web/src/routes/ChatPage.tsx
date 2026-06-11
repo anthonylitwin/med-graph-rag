@@ -58,6 +58,20 @@ export function ChatPage() {
           <h3>Model</h3>
           <p>{response.model}</p>
 
+          {typeof response.confidence === "number" && (
+            <>
+              <h3>Confidence</h3>
+              <p>{Math.round(response.confidence * 100)}%</p>
+            </>
+          )}
+
+          {response.abstained && (
+            <p>
+              The answerer abstained because the retrieved graph evidence was
+              insufficient.
+            </p>
+          )}
+
           <h3>Sources</h3>
           {response.sources.length === 0 ? (
             <p>No sources returned.</p>

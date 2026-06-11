@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter
 
-from app.services.graph_rag_service import answer_question
+from app.services.qa_service import answer_question
 
 router = APIRouter()
 
@@ -15,6 +15,8 @@ class ChatResponse(BaseModel):
     sources: list[dict]
     reasoningPath: list[dict]
     model: str
+    confidence: float | None = None
+    abstained: bool | None = None
 
 
 @router.post("", response_model=ChatResponse)

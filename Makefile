@@ -1,4 +1,4 @@
-.PHONY: bootstrap up down logs test smoke-test web api
+.PHONY: bootstrap up down logs test smoke-test web api qa-answer qa-dataset qa-eval
 
 # Override at runtime, e.g. `make schema PYTHON=.venv-wsl/bin/python`
 PYTHON ?= .venv/Scripts/python.exe
@@ -25,7 +25,7 @@ web:
 	cd apps/web && npm run dev
 
 api:
-	cd apps/api && $(PYTHON) -m uvicorn app.main:app --reload
+	PYTHONPATH=. $(PYTHON) -m uvicorn app.main:app --app-dir apps/api --reload
 
 schema:
 	PYTHONPATH=. $(PYTHON) scripts/apply_neo4j_schema.py
@@ -44,3 +44,12 @@ graph-smoke-test:
 
 ingest-pmc:
 	PYTHONPATH=. $(PYTHON) pipelines/ingestion/ingest_pmc.py --pmcid $(PMCIDS) $(ARGS)
+
+qa-answer:
+	PYTHONPATH=. $(PYTHON) pipelines/qa/answer_questions.py --question-file $(QUESTIONS) $(ARGS)
+
+qa-dataset:
+	PYTHONPATH=. $(PYTHON) pipelines/qa/process_training_dataset.py --dataset $(DATASET) $(ARGS)
+
+qa-eval:
+	PYTHONPATH=. $(PYTHON) eval/runners/run_graph_rag_baseline.py $(ARGS)
