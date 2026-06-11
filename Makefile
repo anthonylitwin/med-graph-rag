@@ -17,6 +17,7 @@ logs:
 	docker compose logs -f
 
 test:
+	PYTHONPATH=. $(PYTHON) -m unittest discover -s tests
 	cd apps/web && npm test -- --run || true
 	cd apps/api && $(PYTHON) -m pytest || true
 
@@ -40,3 +41,6 @@ smoke-test:
 
 graph-smoke-test:
 	curl -f http://localhost:8000/graph/sample
+
+ingest-pmc:
+	PYTHONPATH=. $(PYTHON) pipelines/ingestion/ingest_pmc.py --pmcid $(PMCIDS) $(ARGS)
