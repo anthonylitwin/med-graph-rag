@@ -61,34 +61,6 @@ FOR (n:Paper)
 REQUIRE n.pmid IS UNIQUE;
 
 ///////////////////////////////////////////////////////////////////////////
-// REQUIRED PROPERTY CONSTRAINTS
-///////////////////////////////////////////////////////////////////////////
-
-CREATE CONSTRAINT drug_name_required IF NOT EXISTS
-FOR (n:Drug)
-REQUIRE n.name IS NOT NULL;
-
-CREATE CONSTRAINT condition_name_required IF NOT EXISTS
-FOR (n:Condition)
-REQUIRE n.name IS NOT NULL;
-
-CREATE CONSTRAINT symptom_name_required IF NOT EXISTS
-FOR (n:Symptom)
-REQUIRE n.name IS NOT NULL;
-
-CREATE CONSTRAINT riskfactor_name_required IF NOT EXISTS
-FOR (n:RiskFactor)
-REQUIRE n.name IS NOT NULL;
-
-CREATE CONSTRAINT biomarker_name_required IF NOT EXISTS
-FOR (n:Biomarker)
-REQUIRE n.name IS NOT NULL;
-
-CREATE CONSTRAINT paper_title_required IF NOT EXISTS
-FOR (n:Paper)
-REQUIRE n.title IS NOT NULL;
-
-///////////////////////////////////////////////////////////////////////////
 // INDEXES
 ///////////////////////////////////////////////////////////////////////////
 
