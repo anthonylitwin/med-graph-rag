@@ -4,13 +4,15 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from packages.llm.models import DEFAULT_FRONTIER_MODEL
+
 
 DEFAULT_OUTPUT_ROOT = Path("data/source_documents/pmc_v001")
 DEFAULT_CHUNK_MAX_CHARS = 6000
 DEFAULT_CHUNK_OVERLAP_CHARS = 500
 DEFAULT_PROMPT_VERSION = "001_initial_prompt"
 DEFAULT_EXTRACTOR_PROVIDER = "openai"
-DEFAULT_OPENAI_MODEL = "gpt-5.5"
+DEFAULT_OPENAI_MODEL = DEFAULT_FRONTIER_MODEL
 
 
 @dataclass(slots=True)

@@ -7,10 +7,12 @@ export type ChatResponse = {
     sources: Array<Record<string, unknown>>;
     reasoningPath: Array<Record<string, unknown>>;
     model: string;
+    confidence?: number;
+    abstained?: boolean;
 };
 
 const API_BASE_URL = 
-    import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+    import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export async function sendChatMessage(
     request: ChatRequest
@@ -24,7 +26,7 @@ export async function sendChatMessage(
     });
 
     if (!response.ok){
-        throw new Error(`Chat request failed: $(response.status)`);
+        throw new Error(`Chat request failed: ${response.status}`);
     }
 
     return response.json();

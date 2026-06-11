@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import Any, Protocol
 
+from packages.llm.providers import OpenAIResponsesModel
 from pipelines.ingestion.models import ChunkRecord, DEFAULT_OPENAI_MODEL, DEFAULT_PROMPT_VERSION
 
 
@@ -148,64 +149,16 @@ def _format_prompt(document: dict[str, Any], chunk: ChunkRecord) -> str:
     return prompt
 
 
-def _response_text(response: Any) -> str:
-    output_text = getattr(response, "output_text", None)
-    if isinstance(output_text, str) and output_text.strip():
-        return output_text
-
-    if hasattr(response, "model_dump"):
-        response = response.model_dump()
-    elif not isinstance(response, dict) and hasattr(response, "__dict__"):
-        response = vars(response)
-
-    def walk(value: Any) -> str | None:
-        if isinstance(value, dict):
-            if value.get("type") == "output_text" and isinstance(value.get("text"), str):
-                return value["text"]
-            for child in value.values():
-                result = walk(child)
-                if result:
-                    return result
-        if isinstance(value, list):
-            for child in value:
-                result = walk(child)
-                if result:
-                    return result
-        return None
-
-    text = walk(response)
-    if not text:
-        raise RuntimeError("OpenAI response did not contain output text")
-    return text
-
-
 class OpenAIResponsesExtractor:
     provider = "openai"
 
     def __init__(self, model: str | None = None, reasoning_effort: str | None = None) -> None:
         self.model = model or os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL)
         self.reasoning_effort = reasoning_effort or os.getenv("OPENAI_REASONING_EFFORT", "medium")
-
-        try:
-            from openai import OpenAI
-        except ImportError as exc:
-            raise RuntimeError("Install the openai package to use --extractor openai") from exc
-
-        self.client = OpenAI()
+        self.language_model = OpenAIResponsesModel(model=self.model, reasoning_effort=self.reasoning_effort)
 
     def extract(self, document: dict[str, Any], chunk: ChunkRecord) -> dict[str, Any]:
-        response = self.client.responses.create(
-            model=self.model,
-            input=[
-                {
-                    "role": "user",
-                    "content": [{"type": "input_text", "text": _format_prompt(document, chunk)}],
-                }
-            ],
-            reasoning={"effort": self.reasoning_effort},
-            text={"format": extraction_json_schema()},
-        )
-        return json.loads(_response_text(response))
+        return self.language_model.generate_json(_format_prompt(document, chunk), extraction_json_schema())
 
 
 class NoopExtractor:
