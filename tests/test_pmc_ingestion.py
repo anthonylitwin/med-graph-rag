@@ -6,10 +6,11 @@ import tempfile
 import types
 import unittest
 from pathlib import Path
+from typing import Any
 from unittest import mock
 
 from pipelines.ingestion.chunking import chunk_article
-from pipelines.ingestion.extractors import OpenAIResponsesExtractor
+from pipelines.ingestion.extractors import GLiNEROllamaExtractor, OpenAIResponsesExtractor
 from pipelines.ingestion.models import ChunkRecord, ExtractionContext
 from pipelines.ingestion.neo4j_loader import load_processed_record_with_session
 from pipelines.ingestion.pmc_bioc import parse_bioc_payload
@@ -248,6 +249,82 @@ class OpenAIExtractorTests(unittest.TestCase):
         self.assertEqual(calls[0]["model"], "gpt-test")
         self.assertEqual(calls[0]["reasoning"], {"effort": "low"})
         self.assertEqual(calls[0]["text"]["format"]["type"], "json_schema")
+
+
+class LocalExtractorTests(unittest.TestCase):
+    def test_gliner_ollama_extractor_uses_candidates_and_validates_relationships(self) -> None:
+        class FakeGLiNER:
+            def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:
+                self.text = text
+                self.labels = labels
+                self.threshold = threshold
+                return [
+                    {"text": "Fish oil", "label": "Drug", "score": 0.91},
+                    {"text": "Triglycerides", "label": "Biomarker", "score": 0.88},
+                ]
+
+        class FakeLanguageModel:
+            provider = "ollama"
+            model = "qwen-test"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, object]:
+                self.prompt = prompt
+                self.json_schema = json_schema
+                return {
+                    "relationships": [
+                        {
+                            "type": "REDUCES",
+                            "source": {"type": "Drug", "name": "Fish oil"},
+                            "target": {"type": "Biomarker", "name": "Triglycerides"},
+                            "properties": {"confidence": 0.86, "evidence": "Fish oil reduced triglycerides"},
+                        }
+                    ],
+                    "rejected_candidates": [],
+                }
+
+        chunk = ChunkRecord(
+            id="PMC3572442-chunk-0001",
+            document_id="paper:PMC3572442",
+            pmcid="PMC3572442",
+            order=1,
+            char_start=0,
+            char_end=64,
+            section="Abstract",
+            type="abstract",
+            source_sections=["Abstract"],
+            text="Fish oil reduced triglycerides in adults.",
+        )
+        document = {"id": "paper:PMC3572442", "pmcid": "PMC3572442", "pmid": "12345", "title": "Mock paper"}
+        fake_gliner = FakeGLiNER()
+        fake_model = FakeLanguageModel()
+        extractor = GLiNEROllamaExtractor(
+            model="qwen-test",
+            entity_model="fake-gliner",
+            language_model=fake_model,
+            gliner_model=fake_gliner,
+        )
+
+        raw_output = extractor.extract(document, chunk)
+        normalized = validate_extraction_output(
+            raw_output,
+            document,
+            chunk,
+            ExtractionContext(
+                extractor=extractor.provider,
+                model=extractor.model,
+                created_at="2026-01-01T00:00:00+00:00",
+            ),
+        )
+
+        self.assertEqual(fake_gliner.labels, ["Drug", "Condition", "Symptom", "RiskFactor", "Biomarker"])
+        self.assertIn("candidate_entities", fake_model.prompt)
+        self.assertEqual(fake_model.json_schema["name"], "medgraphrag_local_relationship_extraction")
+        self.assertEqual(len(normalized["entities"]), 2)
+        self.assertEqual(len(normalized["relationships"]), 1)
+        self.assertEqual(normalized["relationships"][0]["type"], "REDUCES")
 
 
 class Neo4jLoaderTests(unittest.TestCase):

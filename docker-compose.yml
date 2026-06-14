@@ -7,6 +7,11 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      - MODEL_PROFILE=${MODEL_PROFILE:-frontier}
+      - LOCAL_MODEL=${LOCAL_MODEL:-qwen2.5:7b-instruct}
+      - OLLAMA_BASE_URL=${DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - EXTRACTOR_ENTITY_MODEL=${EXTRACTOR_ENTITY_MODEL:-Ihor/gliner-biomed-small-v1.0}
     volumes:
       - ./apps/api/app:/app/app
       - ./packages:/app/packages

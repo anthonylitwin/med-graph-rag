@@ -11,8 +11,7 @@ Cheap smoke test without OpenAI or Neo4j:
 ```powershell
 .\.venv\Scripts\python.exe pipelines/qa/answer_questions.py `
   --question-file eval/questions/qa_eval_v001.json `
-  --answerer noop `
-  --retriever noop
+  --model-profile noop
 ```
 
 GraphRAG run using the default frontier model:
@@ -21,9 +20,18 @@ GraphRAG run using the default frontier model:
 .\.venv\Scripts\python.exe pipelines/qa/answer_questions.py `
   --question-file eval/questions/qa_eval_v001.json `
   --output-root data/qa/qa_v001 `
-  --answerer openai `
-  --model gpt-5.5 `
-  --retriever graph
+  --model-profile frontier
+```
+
+Local GraphRAG run with Ollama:
+
+```powershell
+ollama pull qwen2.5:7b-instruct
+
+.\.venv\Scripts\python.exe pipelines/qa/answer_questions.py `
+  --question-file eval/questions/qa_eval_v001.json `
+  --output-root data/qa/local_qwen25 `
+  --model-profile local-qwen25
 ```
 
 Expected artifacts:
@@ -59,11 +67,12 @@ Supported export formats:
 The API uses the same QA core as the CLI.
 
 ```text
-QA_PROVIDER=openai
-QA_MODEL=gpt-5.5
-QA_RETRIEVER=graph
+MODEL_PROFILE=frontier
+LOCAL_MODEL=qwen2.5:7b-instruct
+OLLAMA_BASE_URL=http://localhost:11434
 QA_MAX_EVIDENCE=12
 ```
 
-Use `QA_PROVIDER=local` with `LOCAL_MODEL_URL` for a local model endpoint, or
-`QA_PROVIDER=fine_tuned` with `QA_MODEL` set to a fine-tuned model id.
+Supported profiles are `frontier`, `local-qwen25`, `local-qwen3`, and `noop`.
+You can still override the profile with `--answerer`, `--model`, and `--retriever`
+for one-off runs.

@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from packages.llm.models import DEFAULT_FRONTIER_MODEL
+from packages.llm.profiles import DEFAULT_MODEL_PROFILE
 
 
 DEFAULT_QA_OUTPUT_ROOT = Path("data/qa/qa_v001")
@@ -100,6 +101,7 @@ class QAConfig:
     questions: list[QuestionRecord]
     output_root: Path = DEFAULT_QA_OUTPUT_ROOT
     clean_output: bool = False
+    model_profile: str = DEFAULT_MODEL_PROFILE
     answerer_provider: str = DEFAULT_QA_PROVIDER
     model: str = DEFAULT_FRONTIER_MODEL
     retriever: str = DEFAULT_QA_RETRIEVER
@@ -115,6 +117,7 @@ class QAPipelineResult:
     question: str
     answer_path: Path
     retrieved_path: Path
+    model_profile: str
     provider: str
     model: str
     retriever: str
@@ -132,6 +135,7 @@ class QAPipelineResult:
             "question": self.question,
             "answer_path": self.answer_path.as_posix(),
             "retrieved_path": self.retrieved_path.as_posix(),
+            "model_profile": self.model_profile,
             "provider": self.provider,
             "model": self.model,
             "retriever": self.retriever,
