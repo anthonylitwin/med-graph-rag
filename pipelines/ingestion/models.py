@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from packages.llm.models import DEFAULT_FRONTIER_MODEL
+from packages.llm.profiles import DEFAULT_MODEL_PROFILE
 
 
 DEFAULT_OUTPUT_ROOT = Path("data/source_documents/pmc_v001")
@@ -57,8 +58,10 @@ class PipelineConfig:
     clean_output: bool = False
     chunk_max_chars: int = DEFAULT_CHUNK_MAX_CHARS
     chunk_overlap_chars: int = DEFAULT_CHUNK_OVERLAP_CHARS
+    model_profile: str = DEFAULT_MODEL_PROFILE
     extractor_provider: str = DEFAULT_EXTRACTOR_PROVIDER
     model: str = DEFAULT_OPENAI_MODEL
+    entity_model: str = ""
     min_confidence: float = 0.5
     apply_schema: bool = False
     skip_extract: bool = False

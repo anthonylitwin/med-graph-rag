@@ -68,6 +68,12 @@ def _dedupe(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return list(deduped.values())
 
 
+def _extractor_model_name(config: PipelineConfig) -> str:
+    if config.extractor_provider in {"gliner_ollama", "gliner-ollama"}:
+        return f"{config.entity_model} + {config.model}"
+    return config.model
+
+
 def build_processed_record(
     run_id: str,
     config: PipelineConfig,
@@ -83,8 +89,10 @@ def build_processed_record(
             "id": run_id,
             "created_at": datetime.now(UTC).isoformat(),
             "source": "pmc_bioc",
+            "model_profile": config.model_profile,
             "extractor_provider": config.extractor_provider,
-            "extractor_model": config.model,
+            "extractor_model": _extractor_model_name(config),
+            "entity_model": config.entity_model if config.extractor_provider in {"gliner_ollama", "gliner-ollama"} else "",
             "prompt_version": "001_initial_prompt",
             "min_confidence": config.min_confidence,
         },
@@ -100,7 +108,7 @@ def build_processed_record(
 def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
     pmcids = config.pmcids[: config.limit] if config.limit is not None else config.pmcids
     raw_dir, text_dir, processed_dir = ensure_output_directories(config.output_root, config.clean_output)
-    extractor = None if config.skip_extract else get_extractor(config.extractor_provider, config.model)
+    extractor = None if config.skip_extract else get_extractor(config.extractor_provider, config.model, config.entity_model)
     run_id = datetime.now(UTC).strftime("pmc-%Y%m%d%H%M%S")
     results: list[ArticlePipelineResult] = []
 

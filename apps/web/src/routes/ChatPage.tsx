@@ -1,10 +1,84 @@
-import { useState } from "react";
-import { sendChatMessage, type ChatResponse } from "../lib/apiClient";
+import { useEffect, useState } from "react";
+import {
+  getChatModelOptions,
+  sendChatMessage,
+  type ChatResponse,
+  type ModelOption,
+} from "../lib/apiClient";
+
+const FALLBACK_MODEL_OPTIONS: ModelOption[] = [
+  {
+    name: "frontier",
+    label: "Frontier API",
+    description: "Configured OpenAI frontier runtime.",
+    qa_provider: "openai",
+    qa_model: "gpt-5.5",
+    qa_retriever: "graph",
+    extractor_provider: "openai",
+    extractor_model: "gpt-5.5",
+    entity_model: "",
+  },
+  {
+    name: "local-qwen25",
+    label: "Local Qwen 2.5",
+    description: "Ollama qwen2.5:7b-instruct runtime.",
+    qa_provider: "ollama",
+    qa_model: "qwen2.5:7b-instruct",
+    qa_retriever: "graph",
+    extractor_provider: "gliner_ollama",
+    extractor_model: "qwen2.5:7b-instruct",
+    entity_model: "Ihor/gliner-biomed-small-v1.0",
+  },
+  {
+    name: "local-qwen3",
+    label: "Local Qwen 3",
+    description: "Ollama qwen3:8b runtime.",
+    qa_provider: "ollama",
+    qa_model: "qwen3:8b",
+    qa_retriever: "graph",
+    extractor_provider: "gliner_ollama",
+    extractor_model: "qwen3:8b",
+    entity_model: "Ihor/gliner-biomed-small-v1.0",
+  },
+  {
+    name: "noop",
+    label: "Noop",
+    description: "Deterministic smoke-test runtime.",
+    qa_provider: "noop",
+    qa_model: "noop-language-model-v0",
+    qa_retriever: "noop",
+    extractor_provider: "noop",
+    extractor_model: "noop-extractor-v0",
+    entity_model: "",
+  },
+];
 
 export function ChatPage() {
   const [message, setMessage] = useState("");
+  const [modelProfile, setModelProfile] = useState("frontier");
+  const [modelOptions, setModelOptions] = useState<ModelOption[]>(FALLBACK_MODEL_OPTIONS);
   const [response, setResponse] = useState<ChatResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getChatModelOptions()
+      .then((options) => {
+        if (!isMounted) {
+          return;
+        }
+        setModelOptions(options.profiles);
+        setModelProfile(options.defaultProfile);
+      })
+      .catch(() => {
+        setModelOptions(FALLBACK_MODEL_OPTIONS);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -17,7 +91,7 @@ export function ChatPage() {
     setResponse(null);
 
     try {
-      const result = await sendChatMessage({ message });
+      const result = await sendChatMessage({ message, modelProfile });
       setResponse(result);
     } catch (error) {
       setResponse({
@@ -25,6 +99,8 @@ export function ChatPage() {
         sources: [],
         reasoningPath: [],
         model: "error",
+        provider: "error",
+        modelProfile,
       });
     } finally {
       setIsLoading(false);
@@ -34,9 +110,25 @@ export function ChatPage() {
   return (
     <main style={{ maxWidth: 900, margin: "2rem auto", fontFamily: "sans-serif" }}>
       <h1>MedGraphRAG</h1>
-      <p>Ask a biomedical question. For now, this calls the mock FastAPI backend.</p>
+      <p>Ask a biomedical question against the configured graph evidence.</p>
 
       <form onSubmit={handleSubmit}>
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "1rem" }}>
+          <label htmlFor="model-profile">Model</label>
+          <select
+            id="model-profile"
+            value={modelProfile}
+            onChange={(event) => setModelProfile(event.target.value)}
+            style={{ minWidth: 220, padding: "0.5rem" }}
+          >
+            {modelOptions.map((option) => (
+              <option key={option.name} value={option.name}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <textarea
           value={message}
           onChange={(event) => setMessage(event.target.value)}
@@ -56,7 +148,9 @@ export function ChatPage() {
           <p>{response.answer}</p>
 
           <h3>Model</h3>
-          <p>{response.model}</p>
+          <p>
+            {response.model} ({response.provider}, {response.modelProfile})
+          </p>
 
           {typeof response.confidence === "number" && (
             <>

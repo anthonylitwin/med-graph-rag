@@ -7,7 +7,7 @@ The pipeline can:
 - Read PMC IDs from CLI arguments or a newline-only text file.
 - Fetch PMC BioC JSON from NCBI.
 - Write raw JSON, full text, processed chunks, extraction outputs, and a manifest.
-- Extract biomedical entities and relationships with OpenAI Responses API.
+- Extract biomedical entities and relationships with OpenAI or local GLiNER + Ollama.
 - Load validated graph facts into Neo4j.
 
 ## Prerequisites
@@ -18,6 +18,10 @@ Create or update `.env` with:
 OPENAI_API_KEY=your-key-here
 OPENAI_MODEL=gpt-5.5
 OPENAI_REASONING_EFFORT=medium
+MODEL_PROFILE=frontier
+LOCAL_MODEL=qwen2.5:7b-instruct
+OLLAMA_BASE_URL=http://localhost:11434
+EXTRACTOR_ENTITY_MODEL=Ihor/gliner-biomed-small-v1.0
 NEO4J_LOCAL_URI=bolt://localhost:7687
 NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=medgraphrag-password
@@ -27,6 +31,13 @@ Install Python dependencies if needed:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install -r apps/api/requirements.txt
+```
+
+For local GLiNER extraction, install optional model dependencies:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-local-models.txt
+ollama pull qwen2.5:7b-instruct
 ```
 
 For Neo4j load tests, start Neo4j:
@@ -59,7 +70,7 @@ Use this first. It fetches BioC, parses text, chunks the article, writes artifac
 .\.venv\Scripts\python.exe pipelines/ingestion/ingest_pmc.py `
   --pmcid-file data/source_documents/benchmark_pmcids.txt `
   --limit 1 `
-  --extractor noop `
+  --model-profile noop `
   --skip-load
 ```
 
@@ -81,8 +92,25 @@ Run one article without loading Neo4j:
 ```powershell
 .\.venv\Scripts\python.exe pipelines/ingestion/ingest_pmc.py `
   --pmcid PMC3572442 `
+  --model-profile frontier `
   --skip-load
 ```
+
+## Local GLiNER + Ollama Extraction Test
+
+Run one article locally without loading Neo4j:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/ingestion/ingest_pmc.py `
+  --pmcid PMC3572442 `
+  --model-profile local-qwen25 `
+  --skip-load
+```
+
+This uses GLiNER-BioMed for ontology entity candidates and Ollama/Qwen for
+relationships among those candidates. The same extraction validator still drops
+unsupported entity types, invalid relationship directions, low-confidence facts,
+and relationships without evidence.
 
 Inspect:
 
@@ -144,13 +172,20 @@ The load is idempotent, so rerunning the same command should not duplicate graph
 Run the full pipeline through `make`:
 
 ```powershell
-make ingest-pmc PMCIDS="PMC3572442 PMC3234107" ARGS="--apply-schema"
+make ingest-pmc PMCIDS="PMC3572442 PMC3234107" MODEL_PROFILE=frontier ARGS="--apply-schema"
 ```
 
 Run a cheap artifact-only check:
 
 ```powershell
-make ingest-pmc PMCIDS="PMC3572442" ARGS="--extractor noop --skip-load"
+make ingest-pmc PMCIDS="PMC3572442" MODEL_PROFILE=noop ARGS="--skip-load"
+```
+
+Run a local model artifact-only check:
+
+```powershell
+make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
+make ingest-pmc PMCIDS="PMC3572442" MODEL_PROFILE=local-qwen25 ARGS="--skip-load"
 ```
 
 ## Useful Options
@@ -164,7 +199,10 @@ make ingest-pmc PMCIDS="PMC3572442" ARGS="--extractor noop --skip-load"
 | `--clean-output` | Delete the output root before writing new artifacts. |
 | `--chunk-max-chars` | Maximum chunk size in characters. |
 | `--chunk-overlap-chars` | Character overlap between chunks. |
-| `--extractor noop` | Skip model calls while still producing pipeline artifacts. |
+| `--model-profile` | Select `frontier`, `local-qwen25`, `local-qwen3`, or `noop`. |
+| `--extractor` | Override the profile extractor with `openai`, `gliner_ollama`, or `noop`. |
+| `--model` | Override the profile relation/frontier model. |
+| `--entity-model` | Override the GLiNER model used by `gliner_ollama`. |
 | `--skip-load` | Do not write to Neo4j. |
 | `--apply-schema` | Apply Cypher schema before Neo4j loading. |
 | `--min-confidence` | Drop model relationships below this confidence. |
