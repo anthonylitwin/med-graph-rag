@@ -1,6 +1,8 @@
 # PMC Ingestion Pipeline Usage And Testing
 
 This guide covers manual usage and verification for the PMC ingestion and extraction pipeline.
+For the full repo runbook, including UI, QA, benchmark ingestion, artifacts, and
+algorithm extension points, see `docs/complete_test_run.md`.
 
 The pipeline can:
 
@@ -224,7 +226,7 @@ Run a syntax/import compile check:
 
 ## Recommended Test Progression
 
-1. Run `--extractor noop --skip-load`.
+1. Run `--model-profile noop --skip-load`.
 2. Run OpenAI extraction with `--skip-load`.
 3. Start Neo4j and run with `--apply-schema`.
 4. Query Neo4j for `MENTIONS` and extracted relationships.

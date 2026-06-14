@@ -38,3 +38,7 @@ make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
 make up MODEL_PROFILE=local-qwen25
 make qa-answer QUESTIONS=eval/questions/qa_eval_v001.json MODEL_PROFILE=noop
 ```
+
+For a complete end-to-end test run, including model selection, smoke tests,
+full UI startup, benchmark ingestion, QA artifacts, and extension points, see
+[docs/complete_test_run.md](docs/complete_test_run.md).

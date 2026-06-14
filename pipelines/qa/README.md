@@ -3,6 +3,8 @@
 The QA pipeline mirrors the ingestion pipeline: it reads questions from CLI arguments
 or a dataset file, retrieves graph evidence, answers with a configured model provider,
 and writes inspectable artifacts plus a manifest.
+For the full repo runbook, including UI, ingestion, benchmark runs, artifacts,
+and algorithm extension points, see `docs/complete_test_run.md`.
 
 ## Batch Question Answering
 
