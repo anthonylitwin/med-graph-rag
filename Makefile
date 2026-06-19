@@ -1,4 +1,4 @@
-.PHONY: bootstrap up down logs test smoke-test web api qa-answer qa-dataset qa-eval ollama-pull
+.PHONY: bootstrap up down logs test smoke-test web api qa-answer qa-dataset qa-eval annotation-bootstrap ollama-pull
 
 # Override at runtime, e.g. `make schema PYTHON=.venv-wsl/bin/python`
 PYTHON ?= .venv/Scripts/python.exe
@@ -61,3 +61,7 @@ qa-dataset:
 
 qa-eval:
 	MODEL_PROFILE=$(MODEL_PROFILE) LOCAL_MODEL=$(LOCAL_MODEL) OLLAMA_BASE_URL=$(OLLAMA_BASE_URL) EXTRACTOR_ENTITY_MODEL=$(EXTRACTOR_ENTITY_MODEL) PYTHONPATH=. $(PYTHON) eval/runners/run_graph_rag_baseline.py $(ARGS)
+
+annotation-bootstrap: MODEL_PROFILE = local-qwen25
+annotation-bootstrap:
+	MODEL_PROFILE=$(MODEL_PROFILE) LOCAL_MODEL=$(LOCAL_MODEL) OLLAMA_BASE_URL=$(OLLAMA_BASE_URL) EXTRACTOR_ENTITY_MODEL=$(EXTRACTOR_ENTITY_MODEL) PYTHONPATH=. $(PYTHON) pipelines/annotation/bootstrap_annotations.py --pmcid $(PMCIDS) --model-profile $(MODEL_PROFILE) $(ARGS)

@@ -81,6 +81,44 @@ class OllamaChatModelTests(unittest.TestCase):
         self.assertEqual(payload["format"], schema["schema"])
         self.assertEqual(result, {"answer": "ok"})
 
+    def test_generate_json_record_keeps_full_request_and_response(self) -> None:
+        class FakeResponse:
+            def __enter__(self) -> "FakeResponse":
+                return self
+
+            def __exit__(self, *args: object) -> None:
+                return None
+
+            def read(self) -> bytes:
+                return json.dumps({"message": {"content": json.dumps({"answer": "ok"})}}).encode("utf-8")
+
+        def fake_urlopen(req: object, timeout: int) -> FakeResponse:
+            return FakeResponse()
+
+        schema = {
+            "type": "json_schema",
+            "name": "test_schema",
+            "schema": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {"answer": {"type": "string"}},
+                "required": ["answer"],
+            },
+        }
+
+        with mock.patch("packages.llm.providers.request.urlopen", fake_urlopen):
+            model = OllamaChatModel(model="qwen-test", base_url="http://ollama.test", timeout_seconds=9)
+            record = model.generate_json_record("Answer as JSON", schema, prompt_version="test_prompt")
+
+        self.assertEqual(record.status, "ok")
+        self.assertEqual(record.provider, "ollama")
+        self.assertEqual(record.model, "qwen-test")
+        self.assertEqual(record.prompt_version, "test_prompt")
+        self.assertEqual(record.request["format"], schema["schema"])
+        self.assertEqual(record.response_text, json.dumps({"answer": "ok"}))
+        self.assertEqual(record.parsed_json, {"answer": "ok"})
+        self.assertIn("message", record.to_dict()["raw_response"])
+
 
 if __name__ == "__main__":
     unittest.main()

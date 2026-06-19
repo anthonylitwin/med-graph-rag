@@ -42,3 +42,20 @@ make qa-answer QUESTIONS=eval/questions/qa_eval_v001.json MODEL_PROFILE=noop
 For a complete end-to-end test run, including model selection, smoke tests,
 full UI startup, benchmark ingestion, QA artifacts, and extension points, see
 [docs/complete_test_run.md](docs/complete_test_run.md).
+
+### Annotation Bootstrap
+
+Generate a silver annotation workbook for human review without loading Neo4j:
+
+```bash
+make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=noop
+make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=local-qwen25
+make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=frontier
+```
+
+Each run writes artifacts under `data/annotations/bootstrap_v001/<run_id>/`,
+including `annotation_workbook.xlsx`, `run_manifest.json`, `manifest.csv`,
+processed source-document JSON, and per-chunk model-call audit JSON.
+
+For workbook review details, see
+[pipelines/annotation/README.md](pipelines/annotation/README.md).

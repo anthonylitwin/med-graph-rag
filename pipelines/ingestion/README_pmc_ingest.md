@@ -1,8 +1,9 @@
 # PMC Ingestion Pipeline Usage And Testing
 
 This guide covers manual usage and verification for the PMC ingestion and extraction pipeline.
-For the full repo runbook, including UI, QA, benchmark ingestion, artifacts, and
-algorithm extension points, see `docs/complete_test_run.md`.
+For the full repo runbook, including UI, QA, benchmark ingestion, annotation
+bootstrap, artifacts, and algorithm extension points, see
+`docs/complete_test_run.md`.
 
 The pipeline can:
 
@@ -11,6 +12,7 @@ The pipeline can:
 - Write raw JSON, full text, processed chunks, extraction outputs, and a manifest.
 - Extract biomedical entities and relationships with OpenAI or local GLiNER + Ollama.
 - Load validated graph facts into Neo4j.
+- Feed the annotation bootstrap workflow for Excel-based human review.
 
 ## Prerequisites
 
@@ -132,6 +134,50 @@ The processed JSON should include:
 
 For a successful extraction run, `entities` and `relationships` should contain validated ontology objects unless the model found no supported facts in the chunks.
 
+## Annotation Bootstrap For Human Review
+
+Use annotation bootstrap when you want silver model suggestions in an Excel
+workbook before promoting rows to gold labels. It reuses the PMC fetch, chunk,
+extract, and validation flow, but always runs artifact-only and does not load
+Neo4j.
+
+No-model workbook smoke:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid PMC3572442 `
+  --model-profile noop
+```
+
+Local silver bootstrap, which is the default confidence-building path:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid PMC3572442
+```
+
+Frontier silver bootstrap:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid PMC3572442 `
+  --model-profile frontier `
+  --fail-fast
+```
+
+Each run writes:
+
+```text
+data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx
+data/annotations/bootstrap_v001/<run_id>/run_manifest.json
+data/annotations/bootstrap_v001/<run_id>/manifest.csv
+data/annotations/bootstrap_v001/<run_id>/source_documents/processed/*.json
+data/annotations/bootstrap_v001/<run_id>/model_calls/<pmcid>/*.json
+```
+
+See `pipelines/annotation/README.md` for workbook review guidance and the audit
+JSON contract.
+
 ## Neo4j Load Test
 
 Apply the schema and load one article:
@@ -190,6 +236,13 @@ make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
 make ingest-pmc PMCIDS="PMC3572442" MODEL_PROFILE=local-qwen25 ARGS="--skip-load"
 ```
 
+Generate a silver annotation workbook:
+
+```powershell
+make annotation-bootstrap PMCIDS="PMC3572442"
+make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=frontier
+```
+
 ## Useful Options
 
 | Option | Purpose |
@@ -210,6 +263,10 @@ make ingest-pmc PMCIDS="PMC3572442" MODEL_PROFILE=local-qwen25 ARGS="--skip-load
 | `--min-confidence` | Drop model relationships below this confidence. |
 | `--fail-fast` | Stop on the first article or chunk error. |
 
+Annotation bootstrap supports the same PMCID, model profile, model override,
+entity model, confidence, limit, output root, clean output, force, and fail-fast
+controls through `pipelines/annotation/bootstrap_annotations.py`.
+
 ## Regression Tests
 
 Run the focused unit tests:
@@ -228,6 +285,8 @@ Run a syntax/import compile check:
 
 1. Run `--model-profile noop --skip-load`.
 2. Run OpenAI extraction with `--skip-load`.
-3. Start Neo4j and run with `--apply-schema`.
-4. Query Neo4j for `MENTIONS` and extracted relationships.
-5. Rerun the same PMCID to confirm idempotent loading.
+3. Run annotation bootstrap with `noop`, then local, then `frontier` when ready.
+4. Inspect `annotation_workbook.xlsx` and `model_calls/*.json`.
+5. Start Neo4j and run with `--apply-schema`.
+6. Query Neo4j for `MENTIONS` and extracted relationships.
+7. Rerun the same PMCID to confirm idempotent loading.

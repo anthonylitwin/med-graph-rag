@@ -1,8 +1,8 @@
 # MedGraphRAG Complete Test Runbook
 
 This runbook covers the current workspace end to end: model selection, smoke
-tests, full UI startup, benchmark ingestion, QA runs, generated artifacts, and
-the main extension points for improving algorithms.
+tests, full UI startup, benchmark ingestion, annotation bootstrap, QA runs,
+generated artifacts, and the main extension points for improving algorithms.
 
 The primary app surfaces are:
 
@@ -13,6 +13,7 @@ The primary app surfaces are:
 | Shared LLM runtime | `packages/llm` | Model profiles plus OpenAI, Ollama, local HTTP, and noop providers. |
 | Graph schema | `packages/graph/schema` | Ontology, Cypher schema, and frontier extraction prompt. |
 | Ingestion | `pipelines/ingestion` | PMC fetch, chunk, extract, validate, and load pipeline. |
+| Annotation | `pipelines/annotation` | Silver annotation bootstrap, Excel workbook export, and model-call audit artifacts. |
 | QA | `pipelines/qa` | Graph evidence retrieval, answer generation, and artifact writing. |
 | Evaluation | `eval` | Question sets and baseline runners. |
 
@@ -138,6 +139,24 @@ Expected QA artifacts:
 data/qa/smoke_noop/retrieved/*.json
 data/qa/smoke_noop/answers/*.json
 data/qa/smoke_noop/manifest.csv
+```
+
+Annotation workbook smoke:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid-file data/source_documents/benchmark_pmcids.txt `
+  --limit 1 `
+  --model-profile noop
+```
+
+Expected annotation artifacts:
+
+```text
+data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx
+data/annotations/bootstrap_v001/<run_id>/run_manifest.json
+data/annotations/bootstrap_v001/<run_id>/manifest.csv
+data/annotations/bootstrap_v001/<run_id>/source_documents/processed/*.json
 ```
 
 ## 4. Start Services And Full UI
@@ -311,7 +330,58 @@ ORDER BY r.confidence DESC
 LIMIT 25;
 ```
 
-## 7. Run QA And Evaluation
+## 7. Bootstrap Annotation Workbooks
+
+Use annotation bootstrap when you want a human-review workbook before promoting
+model output to gold labels. This command reuses PMC ingestion and extraction,
+writes processed source-document artifacts, records per-call model audit JSON,
+and does not load Neo4j.
+
+No-model workbook smoke:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid PMC3572442 `
+  --model-profile noop
+```
+
+Local silver bootstrap, the recommended confidence-building path:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid-file data/source_documents/benchmark_pmcids.txt `
+  --limit 1
+```
+
+Frontier silver bootstrap after local validation:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/bootstrap_annotations.py `
+  --pmcid PMC3572442 `
+  --model-profile frontier `
+  --fail-fast
+```
+
+Makefile usage:
+
+```powershell
+make annotation-bootstrap PMCIDS="PMC3572442"
+make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=frontier
+```
+
+Annotation by-products:
+
+| Path | Contents |
+| --- | --- |
+| `annotation_workbook.xlsx` | v1.1 review workbook with silver rows in `gold_entities` and `gold_relationships`, marked `needs_review`. |
+| `run_manifest.json` | Run settings, model profile, output paths, PMCID list, and per-article summary. |
+| `manifest.csv` | Top-level copy of the per-article ingestion manifest. |
+| `source_documents/*` | Raw, text, and processed PMC artifacts from the artifact-only run. |
+| `model_calls/*/*.json` | Prompt, schema, request, parsed output, raw response where available, timing, status, provider, model, and prompt version. |
+
+For workbook review details, see `pipelines/annotation/README.md`.
+
+## 8. Run QA And Evaluation
 
 Noop QA:
 
@@ -362,7 +432,7 @@ QA by-products:
 | `answers/*.json` | Answer JSON, sources, reasoning path, raw model response, and retrieved evidence. |
 | `manifest.csv` | Per-question provider, model, profile, retrieval counts, confidence, abstention, status, and errors. |
 
-## 8. Complete Full Run Checklist
+## 9. Complete Full Run Checklist
 
 Use this sequence for a full local validation pass:
 
@@ -371,19 +441,21 @@ Use this sequence for a full local validation pass:
 3. Apply schema.
 4. Run ingestion smoke with `noop --skip-load --limit 1`.
 5. Run one real extraction with `frontier --skip-load --limit 1` or `local-qwen25 --skip-load --limit 1`.
-6. Run all benchmark ingestion with `--apply-schema --fail-fast`.
-7. Seed sample graph if you want the current Graph UI sample page populated.
-8. Run QA with `--retriever graph`.
-9. Start API and web.
-10. Use the Chat model selector and Graph page.
-11. Inspect manifests and processed JSON artifacts.
+6. Run annotation bootstrap with `noop`, then local, then `frontier` when ready.
+7. Review `annotation_workbook.xlsx` and model-call audit JSON.
+8. Run all benchmark ingestion with `--apply-schema --fail-fast`.
+9. Seed sample graph if you want the current Graph UI sample page populated.
+10. Run QA with `--retriever graph`.
+11. Start API and web.
+12. Use the Chat model selector and Graph page.
+13. Inspect manifests and processed JSON artifacts.
 
-## 9. Extension Points For Improving Algorithms
+## 10. Extension Points For Improving Algorithms
 
 ### Model runtime
 
 - `packages/llm/profiles.py`: add new named profiles, default models, or profile aliases.
-- `packages/llm/providers.py`: add new model providers. Current providers are OpenAI Responses, Ollama chat, generic local HTTP, and noop.
+- `packages/llm/providers.py`: add new model providers or use `generate_json_record` when a workflow needs full call audit JSON. Current providers are OpenAI Responses, Ollama chat, generic local HTTP, and noop.
 - `apps/api/app/services/qa_service.py`: controls profile resolution and answerer caching for UI/API chat.
 
 ### Extraction quality
@@ -393,6 +465,8 @@ Use this sequence for a full local validation pass:
 - `pipelines/ingestion/extractors.py`: OpenAI extractor and GLiNER + Ollama local extractor.
 - `pipelines/ingestion/validation.py`: canonical entity types, relationship direction rules, evidence requirements, confidence filtering, deterministic IDs.
 - `pipelines/ingestion/chunking.py`: chunk size, overlap, and text segmentation behavior.
+- `pipelines/annotation/workbook.py`: workbook sheet contract, dropdown values, and silver-to-review row mapping.
+- `pipelines/annotation/bootstrap_annotations.py`: artifact-only annotation orchestration and run manifest shape.
 
 Good next improvements:
 
@@ -400,6 +474,7 @@ Good next improvements:
 - Add sentence-level evidence span selection before relation extraction.
 - Split local relationship prompts by sentence or candidate pair to reduce noise.
 - Add ontology types such as Gene, Protein, Procedure, Trial, or Population only after updating validation, schema, prompt, tests, and UI.
+- Add reviewed-workbook import only after locking the accepted/rejected row semantics.
 
 ### Retrieval and QA
 
@@ -429,13 +504,15 @@ Good next improvements:
 - Add visual graph rendering and evidence side panels.
 - Expose ingestion run manifests and processed artifacts in the UI.
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom | Check |
 | --- | --- |
 | Ollama works on host but not Docker | Use `DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434`. |
 | `gliner_ollama` import error | Install `requirements-local-models.txt`. |
 | OpenAI path fails | Check `OPENAI_API_KEY` and `OPENAI_MODEL`. |
+| Annotation workbook export fails | Install `apps/api/requirements.txt`; the workbook exporter needs `openpyxl`. |
+| Annotation run has no `model_calls` files | Use `pipelines/annotation/bootstrap_annotations.py`; regular ingestion only records calls when configured by annotation mode. |
 | Graph QA retrieves nothing | Confirm Neo4j is loaded and the question contains an entity name present in the graph. |
 | Graph UI empty | Seed sample graph or extend `/graph/sample`; current endpoint only returns `sample=true` nodes. |
 | PowerShell blocks `npm` | Use `npm.cmd run build` or `npm.cmd run dev`. |
