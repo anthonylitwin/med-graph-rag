@@ -69,6 +69,7 @@ class PipelineConfig:
     force: bool = False
     fail_fast: bool = False
     limit: int | None = None
+    model_call_root: Path | None = None
 
 
 @dataclass(slots=True)

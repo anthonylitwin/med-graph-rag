@@ -250,6 +250,68 @@ class OpenAIExtractorTests(unittest.TestCase):
         self.assertEqual(calls[0]["reasoning"], {"effort": "low"})
         self.assertEqual(calls[0]["text"]["format"]["type"], "json_schema")
 
+    def test_openai_extractor_records_model_call_json_when_enabled(self) -> None:
+        output = {
+            "paper": {
+                "pmid": "12345",
+                "pmcid": "PMC3572442",
+                "title": "Mock paper",
+                "year": "",
+                "journal": "",
+                "doi": "",
+                "authors": [],
+                "abstract": "",
+            },
+            "entities": [],
+            "relationships": [],
+            "rejected_candidates": [],
+        }
+
+        class FakeResponses:
+            def create(self, **kwargs):
+                return types.SimpleNamespace(output_text=json.dumps(output))
+
+        class FakeOpenAI:
+            def __init__(self):
+                self.responses = FakeResponses()
+
+        fake_openai_module = types.ModuleType("openai")
+        fake_openai_module.OpenAI = FakeOpenAI
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            model_call_root = Path(tmpdir) / "model_calls"
+            with mock.patch.dict(sys.modules, {"openai": fake_openai_module}):
+                extractor = OpenAIResponsesExtractor(
+                    model="gpt-test",
+                    reasoning_effort="low",
+                    model_call_root=model_call_root,
+                )
+                extractor.extract(
+                    {"pmcid": "PMC3572442", "pmid": "12345", "title": "Mock paper", "authors": []},
+                    ChunkRecord(
+                        id="PMC3572442-chunk-0001",
+                        document_id="paper:PMC3572442",
+                        pmcid="PMC3572442",
+                        order=1,
+                        char_start=0,
+                        char_end=4,
+                        section="Abstract",
+                        type="abstract",
+                        source_sections=["Abstract"],
+                        text="Text",
+                    ),
+                )
+
+            self.assertEqual(len(extractor.last_model_call_paths), 1)
+            audit_path = Path(extractor.last_model_call_paths[0])
+            audit = json.loads(audit_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(audit["provider"], "openai")
+        self.assertEqual(audit["model"], "gpt-test")
+        self.assertEqual(audit["status"], "ok")
+        self.assertEqual(audit["parsed_json"], output)
+        self.assertEqual(audit["request"]["model"], "gpt-test")
+
 
 class LocalExtractorTests(unittest.TestCase):
     def test_gliner_ollama_extractor_uses_candidates_and_validates_relationships(self) -> None:
@@ -325,6 +387,65 @@ class LocalExtractorTests(unittest.TestCase):
         self.assertEqual(len(normalized["entities"]), 2)
         self.assertEqual(len(normalized["relationships"]), 1)
         self.assertEqual(normalized["relationships"][0]["type"], "REDUCES")
+
+    def test_gliner_ollama_extractor_records_entity_and_relationship_calls(self) -> None:
+        class FakeGLiNER:
+            def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:
+                return [
+                    {"text": "Fish oil", "label": "Drug", "score": 0.91},
+                    {"text": "Triglycerides", "label": "Biomarker", "score": 0.88},
+                ]
+
+        class FakeLanguageModel:
+            provider = "ollama"
+            model = "qwen-test"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, object]:
+                return {
+                    "relationships": [
+                        {
+                            "type": "REDUCES",
+                            "source": {"type": "Drug", "name": "Fish oil"},
+                            "target": {"type": "Biomarker", "name": "Triglycerides"},
+                            "properties": {"confidence": 0.86, "evidence": "Fish oil reduced triglycerides"},
+                        }
+                    ],
+                    "rejected_candidates": [],
+                }
+
+        chunk = ChunkRecord(
+            id="PMC3572442-chunk-0001",
+            document_id="paper:PMC3572442",
+            pmcid="PMC3572442",
+            order=1,
+            char_start=0,
+            char_end=64,
+            section="Abstract",
+            type="abstract",
+            source_sections=["Abstract"],
+            text="Fish oil reduced triglycerides in adults.",
+        )
+        document = {"id": "paper:PMC3572442", "pmcid": "PMC3572442", "pmid": "12345", "title": "Mock paper"}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            extractor = GLiNEROllamaExtractor(
+                model="qwen-test",
+                entity_model="fake-gliner",
+                language_model=FakeLanguageModel(),
+                gliner_model=FakeGLiNER(),
+                model_call_root=Path(tmpdir) / "model_calls",
+            )
+            extractor.extract(document, chunk)
+            audit_payloads = [json.loads(Path(path).read_text(encoding="utf-8")) for path in extractor.last_model_call_paths]
+
+        self.assertEqual(len(audit_payloads), 2)
+        self.assertEqual(audit_payloads[0]["provider"], "gliner")
+        self.assertEqual(audit_payloads[0]["parsed_json"]["entities"][0]["name"], "Fish oil")
+        self.assertEqual(audit_payloads[1]["provider"], "ollama")
+        self.assertEqual(audit_payloads[1]["status"], "ok")
 
 
 class Neo4jLoaderTests(unittest.TestCase):

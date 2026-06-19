@@ -108,7 +108,11 @@ def build_processed_record(
 def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
     pmcids = config.pmcids[: config.limit] if config.limit is not None else config.pmcids
     raw_dir, text_dir, processed_dir = ensure_output_directories(config.output_root, config.clean_output)
-    extractor = None if config.skip_extract else get_extractor(config.extractor_provider, config.model, config.entity_model)
+    extractor = (
+        None
+        if config.skip_extract
+        else get_extractor(config.extractor_provider, config.model, config.entity_model, config.model_call_root)
+    )
     run_id = datetime.now(UTC).strftime("pmc-%Y%m%d%H%M%S")
     results: list[ArticlePipelineResult] = []
 
@@ -170,6 +174,7 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
                     }
                     try:
                         raw_output = extractor.extract(article.document, chunk)
+                        model_call_paths = list(getattr(extractor, "last_model_call_paths", []))
                         normalized = validate_extraction_output(raw_output, article.document, chunk, context)
                         extraction_record.update(
                             {
@@ -179,11 +184,16 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
                                 "rejected_candidates": normalized["rejected_candidates"],
                             }
                         )
+                        if model_call_paths:
+                            extraction_record["model_call_paths"] = model_call_paths
                         entities.extend(normalized["entities"])
                         relationships.extend(normalized["relationships"])
                         rejected_candidates.extend(normalized["rejected_candidates"])
                     except Exception as exc:  # noqa: BLE001
                         extraction_record.update({"status": "error", "error": str(exc)})
+                        model_call_paths = list(getattr(extractor, "last_model_call_paths", []))
+                        if model_call_paths:
+                            extraction_record["model_call_paths"] = model_call_paths
                         result.extract_status = "error"
                         if config.fail_fast:
                             raise

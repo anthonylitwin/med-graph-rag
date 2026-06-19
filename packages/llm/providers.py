@@ -1,12 +1,37 @@
 from __future__ import annotations
 
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 import json
 import os
+from time import perf_counter
 from typing import Any, Protocol
 from urllib import request
 
 from packages.llm.models import DEFAULT_FRONTIER_MODEL, DEFAULT_REASONING_EFFORT
 from packages.llm.profiles import DEFAULT_OLLAMA_MODEL
+
+
+@dataclass(slots=True)
+class ModelCallRecord:
+    provider: str
+    model: str
+    prompt_version: str = ""
+    request: dict[str, Any] = field(default_factory=dict)
+    json_schema: dict[str, Any] | None = None
+    response_text: str = ""
+    parsed_json: dict[str, Any] = field(default_factory=dict)
+    raw_response: Any = None
+    started_at: str = ""
+    finished_at: str = ""
+    duration_ms: float = 0.0
+    status: str = "pending"
+    error: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["raw_response"] = _jsonable(self.raw_response)
+        return payload
 
 
 class LanguageModel(Protocol):
@@ -18,6 +43,79 @@ class LanguageModel(Protocol):
 
     def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
         ...
+
+    def generate_json_record(
+        self,
+        prompt: str,
+        json_schema: dict[str, Any] | None = None,
+        *,
+        prompt_version: str = "",
+    ) -> ModelCallRecord:
+        ...
+
+
+def _now_iso() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+def _jsonable(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        return {str(key): _jsonable(child) for key, child in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_jsonable(child) for child in value]
+    if hasattr(value, "model_dump"):
+        try:
+            return _jsonable(value.model_dump(mode="json"))
+        except TypeError:
+            return _jsonable(value.model_dump())
+    if hasattr(value, "__dict__"):
+        return _jsonable(vars(value))
+    return str(value)
+
+
+def _record_json_call(
+    provider: str,
+    model: str,
+    request_payload: dict[str, Any],
+    json_schema: dict[str, Any] | None,
+    prompt_version: str,
+    call,
+) -> ModelCallRecord:
+    started = _now_iso()
+    start = perf_counter()
+    record = ModelCallRecord(
+        provider=provider,
+        model=model,
+        prompt_version=prompt_version,
+        request=request_payload,
+        json_schema=json_schema,
+        started_at=started,
+    )
+    try:
+        raw_response = call()
+        record.raw_response = raw_response
+        text = response_text(raw_response)
+        record.response_text = text
+        parsed = json.loads(text)
+        if not isinstance(parsed, dict):
+            raise RuntimeError("Model JSON response must be an object")
+        record.parsed_json = parsed
+        record.status = "ok"
+    except Exception as exc:  # noqa: BLE001 - recorded for audit before caller handles it.
+        record.status = "error"
+        record.error = str(exc)
+    finally:
+        record.finished_at = _now_iso()
+        record.duration_ms = round((perf_counter() - start) * 1000, 3)
+    return record
+
+
+def _raise_if_error(record: ModelCallRecord) -> dict[str, Any]:
+    if record.status != "ok":
+        raise RuntimeError(record.error or "Model JSON call failed")
+    return record.parsed_json
 
 
 def response_text(response: Any) -> str:
@@ -71,7 +169,7 @@ class OpenAIResponsesModel:
 
         self.client = OpenAI()
 
-    def _create_response(self, prompt: str, json_schema: dict[str, Any] | None = None) -> Any:
+    def _response_kwargs(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
         kwargs: dict[str, Any] = {
             "model": self.model,
             "input": [
@@ -84,13 +182,33 @@ class OpenAIResponsesModel:
         }
         if json_schema is not None:
             kwargs["text"] = {"format": json_schema}
-        return self.client.responses.create(**kwargs)
+        return kwargs
+
+    def _create_response(self, prompt: str, json_schema: dict[str, Any] | None = None) -> Any:
+        return self.client.responses.create(**self._response_kwargs(prompt, json_schema))
 
     def generate_text(self, prompt: str) -> str:
         return response_text(self._create_response(prompt))
 
     def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
-        return json.loads(response_text(self._create_response(prompt, json_schema)))
+        return _raise_if_error(self.generate_json_record(prompt, json_schema))
+
+    def generate_json_record(
+        self,
+        prompt: str,
+        json_schema: dict[str, Any] | None = None,
+        *,
+        prompt_version: str = "",
+    ) -> ModelCallRecord:
+        kwargs = self._response_kwargs(prompt, json_schema)
+        return _record_json_call(
+            self.provider,
+            self.model,
+            kwargs,
+            json_schema,
+            prompt_version,
+            lambda: self.client.responses.create(**kwargs),
+        )
 
 
 class LocalHTTPModel:
@@ -119,13 +237,54 @@ class LocalHTTPModel:
         return text
 
     def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
-        result = self._post({"model": self.model, "prompt": prompt, "json_schema": json_schema})
-        if isinstance(result.get("json"), dict):
-            return result["json"]
-        text = result.get("text") or result.get("output") or result.get("answer")
-        if isinstance(text, str):
-            return json.loads(text)
-        return result
+        return _raise_if_error(self.generate_json_record(prompt, json_schema))
+
+    def generate_json_record(
+        self,
+        prompt: str,
+        json_schema: dict[str, Any] | None = None,
+        *,
+        prompt_version: str = "",
+    ) -> ModelCallRecord:
+        payload = {"model": self.model, "prompt": prompt, "json_schema": json_schema}
+        started = _now_iso()
+        start = perf_counter()
+        record = ModelCallRecord(
+            provider=self.provider,
+            model=self.model,
+            prompt_version=prompt_version,
+            request=payload,
+            json_schema=json_schema,
+            started_at=started,
+        )
+        try:
+            result = self._post(payload)
+            record.raw_response = result
+            if isinstance(result.get("json"), dict):
+                record.parsed_json = result["json"]
+                record.response_text = json.dumps(record.parsed_json, ensure_ascii=True)
+                record.status = "ok"
+                return record
+            text = result.get("text") or result.get("output") or result.get("answer")
+            if isinstance(text, str):
+                record.response_text = text
+                parsed = json.loads(text)
+                if not isinstance(parsed, dict):
+                    raise RuntimeError("Local model JSON response must be an object")
+                record.parsed_json = parsed
+                record.status = "ok"
+                return record
+            record.parsed_json = result
+            record.response_text = json.dumps(result, ensure_ascii=True)
+            record.status = "ok"
+            return record
+        except Exception as exc:  # noqa: BLE001
+            record.status = "error"
+            record.error = str(exc)
+            return record
+        finally:
+            record.finished_at = _now_iso()
+            record.duration_ms = round((perf_counter() - start) * 1000, 3)
 
 
 def _json_schema_for_ollama(json_schema: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -183,14 +342,56 @@ class OllamaChatModel:
         return self._content(self._post_chat(prompt))
 
     def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
-        content = self._content(self._post_chat(prompt, json_schema)).strip()
+        return _raise_if_error(self.generate_json_record(prompt, json_schema))
+
+    def generate_json_record(
+        self,
+        prompt: str,
+        json_schema: dict[str, Any] | None = None,
+        *,
+        prompt_version: str = "",
+    ) -> ModelCallRecord:
+        request_payload: dict[str, Any] = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+            "stream": False,
+            "options": {"temperature": 0},
+        }
+        ollama_schema = _json_schema_for_ollama(json_schema)
+        if ollama_schema is not None:
+            request_payload["format"] = ollama_schema
+
+        started = _now_iso()
+        start = perf_counter()
+        record = ModelCallRecord(
+            provider=self.provider,
+            model=self.model,
+            prompt_version=prompt_version,
+            request=request_payload,
+            json_schema=json_schema,
+            started_at=started,
+        )
         try:
+            result = self._post_chat(prompt, json_schema)
+            record.raw_response = result
+            content = self._content(result).strip()
+            record.response_text = content
             parsed = json.loads(content)
+            if not isinstance(parsed, dict):
+                raise RuntimeError("Ollama JSON response must be an object")
+            record.parsed_json = parsed
+            record.status = "ok"
         except json.JSONDecodeError as exc:
-            raise RuntimeError("Ollama model response was not valid JSON") from exc
-        if not isinstance(parsed, dict):
-            raise RuntimeError("Ollama JSON response must be an object")
-        return parsed
+            record.status = "error"
+            record.error = "Ollama model response was not valid JSON"
+            record.raw_response = record.raw_response or {"decode_error": str(exc)}
+        except Exception as exc:  # noqa: BLE001
+            record.status = "error"
+            record.error = str(exc)
+        finally:
+            record.finished_at = _now_iso()
+            record.duration_ms = round((perf_counter() - start) * 1000, 3)
+        return record
 
 
 class NoopLanguageModel:
@@ -203,13 +404,37 @@ class NoopLanguageModel:
         return f"Noop response for prompt length {len(prompt)}."
 
     def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
-        return {
+        return self.generate_json_record(prompt, json_schema).parsed_json
+
+    def generate_json_record(
+        self,
+        prompt: str,
+        json_schema: dict[str, Any] | None = None,
+        *,
+        prompt_version: str = "",
+    ) -> ModelCallRecord:
+        parsed_json = {
             "answer": "Noop model did not generate a substantive answer.",
             "sources": [],
             "reasoningPath": [],
             "confidence": 0.0,
             "abstained": True,
         }
+        now = _now_iso()
+        return ModelCallRecord(
+            provider=self.provider,
+            model=self.model,
+            prompt_version=prompt_version,
+            request={"model": self.model, "prompt": prompt, "json_schema": json_schema},
+            json_schema=json_schema,
+            response_text=json.dumps(parsed_json, ensure_ascii=True),
+            parsed_json=parsed_json,
+            raw_response=parsed_json,
+            started_at=now,
+            finished_at=now,
+            duration_ms=0.0,
+            status="ok",
+        )
 
 
 def get_language_model(provider: str, model: str | None = None) -> LanguageModel:
@@ -229,6 +454,7 @@ def get_language_model(provider: str, model: str | None = None) -> LanguageModel
 
 __all__ = [
     "LanguageModel",
+    "ModelCallRecord",
     "OpenAIResponsesModel",
     "LocalHTTPModel",
     "OllamaChatModel",
