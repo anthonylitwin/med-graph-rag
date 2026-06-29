@@ -1,0 +1,277 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0018\",\n    \"section\": \"METHODS\",\n    \"text\": \"isk. Because a significant number of cases of CVD occur in people without traditional risk factors, some physicians have suggested that nontraditional biomarkers be used to identify those who are at increased risk for CVD despite normal lipid profiles. As previously discussed in the section on novel risk factors, there are no biomarkers that have been convincingly shown by large clinical trials or meta-analysis to be superior to current practice. Despite the scant evidence linking reduction of these markers to reduced incidence of CVD events, some believe cholesterol drugs should be used in healthy people with low probability of CVD. This study is cited as an example of the type of analysis that leads some to argue for a more extensive use of statins because there was a significant decrease in CVD events. Others feel this liberal use of statins may constitute unacceptable risk in truly low risk subjects. In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively. Another approach to addressing residual risk is use of pharmacological means to raise HDL-C. This idea has been challenged by recent trials that failed to show any lowering of CVD events despite raising HDL-C. A recently published trial comparing genetic mutations that confer high HDL versus low HDL has called into question the well established belief that HDL-C protects against CVD. A third\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"traditional risk factors\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"nontraditional biomarkers\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"increased risk\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid profiles\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"novel risk factors\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"cholesterol drugs\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"nonfatal myocardial infarction\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"cholesterol drugs\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"nonfatal myocardial infarction\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"nonfatal myocardial infarction\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"A recently published trial comparing genetic mutations that confer high HDL versus low HDL has called into question the well established belief that HDL-C protects against CVD.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "cholesterol drugs"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "nonfatal myocardial infarction"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "nonfatal myocardial infarction"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "A recently published trial comparing genetic mutations that confer high HDL versus low HDL has called into question the well established belief that HDL-C protects against CVD.",
+        "reason": "No explicit relationship found in the text."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:10:03.6435139Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"cholesterol drugs\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"nonfatal myocardial infarction\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"nonfatal myocardial infarction\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In the study cited above, the number needed to treat to prevent a single death from any cause and to prevent a single nonfatal myocardial infarction was 239 and 153, respectively.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"A recently published trial comparing genetic mutations that confer high HDL versus low HDL has called into question the well established belief that HDL-C protects against CVD.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 28663468900,
+    "load_duration": 191596400,
+    "prompt_eval_count": 845,
+    "prompt_eval_duration": 4612216000,
+    "eval_count": 338,
+    "eval_duration": 23841135000
+  },
+  "started_at": "2026-06-19T22:09:32.919407+00:00",
+  "finished_at": "2026-06-19T22:10:03.644618+00:00",
+  "duration_ms": 30725.236,
+  "status": "ok",
+  "error": ""
+}

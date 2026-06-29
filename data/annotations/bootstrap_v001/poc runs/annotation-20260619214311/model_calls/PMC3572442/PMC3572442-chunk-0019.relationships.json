@@ -1,0 +1,277 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0019\",\n    \"section\": \"METHODS\",\n    \"text\": \"ng genetic mutations that confer high HDL versus low HDL has called into question the well established belief that HDL-C protects against CVD. A third approach to addressing the problem of residual risk has been to focus on TGRL as potential atherogenic agents. The idea is that lowering TG concentrations that are currently recognized as high, but not sufficiently so to treat pharmacologically (i.e. 250 \\u2013 499 mg/dL), can have a major impact on CVD. However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis. Current research is re-examining some of the long held beliefs about the role of various lipid fractions in the etiology of CVD. This work includes both examination of the biochemical pathways in order to identify new potential drug targets and a detailed analysis of the negative studies to determine if the entire idea is wrong or just a portion.\\n\\nTo summarize, there is a solid link between elevated cholesterol (especially LDL-C) and CVD. It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications. First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines. Multiple alternatives are available for those who either are statin intolerant or who fail to achieve therapeutic goals. While these\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"residual risk\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGRL\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"fibrates\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"niacin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid fractions\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"intermediate to high risk\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"To summarize, there is a solid link between elevated cholesterol (especially LDL-C) and CVD. It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications.\",\n      \"reason\": \"The text does not explicitly support any relationship.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "fibrates"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "type 2 diabetes"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "niacin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "type 2 diabetes"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "To summarize, there is a solid link between elevated cholesterol (especially LDL-C) and CVD. It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications.",
+        "reason": "The text does not explicitly support any relationship."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:10:33.7153653Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"However, recent trials in patients with type 2 diabetes treated with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"To summarize, there is a solid link between elevated cholesterol (especially LDL-C) and CVD. It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications.\",\n      \"reason\": \"The text does not explicitly support any relationship.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 27712386900,
+    "load_duration": 167634500,
+    "prompt_eval_count": 898,
+    "prompt_eval_duration": 4970716000,
+    "eval_count": 322,
+    "eval_duration": 22555616000
+  },
+  "started_at": "2026-06-19T22:10:03.970358+00:00",
+  "finished_at": "2026-06-19T22:10:33.716187+00:00",
+  "duration_ms": 29745.836,
+  "status": "ok",
+  "error": ""
+}

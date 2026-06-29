@@ -353,6 +353,8 @@ class OllamaChatModel:
     ) -> ModelCallRecord:
         request_payload: dict[str, Any] = {
             "model": self.model,
+            "endpoint": f"{self.base_url}/api/chat",
+            "timeout_seconds": self.timeout_seconds,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
             "options": {"temperature": 0},
@@ -387,7 +389,7 @@ class OllamaChatModel:
             record.raw_response = record.raw_response or {"decode_error": str(exc)}
         except Exception as exc:  # noqa: BLE001
             record.status = "error"
-            record.error = str(exc)
+            record.error = f"Ollama request failed at {self.base_url}/api/chat: {exc}"
         finally:
             record.finished_at = _now_iso()
             record.duration_ms = round((perf_counter() - start) * 1000, 3)

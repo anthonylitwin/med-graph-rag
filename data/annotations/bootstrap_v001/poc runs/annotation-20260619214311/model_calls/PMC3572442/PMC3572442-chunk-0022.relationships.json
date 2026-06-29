@@ -1,0 +1,289 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0022\",\n    \"section\": \"REF\",\n    \"text\": \"ication for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\\n\\nComparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\\n\\nAssociation of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\\n\\nLipid-related markers and cardiovascular disease prediction\\n\\nUse of emerging lipoprotein risk factors in assessment of cardiovascular risk\\n\\nEffects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\\n\\nATP III At-A-Glance: Quick Desk Reference 2001\\n\\nResults of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\\n\\nQuickStats: Average Total Cholesterol Level Among Men and Women\\n\\nLong-term weight loss after diet and exercise: a systematic review\\n\\nDietary approaches to the treatment of obesity\\n\\nFamilial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\\n\\nDifferences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\\n\\nSystematic review: comparative effectiveness and harms of combination therapy and monotherapy for\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"subclinical atherosclerosis\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"non-HDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoprotein B\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular events\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lipid-related markers\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"emerging lipoprotein risk factors\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"nonlipid serum markers\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obesity\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"familial hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"tendon xanthomas\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular events\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n      \"name\": \"obesity\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial hypercholesterolemia\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Lipid-related markers and cardiovascular disease prediction\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Use of emerging lipoprotein risk factors in assessment of cardiovascular risk\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\n      \"reason\": \"This is an evidence quote, not a relationship.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "obesity"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "familial hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals",
+        "reason": "No explicit relationship supported by the text."
+      },
+      {
+        "text": "Lipid-related markers and cardiovascular disease prediction",
+        "reason": "No explicit relationship supported by the text."
+      },
+      {
+        "text": "Use of emerging lipoprotein risk factors in assessment of cardiovascular risk",
+        "reason": "No explicit relationship supported by the text."
+      },
+      {
+        "text": "Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review",
+        "reason": "This is an evidence quote, not a relationship."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:12:10.3020468Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular events\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n      \"name\": \"obesity\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial hypercholesterolemia\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Lipid-related markers and cardiovascular disease prediction\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Use of emerging lipoprotein risk factors in assessment of cardiovascular risk\",\n      \"reason\": \"No explicit relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\n      \"reason\": \"This is an evidence quote, not a relationship.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 32909670500,
+    "load_duration": 163048500,
+    "prompt_eval_count": 906,
+    "prompt_eval_duration": 5056194000,
+    "eval_count": 396,
+    "eval_duration": 27672441000
+  },
+  "started_at": "2026-06-19T22:11:35.354826+00:00",
+  "finished_at": "2026-06-19T22:12:10.303295+00:00",
+  "duration_ms": 34948.474,
+  "status": "ok",
+  "error": ""
+}

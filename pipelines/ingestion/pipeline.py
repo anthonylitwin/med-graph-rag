@@ -153,6 +153,7 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
             entities: list[dict[str, Any]] = []
             relationships: list[dict[str, Any]] = []
             rejected_candidates: list[dict[str, Any]] = []
+            chunk_errors: list[str] = []
 
             if extractor is None:
                 result.extract_status = "skipped"
@@ -191,6 +192,7 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
                         rejected_candidates.extend(normalized["rejected_candidates"])
                     except Exception as exc:  # noqa: BLE001
                         extraction_record.update({"status": "error", "error": str(exc)})
+                        chunk_errors.append(f"{chunk.id}: {exc}")
                         model_call_paths = list(getattr(extractor, "last_model_call_paths", []))
                         if model_call_paths:
                             extraction_record["model_call_paths"] = model_call_paths
@@ -198,6 +200,9 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
                         if config.fail_fast:
                             raise
                     raw_extractions.append(extraction_record)
+
+            if chunk_errors:
+                result.error = f"{len(chunk_errors)} chunk(s) failed; first error: {chunk_errors[0]}"
 
             processed_record = build_processed_record(
                 run_id=run_id,

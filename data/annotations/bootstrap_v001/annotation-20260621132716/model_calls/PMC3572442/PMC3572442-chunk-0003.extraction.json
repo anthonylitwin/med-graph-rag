@@ -1,0 +1,1239 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC3572442\nTitle: Hyperlipidemia as a Risk Factor for Cardiovascular Disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC3572442-chunk-0003\nChunk Section: METHODS\n\n---\n\n# TEXT TO EXTRACT\n\n```text\npartial list of markers that have been proposed.\n\nIn general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring. A major study published in JAMA by the Emerging Risk Factors Collaboration reviewed individual records from 37 prospective studies containing 165,544 people without CVD at baseline. The study compared traditional lipids to additional measures, including apolipoproteins B and A\u2013I, lipoprotein(a), and lipoprotein-associated phospholipase A2 in individuals followed for a mean of 10 years. Those with CVD events during the study period were analyzed to determine if the alternative markers added significant predictive value. In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\u201d. Even when a particular test has been shown to add incremental improvement in predicting risk, there has not been sufficient evidence to use the test as a widespread screening tool. Most often, novel risk factors are useful for the patient who has intermediate risk and his/her physician desires additional information to make a decision regarding therapy. It should be considered that, for many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking. For example, it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard. Moreover, the various tests available add cost, may add risk (e.g. radiation for imaging) and many of the assays have not been widely standardized, thus resulting in difficulty interpreting the results. Based on current evidence, it is difficult to recommend these alternative risk markers for screening or for routine clinical use and they are probably most appropriate in carefully considered individual cases. However, this topic is an area of intense focus and ongoing research, so future studies may help elucidate a more clearly defined role for novel risk markers.\n\nTreatment goals\n\nA portion of the current treatment goals as outlined by the NCEP/ATP-III are listed in Box 3. The complete guidelines are available on-line from the National Institutes of Health as a quick reference guide. These recommendations are generally accepted by some, but not all, medical specialty organizations. Others advocate for a more aggressive approach.\n\nRegardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal. Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \u2265 240 mg/dL. More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \u2013 74 was met in both men and women by 2008. The obvious problem in monitoring these trends is that the percent of the population at or below goal varies considerably by demographic parameters. Therefore, it is useful for every practice to perform quality studies in its own population to determine how well current guidelines are met and to think innovatively about clinic initiatives that can address suboptimal treatment.\n\nLife style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective. What is also well known is the difficulty in achieving these goals. There are major limitations in most weight loss studies. For example, weight loss programs show weight reduction reduces both cholesterol and TG but long term almost half of the initial weight loss is regained after 1 year. In a recent review of various weight loss diets, the authors concluded that the type of diet is less important than the its palatability and the ease of continuing it long term. Given these drawbacks to lifestyle change, it may be prudent to achieve lipid lowering goals by initiating medications sooner rather than later. If life style change goals are achieved, the need for medication can be reassessed.\n\nPharmaceutical Options\n\nNumerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL. While there are not any trials comparing all of the available statins directly to each other, there are a few head to head comparisons of some of the statins. These are shown in Table 5.\n\nBased on available evidence, there is no compelling reason to choose one statin over another for the usual primary care clinic patient. However, those patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin. Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\n\nAlternatives to statins\n\nAlthough statins have reached the status of preferred treatment for hyperlipidemia, there are reasons to consider other medications. Some physicians feel that monotherapy is preferable, while others believe that low to moderate doses of combinations of drugs\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:folic_acid\",\"type\":\"Drug\",\"name\":\"Folic acid\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:heterozygous_familial_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Heterozygous familial hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:homocysteine\",\"type\":\"Biomarker\",\"name\":\"Homocysteine\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipid_levels\",\"type\":\"Biomarker\",\"name\":\"Lipid levels\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_a_i\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein A-I\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_associated_phospholipase_a2\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein-associated phospholipase A2\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:xanthomas\",\"type\":\"RiskFactor\",\"name\":\"Xanthomas\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:folic_acid\",\"type\":\"Drug\",\"name\":\"Folic acid\"},\"target\":{\"id\":\"biomarker:homocysteine\",\"type\":\"Biomarker\",\"name\":\"Homocysteine\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"folic acid reduces homocysteine\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"statins have reached the status of preferred treatment for hyperlipidemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:lipid_levels\",\"type\":\"Biomarker\",\"name\":\"Lipid levels\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Comparative data show that all of them reduce lipid levels to varying degrees\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\"},\"target\":{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:xanthomas\",\"type\":\"RiskFactor\",\"name\":\"Xanthomas\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"statin therapy does not reduce the marker levels\",\"reason\":\"Negated statement; no REDUCES relationship extracted.\"},{\"text\":\"folic acid reduces homocysteine, but does not reduce CVD hazard\",\"reason\":\"The CVD hazard portion is negated; no PREVENTS or risk-reduction relationship for Cardiovascular Disease extracted.\"},{\"text\":\"Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.\",\"reason\":\"Lifestyle modification, diet, weight loss, and exercise are not Drug entities, and the ontology does not define a matching intervention-to-biomarker reduction relationship.\"},{\"text\":\"weight reduction reduces both cholesterol and TG\",\"reason\":\"Weight reduction is not a Drug entity, so REDUCES cannot be applied under the ontology.\"},{\"text\":\"alternative risk factor markers have had mixed results in clinical trials\",\"reason\":\"Mixed and insufficient evidence; no explicit supported ASSOCIATED_WITH or predictive relationship extracted.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC3572442",
+      "title": "Hyperlipidemia as a Risk Factor for Cardiovascular Disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:folic_acid",
+        "type": "Drug",
+        "name": "Folic acid",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:atorvastatin",
+        "type": "Drug",
+        "name": "Atorvastatin",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:rosuvastatin",
+        "type": "Drug",
+        "name": "Rosuvastatin",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hyperlipidemia",
+        "type": "Condition",
+        "name": "Hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:familial_combined_hyperlipidemia",
+        "type": "Condition",
+        "name": "Familial combined hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:heterozygous_familial_hyperlipidemia",
+        "type": "Condition",
+        "name": "Heterozygous familial hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular Disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:homocysteine",
+        "type": "Biomarker",
+        "name": "Homocysteine",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:cholesterol",
+        "type": "Biomarker",
+        "name": "Cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "Total cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:lipid_levels",
+        "type": "Biomarker",
+        "name": "Lipid levels",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_a_i",
+        "type": "Biomarker",
+        "name": "Apolipoprotein A-I",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_a",
+        "type": "Biomarker",
+        "name": "Lipoprotein(a)",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_associated_phospholipase_a2",
+        "type": "Biomarker",
+        "name": "Lipoprotein-associated phospholipase A2",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "riskfactor:xanthomas",
+        "type": "RiskFactor",
+        "name": "Xanthomas",
+        "properties": {
+          "source": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:folic_acid",
+          "type": "Drug",
+          "name": "Folic acid"
+        },
+        "target": {
+          "id": "biomarker:homocysteine",
+          "type": "Biomarker",
+          "name": "Homocysteine"
+        },
+        "properties": {
+          "confidence": 0.98,
+          "evidence": "folic acid reduces homocysteine",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "condition:hyperlipidemia",
+          "type": "Condition",
+          "name": "Hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.96,
+          "evidence": "statins have reached the status of preferred treatment for hyperlipidemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:lipid_levels",
+          "type": "Biomarker",
+          "name": "Lipid levels"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Comparative data show that all of them reduce lipid levels to varying degrees",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:atorvastatin",
+          "type": "Drug",
+          "name": "Atorvastatin"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:rosuvastatin",
+          "type": "Drug",
+          "name": "Rosuvastatin"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:atorvastatin",
+          "type": "Drug",
+          "name": "Atorvastatin"
+        },
+        "target": {
+          "id": "condition:familial_combined_hyperlipidemia",
+          "type": "Condition",
+          "name": "Familial combined hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:rosuvastatin",
+          "type": "Drug",
+          "name": "Rosuvastatin"
+        },
+        "target": {
+          "id": "condition:familial_combined_hyperlipidemia",
+          "type": "Condition",
+          "name": "Familial combined hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:xanthomas",
+          "type": "RiskFactor",
+          "name": "Xanthomas"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0003",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "statin therapy does not reduce the marker levels",
+        "reason": "Negated statement; no REDUCES relationship extracted."
+      },
+      {
+        "text": "folic acid reduces homocysteine, but does not reduce CVD hazard",
+        "reason": "The CVD hazard portion is negated; no PREVENTS or risk-reduction relationship for Cardiovascular Disease extracted."
+      },
+      {
+        "text": "Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.",
+        "reason": "Lifestyle modification, diet, weight loss, and exercise are not Drug entities, and the ontology does not define a matching intervention-to-biomarker reduction relationship."
+      },
+      {
+        "text": "weight reduction reduces both cholesterol and TG",
+        "reason": "Weight reduction is not a Drug entity, so REDUCES cannot be applied under the ontology."
+      },
+      {
+        "text": "alternative risk factor markers have had mixed results in clinical trials",
+        "reason": "Mixed and insufficient evidence; no explicit supported ASSOCIATED_WITH or predictive relationship extracted."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_035ebd1514b61025006a37e7b9dedc819f8ce283677fa79b9a",
+    "created_at": 1782048697.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_035ebd1514b61025006a37e7bad7cc819f8377a92860a4d893",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_035ebd1514b61025006a37e7fe5f80819f9c2a1abd48fdba01",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:folic_acid\",\"type\":\"Drug\",\"name\":\"Folic acid\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:heterozygous_familial_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Heterozygous familial hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:homocysteine\",\"type\":\"Biomarker\",\"name\":\"Homocysteine\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipid_levels\",\"type\":\"Biomarker\",\"name\":\"Lipid levels\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_a_i\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein A-I\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_associated_phospholipase_a2\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein-associated phospholipase A2\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:xanthomas\",\"type\":\"RiskFactor\",\"name\":\"Xanthomas\",\"properties\":{\"source\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:folic_acid\",\"type\":\"Drug\",\"name\":\"Folic acid\"},\"target\":{\"id\":\"biomarker:homocysteine\",\"type\":\"Biomarker\",\"name\":\"Homocysteine\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"folic acid reduces homocysteine\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"statins have reached the status of preferred treatment for hyperlipidemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:lipid_levels\",\"type\":\"Biomarker\",\"name\":\"Lipid levels\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Comparative data show that all of them reduce lipid levels to varying degrees\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"atorvastatin and rosuvastatin considered to be the \u201cstrong\u201d reducers of LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:rosuvastatin\",\"type\":\"Drug\",\"name\":\"Rosuvastatin\"},\"target\":{\"id\":\"condition:familial_combined_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Familial combined hyperlipidemia\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:xanthomas\",\"type\":\"RiskFactor\",\"name\":\"Xanthomas\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0003\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"statin therapy does not reduce the marker levels\",\"reason\":\"Negated statement; no REDUCES relationship extracted.\"},{\"text\":\"folic acid reduces homocysteine, but does not reduce CVD hazard\",\"reason\":\"The CVD hazard portion is negated; no PREVENTS or risk-reduction relationship for Cardiovascular Disease extracted.\"},{\"text\":\"Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.\",\"reason\":\"Lifestyle modification, diet, weight loss, and exercise are not Drug entities, and the ontology does not define a matching intervention-to-biomarker reduction relationship.\"},{\"text\":\"weight reduction reduces both cholesterol and TG\",\"reason\":\"Weight reduction is not a Drug entity, so REDUCES cannot be applied under the ontology.\"},{\"text\":\"alternative risk factor markers have had mixed results in clinical trials\",\"reason\":\"Mixed and insufficient evidence; no explicit supported ASSOCIATED_WITH or predictive relationship extracted.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782048800.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "medium",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3437,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 5805,
+      "output_tokens_details": {
+        "reasoning_tokens": 3106
+      },
+      "total_tokens": 9242
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true
+  },
+  "started_at": "2026-06-21T13:31:42.801308+00:00",
+  "finished_at": "2026-06-21T13:33:25.808760+00:00",
+  "duration_ms": 103007.469,
+  "status": "ok",
+  "error": ""
+}

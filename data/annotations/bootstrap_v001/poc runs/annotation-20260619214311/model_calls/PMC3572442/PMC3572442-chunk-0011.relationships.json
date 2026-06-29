@@ -1,0 +1,296 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0011\",\n    \"section\": \"METHODS\",\n    \"text\": \"rom the National Institutes of Health as a quick reference guide. These recommendations are generally accepted by some, but not all, medical specialty organizations. Others advocate for a more aggressive approach.\\n\\nRegardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal. Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \\u2265 240 mg/dL. More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008. The obvious problem in monitoring these trends is that the percent of the population at or below goal varies considerably by demographic parameters. Therefore, it is useful for every practice to perform quality studies in its own population to determine how well current guidelines are met and to think innovatively about clinic initiatives that can address suboptimal treatment.\\n\\nLife style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective. What is also well known is the\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"NEPTUNE II\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"elevated cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"total cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL cholesterol\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Regardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"total cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \u2265 240 mg/dL.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"NEPTUNE II\",\n      \"reason\": \"The chunk does not provide evidence for a relationship involving NEPTUNE II. The reference to NEPTUNE II is used in the context of survey results, but no direct relationship between NEPTUNE II and cholesterol levels or biomarkers is stated.\"\n    },\n    {\n      \"text\": \"National Health and Nutrition Examination Surveys (NHANES)\",\n      \"reason\": \"The chunk does not provide evidence for a relationship involving NHANES. The reference to NHANES is used in the context of data showing a decline in total cholesterol levels, but no direct relationship between NHANES and cholesterol levels or biomarkers is stated.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "elevated cholesterol"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Regardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Biomarker",
+          "name": "total cholesterol"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "elevated cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \u2265 240 mg/dL."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "elevated cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \u2013 74 was met in both men and women by 2008."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "NEPTUNE II",
+        "reason": "The chunk does not provide evidence for a relationship involving NEPTUNE II. The reference to NEPTUNE II is used in the context of survey results, but no direct relationship between NEPTUNE II and cholesterol levels or biomarkers is stated."
+      },
+      {
+        "text": "National Health and Nutrition Examination Surveys (NHANES)",
+        "reason": "The chunk does not provide evidence for a relationship involving NHANES. The reference to NHANES is used in the context of data showing a decline in total cholesterol levels, but no direct relationship between NHANES and cholesterol levels or biomarkers is stated."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T21:51:11.6749702Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL cholesterol\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Regardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"total cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \u2265 240 mg/dL.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"NEPTUNE II\",\n      \"reason\": \"The chunk does not provide evidence for a relationship involving NEPTUNE II. The reference to NEPTUNE II is used in the context of survey results, but no direct relationship between NEPTUNE II and cholesterol levels or biomarkers is stated.\"\n    },\n    {\n      \"text\": \"National Health and Nutrition Examination Surveys (NHANES)\",\n      \"reason\": \"The chunk does not provide evidence for a relationship involving NHANES. The reference to NHANES is used in the context of data showing a decline in total cholesterol levels, but no direct relationship between NHANES and cholesterol levels or biomarkers is stated.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 38740417800,
+    "load_duration": 163308300,
+    "prompt_eval_count": 755,
+    "prompt_eval_duration": 3352146000,
+    "eval_count": 608,
+    "eval_duration": 35207861000
+  },
+  "started_at": "2026-06-19T21:50:30.918470+00:00",
+  "finished_at": "2026-06-19T21:51:11.676169+00:00",
+  "duration_ms": 40757.703,
+  "status": "ok",
+  "error": ""
+}

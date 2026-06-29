@@ -1,0 +1,266 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0015\",\n    \"section\": \"METHODS\",\n    \"text\": \"sources (e.g. PubMed) it is difficult to find systematic reviews of the evidence for the many natural remedies that have putative benefit in promoting a healthier lipid profile. Those that are available generally show only modest cholesterol lowering. A major deficiency in the study of alternative products is the lack of studies that use hard cardiovascular endpoints instead of a surrogate marker, such as changes in LDL-C. As was learned from the experience with products such as rosiglitazone in people with type 2 diabetes, not all favorable changes in serum lipid characteristics translate into a reduction in CVD events. Thus, any study based solely on lipid lowering as an endpoint may be misleading.\\n\\nUnanswered questions and current controversies\\n\\nDespite the overall lowering of mean LDL-C and the overall incidence of CVD in the US population, CVD remains a significant health burden and a leading cause of mortality. There remain many unanswered questions and controversies regarding how best to further decrease these numbers. These questions are important because of the expected increase in CVD given the aging population and the obesity epidemic. These are addressed in this section in no particular order.\\n\\nOne of the potential reasons for continuing high rates of CVD is that the target LDL-C goals may be too modest. There are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL. Others argue that the\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosiglitazone\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"mortality\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"aging population\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"obesity epidemic\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"aging population\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n    \"properties\": {\n      \"confidence\": 0.9,\n      \"evidence\": \"As was learned from the experience with products such as rosiglitazone in people with type 2 diabetes, not all favorable changes in serum lipid characteristics translate into a reduction in CVD events.\"\n    }\n  }\n]\n\n   ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"sources (e.g. PubMed) it is difficult to find systematic reviews of the evidence for the many natural remedies that have putative benefit in promoting a healthier lipid profile.\",\n      \"reason\": \"The text does not provide explicit support for any relationship involving the candidate entities provided.\"\n    },\n    {\n      \"text\": \"There are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL.\",\n      \"reason\": \"The text does not provide explicit support for any relationship involving the candidate entities provided.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "RiskFactor",
+          "name": "aging population"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "As was learned from the experience with products such as rosiglitazone in people with type 2 diabetes, not all favorable changes in serum lipid characteristics translate into a reduction in CVD events."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "sources (e.g. PubMed) it is difficult to find systematic reviews of the evidence for the many natural remedies that have putative benefit in promoting a healthier lipid profile.",
+        "reason": "The text does not provide explicit support for any relationship involving the candidate entities provided."
+      },
+      {
+        "text": "There are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL.",
+        "reason": "The text does not provide explicit support for any relationship involving the candidate entities provided."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:08:01.1753596Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"aging population\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n    \"properties\": {\n      \"confidence\": 0.9,\n      \"evidence\": \"As was learned from the experience with products such as rosiglitazone in people with type 2 diabetes, not all favorable changes in serum lipid characteristics translate into a reduction in CVD events.\"\n    }\n  }\n]\n\n   ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"sources (e.g. PubMed) it is difficult to find systematic reviews of the evidence for the many natural remedies that have putative benefit in promoting a healthier lipid profile.\",\n      \"reason\": \"The text does not provide explicit support for any relationship involving the candidate entities provided.\"\n    },\n    {\n      \"text\": \"There are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL.\",\n      \"reason\": \"The text does not provide explicit support for any relationship involving the candidate entities provided.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 23012780500,
+    "load_duration": 154071500,
+    "prompt_eval_count": 748,
+    "prompt_eval_duration": 3717847000,
+    "eval_count": 271,
+    "eval_duration": 19125920000
+  },
+  "started_at": "2026-06-19T22:07:36.123964+00:00",
+  "finished_at": "2026-06-19T22:08:01.176124+00:00",
+  "duration_ms": 25052.154,
+  "status": "ok",
+  "error": ""
+}

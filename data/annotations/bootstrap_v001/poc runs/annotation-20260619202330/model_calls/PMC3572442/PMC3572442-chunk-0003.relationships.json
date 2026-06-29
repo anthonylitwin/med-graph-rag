@@ -1,0 +1,440 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0003\",\n    \"section\": \"RESULTS\",\n    \"text\": \"he underlying cause. Primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities. It is vital to know common primary and secondary causes of elevated lipids and to recognize unusual patterns or physical findings that should trigger a referral to a lipidologist. Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease. Some of these syndromes require different treatment than the usual primary care patient presenting with hyperlipidemia.\\n\\nHyperlipidemia can broadly be classified as isolated elevation of cholesterol, isolated elevated TG and elevations of both. The cause may be genetic, environmental or both. Table 2 is a list of genetic causes of hyperlipidemia with a brief clinical description including clues that should trigger consideration of a lipid specialty referral. In general, the clues to a genetic syndrome include very high cholesterol levels (> 300 mg/dL), very high TG levels (>500 mg/dL), xanthomas, strong family history of hyperlipidemia or early CVD, or lack of expected response to maximal therapeutic doses of lipid lowering agents.\\n\\nDyslipidemia has multiple secondary causes. These are listed in Table 3, which is divided into isolated cholesterol elevation, isolated TG elevation and a mixed pattern. An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism. This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism. HIV is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities.\\n\\nEvaluation and treatment of patient with hyperlipidemia\\n\\nCVD risk analysis\\n\\nAn important step in the interpretation of lipid screening results is the performance of a cardiovascular risk assessment. This point is strongly emphasized in the report of ATP-III and in numerous peer reviewed journal articles reviewing the topic of lipid management. The basic principle is that the higher a person\\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia. Any physician who is interpreting the results of a lipid panel needs to take the time to do a formal CVD risk analysis. One of the most commonly used validated instruments is the Framingham Risk Score. However, it has several limitations such as underestimating the risk in a high risk individual due to the absence of some important risk factors in the scoring system. Therefore, others have attempted to improve the scoring system in order to more precisely estimate the\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemic syndromes\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"genetic causes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"premature CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"organ system disease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"isolated elevated TG\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"genetic\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"environmental\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"early CVD\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"lipid lowering agents\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Dyslipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypothyroidism\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"thyroid hormone\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"renal disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"alcoholism\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"HIV\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"protease inhibitors\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk factors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"...clues to a genetic syndrome include very high cholesterol levels (> 300 mg/dL), very high TG levels (>500 mg/dL), xanthomas, strong family history of hyperlipidemia or early CVD, or lack of expected response to maximal therapeutic doses of lipid lowering agents.\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"genetic causes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"premature CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"genetic causes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"organ system disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"thyroid hormone\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"risk factors\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important step in the interpretation of lipid screening results is the performance of a cardiovascular risk assessment. This point is strongly emphasized in the report of ATP-III and in numerous peer reviewed journal articles reviewing the topic of lipid management. The basic principle is that the higher a person\\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"it is vital to know common primary and secondary causes of elevated lipids and to recognize unusual patterns or physical findings that should trigger a referral to a lipidologist\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemia' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease\",\n      \"reason\": \"Already included as a relationship between 'genetic causes' and 'premature CVD'.\"\n    },\n    {\n      \"text\": \"some of these syndromes require different treatment than the usual primary care patient presenting with hyperlipidemia\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"dyslipidemia has multiple secondary causes. these are listed in table 3, which is divided into isolated cholesterol elevation, isolated TG elevation and a mixed pattern\",\n      \"reason\": \"No explicit relationship between 'Dyslipidemia' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"an important secondary cause of high cholesterol is hypothyroidism. it is important to screen people with elevated cholesterol for hypothyroidism\",\n      \"reason\": \"Already included as a relationship between 'hypothyroidism' and 'cholesterol'.\"\n    },\n    {\n      \"text\": \"this is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism\",\n      \"reason\": \"Already included as a relationship between 'hypothyroidism' and 'cholesterol'.\"\n    },\n    {\n      \"text\": \"hiv is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities\",\n      \"reason\": \"No explicit relationship between 'HIV' and other conditions or biomarkers.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "xanthomas"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"...clues to a genetic syndrome include very high cholesterol levels (> 300 mg/dL), very high TG levels (>500 mg/dL), xanthomas, strong family history of hyperlipidemia or early CVD, or lack of expected response to maximal therapeutic doses of lipid lowering agents.\""
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "RiskFactor",
+          "name": "genetic causes"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "premature CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\""
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "RiskFactor",
+          "name": "genetic causes"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "organ system disease"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\""
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "thyroid hormone"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\""
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "RiskFactor",
+          "name": "risk factors"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important step in the interpretation of lipid screening results is the performance of a cardiovascular risk assessment. This point is strongly emphasized in the report of ATP-III and in numerous peer reviewed journal articles reviewing the topic of lipid management. The basic principle is that the higher a person\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia.\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "TG"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "TG"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\""
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\""
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities",
+        "reason": "No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers."
+      },
+      {
+        "text": "it is vital to know common primary and secondary causes of elevated lipids and to recognize unusual patterns or physical findings that should trigger a referral to a lipidologist",
+        "reason": "No explicit relationship between 'hyperlipidemia' and other conditions or biomarkers."
+      },
+      {
+        "text": "although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease",
+        "reason": "Already included as a relationship between 'genetic causes' and 'premature CVD'."
+      },
+      {
+        "text": "some of these syndromes require different treatment than the usual primary care patient presenting with hyperlipidemia",
+        "reason": "No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers."
+      },
+      {
+        "text": "dyslipidemia has multiple secondary causes. these are listed in table 3, which is divided into isolated cholesterol elevation, isolated TG elevation and a mixed pattern",
+        "reason": "No explicit relationship between 'Dyslipidemia' and other conditions or biomarkers."
+      },
+      {
+        "text": "an important secondary cause of high cholesterol is hypothyroidism. it is important to screen people with elevated cholesterol for hypothyroidism",
+        "reason": "Already included as a relationship between 'hypothyroidism' and 'cholesterol'."
+      },
+      {
+        "text": "this is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism",
+        "reason": "Already included as a relationship between 'hypothyroidism' and 'cholesterol'."
+      },
+      {
+        "text": "hiv is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities",
+        "reason": "No explicit relationship between 'HIV' and other conditions or biomarkers."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T20:43:14.7803051Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"...clues to a genetic syndrome include very high cholesterol levels (> 300 mg/dL), very high TG levels (>500 mg/dL), xanthomas, strong family history of hyperlipidemia or early CVD, or lack of expected response to maximal therapeutic doses of lipid lowering agents.\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"genetic causes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"premature CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"genetic causes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"organ system disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"thyroid hormone\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy\\\"\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"risk factors\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important step in the interpretation of lipid screening results is the performance of a cardiovascular risk assessment. This point is strongly emphasized in the report of ATP-III and in numerous peer reviewed journal articles reviewing the topic of lipid management. The basic principle is that the higher a person\\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"\\\"An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism.\\\"\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"it is vital to know common primary and secondary causes of elevated lipids and to recognize unusual patterns or physical findings that should trigger a referral to a lipidologist\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemia' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease\",\n      \"reason\": \"Already included as a relationship between 'genetic causes' and 'premature CVD'.\"\n    },\n    {\n      \"text\": \"some of these syndromes require different treatment than the usual primary care patient presenting with hyperlipidemia\",\n      \"reason\": \"No explicit relationship between 'hyperlipidemic syndromes' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"dyslipidemia has multiple secondary causes. these are listed in table 3, which is divided into isolated cholesterol elevation, isolated TG elevation and a mixed pattern\",\n      \"reason\": \"No explicit relationship between 'Dyslipidemia' and other conditions or biomarkers.\"\n    },\n    {\n      \"text\": \"an important secondary cause of high cholesterol is hypothyroidism. it is important to screen people with elevated cholesterol for hypothyroidism\",\n      \"reason\": \"Already included as a relationship between 'hypothyroidism' and 'cholesterol'.\"\n    },\n    {\n      \"text\": \"this is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism\",\n      \"reason\": \"Already included as a relationship between 'hypothyroidism' and 'cholesterol'.\"\n    },\n    {\n      \"text\": \"hiv is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities\",\n      \"reason\": \"No explicit relationship between 'HIV' and other conditions or biomarkers.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 320719337600,
+    "load_duration": 107598800,
+    "prompt_eval_count": 1394,
+    "prompt_eval_duration": 18663745000,
+    "eval_count": 1878,
+    "eval_duration": 301890599000
+  },
+  "started_at": "2026-06-19T20:37:52.016922+00:00",
+  "finished_at": "2026-06-19T20:43:14.781626+00:00",
+  "duration_ms": 322764.705,
+  "status": "ok",
+  "error": ""
+}

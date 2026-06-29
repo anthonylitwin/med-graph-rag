@@ -1,0 +1,322 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0023\",\n    \"section\": \"REF\",\n    \"text\": \"on xanthomas: a systematic review and meta-analysis\\n\\nSystematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\\n\\nGarlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\\n\\nArtichoke leaf extract for treating hypercholesterolaemia\\n\\nComplementary and alternative therapies for the management of dyslipidemia\\n\\nEffect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\\n\\nDrug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\\n\\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\\n\\nEffect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\\n\\nIntensive lipid lowering with atorvastatin in patients with stable coronary disease\\n\\nStatins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\\n\\nRisk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\\n\\nLipid-modifying therapies and risk of pancreatitis: a meta-analysis\\n\\nComparative Effectiveness of Lipid-Modifying Agents\\n\\nCost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk\\n\\nNiacin in patients with low HDL cholesterol levels receiving intensive statin therapy\\n\\nCurrent status of CETP inhibitors in the treatment of hyperlipidemia: an update\\n\\nPlasma HDL\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"dyslipidemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Garlic\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Artichoke leaf extract\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolaemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosiglitazone\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"myocardial infarction\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"TZDs\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary atherosclerosis\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"stable coronary disease\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Statins\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk of incident diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"incident diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"low cardiovascular risk\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Niacin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL cholesterol levels\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"CETP inhibitors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Plasma HDL\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"xanthomas\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"on xanthomas: a systematic review and meta-analysis\"\n      }\n    }\n  ]\n  ,\"rejected_candidates\":[\n    {\"text\":\"Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Artichoke leaf extract for treating hypercholesterolaemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Complementary and alternative therapies for the management of dyslipidemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Drug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Meta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Intensive lipid lowering with atorvastatin in patients with stable coronary disease\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Lipid-modifying therapies and risk of pancreatitis: a meta-analysis\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Comparative Effectiveness of Lipid-Modifying Agents\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Cost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Niacin in patients with low HDL cholesterol levels receiving intensive statin therapy\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\"reason\":\"no direct relationship supported\"}\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "xanthomas"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "on xanthomas: a systematic review and meta-analysis"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Artichoke leaf extract for treating hypercholesterolaemia",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Complementary and alternative therapies for the management of dyslipidemia",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Drug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Meta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Intensive lipid lowering with atorvastatin in patients with stable coronary disease",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Lipid-modifying therapies and risk of pancreatitis: a meta-analysis",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Comparative Effectiveness of Lipid-Modifying Agents",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Cost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Niacin in patients with low HDL cholesterol levels receiving intensive statin therapy",
+        "reason": "no direct relationship supported"
+      },
+      {
+        "text": "Current status of CETP inhibitors in the treatment of hyperlipidemia: an update",
+        "reason": "no direct relationship supported"
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:13:01.4584583Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"xanthomas\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"on xanthomas: a systematic review and meta-analysis\"\n      }\n    }\n  ]\n  ,\"rejected_candidates\":[\n    {\"text\":\"Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Artichoke leaf extract for treating hypercholesterolaemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Complementary and alternative therapies for the management of dyslipidemia\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Drug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Meta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Intensive lipid lowering with atorvastatin in patients with stable coronary disease\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Lipid-modifying therapies and risk of pancreatitis: a meta-analysis\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Comparative Effectiveness of Lipid-Modifying Agents\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Cost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Niacin in patients with low HDL cholesterol levels receiving intensive statin therapy\",\"reason\":\"no direct relationship supported\"},\n    {\"text\":\"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\"reason\":\"no direct relationship supported\"}\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 48835073400,
+    "load_duration": 155628100,
+    "prompt_eval_count": 1111,
+    "prompt_eval_duration": 6774322000,
+    "eval_count": 589,
+    "eval_duration": 41878425000
+  },
+  "started_at": "2026-06-19T22:12:10.591249+00:00",
+  "finished_at": "2026-06-19T22:13:01.460235+00:00",
+  "duration_ms": 50869.0,
+  "status": "ok",
+  "error": ""
+}

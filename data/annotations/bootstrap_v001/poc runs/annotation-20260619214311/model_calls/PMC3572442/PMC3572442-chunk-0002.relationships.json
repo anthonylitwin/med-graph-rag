@@ -1,0 +1,300 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0002\",\n    \"section\": \"INTRO\",\n    \"text\": \"de ambulatory care in non-government settings, hyperlipidemia is second only to hypertension in the list of the 10 most common chronic conditions that were seen The fact that hyperlipidemia is a strong risk factor for CVD is well established. Hyperlipidemia refers to elevated cholesterol, elevated TG or both. The problem can be due solely to hereditary factors, but more commonly it is an acquired condition. Physicians need to know the major categories of dyslipidemia and to have a well reasoned action plan for dealing with each one, including knowing when to refer a case to a lipidology specialist. It is the purpose of this paper to review the categories of hyperlipidemia, the current treatment recommendations and the current controversies and unresolved questions. Some of the recent evidence based data (~2000 to current year) and studies regarding hyperlipidemia will be discussed.\\n\\nDefinitions of hyperlipidemia\\n\\nFor most primary care providers, hyperlipidemia is defined as elevations of fasting total cholesterol concentration which may or may not be associated with elevated TG concentration. However, lipids are not soluble in plasma, but are instead transported in particles known as lipoproteins. Therefore, classifications of hyperlipidemia are also based on abnormalities of lipoproteins. See Box 1.\\n\\nThe NCEP created a standard using lipid levels in 2001 that is still the most commonly used clinical classification. See Table 1. The NCEP is currently revising its\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypertension\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"elevated cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"hereditary factors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"dyslipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoproteins\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both. The problem can be due solely to hereditary factors, but more commonly it is an acquired condition.' This implies that hyperlipidemia can lead to CVD.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated cholesterol.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated TG.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"hyperlipidemia is second only to hypertension in the list of the 10 most common chronic conditions that were seen\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and hypertension.\"\n    },\n    {\n      \"text\": \"Physicians need to know the major categories of dyslipidemia and to have a well reasoned action plan for dealing with each one, including knowing when to refer a case to a lipidology specialist.\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and dyslipidemia.\"\n    },\n    {\n      \"text\": \"It is the purpose of this paper to review the categories of hyperlipidemia, the current treatment recommendations and the current controversies and unresolved questions.\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and any other condition or biomarker mentioned.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both. The problem can be due solely to hereditary factors, but more commonly it is an acquired condition.' This implies that hyperlipidemia can lead to CVD."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "elevated cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated cholesterol."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "TG"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated TG."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "hyperlipidemia is second only to hypertension in the list of the 10 most common chronic conditions that were seen",
+        "reason": "The text does not provide a relationship between hyperlipidemia and hypertension."
+      },
+      {
+        "text": "Physicians need to know the major categories of dyslipidemia and to have a well reasoned action plan for dealing with each one, including knowing when to refer a case to a lipidology specialist.",
+        "reason": "The text does not provide a relationship between hyperlipidemia and dyslipidemia."
+      },
+      {
+        "text": "It is the purpose of this paper to review the categories of hyperlipidemia, the current treatment recommendations and the current controversies and unresolved questions.",
+        "reason": "The text does not provide a relationship between hyperlipidemia and any other condition or biomarker mentioned."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T21:44:50.0730281Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both. The problem can be due solely to hereditary factors, but more commonly it is an acquired condition.' This implies that hyperlipidemia can lead to CVD.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated cholesterol.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The text states 'Hyperlipidemia refers to elevated cholesterol, elevated TG or both.' This implies that hyperlipidemia can lead to elevated TG.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"hyperlipidemia is second only to hypertension in the list of the 10 most common chronic conditions that were seen\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and hypertension.\"\n    },\n    {\n      \"text\": \"Physicians need to know the major categories of dyslipidemia and to have a well reasoned action plan for dealing with each one, including knowing when to refer a case to a lipidology specialist.\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and dyslipidemia.\"\n    },\n    {\n      \"text\": \"It is the purpose of this paper to review the categories of hyperlipidemia, the current treatment recommendations and the current controversies and unresolved questions.\",\n      \"reason\": \"The text does not provide a relationship between hyperlipidemia and any other condition or biomarker mentioned.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 36905929300,
+    "load_duration": 164714100,
+    "prompt_eval_count": 822,
+    "prompt_eval_duration": 3431848000,
+    "eval_count": 577,
+    "eval_duration": 33290377999
+  },
+  "started_at": "2026-06-19T21:44:11.138989+00:00",
+  "finished_at": "2026-06-19T21:44:50.074037+00:00",
+  "duration_ms": 38935.05,
+  "status": "ok",
+  "error": ""
+}

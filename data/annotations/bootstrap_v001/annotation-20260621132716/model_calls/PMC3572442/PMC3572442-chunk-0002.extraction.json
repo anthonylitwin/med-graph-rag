@@ -1,0 +1,1580 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC3572442\nTitle: Hyperlipidemia as a Risk Factor for Cardiovascular Disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC3572442-chunk-0002\nChunk Section: RESULTS\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nrlying cause. Primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities. It is vital to know common primary and secondary causes of elevated lipids and to recognize unusual patterns or physical findings that should trigger a referral to a lipidologist. Although rare in primary care practices, many genetic causes of hyperlipidemia carry an increased risk of premature CVD and/or other organ system disease. Some of these syndromes require different treatment than the usual primary care patient presenting with hyperlipidemia.\n\nHyperlipidemia can broadly be classified as isolated elevation of cholesterol, isolated elevated TG and elevations of both. The cause may be genetic, environmental or both. Table 2 is a list of genetic causes of hyperlipidemia with a brief clinical description including clues that should trigger consideration of a lipid specialty referral. In general, the clues to a genetic syndrome include very high cholesterol levels (> 300 mg/dL), very high TG levels (>500 mg/dL), xanthomas, strong family history of hyperlipidemia or early CVD, or lack of expected response to maximal therapeutic doses of lipid lowering agents.\n\nDyslipidemia has multiple secondary causes. These are listed in Table 3, which is divided into isolated cholesterol elevation, isolated TG elevation and a mixed pattern. An important secondary cause of high cholesterol is hypothyroidism. It is important to screen people with elevated cholesterol for hypothyroidism. This is due to the fact that hypothyroidism causes elevations of cholesterol and reduced thyroid hormone concentrations increase the risk of statin induced myopathy Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism. HIV is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities.\n\nEvaluation and treatment of patient with hyperlipidemia\n\nCVD risk analysis\n\nAn important step in the interpretation of lipid screening results is the performance of a cardiovascular risk assessment. This point is strongly emphasized in the report of ATP-III and in numerous peer reviewed journal articles reviewing the topic of lipid management. The basic principle is that the higher a person\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia. Any physician who is interpreting the results of a lipid panel needs to take the time to do a formal CVD risk analysis. One of the most commonly used validated instruments is the Framingham Risk Score. However, it has several limitations such as underestimating the risk in a high risk individual due to the absence of some important risk factors in the scoring system. Therefore, others have attempted to improve the scoring system in order to more precisely estimate the risk of a major cardiovascular event in differing groups.\n\nNovel risk factors\n\nThe emphasis on lowering LDL-C with statins has resulted in significant improvement in morbidity and mortality from CVD. However, despite the emphasis on control of LDL-C, a number of cardiac events occur in people without clinically abnormal LDL-C concentrations. This problem is often referred to as residual risk. One way of improving risk prediction and treatment has been to focus on non-HDL cholesterol levels rather than on just LDL-C. The reason for this is that other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons. As triglycerides are removed from TGRLs by intravascular lipases, the particles become denser and have a greater portion of their composition as cholesterol. In the case of chylomicrons, which transport dietary fat, the end product of TG lipolysis is a small, dense Apo-B48 containing particle known as a chylomicron remnant. VLDL, which transports endogenously produced TG, has a more complex catabolism. In a simplified version, the catabolic steps can be thought of as a conversion of VLDL to intermediate density lipoproteins (IDL), which are then converted to LDL. The particles are defined by their different densities and TG:Cholesterol ratios, but all of them contain apoB-100. These remnant particles are believed to be significant contributors to CVD because the particles not eliminated by the liver (the preferred disposal site) are taken up in arterial walls to eventually become lipid laden macrophages, the well known foam cells that are a hallmark of early atherosclerosis. In a meta-analysis of 38,153 statin treated subjects in whom non-HDL-C, LDL-C and Apo-B were compared, all three markers were predictive of CVD, with non-HDL-C showing a slightly greater association than the other two. However, even though statistically non-HDL-C was the best predictor, the 95% confidence intervals of the hazard ratio of CVD for each of the 3 markers overlapped sufficiently that this study cannot be considered conclusive.\n\nAdditional, markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines. In 2011, a consensus panel of the National Lipid Association published a review of the clinical utility of various proposed markers. See Box 3 for a partial list of markers that have been proposed.\n\nIn general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring. A major study published in JAMA by the Emerging Risk Factors Collaboration reviewed individual records from 37 prospective studies containing 165,544 people without CVD at baseline. The study compared traditional\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"riskfactor:genetic_causes_of_hyperlipidemia\",\"type\":\"RiskFactor\",\"name\":\"Genetic causes of hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:premature_cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Premature cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypothyroidism\",\"type\":\"Condition\",\"name\":\"Hypothyroidism\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:reduced_thyroid_hormone_concentrations\",\"type\":\"RiskFactor\",\"name\":\"Reduced thyroid hormone concentrations\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:statin_induced_myopathy\",\"type\":\"Condition\",\"name\":\"Statin-induced myopathy\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:renal_disease\",\"type\":\"Condition\",\"name\":\"Renal disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:alcoholism\",\"type\":\"RiskFactor\",\"name\":\"Alcoholism\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hiv_infection\",\"type\":\"Condition\",\"name\":\"HIV infection\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:protease_inhibitors\",\"type\":\"Drug\",\"name\":\"Protease inhibitors\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apo_b\",\"type\":\"Biomarker\",\"name\":\"Apo-B\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:very_low_density_lipoprotein\",\"type\":\"Biomarker\",\"name\":\"Very low density lipoprotein\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:chylomicrons\",\"type\":\"Biomarker\",\"name\":\"Chylomicrons\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:remnant_particles\",\"type\":\"Biomarker\",\"name\":\"Remnant particles\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:inflammatory_proteins\",\"type\":\"Biomarker\",\"name\":\"Inflammatory proteins\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:cytokines\",\"type\":\"Biomarker\",\"name\":\"Cytokines\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:genetic_causes_of_hyperlipidemia\",\"type\":\"RiskFactor\",\"name\":\"Genetic causes of hyperlipidemia\"},\"target\":{\"id\":\"condition:premature_cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Premature cardiovascular disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"many genetic causes of hyperlipidemia carry an increased risk of premature CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.76,\"evidence\":\"the higher a person\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:hypothyroidism\",\"type\":\"Condition\",\"name\":\"Hypothyroidism\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"hypothyroidism causes elevations of cholesterol\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:reduced_thyroid_hormone_concentrations\",\"type\":\"RiskFactor\",\"name\":\"Reduced thyroid hormone concentrations\"},\"target\":{\"id\":\"condition:statin_induced_myopathy\",\"type\":\"Condition\",\"name\":\"Statin-induced myopathy\"},\"properties\":{\"confidence\":0.91,\"evidence\":\"reduced thyroid hormone concentrations increase the risk of statin induced myopathy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"statin induced myopathy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:renal_disease\",\"type\":\"Condition\",\"name\":\"Renal disease\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:alcoholism\",\"type\":\"RiskFactor\",\"name\":\"Alcoholism\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:hiv_infection\",\"type\":\"Condition\",\"name\":\"HIV infection\"},\"target\":{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"HIV is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:protease_inhibitors\",\"type\":\"Drug\",\"name\":\"Protease inhibitors\"},\"target\":{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"the use of protease inhibitors can contribute to lipid abnormalities\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"The emphasis on lowering LDL-C with statins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.91,\"evidence\":\"all three markers were predictive of CVD, with non-HDL-C showing a slightly greater association than the other two\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"all three markers were predictive of CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apo_b\",\"type\":\"Biomarker\",\"name\":\"Apo-B\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"all three markers were predictive of CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:very_low_density_lipoprotein\",\"type\":\"Biomarker\",\"name\":\"Very low density lipoprotein\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:chylomicrons\",\"type\":\"Biomarker\",\"name\":\"Chylomicrons\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_particles\",\"type\":\"Biomarker\",\"name\":\"Remnant particles\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.79,\"evidence\":\"These remnant particles are believed to be significant contributors to CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:inflammatory_proteins\",\"type\":\"Biomarker\",\"name\":\"Inflammatory proteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.77,\"evidence\":\"markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:cytokines\",\"type\":\"Biomarker\",\"name\":\"Cytokines\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.77,\"evidence\":\"markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"xanthomas\",\"reason\":\"Mentioned as a clue for genetic syndrome/referral consideration, but no supported ontology relationship is stated in the chunk.\"},{\"text\":\"Framingham Risk Score\",\"reason\":\"Risk scoring instrument is not one of the defined biomedical entity types in the ontology.\"},{\"text\":\"lipidologist\",\"reason\":\"Provider specialty is not a defined entity type in the ontology.\"},{\"text\":\"lipid lowering agents\",\"reason\":\"Mentioned only in context of lack of expected response; no specific drug-entity relationship is directly supported.\"},{\"text\":\"foam cells\",\"reason\":\"Mentioned as hallmark of early atherosclerosis, but entity type and extractable ontology relationship are not sufficiently supported.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC3572442",
+      "title": "Hyperlipidemia as a Risk Factor for Cardiovascular Disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "riskfactor:genetic_causes_of_hyperlipidemia",
+        "type": "RiskFactor",
+        "name": "Genetic causes of hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:premature_cardiovascular_disease",
+        "type": "Condition",
+        "name": "Premature cardiovascular disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hyperlipidemia",
+        "type": "Condition",
+        "name": "Hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hypothyroidism",
+        "type": "Condition",
+        "name": "Hypothyroidism",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hypercholesterolemia",
+        "type": "Condition",
+        "name": "Hypercholesterolemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "riskfactor:reduced_thyroid_hormone_concentrations",
+        "type": "RiskFactor",
+        "name": "Reduced thyroid hormone concentrations",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:statin_induced_myopathy",
+        "type": "Condition",
+        "name": "Statin-induced myopathy",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:myopathy",
+        "type": "Condition",
+        "name": "Myopathy",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:diabetes",
+        "type": "Condition",
+        "name": "Diabetes",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:renal_disease",
+        "type": "Condition",
+        "name": "Renal disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "riskfactor:alcoholism",
+        "type": "RiskFactor",
+        "name": "Alcoholism",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:secondary_hyperlipidemia",
+        "type": "Condition",
+        "name": "Secondary hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hiv_infection",
+        "type": "Condition",
+        "name": "HIV infection",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:protease_inhibitors",
+        "type": "Drug",
+        "name": "Protease inhibitors",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:lipid_abnormalities",
+        "type": "Condition",
+        "name": "Lipid abnormalities",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:non_hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "Non-HDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apo_b",
+        "type": "Biomarker",
+        "name": "Apo-B",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:very_low_density_lipoprotein",
+        "type": "Biomarker",
+        "name": "Very low density lipoprotein",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:chylomicrons",
+        "type": "Biomarker",
+        "name": "Chylomicrons",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:remnant_particles",
+        "type": "Biomarker",
+        "name": "Remnant particles",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:atherosclerosis",
+        "type": "Condition",
+        "name": "Atherosclerosis",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:inflammatory_proteins",
+        "type": "Biomarker",
+        "name": "Inflammatory proteins",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:cytokines",
+        "type": "Biomarker",
+        "name": "Cytokines",
+        "properties": {
+          "source": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:genetic_causes_of_hyperlipidemia",
+          "type": "RiskFactor",
+          "name": "Genetic causes of hyperlipidemia"
+        },
+        "target": {
+          "id": "condition:premature_cardiovascular_disease",
+          "type": "Condition",
+          "name": "Premature cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "many genetic causes of hyperlipidemia carry an increased risk of premature CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:hyperlipidemia",
+          "type": "Condition",
+          "name": "Hyperlipidemia"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.76,
+          "evidence": "the higher a person\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "id": "condition:hypothyroidism",
+          "type": "Condition",
+          "name": "Hypothyroidism"
+        },
+        "target": {
+          "id": "condition:hypercholesterolemia",
+          "type": "Condition",
+          "name": "Hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "hypothyroidism causes elevations of cholesterol",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:reduced_thyroid_hormone_concentrations",
+          "type": "RiskFactor",
+          "name": "Reduced thyroid hormone concentrations"
+        },
+        "target": {
+          "id": "condition:statin_induced_myopathy",
+          "type": "Condition",
+          "name": "Statin-induced myopathy"
+        },
+        "properties": {
+          "confidence": 0.91,
+          "evidence": "reduced thyroid hormone concentrations increase the risk of statin induced myopathy",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "condition:myopathy",
+          "type": "Condition",
+          "name": "Myopathy"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "statin induced myopathy",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "id": "condition:diabetes",
+          "type": "Condition",
+          "name": "Diabetes"
+        },
+        "target": {
+          "id": "condition:secondary_hyperlipidemia",
+          "type": "Condition",
+          "name": "Secondary hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "id": "condition:renal_disease",
+          "type": "Condition",
+          "name": "Renal disease"
+        },
+        "target": {
+          "id": "condition:secondary_hyperlipidemia",
+          "type": "Condition",
+          "name": "Secondary hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:alcoholism",
+          "type": "RiskFactor",
+          "name": "Alcoholism"
+        },
+        "target": {
+          "id": "condition:secondary_hyperlipidemia",
+          "type": "Condition",
+          "name": "Secondary hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "id": "condition:hiv_infection",
+          "type": "Condition",
+          "name": "HIV infection"
+        },
+        "target": {
+          "id": "condition:lipid_abnormalities",
+          "type": "Condition",
+          "name": "Lipid abnormalities"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "HIV is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:protease_inhibitors",
+          "type": "Drug",
+          "name": "Protease inhibitors"
+        },
+        "target": {
+          "id": "condition:lipid_abnormalities",
+          "type": "Condition",
+          "name": "Lipid abnormalities"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "the use of protease inhibitors can contribute to lipid abnormalities",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "The emphasis on lowering LDL-C with statins",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:non_hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-HDL cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.91,
+          "evidence": "all three markers were predictive of CVD, with non-HDL-C showing a slightly greater association than the other two",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "all three markers were predictive of CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apo_b",
+          "type": "Biomarker",
+          "name": "Apo-B"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "all three markers were predictive of CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:very_low_density_lipoprotein",
+          "type": "Biomarker",
+          "name": "Very low density lipoprotein"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:chylomicrons",
+          "type": "Biomarker",
+          "name": "Chylomicrons"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_particles",
+          "type": "Biomarker",
+          "name": "Remnant particles"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.79,
+          "evidence": "These remnant particles are believed to be significant contributors to CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:inflammatory_proteins",
+          "type": "Biomarker",
+          "name": "Inflammatory proteins"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.77,
+          "evidence": "markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:cytokines",
+          "type": "Biomarker",
+          "name": "Cytokines"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.77,
+          "evidence": "markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "xanthomas",
+        "reason": "Mentioned as a clue for genetic syndrome/referral consideration, but no supported ontology relationship is stated in the chunk."
+      },
+      {
+        "text": "Framingham Risk Score",
+        "reason": "Risk scoring instrument is not one of the defined biomedical entity types in the ontology."
+      },
+      {
+        "text": "lipidologist",
+        "reason": "Provider specialty is not a defined entity type in the ontology."
+      },
+      {
+        "text": "lipid lowering agents",
+        "reason": "Mentioned only in context of lack of expected response; no specific drug-entity relationship is directly supported."
+      },
+      {
+        "text": "foam cells",
+        "reason": "Mentioned as hallmark of early atherosclerosis, but entity type and extractable ontology relationship are not sufficiently supported."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0c714755c1310b0c006a37e73250148192b12b0621356cc87e",
+    "created_at": 1782048562.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0c714755c1310b0c006a37e7335ab48192aa95f4a478e4f9f7",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0c714755c1310b0c006a37e77d13388192b7b8a57816b2819a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"riskfactor:genetic_causes_of_hyperlipidemia\",\"type\":\"RiskFactor\",\"name\":\"Genetic causes of hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:premature_cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Premature cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypothyroidism\",\"type\":\"Condition\",\"name\":\"Hypothyroidism\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:reduced_thyroid_hormone_concentrations\",\"type\":\"RiskFactor\",\"name\":\"Reduced thyroid hormone concentrations\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:statin_induced_myopathy\",\"type\":\"Condition\",\"name\":\"Statin-induced myopathy\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:renal_disease\",\"type\":\"Condition\",\"name\":\"Renal disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:alcoholism\",\"type\":\"RiskFactor\",\"name\":\"Alcoholism\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hiv_infection\",\"type\":\"Condition\",\"name\":\"HIV infection\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:protease_inhibitors\",\"type\":\"Drug\",\"name\":\"Protease inhibitors\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apo_b\",\"type\":\"Biomarker\",\"name\":\"Apo-B\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:very_low_density_lipoprotein\",\"type\":\"Biomarker\",\"name\":\"Very low density lipoprotein\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:chylomicrons\",\"type\":\"Biomarker\",\"name\":\"Chylomicrons\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:remnant_particles\",\"type\":\"Biomarker\",\"name\":\"Remnant particles\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:inflammatory_proteins\",\"type\":\"Biomarker\",\"name\":\"Inflammatory proteins\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:cytokines\",\"type\":\"Biomarker\",\"name\":\"Cytokines\",\"properties\":{\"source\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:genetic_causes_of_hyperlipidemia\",\"type\":\"RiskFactor\",\"name\":\"Genetic causes of hyperlipidemia\"},\"target\":{\"id\":\"condition:premature_cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Premature cardiovascular disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"many genetic causes of hyperlipidemia carry an increased risk of premature CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.76,\"evidence\":\"the higher a person\u2019s CVD risk, the greater the benefit in aggressively treating all modifiable risk factors, including hyperlipidemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:hypothyroidism\",\"type\":\"Condition\",\"name\":\"Hypothyroidism\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"hypothyroidism causes elevations of cholesterol\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:reduced_thyroid_hormone_concentrations\",\"type\":\"RiskFactor\",\"name\":\"Reduced thyroid hormone concentrations\"},\"target\":{\"id\":\"condition:statin_induced_myopathy\",\"type\":\"Condition\",\"name\":\"Statin-induced myopathy\"},\"properties\":{\"confidence\":0.91,\"evidence\":\"reduced thyroid hormone concentrations increase the risk of statin induced myopathy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"statin induced myopathy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:renal_disease\",\"type\":\"Condition\",\"name\":\"Renal disease\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:alcoholism\",\"type\":\"RiskFactor\",\"name\":\"Alcoholism\"},\"target\":{\"id\":\"condition:secondary_hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Secondary hyperlipidemia\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Other important contributors to secondary hyperlipidemia include diabetes, renal disease and alcoholism.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"CAUSES\",\"source\":{\"id\":\"condition:hiv_infection\",\"type\":\"Condition\",\"name\":\"HIV infection\"},\"target\":{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"HIV is an important consideration both because the infection and the use of protease inhibitors can contribute to lipid abnormalities.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:protease_inhibitors\",\"type\":\"Drug\",\"name\":\"Protease inhibitors\"},\"target\":{\"id\":\"condition:lipid_abnormalities\",\"type\":\"Condition\",\"name\":\"Lipid abnormalities\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"the use of protease inhibitors can contribute to lipid abnormalities\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"The emphasis on lowering LDL-C with statins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.91,\"evidence\":\"all three markers were predictive of CVD, with non-HDL-C showing a slightly greater association than the other two\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"all three markers were predictive of CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apo_b\",\"type\":\"Biomarker\",\"name\":\"Apo-B\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"all three markers were predictive of CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:very_low_density_lipoprotein\",\"type\":\"Biomarker\",\"name\":\"Very low density lipoprotein\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:chylomicrons\",\"type\":\"Biomarker\",\"name\":\"Chylomicrons\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_particles\",\"type\":\"Biomarker\",\"name\":\"Remnant particles\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.79,\"evidence\":\"These remnant particles are believed to be significant contributors to CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:inflammatory_proteins\",\"type\":\"Biomarker\",\"name\":\"Inflammatory proteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.77,\"evidence\":\"markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:cytokines\",\"type\":\"Biomarker\",\"name\":\"Cytokines\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.77,\"evidence\":\"markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"xanthomas\",\"reason\":\"Mentioned as a clue for genetic syndrome/referral consideration, but no supported ontology relationship is stated in the chunk.\"},{\"text\":\"Framingham Risk Score\",\"reason\":\"Risk scoring instrument is not one of the defined biomedical entity types in the ontology.\"},{\"text\":\"lipidologist\",\"reason\":\"Provider specialty is not a defined entity type in the ontology.\"},{\"text\":\"lipid lowering agents\",\"reason\":\"Mentioned only in context of lack of expected response; no specific drug-entity relationship is directly supported.\"},{\"text\":\"foam cells\",\"reason\":\"Mentioned as hallmark of early atherosclerosis, but entity type and extractable ontology relationship are not sufficiently supported.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782048697.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "medium",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3446,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 7925,
+      "output_tokens_details": {
+        "reasoning_tokens": 3102
+      },
+      "total_tokens": 11371
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true
+  },
+  "started_at": "2026-06-21T13:29:27.218513+00:00",
+  "finished_at": "2026-06-21T13:31:42.799047+00:00",
+  "duration_ms": 135580.526,
+  "status": "ok",
+  "error": ""
+}

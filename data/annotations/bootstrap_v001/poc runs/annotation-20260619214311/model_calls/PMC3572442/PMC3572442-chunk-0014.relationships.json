@@ -1,0 +1,270 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0014\",\n    \"section\": \"METHODS\",\n    \"text\": \"s, etc.)\\n\\nMany people prefer complementary and alternative medicines to pharmaceutical products. They want to use these products because they are less expensive to purchase, don\\u2019t require a prescription and are considered natural. While there are no studies demonstrating that an alternative product is superior to statins in either lipid or CVD reduction, several reviews have shown modest reduction of plasma lipids with the use of substances such as garlic, artichoke leaf extract, nuts, plant stanolols, psyllium, soluble fiber, orange juice, and red yeast rice. Potential resources to help the interested reader learn more are found at The National Institutes of Health National Center for Complementary and Alternative Medicine official web site (http://nccam.nih.gov/), which contains information that is organized both by product and by health condition. It also has links to systematic reviews and meta-analyses conducted in the last 5 years about specific treatments. Another source is the web site www.naturalstandard.com/. The Natural Standard Research Collaboration is a coalition of medical researchers that conducts and reviews research about natural remedies. They rate products using an evidence based methodology and assign each review a grade (A \\u2013 F) based on the available scientific evidence. Using traditional medical research sources (e.g. PubMed) it is difficult to find systematic reviews of the evidence for the many natural remedies that have putative benefit in promoting\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"plasma lipids\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"garlic\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"artichoke leaf extract\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"plant stanolols\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"psyllium\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"red yeast rice\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"health condition\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"While there are no studies demonstrating that an alternative product is superior to statins in either lipid or CVD reduction, several reviews have shown modest reduction of plasma lipids with the use of substances such as garlic, artichoke leaf extract, nuts, plant stanolols, psyllium, soluble fiber, orange juice, and red yeast rice.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Many people prefer complementary and alternative medicines to pharmaceutical products. They want to use these products because they are less expensive to purchase, don\\u2019t require a prescription and are considered natural.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    },\n    {\n      \"text\": \"Potential resources to help the interested reader learn more are found at The National Institutes of Health National Center for Complementary and Alternative Medicine official web site (http://nccam.nih.gov/), which contains information that is organized both by product and by health condition. It also has links to systematic reviews and meta-analyses conducted in the last 5 years about specific treatments.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    },\n    {\n      \"text\": \"Another source is the web site www.naturalstandard.com/. The Natural Standard Research Collaboration is a coalition of medical researchers that conducts and reviews research about natural remedies. They rate products using an evidence based methodology and assign each review a grade (A \\u2013 F) based on the available scientific evidence.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "While there are no studies demonstrating that an alternative product is superior to statins in either lipid or CVD reduction, several reviews have shown modest reduction of plasma lipids with the use of substances such as garlic, artichoke leaf extract, nuts, plant stanolols, psyllium, soluble fiber, orange juice, and red yeast rice."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Many people prefer complementary and alternative medicines to pharmaceutical products. They want to use these products because they are less expensive to purchase, don\u2019t require a prescription and are considered natural.",
+        "reason": "No explicit relationship found in the text."
+      },
+      {
+        "text": "Potential resources to help the interested reader learn more are found at The National Institutes of Health National Center for Complementary and Alternative Medicine official web site (http://nccam.nih.gov/), which contains information that is organized both by product and by health condition. It also has links to systematic reviews and meta-analyses conducted in the last 5 years about specific treatments.",
+        "reason": "No explicit relationship found in the text."
+      },
+      {
+        "text": "Another source is the web site www.naturalstandard.com/. The Natural Standard Research Collaboration is a coalition of medical researchers that conducts and reviews research about natural remedies. They rate products using an evidence based methodology and assign each review a grade (A \u2013 F) based on the available scientific evidence.",
+        "reason": "No explicit relationship found in the text."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:07:35.8004757Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"While there are no studies demonstrating that an alternative product is superior to statins in either lipid or CVD reduction, several reviews have shown modest reduction of plasma lipids with the use of substances such as garlic, artichoke leaf extract, nuts, plant stanolols, psyllium, soluble fiber, orange juice, and red yeast rice.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Many people prefer complementary and alternative medicines to pharmaceutical products. They want to use these products because they are less expensive to purchase, don\\u2019t require a prescription and are considered natural.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    },\n    {\n      \"text\": \"Potential resources to help the interested reader learn more are found at The National Institutes of Health National Center for Complementary and Alternative Medicine official web site (http://nccam.nih.gov/), which contains information that is organized both by product and by health condition. It also has links to systematic reviews and meta-analyses conducted in the last 5 years about specific treatments.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    },\n    {\n      \"text\": \"Another source is the web site www.naturalstandard.com/. The Natural Standard Research Collaboration is a coalition of medical researchers that conducts and reviews research about natural remedies. They rate products using an evidence based methodology and assign each review a grade (A \\u2013 F) based on the available scientific evidence.\",\n      \"reason\": \"No explicit relationship found in the text.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 33495209000,
+    "load_duration": 153344500,
+    "prompt_eval_count": 810,
+    "prompt_eval_duration": 4279861000,
+    "eval_count": 417,
+    "eval_duration": 29018218000
+  },
+  "started_at": "2026-06-19T22:07:00.265248+00:00",
+  "finished_at": "2026-06-19T22:07:35.801325+00:00",
+  "duration_ms": 35536.078,
+  "status": "ok",
+  "error": ""
+}

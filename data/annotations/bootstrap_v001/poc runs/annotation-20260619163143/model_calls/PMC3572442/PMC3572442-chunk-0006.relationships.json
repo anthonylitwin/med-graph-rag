@@ -1,0 +1,221 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0006\",\n    \"section\": \"REF\",\n    \"text\": \"w series: the pathogenesis of atherosclerosis: an interpretive history of the cholesterol controversy, part III: mechanistically defining the role of hyperlipidemia\\n\\nThe pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part IV: the 1984 coronary primary prevention trial ends it--almost\\n\\nThematic review series: the pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part V: the discovery of the statins and the end of the controversy\\n\\nScreening for Lipid Disorders in Adults\\n\\nPublic Cholesterol Screening\\n\\nDisorders of Lipid Metabolism\\n\\nLipid management in patients who have HIV and are receiving HIV therapy\\n\\nChapter 3.3 Assessment of cardiovascular risk\\n\\nImprovements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\\n\\nComparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\\n\\nAssociation of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\\n\\nLipid-related markers and cardiovascular disease prediction\\n\\nUse of emerging lipoprotein risk factors in assessment of cardiovascular risk\\n\\nEffects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\\n\\nATP III At-A-Glance: Quick Desk Reference 2001\\n\\nResults of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\\n\\nQuickStats: Average Total Cholesterol Level Among Men and Women\\n\\nLong-term weight loss after diet and exercise: a systematic review\\n\\nDietary approaches to the treatment of obesity\\n\\nFamilial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\\n\\nDifferences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\\n\\nSystematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\\n\\nGarlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\\n\\nArtichoke leaf extract for treating hypercholesterolaemia\\n\\nComplementary and alternative therapies for the management of dyslipidemia\\n\\nEffect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\\n\\nDrug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\\n\\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\\n\\nEffect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\\n\\nIntensive lipid lowering with atorvastatin in patients with stable coronary disease\\n\\nStatins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\\n\\nRisk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\\n\\nLipid-modifying therapies and risk of pancreatitis: a meta-analysis\\n\\nComparative Effectiveness of Lipid-Modifying Agents\\n\\nCost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk\\n\\nNiacin in patients with low HDL cholesterol levels receiving intensive statin therapy\\n\\nCurrent status of CETP inhibitors in the treatment of hyperlipidemia: an update\\n\\nPlasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\\n\\nEffects of combination lipid therapy in type 2 diabetes mellitus\\n\\nEffects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\\n\\nVariation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature\\n\\nLipoprotein(a) as a cardiovascular risk factor: current status\\n\\nThe clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\\n\\nComparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\\n\\nEffect of two intensive statin regimens on progression of coronary disease\\n\\nClassification of hyperlipidemias as defined by the NCEP ATP 3. All concentrations are expressed as mg/dL\\n\\nLDL Cholesterol <100 Optimal 100 \\u2013 129 Near or above optimal 130 \\u2013 159 Borderline high 160 \\u2013 189 High \\u2265 190 Very high Total Cholesterol <200 Desirable 200 \\u2013 239 Borderline high \\u2265 240 High HDL Cholesterol* <40 Low \\u2265 60 High Triglycerides <150 Normal 150 \\u2013 199 Borderline high 200 \\u2013 499 High \\u2265 500 Very high\\n\\nGenetic causes of hyperlipidemia\\n\\nCAUSES CLINICAL FEATURES Isolated cholesterol elevation Genetic Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \\u2013 40 years old) CVD is common Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD Mutations Associated with Elevated LDL Levels Rare and isolated; suspect if elevated LDL unresponsive to treatment Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory Polygenic Hypercholesterolemia No family history, no physical manifestations such as xanthomas, exact cause is unknown Lp(X) Associate with obstructive hepatic disease, CVD risk unclear Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"HIV\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular disease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL Cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"non-HDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoprotein B\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular events\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"lipoprotein risk factors\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"cardiovascular risk\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"nonlipid serum markers\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Total Cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obesity\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"tendon xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"dyslipidemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Garlic\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolaemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosiglitazone\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"myocardial infarction\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Niacin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL Cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes mellitus\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"fenofibrate\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein associated phospholipase A2\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"cardiovascular risk factors\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lipoprotein\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pitavastatin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemias\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Triglycerides\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Familial Hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TC\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"MI\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Apolipoprotein B100\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CHD\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obstructive hepatic disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Sitosterolemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Cerebrotendinous Xanthomatosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"neurologic disease\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"cataracts\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "",
+  "parsed_json": {},
+  "raw_response": null,
+  "started_at": "2026-06-19T16:32:16.075579+00:00",
+  "finished_at": "2026-06-19T16:32:20.158558+00:00",
+  "duration_ms": 4083.0,
+  "status": "error",
+  "error": "<urlopen error [WinError 10061] No connection could be made because the target machine actively refused it>"
+}

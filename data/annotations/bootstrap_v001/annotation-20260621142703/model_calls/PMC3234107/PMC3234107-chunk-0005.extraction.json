@@ -1,0 +1,1314 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC3234107\nTitle: The Role of Triglycerides in Atherosclerosis\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC3234107-chunk-0005\nChunk Section: METHODS\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nof up to 40% in TG levels may be attained through intensive therapeutic lifestyle changes (Table 2).\n\nAside from lifestyle changes, further treatment with lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids, may be warranted and should be considered to help achieve non-HDL-C targets in patients with hypertriglyceridemia. The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used and the pretreatment TG level (Table 2). The most recent AHA scientific statement on TG and CVD concludes 1) in patients with hypertriglyceridemia, statin monotherapy may be beneficial in the setting of an LDL-C level that merits treatment; 2) fibrate monotherapy may be beneficial in patients with high TG levels, low HDL-C, or both; 3) high-risk statin-treated patients who continue to have elevated TG levels display a residual risk for CVD that is likely a result of the multiple metabolic abnormalities observed in atherogenic dyslipidemia; 4) there is limited data on the potential benefit of adding a second drug in these high-risk patients. Additional clinical outcome trials are necessary to evaluate this benefit.\n\nIn line with the second recommendation of the AHA statement on TG, other health organizations such as the Residual Risk Reduction Initiative (R3I) recommend further therapeutic intervention that targets all lipid risk factors including hypertriglyceridemia.\n\nConclusions\n\nHypertriglyceridemia is a prevalent risk factor for CVD and increasingly important in the setting of current obesity and insulin resistance epidemics. Recent data add confidence to the conclusion that TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins, especially apo C-III. Another surrogate marker of CHD risk is non-HDL-C, which combines the cholesterol levels found in LDL-C and TG-rich lipoproteins. Lowering non-HDL-C has clearly been associated with benefit, and has been designated as the second lipid target after LDL-C level by the NCEP ATP III guidelines. Although there is no rigorous outcome data definitely proving that reduction in TG level reduces CVD, current epidemiologic data and clinical trial results support an association between elevated TG and CVD risk. The possible benefit of residual risk reduction through therapeutic interventions that target all lipid risk factors including hypertriglyceridemia suggests a role for treatment of persistently high TG concentrations in high-risk, statin-treated patients. Additional clinical outcome trials are necessary to fully evaluate this benefit.\n\nClinical Trial Acronyms\n\nACCORD\u2013Action to Control Cardiovascular Risk in Diabetes; AIM-HIGH\u2013Atherothrombosis Intervention in Metabolic syndrome with Low HDL/High Triglycerides: Impact on Global Health Outcomes; JELIS\u2013Japan EPA Lipid Intervention Study; NCEP ATP III\u2013National Cholesterol Education Program Adult Treatment Panel III; NHANES\u2013National Health and Nutrition Examination Survey; PROVE IT-TIMI 22\u2013Pravastatin or Atorvastatin Evaluation and Infection Therapy-Thrombolysis in Myocardial Infarction 22.\n\nDisclosure\n\nConflicts of interest: B.G. Talayero: none; F.M. Sacks: has board membership with R3i Foundation; has been a consultant for Abbott, Amgen, Pfizer, Roche, Merck, Eli Lilly, ISIS, and Genzyme; has given expert testimony for Abbott and Par; has received grant support from ISIS; and has received honoraria from Abbott.\n\nReferences and Recommended Reading\n\nPapers of particular interest, published recently, have been highlighted as:\n\n\u2022 Of importance\n\n\u2022 \u2022 Of major importance\n\nHeart disease and stroke statistics--2010 update: a report from the American Heart Association\n\nThird Report of the National Cholesterol Education Program (NCEP) Expert Panel on Detection, Evaluation, and Treatment of High Blood Cholesterol in Adults (Adult Treatment Panel III)\n\nPrevalence of the metabolic syndrome among US adults: findings from the third National Health and Nutrition Examination Survey\n\nNCEP-defined metabolic syndrome, diabetes, and prevalence of coronary heart disease among NHANES III participants age 50 years and older\n\nPlasma triglyceride level is a risk factor for cardiovascular disease independent of high-density lipoprotein cholesterol level: A meta-analysis of population-based prospective studies\n\nObesity, mortality and cardiovascular disease in the M\u00fcnster Heart Study (PROCAM)\n\nTriglycerides and the risk of coronary heart disease: 10,158 incident cases among 262,525 participants in 29 Western prospective studies\n\nEfficacy and safety of cholesterol-lowering treatment: prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins\n\nHypertriglyceridemia: changes in the plasma lipoproteins associated with an increased risk of cardiovascular disease\n\nApolipoprotein B-48 or its apolipoprotein B-100 equivalent mediates the binding of triglyceride rich lipoproteins to their unique human monocyte-macrophage receptor\n\nThe induction of macrophage foam cell formation by chylomicron remnants\n\nApolipoprotein C-III: understanding an emerging cardiovascular risk factor\n\nApolipoprotein C-III and the metabolic basis for hypertriglyceridemia and the dense LDL phenotype\n\nFoxO1 integrates insulin signaling to VLDL production\n\nHepatic uptake of chylomicron remnants\n\nLipoprotein subclasses and particle sizes and their relationship with coronary artery calcification in men and women with and without type 1 diabetes\n\nRole of macrophage-derived lipoprotein lipase in lipoprotein metabolism and atherosclerosis\n\nApolipoprotein CIII links hyperlipidemia with vascular endothelial function\n\nTriglyceride-rich lipoprotein lipolysis releases neutral and oxidized FFAs that induce endothelial cell inflammation\n\nTriglyceride-rich lipoproteins inhibit cholesterol efflux to apolipoprotein (apo) A1 from human macrophage foam cells\n\nAcute hypertriglyceridaemia in humans\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3234107\",\"title\":\"The Role of Triglycerides in Atherosclerosis\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:nicotinic_acid\",\"type\":\"Drug\",\"name\":\"Nicotinic acid\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:hypertriglyceridemia\",\"type\":\"RiskFactor\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:atherogenic_dyslipidemia\",\"type\":\"Condition\",\"name\":\"Atherogenic dyslipidemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obesity\",\"type\":\"Condition\",\"name\":\"Obesity\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:insulin_resistance\",\"type\":\"Condition\",\"name\":\"Insulin resistance\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:atherogenic_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Atherogenic lipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:tg_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\"},\"target\":{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"further treatment with lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids, may be warranted and should be considered to help achieve non-HDL-C targets in patients with hypertriglyceridemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used and the pretreatment TG level\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:nicotinic_acid\",\"type\":\"Drug\",\"name\":\"Nicotinic acid\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:hypertriglyceridemia\",\"type\":\"RiskFactor\",\"name\":\"Hypertriglyceridemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Hypertriglyceridemia is a prevalent risk factor for CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"current epidemiologic data and clinical trial results support an association between elevated TG and CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins, especially apo C-III\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:atherogenic_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Atherogenic lipoproteins\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.87,\"evidence\":\"Another surrogate marker of CHD risk is non-HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"Although there is no rigorous outcome data definitely proving that reduction in TG level reduces CVD\",\"reason\":\"Negated/insufficient evidence; not extracting a causal, TREATS, PREVENTS, or REDUCES relationship between triglyceride reduction and cardiovascular disease.\"},{\"text\":\"there is limited data on the potential benefit of adding a second drug in these high-risk patients\",\"reason\":\"Insufficient evidence and no specific second drug or supported clinical outcome relationship is stated.\"},{\"text\":\"of up to 40% in TG levels may be attained through intensive therapeutic lifestyle changes\",\"reason\":\"Lifestyle change is not a Drug entity in the specified ontology, and no supported relationship type applies.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC3234107",
+      "title": "The Role of Triglycerides in Atherosclerosis",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "drug:lipid_lowering_drugs",
+        "type": "Drug",
+        "name": "Lipid-lowering drugs",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:fibrates",
+        "type": "Drug",
+        "name": "Fibrates",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:nicotinic_acid",
+        "type": "Drug",
+        "name": "Nicotinic acid",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:omega_3_fatty_acids",
+        "type": "Drug",
+        "name": "Omega-3 fatty acids",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hypertriglyceridemia",
+        "type": "Condition",
+        "name": "Hypertriglyceridemia",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "riskfactor:hypertriglyceridemia",
+        "type": "RiskFactor",
+        "name": "Hypertriglyceridemia",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:coronary_heart_disease",
+        "type": "Condition",
+        "name": "Coronary heart disease",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:atherogenic_dyslipidemia",
+        "type": "Condition",
+        "name": "Atherogenic dyslipidemia",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:obesity",
+        "type": "Condition",
+        "name": "Obesity",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:insulin_resistance",
+        "type": "Condition",
+        "name": "Insulin resistance",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:non_hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "Non-HDL cholesterol",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:atherogenic_lipoproteins",
+        "type": "Biomarker",
+        "name": "Atherogenic lipoproteins",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apolipoproteins",
+        "type": "Biomarker",
+        "name": "Apolipoproteins",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_c_iii",
+        "type": "Biomarker",
+        "name": "Apolipoprotein C-III",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:tg_rich_lipoproteins",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoproteins",
+        "properties": {
+          "source": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:lipid_lowering_drugs",
+          "type": "Drug",
+          "name": "Lipid-lowering drugs"
+        },
+        "target": {
+          "id": "condition:hypertriglyceridemia",
+          "type": "Condition",
+          "name": "Hypertriglyceridemia"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "further treatment with lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids, may be warranted and should be considered to help achieve non-HDL-C targets in patients with hypertriglyceridemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:lipid_lowering_drugs",
+          "type": "Drug",
+          "name": "Lipid-lowering drugs"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used and the pretreatment TG level",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:nicotinic_acid",
+          "type": "Drug",
+          "name": "Nicotinic acid"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:hypertriglyceridemia",
+          "type": "RiskFactor",
+          "name": "Hypertriglyceridemia"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.96,
+          "evidence": "Hypertriglyceridemia is a prevalent risk factor for CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "current epidemiologic data and clinical trial results support an association between elevated TG and CVD risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins, especially apo C-III",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:atherogenic_lipoproteins",
+          "type": "Biomarker",
+          "name": "Atherogenic lipoproteins"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:non_hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-HDL cholesterol"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.87,
+          "evidence": "Another surrogate marker of CHD risk is non-HDL-C",
+          "source_pmid": "",
+          "source_pmcid": "PMC3234107",
+          "chunk_id": "PMC3234107-chunk-0005",
+          "extractor": "MedGraphRAG v1.1",
+          "model": "gpt-4.1",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Although there is no rigorous outcome data definitely proving that reduction in TG level reduces CVD",
+        "reason": "Negated/insufficient evidence; not extracting a causal, TREATS, PREVENTS, or REDUCES relationship between triglyceride reduction and cardiovascular disease."
+      },
+      {
+        "text": "there is limited data on the potential benefit of adding a second drug in these high-risk patients",
+        "reason": "Insufficient evidence and no specific second drug or supported clinical outcome relationship is stated."
+      },
+      {
+        "text": "of up to 40% in TG levels may be attained through intensive therapeutic lifestyle changes",
+        "reason": "Lifestyle change is not a Drug entity in the specified ontology, and no supported relationship type applies."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0febaf9e727feea8006a37f63af1e481a0a05f384748ecca25",
+    "created_at": 1782052410.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0febaf9e727feea8006a37f63b8cc481a091d4e55049c887fe",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0febaf9e727feea8006a37f67da71081a0a08a9ad127dfb32a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3234107\",\"title\":\"The Role of Triglycerides in Atherosclerosis\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:nicotinic_acid\",\"type\":\"Drug\",\"name\":\"Nicotinic acid\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:hypertriglyceridemia\",\"type\":\"RiskFactor\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:atherogenic_dyslipidemia\",\"type\":\"Condition\",\"name\":\"Atherogenic dyslipidemia\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obesity\",\"type\":\"Condition\",\"name\":\"Obesity\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:insulin_resistance\",\"type\":\"Condition\",\"name\":\"Insulin resistance\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:atherogenic_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Atherogenic lipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:tg_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\"},\"target\":{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"further treatment with lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids, may be warranted and should be considered to help achieve non-HDL-C targets in patients with hypertriglyceridemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:lipid_lowering_drugs\",\"type\":\"Drug\",\"name\":\"Lipid-lowering drugs\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used and the pretreatment TG level\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:nicotinic_acid\",\"type\":\"Drug\",\"name\":\"Nicotinic acid\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"lipid-lowering drugs, such as statins, fibrates, nicotinic acid, or omega-3 fatty acids... The efficacies of pharmacologic interventions on TG level reduction vary depending on the agent used\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:hypertriglyceridemia\",\"type\":\"RiskFactor\",\"name\":\"Hypertriglyceridemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Hypertriglyceridemia is a prevalent risk factor for CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"current epidemiologic data and clinical trial results support an association between elevated TG and CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins, especially apo C-III\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:atherogenic_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Atherogenic lipoproteins\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels appear to provide unique information as a biomarker of CVD risk because of their association with atherogenic lipoproteins and apolipoproteins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.87,\"evidence\":\"Another surrogate marker of CHD risk is non-HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3234107\",\"chunk_id\":\"PMC3234107-chunk-0005\",\"extractor\":\"MedGraphRAG v1.1\",\"model\":\"gpt-4.1\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"Although there is no rigorous outcome data definitely proving that reduction in TG level reduces CVD\",\"reason\":\"Negated/insufficient evidence; not extracting a causal, TREATS, PREVENTS, or REDUCES relationship between triglyceride reduction and cardiovascular disease.\"},{\"text\":\"there is limited data on the potential benefit of adding a second drug in these high-risk patients\",\"reason\":\"Insufficient evidence and no specific second drug or supported clinical outcome relationship is stated.\"},{\"text\":\"of up to 40% in TG levels may be attained through intensive therapeutic lifestyle changes\",\"reason\":\"Lifestyle change is not a Drug entity in the specified ontology, and no supported relationship type applies.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782052507.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "medium",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3527,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 8036,
+      "output_tokens_details": {
+        "reasoning_tokens": 4499
+      },
+      "total_tokens": 11563
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true
+  },
+  "started_at": "2026-06-21T14:33:36.076150+00:00",
+  "finished_at": "2026-06-21T14:35:12.551380+00:00",
+  "duration_ms": 96475.244,
+  "status": "ok",
+  "error": ""
+}

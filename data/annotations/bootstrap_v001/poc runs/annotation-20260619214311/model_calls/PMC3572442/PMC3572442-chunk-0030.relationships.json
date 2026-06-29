@@ -1,0 +1,311 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0030\",\n    \"section\": \"TABLE\",\n    \"text\": \"ide effects, tolerability, and/or adherence? Attainment of ATP III LDL-c goals Very low Ezetimibe plus simvastatin therapy is more likely to result in attainment of LDL-c target than higher dose simvastatin, based on 2 small trials.Results for statin-fibrate combination (1 trial) were indeterminate.No evidence was available for other combinations. Key Question 3. Compared with higher dose statins and to one another, do combination regimens differ in benefits and harms within subgroups of patients? All-cause mortality, vascular death, and attainment of ATP III LDL-c goals Very low There is insufficient evidence to draw any meaningful conclusions in subgroups for any combination. Serious adverse events --- Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\\n\\nBecause of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\\n\\nKey Points\\n\\nElevated levels of blood lipids are well documented risk factors for cardiovascular disease. Current classification schemes and\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-c\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Ezetimibe\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"simvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin-fibrate\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"All-cause mortality\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"vascular death\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"ATP III\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Serious adverse events\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"SAE\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"SAE\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"low-density lipoprotein cholesterol\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"serious adverse events\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"blood lipids\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular disease\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"low-density lipoprotein cholesterol\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"serious adverse events\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"blood lipids\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Ezetimibe plus simvastatin therapy is more likely to result in attainment of LDL-c target than higher dose simvastatin, based on 2 small trials.\",\n      \"reason\": \"The text does not explicitly support a relationship between Ezetimibe and Simvastatin. The text discusses the effectiveness of different treatment combinations.\"\n    },\n    {\n      \"text\": \"No evidence was available for other combinations.\",\n      \"reason\": \"The text does not provide enough information to infer any relationships with candidate entities.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "low-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\n\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "serious adverse events"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\n\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "blood lipids"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\n\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\n\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Ezetimibe plus simvastatin therapy is more likely to result in attainment of LDL-c target than higher dose simvastatin, based on 2 small trials.",
+        "reason": "The text does not explicitly support a relationship between Ezetimibe and Simvastatin. The text discusses the effectiveness of different treatment combinations."
+      },
+      {
+        "text": "No evidence was available for other combinations.",
+        "reason": "The text does not provide enough information to infer any relationships with candidate entities."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:19:14.8345821Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"low-density lipoprotein cholesterol\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"serious adverse events\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"blood lipids\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"Because of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Ezetimibe plus simvastatin therapy is more likely to result in attainment of LDL-c target than higher dose simvastatin, based on 2 small trials.\",\n      \"reason\": \"The text does not explicitly support a relationship between Ezetimibe and Simvastatin. The text discusses the effectiveness of different treatment combinations.\"\n    },\n    {\n      \"text\": \"No evidence was available for other combinations.\",\n      \"reason\": \"The text does not provide enough information to infer any relationships with candidate entities.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 59650754200,
+    "load_duration": 214217600,
+    "prompt_eval_count": 914,
+    "prompt_eval_duration": 5196483000,
+    "eval_count": 772,
+    "eval_duration": 54221579000
+  },
+  "started_at": "2026-06-19T22:18:13.153240+00:00",
+  "finished_at": "2026-06-19T22:19:14.835891+00:00",
+  "duration_ms": 61682.654,
+  "status": "ok",
+  "error": ""
+}

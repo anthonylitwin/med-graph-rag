@@ -111,6 +111,51 @@ or edit rows in place.
 Every accepted relationship should keep concise `evidence_text` copied from the
 source chunk, and directionality should be checked before promotion to gold.
 
+## Adjudication To Gold
+
+Adjudication is a separate second-phase command. Bootstrap creates silver
+workbooks; adjudication validates a reviewed workbook and exports gold CSV files.
+It does not mutate the original silver workbook.
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/adjudicate_annotations.py `
+  --workbook data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx
+```
+
+Run frontier LLM-assisted adjudication before validation/export:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/adjudicate_annotations.py `
+  --workbook data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx `
+  --llm-review
+```
+
+Or use make:
+
+```powershell
+make annotation-review WORKBOOK="data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx"
+make annotation-review WORKBOOK="data/annotations/bootstrap_v001/<run_id>/annotation_workbook.xlsx" ARGS="--llm-review"
+```
+
+Outputs are written under `data/annotations/gold_v001/<review_id>/`:
+
+| File | Purpose |
+| --- | --- |
+| `reviewed_annotation_workbook.xlsx` | Copy of the workbook being adjudicated. |
+| `adjudication_report.json` | Validation summary, blocking errors, and export metadata. |
+| `gold_entities.csv` | Accepted entity rows, written only when validation passes. |
+| `gold_relationships.csv` | Accepted relationship rows, written only when validation passes. |
+
+Gold export is blocked while chunks, entity rows, or relationship rows remain
+`needs_review`, while accepted relationships have unresolved direction,
+negation, or speculation flags, or when relationship endpoints do not map to
+accepted entities in the same chunk.
+
+`--llm-review` always uses the `frontier` OpenAI model profile. It reviews each
+chunk entities-first and relationships-second, updates only the copied
+`reviewed_annotation_workbook.xlsx`, and writes audit JSON under
+`model_calls/<pmcid>/<chunk_id>.*_adjudication.json`.
+
 ## Audit JSON
 
 Model-call audit files record request payloads, prompts, JSON schemas, parsed

@@ -1,0 +1,296 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0028\",\n    \"section\": \"TABLE\",\n    \"text\": \"in alternatives\\n\\nDRUG EFFECTS ADVERSEREACTIONS Bile acid sequestrants Cholestyramine (4\\u201316 g)Colestipol (5\\u201320 g)Colesevelam (2.6\\u20133.8 g) LDL \\u221215\\u201330%HDL +3\\u20135%TG No change orincrease GastrointestinaldistressConstipationDecreasedabsorptionof other drugs Nicotinic acid Immediate release(crystalline) nicotinic acid(1.5\\u20133 gm), extendedrelease nicotinic acid(Niaspan\\u00ae) (1\\u20132 g),sustained releasenicotinic acid (1\\u20132 g) LDL \\u22125\\u201325%HDL +15\\u201335%TG \\u221220\\u201350% FlushingHyperglycemiaHyperuricemia(or gout)Upper GI distressHepatotoxicity Fibric acids Gemfibrozil(600 mg BID)Fenofibrate (200 mg)Clofibrate(1000 mgBID) LDL \\u22125\\u201320%(may be increased inpatients with high TG)HDL +10\\u201320%TG \\u221220\\u201350% DyspepsiaGallstonesMyopathy Ezetimibe Zetia (10 mg daily)As monotherapy, often combined witha statin LDL-C \\u221218%HDL-C +3%TG \\u22128% DiarrheaArthralgiaNasopharyngitis orSinusitisControversialregarding reductionof CVD events Omega 3 fatty acids LovazaFish OilPlant sources Prescription fatty acid ester indicated only fortreatment of TG > 500 mg/dl to preventpancreatitisFish oil has been shown to reduce elevated TGwith subsequent mild reduction in LDL andnon-HDL-C; however a recent major studyshowed no benefit from fish oil capsules;consumption of fish is preferred. Plant sourcesof omega-3 FA have been subjected to fewclinical trials with CVD endpoints\\n\\nSummary of conclusions from evidence comparing use of a specific statin in combination with another lipid-modifying agent with use of a higher dose statin in populations\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Cholestyramine\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colestipol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colesevelam\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"nicotinic acid\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Niaspan\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"sustained releasenicotinic acid\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"FlushingHyperglycemiaHyperuricemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"gout\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"Upper GI distressHepatotoxicity\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Fibric acids\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Gemfibrozil\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Fenofibrate\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Clofibrate\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"DyspepsiaGallstonesMyopathy\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Ezetimibe Zetia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"DiarrheaArthralgiaNasopharyngitis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Omega 3 fatty acids\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"LovazaFish OilPlant\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Prescription fatty acid ester\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGwith\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Cholestyramine\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Colestipol\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Colesevelam\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"GallstonesMyopathy\",\n      \"reason\": \"No direct relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Nasopharyngitis\",\n      \"reason\": \"No direct relationship supported by the text.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "Cholestyramine"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "LDL \u221215\u201330%"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "Colestipol"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "LDL \u221215\u201330%"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "Colesevelam"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "LDL \u221215\u201330%"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "GallstonesMyopathy",
+        "reason": "No direct relationship supported by the text."
+      },
+      {
+        "text": "Nasopharyngitis",
+        "reason": "No direct relationship supported by the text."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:17:49.5616232Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Cholestyramine\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Colestipol\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Colesevelam\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"LDL \\u221215\\u201330%\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"GallstonesMyopathy\",\n      \"reason\": \"No direct relationship supported by the text.\"\n    },\n    {\n      \"text\": \"Nasopharyngitis\",\n      \"reason\": \"No direct relationship supported by the text.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 37743886400,
+    "load_duration": 147181700,
+    "prompt_eval_count": 1478,
+    "prompt_eval_duration": 9923683000,
+    "eval_count": 384,
+    "eval_duration": 27637292000
+  },
+  "started_at": "2026-06-19T22:17:09.770839+00:00",
+  "finished_at": "2026-06-19T22:17:49.562638+00:00",
+  "duration_ms": 39791.804,
+  "status": "ok",
+  "error": ""
+}

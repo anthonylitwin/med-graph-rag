@@ -1,0 +1,312 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0025\",\n    \"section\": \"TABLE\",\n    \"text\": \"High \\u2265 500 Very high\\n\\nGenetic causes of hyperlipidemia\\n\\nCAUSES CLINICAL FEATURES Isolated cholesterol elevation Genetic Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \\u2013 40 years old) CVD is common Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD Mutations Associated with Elevated LDL Levels Rare and isolated; suspect if elevated LDL unresponsive to treatment Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory Polygenic Hypercholesterolemia No family history, no physical manifestations such as xanthomas, exact cause is unknown Lp(X) Associate with obstructive hepatic disease, CVD risk unclear Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults Elevated cholesterol and triglycerides Combined (Familial) Hyperlipidemia May occur randomly or with strong family history of hyperlipidemia; type 2 diabetes and metabolic syndrome are associated and can make diagnosis more difficult Familial Dysbetalipoproteinemia (Type III\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Isolated cholesterol elevation\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Familial Hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TC\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"family history\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"tendon xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"MI\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Familial Defective Apolipoprotein B100\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"CHD Mutations\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Elevated Plasma Lipoprotein\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Polygenic Hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obstructive hepatic disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Sitosterolemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"plant sterols\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Cerebrotendinous Xanthomatosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"neurologic disease\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"cataracts\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"triglycerides\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"metabolic syndrome\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Familial Dysbetalipoproteinemia\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Familial Defective Apolipoprotein B100\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD. Familial Defective Apolipoprotein B100 is associated with an increased risk of cardiovascular disease (CVD).\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"Familial Hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"MI\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Hypercholesterolemia is associated with an increased risk of myocardial infarction (MI).\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"Familial Dysbetalipoproteinemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"neurologic disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Familial Dysbetalipoproteinemia (Type III) is associated with neurologic disease.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Genetic causes of hyperlipidemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Isolated cholesterol elevation\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Familial Hypercholesterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Polygenic Hypercholesterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Sitosterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Cerebrotendinous Xanthomatosis\",\n      \"reason\": \"No explicit relationship found in the text\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "Familial Defective Apolipoprotein B100"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD. Familial Defective Apolipoprotein B100 is associated with an increased risk of cardiovascular disease (CVD)."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "Familial Hypercholesterolemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "MI"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Hypercholesterolemia is associated with an increased risk of myocardial infarction (MI)."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "Familial Dysbetalipoproteinemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "neurologic disease"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Familial Dysbetalipoproteinemia (Type III) is associated with neurologic disease."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Genetic causes of hyperlipidemia",
+        "reason": "No explicit relationship found in the text"
+      },
+      {
+        "text": "Isolated cholesterol elevation",
+        "reason": "No explicit relationship found in the text"
+      },
+      {
+        "text": "Familial Hypercholesterolemia",
+        "reason": "No explicit relationship found in the text"
+      },
+      {
+        "text": "Polygenic Hypercholesterolemia",
+        "reason": "No explicit relationship found in the text"
+      },
+      {
+        "text": "Sitosterolemia",
+        "reason": "No explicit relationship found in the text"
+      },
+      {
+        "text": "Cerebrotendinous Xanthomatosis",
+        "reason": "No explicit relationship found in the text"
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:14:42.1699321Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Familial Defective Apolipoprotein B100\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD. Familial Defective Apolipoprotein B100 is associated with an increased risk of cardiovascular disease (CVD).\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"Familial Hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"MI\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Hypercholesterolemia is associated with an increased risk of myocardial infarction (MI).\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"Familial Dysbetalipoproteinemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"neurologic disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Familial Dysbetalipoproteinemia (Type III) is associated with neurologic disease.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Genetic causes of hyperlipidemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Isolated cholesterol elevation\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Familial Hypercholesterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Polygenic Hypercholesterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Sitosterolemia\",\n      \"reason\": \"No explicit relationship found in the text\"\n    },\n    {\n      \"text\": \"Cerebrotendinous Xanthomatosis\",\n      \"reason\": \"No explicit relationship found in the text\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 51256198200,
+    "load_duration": 155336400,
+    "prompt_eval_count": 1210,
+    "prompt_eval_duration": 7671932000,
+    "eval_count": 607,
+    "eval_duration": 43397140000
+  },
+  "started_at": "2026-06-19T22:13:48.897305+00:00",
+  "finished_at": "2026-06-19T22:14:42.170944+00:00",
+  "duration_ms": 53273.647,
+  "status": "ok",
+  "error": ""
+}

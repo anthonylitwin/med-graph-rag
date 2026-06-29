@@ -1,0 +1,294 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0024\",\n    \"section\": \"REF\",\n    \"text\": \"HDL cholesterol levels receiving intensive statin therapy\\n\\nCurrent status of CETP inhibitors in the treatment of hyperlipidemia: an update\\n\\nPlasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\\n\\nEffects of combination lipid therapy in type 2 diabetes mellitus\\n\\nEffects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\\n\\nVariation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature\\n\\nLipoprotein(a) as a cardiovascular risk factor: current status\\n\\nThe clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\\n\\nComparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\\n\\nEffect of two intensive statin regimens on progression of coronary disease\\n\\nClassification of hyperlipidemias as defined by the NCEP ATP 3. All concentrations are expressed as mg/dL\\n\\nLDL Cholesterol <100 Optimal 100 \\u2013 129 Near or above optimal 130 \\u2013 159 Borderline high 160 \\u2013 189 High \\u2265 190 Very high Total Cholesterol <200 Desirable 200 \\u2013 239 Borderline high \\u2265 240 High HDL Cholesterol* <40 Low \\u2265 60 High Triglycerides <150 Normal 150 \\u2013 199 Borderline high 200 \\u2013 499 High \\u2265 500 Very high\\n\\nGenetic causes of hyperlipidemia\\n\\nCAUSES CLINICAL FEATURES Isolated cholesterol elevation Genetic Familial Hypercholesterolemia\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL Cholesterol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"CETP inhibitors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"myocardial infarction\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes mellitus\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"fenofibrate\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular events\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein associated phospholipase A2\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"cardiovascular risk factors\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"cardiovascular risk factor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pitavastatin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemias\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"NCEP ATP 3\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL Cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Total Cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Triglycerides\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"Isolated cholesterol elevation\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hypercholesterolemia\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fenofibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular events\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\"\n      }\n    }\n  ]\n  ,\"rejected_candidates\": [\n    {\n      \"text\": \"HDL cholesterol levels receiving intensive statin therapy\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Effects of combination lipid therapy in type 2 diabetes mellitus\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Variation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Lipoprotein(a) as a cardiovascular risk factor: current status\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Effect of two intensive statin regimens on progression of coronary disease\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "fenofibrate"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "HDL cholesterol levels receiving intensive statin therapy",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Current status of CETP inhibitors in the treatment of hyperlipidemia: an update",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Effects of combination lipid therapy in type 2 diabetes mellitus",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Variation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Lipoprotein(a) as a cardiovascular risk factor: current status",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study",
+        "reason": "Not a direct relationship based on the provided text."
+      },
+      {
+        "text": "Effect of two intensive statin regimens on progression of coronary disease",
+        "reason": "Not a direct relationship based on the provided text."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:13:48.5680995Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fenofibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular events\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\"\n      }\n    }\n  ]\n  ,\"rejected_candidates\": [\n    {\n      \"text\": \"HDL cholesterol levels receiving intensive statin therapy\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Effects of combination lipid therapy in type 2 diabetes mellitus\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Variation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Lipoprotein(a) as a cardiovascular risk factor: current status\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    },\n    {\n      \"text\": \"Effect of two intensive statin regimens on progression of coronary disease\",\n      \"reason\": \"Not a direct relationship based on the provided text.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 44771036200,
+    "load_duration": 139912400,
+    "prompt_eval_count": 1235,
+    "prompt_eval_duration": 7860047000,
+    "eval_count": 517,
+    "eval_duration": 36746597000
+  },
+  "started_at": "2026-06-19T22:13:01.764800+00:00",
+  "finished_at": "2026-06-19T22:13:48.569393+00:00",
+  "duration_ms": 46804.592,
+  "status": "ok",
+  "error": ""
+}

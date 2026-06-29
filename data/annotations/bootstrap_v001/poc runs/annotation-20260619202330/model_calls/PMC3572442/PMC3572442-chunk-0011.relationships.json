@@ -1,0 +1,410 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0011\",\n    \"section\": \"REF\",\n    \"text\": \"s\\n\\nThematic review series: the pathogenesis of atherosclerosis: an interpretive history of the cholesterol controversy, part III: mechanistically defining the role of hyperlipidemia\\n\\nThe pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part IV: the 1984 coronary primary prevention trial ends it--almost\\n\\nThematic review series: the pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part V: the discovery of the statins and the end of the controversy\\n\\nScreening for Lipid Disorders in Adults\\n\\nPublic Cholesterol Screening\\n\\nDisorders of Lipid Metabolism\\n\\nLipid management in patients who have HIV and are receiving HIV therapy\\n\\nChapter 3.3 Assessment of cardiovascular risk\\n\\nImprovements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\\n\\nComparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\\n\\nAssociation of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\\n\\nLipid-related markers and cardiovascular disease prediction\\n\\nUse of emerging lipoprotein risk factors in assessment of cardiovascular risk\\n\\nEffects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\\n\\nATP III At-A-Glance: Quick Desk Reference 2001\\n\\nResults of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\\n\\nQuickStats: Average Total Cholesterol Level Among Men and Women\\n\\nLong-term weight loss after diet and exercise: a systematic review\\n\\nDietary approaches to the treatment of obesity\\n\\nFamilial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\\n\\nDifferences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\\n\\nSystematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\\n\\nGarlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\\n\\nArtichoke leaf extract for treating hypercholesterolaemia\\n\\nComplementary and alternative therapies for the management of dyslipidemia\\n\\nEffect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\\n\\nDrug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\\n\\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\\n\\nEffect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\\n\\nIntensive lipid lowering with atorvastatin in patients with stable coronary\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"HIV\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular disease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"non-HDL cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoprotein B\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lipid-related markers\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"lipoprotein risk factors\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"cardiovascular risk\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"nonlipid serum markers\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obesity\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"tendon xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"dyslipidemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Garlic\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Artichoke leaf extract\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolaemia\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosiglitazone\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"myocardial infarction\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"tendon xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosiglitazone\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\"\n      }\n    },\n    {\n      \"type\": \"INTERACTS_WITH\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Intensive lipid lowering with atorvastatin in patients with stable coronary\"\n      }\n    }\n  ]\n        , \"rejected_candidates\": [\n            {\n                \"text\": \"Screening for Lipid Disorders in Adults\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Public Cholesterol Screening\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Disorders of Lipid Metabolism\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Lipid management in patients who have HIV and are receiving HIV therapy\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Chapter 3.3 Assessment of cardiovascular risk\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Improvements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\n                \"reason\": \"Relationship already included in 'TREATS' relationship.\"\n            },\n            {\n                \"text\": \"Lipid-related markers and cardiovascular disease prediction\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Use of emerging lipoprotein risk factors in assessment of cardiovascular risk\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"ATP III At-A-Glance: Quick Desk Reference 2001\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Results of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"QuickStats: Average Total Cholesterol Level Among Men and Women\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Long-term weight loss after diet and exercise: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Dietary approaches to the treatment of obesity\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Familial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\",\n                \"reason\": \"Relationship already included in 'HAS_SYMPTOM' relationship.\"\n            },\n            {\n                \"text\": \"Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Artichoke leaf extract for treating hypercholesterolaemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Complementary and alternative therapies for the management of dyslipidemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            }\n        ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis"
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "familial hypercholesterolemia"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "tendon xanthomas"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "rosiglitazone"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "myocardial infarction"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes"
+        }
+      },
+      {
+        "type": "INTERACTS_WITH",
+        "source": {
+          "type": "Drug",
+          "name": "atorvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "atherosclerosis"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Intensive lipid lowering with atorvastatin in patients with stable coronary"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Screening for Lipid Disorders in Adults",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Public Cholesterol Screening",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Disorders of Lipid Metabolism",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Lipid management in patients who have HIV and are receiving HIV therapy",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Chapter 3.3 Assessment of cardiovascular risk",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Improvements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis",
+        "reason": "Relationship already included in 'TREATS' relationship."
+      },
+      {
+        "text": "Lipid-related markers and cardiovascular disease prediction",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Use of emerging lipoprotein risk factors in assessment of cardiovascular risk",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "ATP III At-A-Glance: Quick Desk Reference 2001",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Results of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "QuickStats: Average Total Cholesterol Level Among Men and Women",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Long-term weight loss after diet and exercise: a systematic review",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Dietary approaches to the treatment of obesity",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Familial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis",
+        "reason": "Relationship already included in 'HAS_SYMPTOM' relationship."
+      },
+      {
+        "text": "Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Artichoke leaf extract for treating hypercholesterolaemia",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Complementary and alternative therapies for the management of dyslipidemia",
+        "reason": "No explicit relationship to any candidate entity."
+      },
+      {
+        "text": "Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial",
+        "reason": "No explicit relationship to any candidate entity."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T21:17:41.0843083Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"tendon xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosiglitazone\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\"\n      }\n    },\n    {\n      \"type\": \"INTERACTS_WITH\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Intensive lipid lowering with atorvastatin in patients with stable coronary\"\n      }\n    }\n  ]\n        , \"rejected_candidates\": [\n            {\n                \"text\": \"Screening for Lipid Disorders in Adults\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Public Cholesterol Screening\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Disorders of Lipid Metabolism\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Lipid management in patients who have HIV and are receiving HIV therapy\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Chapter 3.3 Assessment of cardiovascular risk\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Improvements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Comparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\n                \"reason\": \"Relationship already included in 'TREATS' relationship.\"\n            },\n            {\n                \"text\": \"Lipid-related markers and cardiovascular disease prediction\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Use of emerging lipoprotein risk factors in assessment of cardiovascular risk\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"ATP III At-A-Glance: Quick Desk Reference 2001\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Results of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"QuickStats: Average Total Cholesterol Level Among Men and Women\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Long-term weight loss after diet and exercise: a systematic review\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Dietary approaches to the treatment of obesity\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Familial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Differences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\",\n                \"reason\": \"Relationship already included in 'HAS_SYMPTOM' relationship.\"\n            },\n            {\n                \"text\": \"Systematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Artichoke leaf extract for treating hypercholesterolaemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Complementary and alternative therapies for the management of dyslipidemia\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            },\n            {\n                \"text\": \"Effect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\",\n                \"reason\": \"No explicit relationship to any candidate entity.\"\n            }\n        ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 262628475500,
+    "load_duration": 159297200,
+    "prompt_eval_count": 1423,
+    "prompt_eval_duration": 19994551000,
+    "eval_count": 1517,
+    "eval_duration": 242432151000
+  },
+  "started_at": "2026-06-19T21:13:16.445212+00:00",
+  "finished_at": "2026-06-19T21:17:41.085321+00:00",
+  "duration_ms": 264640.112,
+  "status": "ok",
+  "error": ""
+}

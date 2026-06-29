@@ -1,0 +1,414 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0006\",\n    \"section\": \"METHODS\",\n    \"text\": \"ul the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal. Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \\u2265 240 mg/dL. More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008. The obvious problem in monitoring these trends is that the percent of the population at or below goal varies considerably by demographic parameters. Therefore, it is useful for every practice to perform quality studies in its own population to determine how well current guidelines are met and to think innovatively about clinic initiatives that can address suboptimal treatment.\\n\\nLife style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective. What is also well known is the difficulty in achieving these goals. There are major limitations in most weight loss studies. For example, weight loss programs show weight reduction reduces both cholesterol and TG but long term almost half of the initial weight loss is regained after 1 year. In a recent review of various weight loss diets, the authors concluded that the type of diet is less important than the its palatability and the ease of continuing it long term. Given these drawbacks to lifestyle change, it may be prudent to achieve lipid lowering goals by initiating medications sooner rather than later. If life style change goals are achieved, the need for medication can be reassessed.\\n\\nPharmaceutical Options\\n\\nNumerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the \\u201cstrong\\u201d reducers of LDL. While there are not any trials comparing all of the available statins directly to each other, there are a few head to head comparisons of some of the statins. These are shown in Table 5.\\n\\nBased on available evidence, there is no compelling reason to choose one statin over another for the usual primary care clinic patient. However, those patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin. Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\\n\\nAlternatives to\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"total cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosuvastatin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"familial combined hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"heterozygous familial hyperlipidemia\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"CVD risk\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"total cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial combined hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Based on available evidence, there is no compelling reason to choose one statin over another for the usual primary care clinic patient. However, those patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"heterozygous familial hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"xanthomas\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD risk\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"INTERACTS_WITH\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"While there are not any trials comparing all of the available statins directly to each other, there are a few head to head comparisons of some of the statins. These are shown in Table 5.\"\n      }\n    }\n  ]\n        , \"rejected_candidates\": [\n            {\n                \"text\": \"ul the medical community has been in meeting guideline goals.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \\u2265 240 mg/dL.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"What is also well known is the difficulty in achieving these goals.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"There are major limitations in most weight loss studies. For example, weight loss programs show weight reduction reduces both cholesterol and TG but long term almost half of the initial weight loss is regained after 1 year.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"In a recent review of various weight loss diets, the authors concluded that the type of diet is less important than the its palatability and the ease of continuing it long term.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Given these drawbacks to lifestyle change, it may be prudent to achieve lipid lowering goals by initiating medications sooner rather than later. If life style change goals are achieved, the need for medication can be reassessed.\",\n                \"reason\": \"No explicit relationship found.\"\n            }\n        ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Numerous studies have established that for most patients statins are the preferred medical treatment."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "total cholesterol"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "TG"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "familial combined hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Based on available evidence, there is no compelling reason to choose one statin over another for the usual primary care clinic patient. However, those patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "xanthomas"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "heterozygous familial hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought."
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "Condition",
+          "name": "xanthomas"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD risk"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought."
+        }
+      },
+      {
+        "type": "INTERACTS_WITH",
+        "source": {
+          "type": "Drug",
+          "name": "atorvastatin"
+        },
+        "target": {
+          "type": "Drug",
+          "name": "rosuvastatin"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "While there are not any trials comparing all of the available statins directly to each other, there are a few head to head comparisons of some of the statins. These are shown in Table 5."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "ul the medical community has been in meeting guideline goals.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \u2265 240 mg/dL.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \u2013 74 was met in both men and women by 2008.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "What is also well known is the difficulty in achieving these goals.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "There are major limitations in most weight loss studies. For example, weight loss programs show weight reduction reduces both cholesterol and TG but long term almost half of the initial weight loss is regained after 1 year.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "In a recent review of various weight loss diets, the authors concluded that the type of diet is less important than the its palatability and the ease of continuing it long term.",
+        "reason": "No explicit relationship found."
+      },
+      {
+        "text": "Given these drawbacks to lifestyle change, it may be prudent to achieve lipid lowering goals by initiating medications sooner rather than later. If life style change goals are achieved, the need for medication can be reassessed.",
+        "reason": "No explicit relationship found."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T21:02:33.0120127Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"total cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"TG\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Numerous studies have established that for most patients statins are the preferred medical treatment. Currently in the United States, the Food and Drug Administration has approved six drugs of this class (with some available in immediate or extended release forms). See Table 4. Comparative data show that all of them reduce lipid levels to varying degrees, with atorvastatin and rosuvastatin considered to be the 'strong' reducers of LDL.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"familial combined hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Based on available evidence, there is no compelling reason to choose one statin over another for the usual primary care clinic patient. However, those patients with familial combined hyperlipidemia should probably be started on atorvastatin or rosuvastatin.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"xanthomas\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"heterozygous familial hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"xanthomas\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD risk\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Additionally, it has been shown that the presence of xanthomas in heterozygous familial hyperlipidemia confers additional CVD risk to these patients and specialty opinion should be sought.\"\n      }\n    },\n    {\n      \"type\": \"INTERACTS_WITH\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"While there are not any trials comparing all of the available statins directly to each other, there are a few head to head comparisons of some of the statins. These are shown in Table 5.\"\n      }\n    }\n  ]\n        , \"rejected_candidates\": [\n            {\n                \"text\": \"ul the medical community has been in meeting guideline goals.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Data from the National Health and Nutrition Examination Surveys (NHANES) document a steady decline in total cholesterol over several decades so that in 2002 no more than 17% of US adults had a total cholesterol level \\u2265 240 mg/dL.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"More recent data from an identical survey in 2008 show that the Healthy People 2010 goal of an average cholesterol below 200 mg/dL in all adults ages 20 \\u2013 74 was met in both men and women by 2008.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Life style modification is the first step to reduce cholesterol levels. Changes in diet, weight loss and increased exercise are all known to be effective.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"What is also well known is the difficulty in achieving these goals.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"There are major limitations in most weight loss studies. For example, weight loss programs show weight reduction reduces both cholesterol and TG but long term almost half of the initial weight loss is regained after 1 year.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"In a recent review of various weight loss diets, the authors concluded that the type of diet is less important than the its palatability and the ease of continuing it long term.\",\n                \"reason\": \"No explicit relationship found.\"\n            },\n            {\n                \"text\": \"Given these drawbacks to lifestyle change, it may be prudent to achieve lipid lowering goals by initiating medications sooner rather than later. If life style change goals are achieved, the need for medication can be reassessed.\",\n                \"reason\": \"No explicit relationship found.\"\n            }\n        ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 273763781600,
+    "load_duration": 162633600,
+    "prompt_eval_count": 1204,
+    "prompt_eval_duration": 16208083000,
+    "eval_count": 1782,
+    "eval_duration": 257335928000
+  },
+  "started_at": "2026-06-19T20:57:57.183054+00:00",
+  "finished_at": "2026-06-19T21:02:33.013398+00:00",
+  "duration_ms": 275830.352,
+  "status": "ok",
+  "error": ""
+}

@@ -1,0 +1,431 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0010\",\n    \"section\": \"METHODS\",\n    \"text\": \"with fibrates or niacin have created doubt about this hypothesis. Current research is re-examining some of the long held beliefs about the role of various lipid fractions in the etiology of CVD. This work includes both examination of the biochemical pathways in order to identify new potential drug targets and a detailed analysis of the negative studies to determine if the entire idea is wrong or just a portion.\\n\\nTo summarize, there is a solid link between elevated cholesterol (especially LDL-C) and CVD. It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications. First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines. Multiple alternatives are available for those who either are statin intolerant or who fail to achieve therapeutic goals. While these statements are relatively simple, it took decades for them to become standard medical practice. Considerable work is ongoing to identify what factors are most important to residual risk. This work plus ongoing effectiveness research in clinical practice networks should lead to significant changes in how practitioners approach dyslipidemia over the next 1 \\u2013 2 decades.\\n\\nThis is a PDF file of an unedited manuscript that has been accepted for publication. As a service to our customers we are providing this early version of the manuscript. The manuscript will undergo copyediting, typesetting, and review of the resulting proof before it is published in its final citable form. Please note that during the production process errors may be discovered which could affect the content, and all legal disclaimers that apply to the journal pertain.\\n\\nConflict of Interest:\\n\\nNil\\n\\nREFERENCES\\n\\nNational Ambulatory Medical Care Survey: 2009 Summary Tables\\n\\nThird Report of the National Cholesterol Education Program (NCEP) Expert Panel on Detection, Evaluation, and Treatment of High Blood Cholesterol in Adults (Adult Treatment Panel III) final report\\n\\nThe Lipid Research Clinics Coronary Primary Prevention Trial results. I. Reduction in incidence of coronary heart disease\\n\\nThe Lipid Research Clinics Coronary Primary Prevention Trial results. II. The relationship of reduction in incidence of coronary heart disease to cholesterol lowering\\n\\nThematic review series: the pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy: part I\\n\\nThematic review series: the pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy: part II: the early evidence linking hypercholesterolemia to coronary disease in humans\\n\\nThematic review series: the pathogenesis of atherosclerosis: an interpretive history of the cholesterol controversy, part III: mechanistically defining the role of hyperlipidemia\\n\\nThe pathogenesis of atherosclerosis. An interpretive history of the\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"fibrates\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"niacin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"elevated cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"intermediate to high risk\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"residual risk\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"dyslipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary heart disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"coronary heart disease\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL-C\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate to high risk\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"with fibrates or niacin have created doubt about this hypothesis.\",\n      \"reason\": \"The text does not explicitly state that fibrates or niacin cause CVD, only that they create doubt about the hypothesis of their effectiveness.\"\n    },\n    {\n      \"text\": \"considerable work is ongoing to identify what factors are most important to residual risk.\",\n      \"reason\": \"The text does not provide evidence for a direct relationship between residual risk and any specific condition or biomarker.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "fibrates"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "with fibrates or niacin have created doubt about this hypothesis."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "niacin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "with fibrates or niacin have created doubt about this hypothesis."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL-C"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines."
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "RiskFactor",
+          "name": "intermediate to high risk"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "elevated cholesterol"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Biomarker",
+          "name": "cholesterol"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hypercholesterolemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "type": "Condition",
+          "name": "hypercholesterolemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      },
+      {
+        "type": "CAUSES",
+        "source": {
+          "type": "Condition",
+          "name": "atherosclerosis"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "There is a solid link between elevated cholesterol (especially LDL-C) and CVD."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "with fibrates or niacin have created doubt about this hypothesis.",
+        "reason": "The text does not explicitly state that fibrates or niacin cause CVD, only that they create doubt about the hypothesis of their effectiveness."
+      },
+      {
+        "text": "considerable work is ongoing to identify what factors are most important to residual risk.",
+        "reason": "The text does not provide evidence for a direct relationship between residual risk and any specific condition or biomarker."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T21:13:15.953453Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"coronary heart disease\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"It has been conclusively shown and become accepted practice to lower LDL-C in patients considered intermediate to high risk for CVD with a combination of therapeutic life style change and medications.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"with fibrates or niacin have created doubt about this hypothesis.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL-C\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate to high risk\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"First line drug therapy should be a statin, titrated to keep LDL-C at or below the target range recommended by the ATP-III guidelines.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"elevated cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypercholesterolemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    },\n    {\n      \"type\": \"CAUSES\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.9,\n        \"evidence\": \"There is a solid link between elevated cholesterol (especially LDL-C) and CVD.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"with fibrates or niacin have created doubt about this hypothesis.\",\n      \"reason\": \"The text does not explicitly state that fibrates or niacin cause CVD, only that they create doubt about the hypothesis of their effectiveness.\"\n    },\n    {\n      \"text\": \"considerable work is ongoing to identify what factors are most important to residual risk.\",\n      \"reason\": \"The text does not provide evidence for a direct relationship between residual risk and any specific condition or biomarker.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 192642843400,
+    "load_duration": 190935100,
+    "prompt_eval_count": 1208,
+    "prompt_eval_duration": 16903705999,
+    "eval_count": 1356,
+    "eval_duration": 175501488000
+  },
+  "started_at": "2026-06-19T21:10:01.249098+00:00",
+  "finished_at": "2026-06-19T21:13:15.954456+00:00",
+  "duration_ms": 194705.362,
+  "status": "ok",
+  "error": ""
+}

@@ -114,6 +114,8 @@ class OllamaChatModelTests(unittest.TestCase):
         self.assertEqual(record.provider, "ollama")
         self.assertEqual(record.model, "qwen-test")
         self.assertEqual(record.prompt_version, "test_prompt")
+        self.assertEqual(record.request["endpoint"], "http://ollama.test/api/chat")
+        self.assertEqual(record.request["timeout_seconds"], 9)
         self.assertEqual(record.request["format"], schema["schema"])
         self.assertEqual(record.response_text, json.dumps({"answer": "ok"}))
         self.assertEqual(record.parsed_json, {"answer": "ok"})
