@@ -159,6 +159,12 @@ def main(argv: list[str] | None = None) -> None:
         f"{manifest['success_count']}/{manifest['article_count']} article(s). "
         f"Workbook: {manifest['workbook_path']}"
     )
+    for result in manifest["results"]:
+        if result.get("status") == "error":
+            print(
+                f"FAILED {result.get('pmcid', '')}: {result.get('error') or 'See processed extraction records'}",
+                file=sys.stderr,
+            )
 
 
 if __name__ == "__main__":

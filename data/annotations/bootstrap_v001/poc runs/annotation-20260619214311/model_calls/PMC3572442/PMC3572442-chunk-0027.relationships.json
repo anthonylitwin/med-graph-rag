@@ -1,0 +1,341 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0027\",\n    \"section\": \"TABLE\",\n    \"text\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS Immunosuppressive agents\\n\\nCurrent HMG-CoA-inhibitors.\\n\\nDrug TradeName DoseRange % LDL-CDecrease % HDL-CIncrease % TGDecrease Fluvastatin Lescol 20\\u201380 mg 22\\u201335 3\\u201311 17\\u201321 Pravastatin Pravachol 10\\u201380 mg 22\\u201337 2\\u201312 15\\u201324 Lovastatin Altoprev/Mevacor 10\\u201380 mg 21\\u201342 2\\u20138 6\\u201321 Simvastatin Zocor 5\\u201380 mg 26\\u201347 10\\u201316 12\\u201333 Atorvastatin Lipitor 10\\u201380 mg 39\\u201360 5\\u20139 19\\u201337 Rosuvastatin Crestor 5\\u201340 mg 45\\u201363 8\\u201310 10\\u201330 Pitavastatin Livalo 1\\u20134 mg 38\\u201344 5\\u20138 14\\u201322\\n\\nStudies of direct comparisons of 2 or more statins' efficacy in lipid lowering.\\n\\nStudy Name NumberParticipants DrugsCompared Conclusions *PATROL 302 pitavastatin, atorvastatin, and rosuvastatin The safety and efficacy of these 3 strong statins are equal **CIRCLE 743 atorvastatin vs pitavastatin vs pravastatin Pitavastatin or atorvastatin resulted in better reduction of LDL-C than pravastatin; pitavastatin significantly increased HDL-C compared to placebo, while the other two statins did not *SATURN 1039 atorvastatin vs rosuvastatin No difference in progression of arterial plaques by intravascular ultrasound despite statistically significant lower LDL with rosuvastatin\\n\\nprospective randomized multi-center trial,\\n\\nRetrospective study.\\n\\nStatin alternatives\\n\\nDRUG EFFECTS ADVERSEREACTIONS Bile acid sequestrants Cholestyramine (4\\u201316 g)Colestipol (5\\u201320 g)Colesevelam (2.6\\u20133.8 g) LDL \\u221215\\u201330%HDL\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Metabolic syndrome\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Renal disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"HIV\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"PCOS\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"HMG-CoA-inhibitors\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-CDecrease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-CIncrease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGDecrease\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Fluvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lescol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pravastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Pravachol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lovastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Altoprev\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Mevacor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Simvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Zocor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lipitor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosuvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Crestor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pitavastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Livalo\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"arterial plaques\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Cholestyramine\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colestipol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colesevelam\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Fluvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 0.95\n      ,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"pravastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Lovastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"pitavastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Current HMG-CoA-inhibitors.\",\n      \"reason\": \"The text does not provide a clear relationship between the drugs and conditions, only listing them together without indicating treatment or association.\"\n    },\n    {\n      \"text\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\",\n      \"reason\": \"The text is a list of entities rather than providing relationships. It does not support any specific relationship between the drugs and conditions.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "Fluvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "pravastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "Lovastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "atorvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "rosuvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "type": "Drug",
+          "name": "pitavastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Current HMG-CoA-inhibitors.",
+        "reason": "The text does not provide a clear relationship between the drugs and conditions, only listing them together without indicating treatment or association."
+      },
+      {
+        "text": "ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.",
+        "reason": "The text is a list of entities rather than providing relationships. It does not support any specific relationship between the drugs and conditions."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:17:09.3696272Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Fluvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 0.95\n      ,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"pravastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"Lovastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"atorvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    },\n    {\n      \"type\": \"TREATS\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"pitavastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Current HMG-CoA-inhibitors.\",\n      \"reason\": \"The text does not provide a clear relationship between the drugs and conditions, only listing them together without indicating treatment or association.\"\n    },\n    {\n      \"text\": \"ex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Current HMG-CoA-inhibitors.\",\n      \"reason\": \"The text is a list of entities rather than providing relationships. It does not support any specific relationship between the drugs and conditions.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 72718610900,
+    "load_duration": 148161200,
+    "prompt_eval_count": 1645,
+    "prompt_eval_duration": 11434749000,
+    "eval_count": 830,
+    "eval_duration": 61106272000
+  },
+  "started_at": "2026-06-19T22:15:54.627782+00:00",
+  "finished_at": "2026-06-19T22:17:09.370588+00:00",
+  "duration_ms": 74742.824,
+  "status": "ok",
+  "error": ""
+}

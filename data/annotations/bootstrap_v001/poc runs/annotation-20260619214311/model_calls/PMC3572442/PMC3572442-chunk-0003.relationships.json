@@ -1,0 +1,281 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0003\",\n    \"section\": \"INTRO\",\n    \"text\": \"ed a standard using lipid levels in 2001 that is still the most commonly used clinical classification. See Table 1. The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\\n\\nSignificance of hyperlipidemia\\n\\nHealth care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States. A landmark study that helped establish that therapeutic interventions to lower cholesterol levels result in reduced risk of cardiovascular morbidity or mortality was the Lipid Research Clinics Coronary Primary Prevention Trial, which was published in two parts (each using a different statistical analysis) in 1984. However, numerous other trials, both prior to and after 1984, also contributed to the evidence of a CVD-hyperlipidemia link. The scientific and medical communities took several decades to agree that this relationship truly exists. A complete history of the cholesterol controversy can be found in a multi-part review (available on line) which was published over a 3 year span in the Journal of Lipid Research.\\n\\nDiagnosis\\n\\nMost cases of hyperlipidemia are found because a lipid panel screen is done as a part of a routine health care evaluation or because plasma lipids are checked after a cardiovascular event. The United States Preventive Services Task Force has posted screening\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid levels\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"ATP-III\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid concentrations\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol levels\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD-hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"plasma lipids\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol levels\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The United States Preventive Services Task Force has posted screening\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"ed a standard using lipid levels in 2001 that is still the most commonly used clinical classification. See Table 1.\",\n      \"reason\": \"No explicit relationship found between 'lipid levels' and any other entity.\"\n    },\n    {\n      \"text\": \"The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\",\n      \"reason\": \"No explicit relationship found between 'ATP-III' and any other entity.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "cholesterol levels"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The United States Preventive Services Task Force has posted screening"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "ed a standard using lipid levels in 2001 that is still the most commonly used clinical classification. See Table 1.",
+        "reason": "No explicit relationship found between 'lipid levels' and any other entity."
+      },
+      {
+        "text": "The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.",
+        "reason": "No explicit relationship found between 'ATP-III' and any other entity."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T21:45:16.8704598Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol levels\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The United States Preventive Services Task Force has posted screening\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"ed a standard using lipid levels in 2001 that is still the most commonly used clinical classification. See Table 1.\",\n      \"reason\": \"No explicit relationship found between 'lipid levels' and any other entity.\"\n    },\n    {\n      \"text\": \"The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\",\n      \"reason\": \"No explicit relationship found between 'ATP-III' and any other entity.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 24499980400,
+    "load_duration": 157231800,
+    "prompt_eval_count": 798,
+    "prompt_eval_duration": 3299637000,
+    "eval_count": 360,
+    "eval_duration": 21024403000
+  },
+  "started_at": "2026-06-19T21:44:50.334495+00:00",
+  "finished_at": "2026-06-19T21:45:16.872078+00:00",
+  "duration_ms": 26537.593,
+  "status": "ok",
+  "error": ""
+}

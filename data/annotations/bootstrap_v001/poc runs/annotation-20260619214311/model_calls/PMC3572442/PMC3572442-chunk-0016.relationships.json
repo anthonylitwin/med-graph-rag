@@ -1,0 +1,311 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0016\",\n    \"section\": \"METHODS\",\n    \"text\": \"e are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL. Others argue that the evidence to support this view has not been conclusively shown.\\n\\nA meta-analysis of trials with cardiovascular outcomes looked at 27,548 patients enrolled in 4 large studies. The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events. However, they did not find a statistically significant difference between CV or all cause mortality Another study that showed evidence of improved outcome from high dose statins is the ASTEROID study. The investigators used intravascular ultrasound to document atheroma regression after treatment with 40 mg daily of rosuvastatin. The average LDL-C achieved was ~ 60 mg/dL. The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients. A third major study was the Treat to New Targets. It found that lowering LDL-C to 80 mg/dL in the treatment group was superior in preventing CVD outcomes than lowering it to 100 mg/dL.\\n\\nAnother controversy regarding LDL-C target is the question of how best to achieve the desired goals. One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk. Statins are known to have beneficial\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"non-fatal cardiac events\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CV\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atheroma\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosuvastatin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"non-fatal cardiac events\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"A meta-analysis of trials with cardiovascular outcomes looked at 27,548 patients enrolled in 4 large studies. The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atheroma\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses.\",\n      \"reason\": \"No explicit relationship found between 'high dose statins' and 'combination therapy'.\"\n    },\n    {\n      \"text\": \"The question is based in part on a balance between benefit and risk. Statins are known to have beneficial\",\n      \"reason\": \"No explicit relationship found between 'statins' and 'beneficial'.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "non-fatal cardiac events"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "A meta-analysis of trials with cardiovascular outcomes looked at 27,548 patients enrolled in 4 large studies. The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "rosuvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "atheroma"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "atherosclerosis"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses.",
+        "reason": "No explicit relationship found between 'high dose statins' and 'combination therapy'."
+      },
+      {
+        "text": "The question is based in part on a balance between benefit and risk. Statins are known to have beneficial",
+        "reason": "No explicit relationship found between 'statins' and 'beneficial'."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:08:48.2864505Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"non-fatal cardiac events\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"A meta-analysis of trials with cardiovascular outcomes looked at 27,548 patients enrolled in 4 large studies. The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atheroma\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses.\",\n      \"reason\": \"No explicit relationship found between 'high dose statins' and 'combination therapy'.\"\n    },\n    {\n      \"text\": \"The question is based in part on a balance between benefit and risk. Statins are known to have beneficial\",\n      \"reason\": \"No explicit relationship found between 'statins' and 'beneficial'.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 44769249100,
+    "load_duration": 154827900,
+    "prompt_eval_count": 824,
+    "prompt_eval_duration": 4332157000,
+    "eval_count": 576,
+    "eval_duration": 40266017000
+  },
+  "started_at": "2026-06-19T22:08:01.505618+00:00",
+  "finished_at": "2026-06-19T22:08:48.288071+00:00",
+  "duration_ms": 46782.46,
+  "status": "ok",
+  "error": ""
+}

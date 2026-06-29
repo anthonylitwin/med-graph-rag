@@ -1,0 +1,296 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0017\",\n    \"section\": \"METHODS\",\n    \"text\": \"efers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk. Statins are known to have beneficial effects in addition to lipid lowering. These pleiotropic effects include antiinflammatory action and improvement in coagulability. The long term risks of the statins are not fully known. There has been recent controversy over the question of whether statins cause type 2 diabetes. In addition, there are questions about a possible link of statins to pancreatitis although a recent review disputes this claim. A number of the studies that have compared adjunctive therapy consisting of a statin plus another lipid lowering drug with mono-statin treatment are reviewed in an exhaustive report from the Agency for Healthcare Research and Quality Table 7 is a reproduction from the executive summary of the report. The main conclusion of the report is that there is insufficient evidence (especially morbidity/mortality data) to answer the question if high dose monotherapy is different from combination therapy. Currently, there is no definitive answer to the question and each physician needs to make the decision based on incomplete data and a rational balance of risk vs benefit for each individual patient.\\n\\nA significant unresolved problem in current medical practice is the issue of residual risk. Because a significant number of cases of CVD occur in people without traditional risk factors, some physicians have suggested that nontraditional\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"efers\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"coagulability\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"long term risks\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"residual risk\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"traditional risk factors\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"There has been recent controversy over the question of whether statins cause type 2 diabetes.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"A number of the studies that have compared adjunctive therapy consisting of a statin plus another lipid lowering drug with mono-statin treatment are reviewed in an exhaustive report from the Agency for Healthcare Research and Quality Table 7 is a reproduction from the executive summary of the report. The main conclusion of the report is that there is insufficient evidence (especially morbidity/mortality data) to answer the question if high dose monotherapy is different from combination therapy. Currently, there is no definitive answer to the question and each physician needs to make the decision based on incomplete data and a rational balance of risk vs benefit for each individual patient.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"In addition, there are questions about a possible link of statins to pancreatitis although a recent review disputes this claim.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"efers combination therapy in moderate doses.\",\n      \"reason\": \"The text does not provide enough information to support any relationship between 'efers' and other entities.\"\n    },\n    {\n      \"text\": \"These pleiotropic effects include antiinflammatory action and improvement in coagulability.\",\n      \"reason\": \"The text describes the pleiotropic effects of statins but does not establish a relationship with other entities.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "type 2 diabetes"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "There has been recent controversy over the question of whether statins cause type 2 diabetes."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "pancreatitis"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "A number of the studies that have compared adjunctive therapy consisting of a statin plus another lipid lowering drug with mono-statin treatment are reviewed in an exhaustive report from the Agency for Healthcare Research and Quality Table 7 is a reproduction from the executive summary of the report. The main conclusion of the report is that there is insufficient evidence (especially morbidity/mortality data) to answer the question if high dose monotherapy is different from combination therapy. Currently, there is no definitive answer to the question and each physician needs to make the decision based on incomplete data and a rational balance of risk vs benefit for each individual patient."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "pancreatitis"
+        },
+        "properties": {
+          "confidence": 1.0,
+          "evidence": "In addition, there are questions about a possible link of statins to pancreatitis although a recent review disputes this claim."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "efers combination therapy in moderate doses.",
+        "reason": "The text does not provide enough information to support any relationship between 'efers' and other entities."
+      },
+      {
+        "text": "These pleiotropic effects include antiinflammatory action and improvement in coagulability.",
+        "reason": "The text describes the pleiotropic effects of statins but does not establish a relationship with other entities."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:09:32.6019435Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"There has been recent controversy over the question of whether statins cause type 2 diabetes.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"A number of the studies that have compared adjunctive therapy consisting of a statin plus another lipid lowering drug with mono-statin treatment are reviewed in an exhaustive report from the Agency for Healthcare Research and Quality Table 7 is a reproduction from the executive summary of the report. The main conclusion of the report is that there is insufficient evidence (especially morbidity/mortality data) to answer the question if high dose monotherapy is different from combination therapy. Currently, there is no definitive answer to the question and each physician needs to make the decision based on incomplete data and a rational balance of risk vs benefit for each individual patient.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 1.0,\n        \"evidence\": \"In addition, there are questions about a possible link of statins to pancreatitis although a recent review disputes this claim.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"efers combination therapy in moderate doses.\",\n      \"reason\": \"The text does not provide enough information to support any relationship between 'efers' and other entities.\"\n    },\n    {\n      \"text\": \"These pleiotropic effects include antiinflammatory action and improvement in coagulability.\",\n      \"reason\": \"The text describes the pleiotropic effects of statins but does not establish a relationship with other entities.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 41969840800,
+    "load_duration": 149824200,
+    "prompt_eval_count": 836,
+    "prompt_eval_duration": 4502053000,
+    "eval_count": 534,
+    "eval_duration": 37298210000
+  },
+  "started_at": "2026-06-19T22:08:48.606059+00:00",
+  "finished_at": "2026-06-19T22:09:32.602820+00:00",
+  "duration_ms": 43996.759,
+  "status": "ok",
+  "error": ""
+}

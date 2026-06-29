@@ -1,0 +1,223 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0004\",\n    \"section\": \"METHODS\",\n    \"text\": \"ral limitations such as underestimating the risk in a high risk individual due to the absence of some important risk factors in the scoring system. Therefore, others have attempted to improve the scoring system in order to more precisely estimate the risk of a major cardiovascular event in differing groups.\\n\\nNovel risk factors\\n\\nThe emphasis on lowering LDL-C with statins has resulted in significant improvement in morbidity and mortality from CVD. However, despite the emphasis on control of LDL-C, a number of cardiac events occur in people without clinically abnormal LDL-C concentrations. This problem is often referred to as residual risk. One way of improving risk prediction and treatment has been to focus on non-HDL cholesterol levels rather than on just LDL-C. The reason for this is that other lipoprotein fractions contribute to the formation of atherosclerosis. These particles are intermediate or end products of triglyceride rich lipoprotein (TGRL) catabolism, specifically very low density lipoprotein (VLDL) and chylomicrons. As triglycerides are removed from TGRLs by intravascular lipases, the particles become denser and have a greater portion of their composition as cholesterol. In the case of chylomicrons, which transport dietary fat, the end product of TG lipolysis is a small, dense Apo-B48 containing particle known as a chylomicron remnant. VLDL, which transports endogenously produced TG, has a more complex catabolism. In a simplified version, the catabolic steps can be thought of as a conversion of VLDL to intermediate density lipoproteins (IDL), which are then converted to LDL. The particles are defined by their different densities and TG:Cholesterol ratios, but all of them contain apoB-100. These remnant particles are believed to be significant contributors to CVD because the particles not eliminated by the liver (the preferred disposal site) are taken up in arterial walls to eventually become lipid laden macrophages, the well known foam cells that are a hallmark of early atherosclerosis. In a meta-analysis of 38,153 statin treated subjects in whom non-HDL-C, LDL-C and Apo-B were compared, all three markers were predictive of CVD, with non-HDL-C showing a slightly greater association than the other two. However, even though statistically non-HDL-C was the best predictor, the 95% confidence intervals of the hazard ratio of CVD for each of the 3 markers overlapped sufficiently that this study cannot be considered conclusive.\\n\\nAdditional, markers for risk factor analysis are based on the contribution to CVD.by inflammatory proteins and other cytokines. In 2011, a consensus panel of the National Lipid Association published a review of the clinical utility of various proposed markers. See Box 3 for a partial list of markers that have been proposed.\\n\\nIn general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk factors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"major cardiovascular event\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"Novel risk factors\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiac events\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"residual risk\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"non-HDL cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGRL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"VLDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"chylomicrons\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"intravascular lipases\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Apo-B48\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"IDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apoB-100\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"non-HDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Apo-B\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "",
+  "parsed_json": {},
+  "raw_response": null,
+  "started_at": "2026-06-19T20:43:15.525321+00:00",
+  "finished_at": "2026-06-19T20:53:17.598408+00:00",
+  "duration_ms": 602073.122,
+  "status": "error",
+  "error": "Ollama request failed at http://localhost:11434/api/chat: timed out"
+}

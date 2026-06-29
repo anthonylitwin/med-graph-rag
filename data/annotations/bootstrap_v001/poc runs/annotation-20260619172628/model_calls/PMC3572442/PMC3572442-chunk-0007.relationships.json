@@ -1,0 +1,223 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0007\",\n    \"section\": \"TABLE\",\n    \"text\": \"Lipoprotein(a) Relationship to CVD unclear, studies contradictory Polygenic Hypercholesterolemia No family history, no physical manifestations such as xanthomas, exact cause is unknown Lp(X) Associate with obstructive hepatic disease, CVD risk unclear Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults Elevated cholesterol and triglycerides Combined (Familial) Hyperlipidemia May occur randomly or with strong family history of hyperlipidemia; type 2 diabetes and metabolic syndrome are associated and can make diagnosis more difficult Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia. Isolated triglyceride elevations LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver;\\n\\nSecondary causes of hyperlipidemia\\n\\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS Immunosuppressive agents\\n\\nCurrent HMG-CoA-inhibitors.\\n\\nDrug TradeName DoseRange % LDL-CDecrease % HDL-CIncrease % TGDecrease Fluvastatin Lescol 20\\u201380 mg 22\\u201335 3\\u201311 17\\u201321 Pravastatin Pravachol 10\\u201380 mg 22\\u201337 2\\u201312 15\\u201324 Lovastatin Altoprev/Mevacor 10\\u201380 mg 21\\u201342 2\\u20138 6\\u201321 Simvastatin Zocor 5\\u201380 mg 26\\u201347 10\\u201316 12\\u201333 Atorvastatin Lipitor 10\\u201380 mg 39\\u201360 5\\u20139 19\\u201337 Rosuvastatin Crestor 5\\u201340 mg 45\\u201363 8\\u201310 10\\u201330 Pitavastatin Livalo 1\\u20134 mg 38\\u201344 5\\u20138 14\\u201322\\n\\nStudies of direct comparisons of 2 or more statins' efficacy in lipid lowering.\\n\\nStudy Name NumberParticipants DrugsCompared Conclusions *PATROL 302 pitavastatin, atorvastatin, and rosuvastatin The safety and efficacy of these 3 strong statins are equal **CIRCLE 743 atorvastatin vs pitavastatin vs pravastatin Pitavastatin or atorvastatin resulted in better reduction of LDL-C than pravastatin; pitavastatin significantly increased HDL-C compared to placebo, while the other two statins did not *SATURN 1039 atorvastatin vs rosuvastatin No difference in progression of arterial plaques by intravascular ultrasound despite statistically significant lower LDL with rosuvastatin\\n\\nprospective randomized multi-center trial,\\n\\nRetrospective study.\\n\\nStatin alternatives\\n\\nDRUG EFFECTS ADVERSEREACTIONS Bile acid sequestrants Cholestyramine (4\\u201316 g)Colestipol (5\\u201320 g)Colesevelam (2.6\\u20133.8 g) LDL \\u221215\\u201330%HDL +3\\u20135%TG No change orincrease GastrointestinaldistressConstipationDecreasedabsorptionof other drugs Nicotinic acid Immediate release(crystalline) nicotinic acid(1.5\\u20133 gm), extendedrelease nicotinic acid(Niaspan\\u00ae) (1\\u20132 g),sustained releasenicotinic acid (1\\u20132 g) LDL \\u22125\\u201325%HDL +15\\u201335%TG \\u221220\\u201350% FlushingHyperglycemiaHyperuricemia(or gout)Upper GI distressHepatotoxicity Fibric acids Gemfibrozil(600 mg BID)Fenofibrate (200 mg)Clofibrate(1000 mgBID) LDL \\u22125\\u201320%(may be increased inpatients with high TG)HDL +10\\u201320%TG \\u221220\\u201350% DyspepsiaGallstonesMyopathy Ezetimibe Zetia (10 mg daily)As monotherapy, often combined witha statin LDL-C \\u221218%HDL-C +3%TG \\u22128% DiarrheaArthralgiaNasopharyngitis orSinusitisControversialregarding reductionof CVD events Omega 3 fatty acids LovazaFish OilPlant sources Prescription fatty acid ester indicated only fortreatment of TG > 500 mg/dl to preventpancreatitisFish oil has been shown to reduce elevated TGwith subsequent mild reduction in LDL andnon-HDL-C; however a recent major studyshowed no benefit from fish oil capsules;consumption of fish is preferred. Plant sourcesof omega-3 FA have been subjected to fewclinical trials with CVD endpoints\\n\\nSummary of conclusions from evidence comparing use of a specific statin in combination with another lipid-modifying agent with use of a higher dose statin in populations requiring intensive treatment and subgroups\\n\\nOutcome Strength of Evidence (GRADE) Summary/conclusions Key Question 1. For patients who require intensive lipid-modifying therapy, what are the comparative long-term benefits and rates of serious adverse events of coadministration of different lipid-modifying agents (i.e., a statin plus another lipid-modifying agent) compared with higher dose statin monotherapy? All-cause mortality Very low Insufficient evidence was available regarding mortality. Based on small trials with few events, no difference in mortality was noted for any statin combination associated with ezetimibe or fibrates compared with higher dose statin monotherapy.No evidence was available for other combinations. Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy. Seriousaadverse events Very low Up to a maximum followup of 24 weeks, no intervention was significantly safer when statin-ezetimibe combination was compared with higher dose statin monotherapy. No evidence was available for other combinations. Key Question 2. Do these regimens differ in reaching LDL targets (or other surrogate markers), short-term\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lipoprotein\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolemia\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"family history\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"obstructive hepatic disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Sitosterolemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Cerebrotendinous Xanthomatosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"neurologic disease\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"cataracts\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"triglycerides\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Type 2 Diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Metabolic syndrome\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"familial dysbetalipoproteinemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Type III Hyperlipoproteinemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypertriglyceridemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"premature diffuse vascular disease\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"male predominance\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hepatic Lipase Deficiency\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"LPL deficiency\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"elevated chylomicrons\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"chylomicrons\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"ApoCII deficiency\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoprotein\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LPL\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Familial hypertriglyceridemia\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"Autosomal dominant inheritance\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"VLDL\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hypothyroidism\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Obesity\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Renal disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"PCOS\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-CDecrease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-CIncrease\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGDecrease\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Fluvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lescol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pravastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Pravachol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lovastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Altoprev\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Mevacor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Simvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Zocor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"atorvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Lipitor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosuvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Crestor\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"pitavastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Livalo\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Cholestyramine\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colestipol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Colesevelam\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"nicotinic acid\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"FlushingHyperglycemiaHyperuricemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"gout\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"Upper GI distressHepatotoxicity\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Fibric acids\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Gemfibrozil\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Fenofibrate\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Clofibrate\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"DyspepsiaGallstonesMyopathy\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Ezetimibe Zetia\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"DiarrheaArthralgiaNasopharyngitis\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Omega 3 fatty acids\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TGwith\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"ezetimibe\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "",
+  "parsed_json": {},
+  "raw_response": null,
+  "started_at": "2026-06-19T18:19:18.309749+00:00",
+  "finished_at": "2026-06-19T18:29:20.357742+00:00",
+  "duration_ms": 602048.056,
+  "status": "error",
+  "error": "Ollama request failed at http://localhost:11434/api/chat: timed out"
+}

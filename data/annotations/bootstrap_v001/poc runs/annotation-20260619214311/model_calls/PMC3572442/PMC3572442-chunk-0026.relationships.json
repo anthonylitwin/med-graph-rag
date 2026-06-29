@@ -1,0 +1,297 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0026\",\n    \"section\": \"TABLE\",\n    \"text\": \"hyperlipidemia; type 2 diabetes and metabolic syndrome are associated and can make diagnosis more difficult Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia. Isolated triglyceride elevations LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver;\\n\\nSecondary causes of hyperlipidemia\\n\\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Type 2 Diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Metabolic syndrome\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"familial dysbetalipoproteinemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hyperlipoproteinemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypertriglyceridemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypercholesterolemia\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"premature diffuse vascular disease\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"male predominance\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Palmar xanthomas\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hepatic Lipase Deficiency\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Rare disorder\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"very high cholesterol and triglyceride concentrations\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"LPL deficiency\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"elevated chylomicrons\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"chylomicrons\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"ApoCII deficiency\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoprotein\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LPL\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"Autosomal dominant inheritance\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"VLDL triglycerides\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"Secondary causes\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Thiazide\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Diuretics\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Hypothyroidism\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Excess Calories\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Obesity\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Glucocorticoids\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"Renal disease\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Antipsychotics\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"HIV\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"Antiretrovirals\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"PCOS\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Type 2 Diabetes\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic\",\n      \"reason\": \"The text does not explicitly support a relationship between Familial Dysbetalipoproteinemia and hyperlipidemia. It only mentions that familial dysbetalipoproteinemia is associated with hypertriglyceridemia and hypercholesterolemia.\"\n    },\n    {\n      \"text\": \"Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia.\",\n      \"reason\": \"The text does not support a relationship between Hepatic Lipase Deficiency and hyperlipidemia. It only mentions that it is associated with familial dysbetalipoproteinemia.\"\n    },\n    {\n      \"text\": \"LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis\",\n      \"reason\": \"The text does not support a relationship between LPL deficiency and hyperlipidemia. It only mentions that it is associated with elevated chylomicrons.\"\n    },\n    {\n      \"text\": \"ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency\",\n      \"reason\": \"The text does not support a relationship between ApoCII deficiency and hyperlipidemia. It only mentions that it is associated with LPL deficiency.\"\n    },\n    {\n      \"text\": \"Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver\",\n      \"reason\": \"The text does not support a relationship between Familial hypertriglyceridemia and hyperlipidemia. It only mentions that it is associated with overproduction of VLDL triglycerides.\"\n    },\n    {\n      \"text\": \"Secondary causes of hyperlipidemia\\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS\",\n      \"reason\": \"The text does not support a relationship between the secondary causes and hyperlipidemia. It only lists various factors that can cause hyperlipidemia.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Type 2 Diabetes"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "Metabolic syndrome"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic",
+        "reason": "The text does not explicitly support a relationship between Familial Dysbetalipoproteinemia and hyperlipidemia. It only mentions that familial dysbetalipoproteinemia is associated with hypertriglyceridemia and hypercholesterolemia."
+      },
+      {
+        "text": "Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia.",
+        "reason": "The text does not support a relationship between Hepatic Lipase Deficiency and hyperlipidemia. It only mentions that it is associated with familial dysbetalipoproteinemia."
+      },
+      {
+        "text": "LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis",
+        "reason": "The text does not support a relationship between LPL deficiency and hyperlipidemia. It only mentions that it is associated with elevated chylomicrons."
+      },
+      {
+        "text": "ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency",
+        "reason": "The text does not support a relationship between ApoCII deficiency and hyperlipidemia. It only mentions that it is associated with LPL deficiency."
+      },
+      {
+        "text": "Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver",
+        "reason": "The text does not support a relationship between Familial hypertriglyceridemia and hyperlipidemia. It only mentions that it is associated with overproduction of VLDL triglycerides."
+      },
+      {
+        "text": "Secondary causes of hyperlipidemia\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS",
+        "reason": "The text does not support a relationship between the secondary causes and hyperlipidemia. It only lists various factors that can cause hyperlipidemia."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T22:15:54.2322469Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Type 2 Diabetes\"\n      }\n   ,\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"Metabolic syndrome\"\n      },\n      \"properties\": {\n        \"confidence\": 0.95,\n        \"evidence\": \"Type 2 Diabetes and metabolic syndrome are associated and can make diagnosis more difficult.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic\",\n      \"reason\": \"The text does not explicitly support a relationship between Familial Dysbetalipoproteinemia and hyperlipidemia. It only mentions that familial dysbetalipoproteinemia is associated with hypertriglyceridemia and hypercholesterolemia.\"\n    },\n    {\n      \"text\": \"Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia.\",\n      \"reason\": \"The text does not support a relationship between Hepatic Lipase Deficiency and hyperlipidemia. It only mentions that it is associated with familial dysbetalipoproteinemia.\"\n    },\n    {\n      \"text\": \"LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis\",\n      \"reason\": \"The text does not support a relationship between LPL deficiency and hyperlipidemia. It only mentions that it is associated with elevated chylomicrons.\"\n    },\n    {\n      \"text\": \"ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency\",\n      \"reason\": \"The text does not support a relationship between ApoCII deficiency and hyperlipidemia. It only mentions that it is associated with LPL deficiency.\"\n    },\n    {\n      \"text\": \"Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver\",\n      \"reason\": \"The text does not support a relationship between Familial hypertriglyceridemia and hyperlipidemia. It only mentions that it is associated with overproduction of VLDL triglycerides.\"\n    },\n    {\n      \"text\": \"Secondary causes of hyperlipidemia\\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS\",\n      \"reason\": \"The text does not support a relationship between the secondary causes and hyperlipidemia. It only lists various factors that can cause hyperlipidemia.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 69730096300,
+    "load_duration": 148469800,
+    "prompt_eval_count": 1385,
+    "prompt_eval_duration": 9107762000,
+    "eval_count": 835,
+    "eval_duration": 60444784000
+  },
+  "started_at": "2026-06-19T22:14:42.475177+00:00",
+  "finished_at": "2026-06-19T22:15:54.233337+00:00",
+  "duration_ms": 71758.168,
+  "status": "ok",
+  "error": ""
+}

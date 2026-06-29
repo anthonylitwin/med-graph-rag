@@ -1,0 +1,448 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0005\",\n    \"section\": \"METHODS\",\n    \"text\": \"Box 3 for a partial list of markers that have been proposed.\\n\\nIn general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring. A major study published in JAMA by the Emerging Risk Factors Collaboration reviewed individual records from 37 prospective studies containing 165,544 people without CVD at baseline. The study compared traditional lipids to additional measures, including apolipoproteins B and A\\u2013I, lipoprotein(a), and lipoprotein-associated phospholipase A2 in individuals followed for a mean of 10 years. Those with CVD events during the study period were analyzed to determine if the alternative markers added significant predictive value. In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d. Even when a particular test has been shown to add incremental improvement in predicting risk, there has not been sufficient evidence to use the test as a widespread screening tool. Most often, novel risk factors are useful for the patient who has intermediate risk and his/her physician desires additional information to make a decision regarding therapy. It should be considered that, for many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking. For example, it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard. Moreover, the various tests available add cost, may add risk (e.g. radiation for imaging) and many of the assays have not been widely standardized, thus resulting in difficulty interpreting the results. Based on current evidence, it is difficult to recommend these alternative risk markers for screening or for routine clinical use and they are probably most appropriate in carefully considered individual cases. However, this topic is an area of intense focus and ongoing research, so future studies may help elucidate a more clearly defined role for novel risk markers.\\n\\nTreatment goals\\n\\nA portion of the current treatment goals as outlined by the NCEP/ATP-III are listed in Box 3. The complete guidelines are available on-line from the National Institutes of Health as a quick reference guide. These recommendations are generally accepted by some, but not all, medical specialty organizations. Others advocate for a more aggressive approach.\\n\\nRegardless of the recommendations, it is useful to consider how successful the medical community has been in meeting guideline goals. A national survey conducted in 2003 (NEPTUNE II) showed 67% of the 4,885 patients with elevated cholesterol achieved their LDL cholesterol treatment goal. Data from the National Health and\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoproteins B and A\\u2013I\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein(a)\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein-associated phospholipase A2\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoproteins\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"low-risk\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"intermediate-risk\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"high-risk\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"novel risk factors\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"intermediate risk\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"folic acid\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"homocysteine\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"elevated cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL cholesterol\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"folic acid\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"homocysteine\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"folic acid\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"apolipoproteins B and A\\u2013I\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein(a)\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein-associated phospholipase A2\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"low-risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"high-risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"CVD\",\n      \"reason\": \"No explicit relationship with drugs or biomarkers\"\n    },\n    {\n      \"text\": \"apolipoproteins B and A\\u2013I\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"lipoprotein(a)\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"lipoprotein-associated phospholipase A2\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"apolipoproteins\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"low-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"intermediate-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"high-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"novel risk factors\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"intermediate risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "folic acid"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "homocysteine"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "folic acid"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "apolipoproteins B and A\u2013I"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "lipoprotein(a)"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "lipoprotein-associated phospholipase A2"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "intermediate risk"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "low-risk"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "high-risk"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "CVD",
+        "reason": "No explicit relationship with drugs or biomarkers"
+      },
+      {
+        "text": "apolipoproteins B and A\u2013I",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "lipoprotein(a)",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "lipoprotein-associated phospholipase A2",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "apolipoproteins",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "low-risk",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "intermediate-risk",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "high-risk",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "novel risk factors",
+        "reason": "No explicit relationship with drugs or other conditions"
+      },
+      {
+        "text": "intermediate risk",
+        "reason": "No explicit relationship with drugs or other conditions"
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T20:57:56.5275099Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"folic acid\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"homocysteine\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"folic acid\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"it has been shown in multiple meta-analyses that folic acid reduces homocysteine, but does not reduce CVD hazard.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"LDL cholesterol\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"apolipoproteins B and A\\u2013I\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein(a)\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein-associated phospholipase A2\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"low-risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"high-risk\"\n      },\n      \"properties\": {\n        \"confidence\": 0.7,\n        \"evidence\": \"For many novel risk markers, statin therapy does not reduce the marker levels and evidence that treating the specific marker has any real impact on CVD is lacking.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"CVD\",\n      \"reason\": \"No explicit relationship with drugs or biomarkers\"\n    },\n    {\n      \"text\": \"apolipoproteins B and A\\u2013I\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"lipoprotein(a)\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"lipoprotein-associated phospholipase A2\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"apolipoproteins\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"low-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"intermediate-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"high-risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"novel risk factors\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    },\n    {\n      \"text\": \"intermediate risk\",\n      \"reason\": \"No explicit relationship with drugs or other conditions\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 276003996400,
+    "load_duration": 166364200,
+    "prompt_eval_count": 1261,
+    "prompt_eval_duration": 22218799000,
+    "eval_count": 1596,
+    "eval_duration": 253557333000
+  },
+  "started_at": "2026-06-19T20:53:18.473349+00:00",
+  "finished_at": "2026-06-19T20:57:56.528762+00:00",
+  "duration_ms": 278055.409,
+  "status": "ok",
+  "error": ""
+}

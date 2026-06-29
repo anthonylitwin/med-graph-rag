@@ -1,0 +1,352 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:3b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:3b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 900,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0009\",\n    \"section\": \"METHODS\",\n    \"text\": \"alysis are based on the contribution to CVD.by inflammatory proteins and other cytokines. In 2011, a consensus panel of the National Lipid Association published a review of the clinical utility of various proposed markers. See Box 3 for a partial list of markers that have been proposed.\\n\\nIn general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring. A major study published in JAMA by the Emerging Risk Factors Collaboration reviewed individual records from 37 prospective studies containing 165,544 people without CVD at baseline. The study compared traditional lipids to additional measures, including apolipoproteins B and A\\u2013I, lipoprotein(a), and lipoprotein-associated phospholipase A2 in individuals followed for a mean of 10 years. Those with CVD events during the study period were analyzed to determine if the alternative markers added significant predictive value. In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d. Even when a particular test has been shown to add incremental improvement in predicting risk, there has not been sufficient evidence to use the test as a widespread screening tool. Most often, novel risk factors are\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"inflammatory proteins\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoproteins B and A\\u2013I\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein(a)\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein-associated phospholipase A2\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"apolipoproteins\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"low-risk\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"intermediate-risk\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"high-risk\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"inflammatory proteins\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"apolipoproteins B and A\\u2013I\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein(a)\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein-associated phospholipase A2\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"low-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"high-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\",\n      \"reason\": \"The text does not explicitly support any relationship between the candidate entities provided.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "inflammatory proteins"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "apolipoproteins B and A\u2013I"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "lipoprotein(a)"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "lipoprotein-associated phospholipase A2"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "low-risk"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\u201d."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "intermediate-risk"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\u201d."
+        }
+      },
+      {
+        "type": "HAS_RISK_FACTOR",
+        "source": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "target": {
+          "type": "RiskFactor",
+          "name": "high-risk"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\u201d."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.",
+        "reason": "The text does not explicitly support any relationship between the candidate entities provided."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:3b-instruct",
+    "created_at": "2026-06-19T21:50:04.5290129Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"inflammatory proteins\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"apolipoproteins B and A\\u2013I\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein(a)\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipoprotein-associated phospholipase A2\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"low-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"intermediate-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    },\n    {\n      \"type\": \"HAS_RISK_FACTOR\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"target\": {\n        \"type\": \"RiskFactor\",\n        \"name\": \"high-risk\"\n      }\n    ,\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"In an accompanying editorial, lipid expert Dr. Scott Grundy concluded that \\u201capolipoproteins are of limited value in reclassifying individuals among arbitrary risk categories, i.e., low-risk, intermediate-risk, and high-risk\\u201d.\"\n      }\n    }\n  ]\n  ,\n  \"rejected_candidates\": [\n    {\n      \"text\": \"In general, alternative risk factor markers have had mixed results in clinical trials. Even the most positive studies have not shown a dramatic improvement in prediction of future CVD risk compared to traditional Framingham risk scoring.\",\n      \"reason\": \"The text does not explicitly support any relationship between the candidate entities provided.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 65046654400,
+    "load_duration": 131379700,
+    "prompt_eval_count": 840,
+    "prompt_eval_duration": 3909813000,
+    "eval_count": 1030,
+    "eval_duration": 60981501000
+  },
+  "started_at": "2026-06-19T21:48:57.459595+00:00",
+  "finished_at": "2026-06-19T21:50:04.529823+00:00",
+  "duration_ms": 67070.231,
+  "status": "ok",
+  "error": ""
+}

@@ -1,0 +1,349 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0008\",\n    \"section\": \"METHODS\",\n    \"text\": \"such as changes in LDL-C. As was learned from the experience with products such as rosiglitazone in people with type 2 diabetes, not all favorable changes in serum lipid characteristics translate into a reduction in CVD events. Thus, any study based solely on lipid lowering as an endpoint may be misleading.\\n\\nUnanswered questions and current controversies\\n\\nDespite the overall lowering of mean LDL-C and the overall incidence of CVD in the US population, CVD remains a significant health burden and a leading cause of mortality. There remain many unanswered questions and controversies regarding how best to further decrease these numbers. These questions are important because of the expected increase in CVD given the aging population and the obesity epidemic. These are addressed in this section in no particular order.\\n\\nOne of the potential reasons for continuing high rates of CVD is that the target LDL-C goals may be too modest. There are investigators and practitioners who advocate lowering LDL-C as low as can be achieved, possible even to levels < 50 mg/dL. Others argue that the evidence to support this view has not been conclusively shown.\\n\\nA meta-analysis of trials with cardiovascular outcomes looked at 27,548 patients enrolled in 4 large studies. The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events. However, they did not find a statistically significant difference between CV or all cause mortality Another study that showed evidence of improved outcome from high dose statins is the ASTEROID study. The investigators used intravascular ultrasound to document atheroma regression after treatment with 40 mg daily of rosuvastatin. The average LDL-C achieved was ~ 60 mg/dL. The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients. A third major study was the Treat to New Targets. It found that lowering LDL-C to 80 mg/dL in the treatment group was superior in preventing CVD outcomes than lowering it to 100 mg/dL.\\n\\nAnother controversy regarding LDL-C target is the question of how best to achieve the desired goals. One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk. Statins are known to have beneficial effects in addition to lipid lowering. These pleiotropic effects include antiinflammatory action and improvement in coagulability. The long term risks of the statins are not fully known. There has been recent controversy over the question of whether statins cause type 2 diabetes. In addition, there are questions about a possible link of statins to pancreatitis although a recent review disputes this claim. A number of the studies that have compared adjunctive therapy consisting of a statin plus another lipid lowering drug with mono-statin treatment are\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosiglitazone\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"type 2 diabetes\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"serum lipid characteristics\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"obesity epidemic\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CV\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"atheroma\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"rosuvastatin\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"atherosclerosis\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary disease\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statins\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"long term risks\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"pancreatitis\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"There has been recent controversy over the question of whether statins cause type 2 diabetes.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"There are questions about a possible link of statins to pancreatitis although a recent review disputes this claim.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"non-fatal cardiac events\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"atheroma\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The investigators used intravascular ultrasound to document atheroma regression after treatment with 40 mg daily of rosuvastatin.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD outcomes\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"It found that lowering LDL-C to 80 mg/dL in the treatment group was superior in preventing CVD outcomes than lowering it to 100 mg/dL.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"not all favorable changes in serum lipid characteristics translate into a reduction in CVD events\",\n      \"reason\": \"The text does not explicitly state that statins or any other drug reduce CVD events through changes in serum lipid characteristics.\"\n    },\n    {\n      \"text\": \"Despite the overall lowering of mean LDL-C and the overall incidence of CVD in the US population, CVD remains a significant health burden and a leading cause of mortality.\",\n      \"reason\": \"This statement is about the overall trend but does not provide specific drug-biomarker or drug-condition relationships.\"\n    },\n    {\n      \"text\": \"One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk.\",\n      \"reason\": \"This statement discusses the debate but does not provide explicit evidence for any drug-biomarker or drug-condition relationships.\"\n    },\n    {\n      \"text\": \"These are addressed in this section in no particular order.\",\n      \"reason\": \"This is an introductory statement and does not contain specific drug-biomarker or drug-condition relationships.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "type 2 diabetes"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "There has been recent controversy over the question of whether statins cause type 2 diabetes."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "pancreatitis"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "There are questions about a possible link of statins to pancreatitis although a recent review disputes this claim."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "high dose statins"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "non-fatal cardiac events"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "rosuvastatin"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "atheroma"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The investigators used intravascular ultrasound to document atheroma regression after treatment with 40 mg daily of rosuvastatin."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "high dose statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "atherosclerosis"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients."
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "type": "Drug",
+          "name": "high dose statins"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD outcomes"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "It found that lowering LDL-C to 80 mg/dL in the treatment group was superior in preventing CVD outcomes than lowering it to 100 mg/dL."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "not all favorable changes in serum lipid characteristics translate into a reduction in CVD events",
+        "reason": "The text does not explicitly state that statins or any other drug reduce CVD events through changes in serum lipid characteristics."
+      },
+      {
+        "text": "Despite the overall lowering of mean LDL-C and the overall incidence of CVD in the US population, CVD remains a significant health burden and a leading cause of mortality.",
+        "reason": "This statement is about the overall trend but does not provide specific drug-biomarker or drug-condition relationships."
+      },
+      {
+        "text": "One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk.",
+        "reason": "This statement discusses the debate but does not provide explicit evidence for any drug-biomarker or drug-condition relationships."
+      },
+      {
+        "text": "These are addressed in this section in no particular order.",
+        "reason": "This is an introductory statement and does not contain specific drug-biomarker or drug-condition relationships."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T21:07:30.3164151Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"type 2 diabetes\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"There has been recent controversy over the question of whether statins cause type 2 diabetes.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"pancreatitis\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"There are questions about a possible link of statins to pancreatitis although a recent review disputes this claim.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"non-fatal cardiac events\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The authors concluded that high dose statins were significantly better than moderate dose, primarily by reducing non-fatal cardiac events.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"rosuvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"atheroma\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The investigators used intravascular ultrasound to document atheroma regression after treatment with 40 mg daily of rosuvastatin.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"atherosclerosis\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The study authors concluded that lowering LDL-C below current recommended guidelines can cause regression of atherosclerosis in coronary disease patients.\"\n      }\n    },\n    {\n      \"type\": \"REDUCES\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"high dose statins\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD outcomes\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"It found that lowering LDL-C to 80 mg/dL in the treatment group was superior in preventing CVD outcomes than lowering it to 100 mg/dL.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"not all favorable changes in serum lipid characteristics translate into a reduction in CVD events\",\n      \"reason\": \"The text does not explicitly state that statins or any other drug reduce CVD events through changes in serum lipid characteristics.\"\n    },\n    {\n      \"text\": \"Despite the overall lowering of mean LDL-C and the overall incidence of CVD in the US population, CVD remains a significant health burden and a leading cause of mortality.\",\n      \"reason\": \"This statement is about the overall trend but does not provide specific drug-biomarker or drug-condition relationships.\"\n    },\n    {\n      \"text\": \"One side of the debate advocates high dose statins while the other prefers combination therapy in moderate doses. The question is based in part on a balance between benefit and risk.\",\n      \"reason\": \"This statement discusses the debate but does not provide explicit evidence for any drug-biomarker or drug-condition relationships.\"\n    },\n    {\n      \"text\": \"These are addressed in this section in no particular order.\",\n      \"reason\": \"This is an introductory statement and does not contain specific drug-biomarker or drug-condition relationships.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 138921760200,
+    "load_duration": 165937900,
+    "prompt_eval_count": 1200,
+    "prompt_eval_duration": 16579580999,
+    "eval_count": 918,
+    "eval_duration": 122138634000
+  },
+  "started_at": "2026-06-19T21:05:09.329565+00:00",
+  "finished_at": "2026-06-19T21:07:30.317350+00:00",
+  "duration_ms": 140987.788,
+  "status": "ok",
+  "error": ""
+}

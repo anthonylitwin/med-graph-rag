@@ -1,0 +1,495 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0008\",\n    \"section\": \"TABLE\",\n    \"text\": \"ence was available for other combinations. Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy. Seriousaadverse events Very low Up to a maximum followup of 24 weeks, no intervention was significantly safer when statin-ezetimibe combination was compared with higher dose statin monotherapy. No evidence was available for other combinations. Key Question 2. Do these regimens differ in reaching LDL targets (or other surrogate markers), short-term side effects, tolerability, and/or adherence? Attainment of ATP III LDL-c goals Very low Ezetimibe plus simvastatin therapy is more likely to result in attainment of LDL-c target than higher dose simvastatin, based on 2 small trials.Results for statin-fibrate combination (1 trial) were indeterminate.No evidence was available for other combinations. Key Question 3. Compared with higher dose statins and to one another, do combination regimens differ in benefits and harms within subgroups of patients? All-cause mortality, vascular death, and attainment of ATP III LDL-c goals Very low There is insufficient evidence to draw any meaningful conclusions in subgroups for any combination. Serious adverse events --- Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\\n\\nBecause of scant evidence for those in need of intensive lipid lowering, SAE was examined across all trial populations\\n\\nAbbreviations: ATP III=Adult Treatment Panel III (of the National Cholesterol Education Program); GRADE=Grading of Recommendations Assessment, Development and Evaluation; LDL-c=low-density lipoprotein cholesterol; SAE=serious adverse events.\\n\\nKey Points\\n\\nElevated levels of blood lipids are well documented risk factors for cardiovascular disease. Current classification schemes and treatment levels for hyperlipidemia are based on the National Cholesterol Education Panel\\u2019s (NCEP) Adult Treatment Program-3 (ATP-III) guidelines.\\n\\nStatins are the preferred class of drugs to lower elevated low density lipoprotein cholesterol (LDL-C). There are other classes to augment or substitute for statins, such as ezetimibe, fibrates, niacin and dietary supplements.\\n\\nExtensive research over the last decade has raised the question whether or not ATP-III guidelines are sufficiently aggressive. New guidelines from ATP-IV are expected to be released in the near future, but in the meantime physicians are faced with uncertainty about how low to target LDL-C, whether to pharmacologically treat high density lipoprotein cholesterol (HDL-C) and triglyceride (TG) levels and how best to achieve target goals.\\n\\nBox 1. Classes of Apolipoproteins\\n\\nChylomicrons \\u2013 Triglyceride rich carrier of dietary fats\\n\\nVery Low Density Lipoprotein (VLDL) \\u2013 Triglyceride rich carrier of hepatic synthesized triglycerides (TG)\\n\\nIntermediate and Low Density Lipoprotein (IDL & LDL) \\u2013 Cholesterol rich remnant particles derived from lipolysis of triglycerides in VLDL\\n\\nHigh Density Lipoprotein (HDL) \\u2013 Cholesterol rich particle that transports cholesterol to liver for disposal or recycling\\n\\nBox 2. Recommendations of the US Preventative Services Task Force 2008\\n\\nScreen men aged 35 and older (Grade A Recommendation)\\n\\nScreen men aged 20 to 35 if they are at increased risk for coronary heart disease* (Grade B Recommendation)\\n\\nScreen women aged 45 and older if they are at increased risk for coronary heart disease. (Grade A Recommendation)\\n\\nScreen women aged 20 to 45 if they are at increased risk for coronary heart disease. (Grade B Recommendation)\\n\\nNo recommendation for or against routine screening men aged 20 to 35, or in women aged 20 and older who are not at increased risk for coronary heart disease. (Grade C Recommendation)\\n\\n*Increased risk for CVD is defined by risk factors. These include men with diabetes, a family history of heart disease in a close male relative younger than age 50 or a close female relative younger than age 60, a family history of high cholesterol, or a personal history of multiple coronary disease risk factors (e.g., smoking, high blood pressure).\\n\\nBox 3. Summary of some novel or alternative risk factors with recommendations for their use based on different sources\\n\\n\\u2022 CRP Recommended for routine measurement in intermediate risk subjects \\u2022 Lp-PLA2 Consider for selected patients \\u2022 Apo-B Reasonable for many intermediate risk patients \\u2022 LDL-P Reasonable for many intermediate risk patients \\u2022 Lp(a) Consider for selected patients \\u2022 LDL Subfractions Not Recommended \\u2022 HDL Subfractions Not Recommended Journal of Clinical Lipidology (2011) 5:338 \\u2022 Imaging (Carotid intima thickening, coronary artery calcium by CT)Primary value is asymptomatic individuals at intermediate cardiovascular risk. Further research is recommended Heart (2012) 98:177e184 \\u2022 Fibrinogen. Not Recommended (effective treatment not demonstrated) Heart (2006) 92:166 \\u2022 homocysteine Not Recommended (effective treatment not demonstrated) PLoS ONE, (2011) 6:e25142\\n\\nBox 4. Comparison of LDL Cholesterol and Non-HDL Cholesterol Goals for Three Risk Categories based on ATP-III guidelines*\\n\\n> 20%, then LDL < 100 and non-HDL < 130\\n\\n\\u226420% plus 2 or more risk factors, then LDL < 130and non-HDL < 160\\n\\n0\\u20131 risk factors, then LDL < 160 and non-HDL < 190\\n\\nIf CVD 10 year risk is:\\n\\n* ATP-4 guidelines are expected this year and will probably significantly change these recommendations.\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Condition\",\n      \"name\": \"vascular death\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin-ezetimibe\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL targets\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-C\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"ezetimibe\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"simvastatin\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"statin-fibrate\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"SAE\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"low-density lipoprotein cholesterol\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"risk factors\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"cardiovascular disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"low density lipoprotein cholesterol\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"fibrates\"\n    },\n    {\n      \"type\": \"Drug\",\n      \"name\": \"niacin\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"high density lipoprotein cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL-C\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"TG\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Low Density Lipoprotein\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"VLDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"IDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"High Density Lipoprotein\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"increased risk\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary heart disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"heart disease\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"family history of high cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"coronary disease\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"smoking\"\n    },\n    {\n      \"type\": \"RiskFactor\",\n      \"name\": \"high blood pressure\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"CRP\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lp-PLA2\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Apo-B\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL-P\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Lp\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"Carotid intima thickening\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"coronary artery calcium\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Fibrinogen\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"homocysteine\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"LDL Cholesterol\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"Non-HDL Cholesterol\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"simvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-fibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"simvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-fibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"coronary heart disease\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    },\n    {\n      \"text\": \"diabetes\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    },\n    {\n      \"text\": \"heart disease\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    }\n  ]\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "cardiovascular disease"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "cardiovascular disease"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin-ezetimibe"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "simvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin-fibrate"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "ezetimibe"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "fibrates"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "niacin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "SAE"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin-ezetimibe"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "simvastatin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "statin-fibrate"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "ezetimibe"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "fibrates"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "niacin"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "vascular death"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy."
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "coronary heart disease",
+        "reason": "No direct relationship with SAE or vascular death is mentioned in the text."
+      },
+      {
+        "text": "diabetes",
+        "reason": "No direct relationship with SAE or vascular death is mentioned in the text."
+      },
+      {
+        "text": "heart disease",
+        "reason": "No direct relationship with SAE or vascular death is mentioned in the text."
+      }
+    ]
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T18:35:57.617627Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"cardiovascular disease\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"simvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-fibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"SAE\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Since absent to scant subgroup evidence was anticipated, SAE was examined across all trial populations (see above). Inter-combination, indirect comparison of syntheses We are unable to confirm a difference in benefits or harms between combinations due to the lack of evidence.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"simvastatin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"statin-fibrate\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ezetimibe\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"fibrates\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"niacin\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"vascular death\"\n      },\n      \"properties\": {\n        \"confidence\": 0.8,\n        \"evidence\": \"Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": [\n    {\n      \"text\": \"coronary heart disease\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    },\n    {\n      \"text\": \"diabetes\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    },\n    {\n      \"text\": \"heart disease\",\n      \"reason\": \"No direct relationship with SAE or vascular death is mentioned in the text.\"\n    }\n  ]\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 393454694900,
+    "load_duration": 186786300,
+    "prompt_eval_count": 2663,
+    "prompt_eval_duration": 52076609000,
+    "eval_count": 2021,
+    "eval_duration": 341126373000
+  },
+  "started_at": "2026-06-19T18:29:22.112573+00:00",
+  "finished_at": "2026-06-19T18:35:57.619153+00:00",
+  "duration_ms": 395506.591,
+  "status": "ok",
+  "error": ""
+}

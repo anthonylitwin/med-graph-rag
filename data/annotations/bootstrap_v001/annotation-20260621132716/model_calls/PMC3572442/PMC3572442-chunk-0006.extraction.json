@@ -1,0 +1,1748 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC3572442\nTitle: Hyperlipidemia as a Risk Factor for Cardiovascular Disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC3572442-chunk-0006\nChunk Section: REF\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nw series: the pathogenesis of atherosclerosis: an interpretive history of the cholesterol controversy, part III: mechanistically defining the role of hyperlipidemia\n\nThe pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part IV: the 1984 coronary primary prevention trial ends it--almost\n\nThematic review series: the pathogenesis of atherosclerosis. An interpretive history of the cholesterol controversy, part V: the discovery of the statins and the end of the controversy\n\nScreening for Lipid Disorders in Adults\n\nPublic Cholesterol Screening\n\nDisorders of Lipid Metabolism\n\nLipid management in patients who have HIV and are receiving HIV therapy\n\nChapter 3.3 Assessment of cardiovascular risk\n\nImprovements in risk stratification for the occurrence of cardiovascular disease by imaging subclinical atherosclerosis: a systematic review\n\nComparison of novel risk markers for improvement in cardiovascular risk assessment in intermediate-risk individuals\n\nAssociation of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\n\nLipid-related markers and cardiovascular disease prediction\n\nUse of emerging lipoprotein risk factors in assessment of cardiovascular risk\n\nEffects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\n\nATP III At-A-Glance: Quick Desk Reference 2001\n\nResults of the National Cholesterol Education (NCEP) Program Evaluation ProjecT Utilizing Novel E-Technology (NEPTUNE) II survey and implications for treatment under the recent NCEP Writing Group recommendations\n\nQuickStats: Average Total Cholesterol Level Among Men and Women\n\nLong-term weight loss after diet and exercise: a systematic review\n\nDietary approaches to the treatment of obesity\n\nFamilial hypercholesterolemia: Current treatment options and patient selection for low-density lipoprotein apheresis\n\nDifferences in characteristics and risk of cardiovascular disease in familial hypercholesterolemia patients with and without tendon xanthomas: a systematic review and meta-analysis\n\nSystematic review: comparative effectiveness and harms of combination therapy and monotherapy for dyslipidemia\n\nGarlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\n\nArtichoke leaf extract for treating hypercholesterolaemia\n\nComplementary and alternative therapies for the management of dyslipidemia\n\nEffect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\n\nDrug Class Review: Newer Diabetes Medications, TZDs, and Combinations: Final Original Report [Internet]\n\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\n\nEffect of very high-intensity statin therapy on regression of coronary atherosclerosis: the ASTEROID trial\n\nIntensive lipid lowering with atorvastatin in patients with stable coronary disease\n\nStatins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\n\nRisk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\n\nLipid-modifying therapies and risk of pancreatitis: a meta-analysis\n\nComparative Effectiveness of Lipid-Modifying Agents\n\nCost-effectiveness of the use of low- and high-potency statins in people at low cardiovascular risk\n\nNiacin in patients with low HDL cholesterol levels receiving intensive statin therapy\n\nCurrent status of CETP inhibitors in the treatment of hyperlipidemia: an update\n\nPlasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\n\nEffects of combination lipid therapy in type 2 diabetes mellitus\n\nEffects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\n\nVariation of lipoprotein associated phospholipase A2 across demographic characteristics and cardiovascular risk factors: A systematic review of the literature\n\nLipoprotein(a) as a cardiovascular risk factor: current status\n\nThe clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\n\nComparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\n\nEffect of two intensive statin regimens on progression of coronary disease\n\nClassification of hyperlipidemias as defined by the NCEP ATP 3. All concentrations are expressed as mg/dL\n\nLDL Cholesterol <100 Optimal 100 \u2013 129 Near or above optimal 130 \u2013 159 Borderline high 160 \u2013 189 High \u2265 190 Very high Total Cholesterol <200 Desirable 200 \u2013 239 Borderline high \u2265 240 High HDL Cholesterol* <40 Low \u2265 60 High Triglycerides <150 Normal 150 \u2013 199 Borderline high 200 \u2013 499 High \u2265 500 Very high\n\nGenetic causes of hyperlipidemia\n\nCAUSES CLINICAL FEATURES Isolated cholesterol elevation Genetic Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \u2013 40 years old) CVD is common Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20. Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD Mutations Associated with Elevated LDL Levels Rare and isolated; suspect if elevated LDL unresponsive to treatment Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory Polygenic Hypercholesterolemia No family history, no physical manifestations such as xanthomas, exact cause is unknown Lp(X) Associate with obstructive hepatic disease, CVD risk unclear Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "medium"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:nonlipid_serum_markers\",\"type\":\"Biomarker\",\"name\":\"Nonlipid serum markers\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:garlic\",\"type\":\"Drug\",\"name\":\"Garlic\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:artichoke_leaf_extract\",\"type\":\"Drug\",\"name\":\"Artichoke leaf extract\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:cetp_inhibitors\",\"type\":\"Drug\",\"name\":\"CETP inhibitors\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_x\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein X\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obstructive_hepatic_disease\",\"type\":\"Condition\",\"name\":\"Obstructive hepatic disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:sitosterolemia\",\"type\":\"Condition\",\"name\":\"Sitosterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:neurologic_disease\",\"type\":\"Condition\",\"name\":\"Neurologic disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cataracts\",\"type\":\"Condition\",\"name\":\"Cataracts\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:rosiglitazone\",\"type\":\"Drug\",\"name\":\"Rosiglitazone\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:fenofibrate\",\"type\":\"Drug\",\"name\":\"Fenofibrate\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:pitavastatin\",\"type\":\"Drug\",\"name\":\"Pitavastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:type_2_diabetes_mellitus\",\"type\":\"Condition\",\"name\":\"Type 2 diabetes mellitus\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_atherosclerosis\",\"type\":\"Condition\",\"name\":\"Coronary atherosclerosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obesity\",\"type\":\"Condition\",\"name\":\"Obesity\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:dyslipidemia\",\"type\":\"Condition\",\"name\":\"Dyslipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonlipid_serum_markers\",\"type\":\"Biomarker\",\"name\":\"Nonlipid serum markers\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:garlic\",\"type\":\"Drug\",\"name\":\"Garlic\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:artichoke_leaf_extract\",\"type\":\"Drug\",\"name\":\"Artichoke leaf extract\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Artichoke leaf extract for treating hypercholesterolaemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:cetp_inhibitors\",\"type\":\"Drug\",\"name\":\"CETP inhibitors\"},\"target\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \u2013 40 years old) CVD is common\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Familial Defective Apolipoprotein B100 increases LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_x\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein X\"},\"target\":{\"id\":\"condition:obstructive_hepatic_disease\",\"type\":\"Condition\",\"name\":\"Obstructive hepatic disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lp(X) Associate with obstructive hepatic disease, CVD risk unclear\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:sitosterolemia\",\"type\":\"Condition\",\"name\":\"Sitosterolemia\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"condition:neurologic_disease\",\"type\":\"Condition\",\"name\":\"Neurologic disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"condition:cataracts\",\"type\":\"Condition\",\"name\":\"Cataracts\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory\",\"reason\":\"The text explicitly states that the relationship to cardiovascular disease is unclear and contradictory, so no association was extracted.\"},{\"text\":\"Lp(X) Associate with obstructive hepatic disease, CVD risk unclear\",\"reason\":\"Association with obstructive hepatic disease was extracted, but the cardiovascular disease risk portion was not extracted because the text says it is unclear.\"},{\"text\":\"Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\",\"reason\":\"The title mentions risk but does not state a direction or result supporting an adverse effect or association.\"},{\"text\":\"Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\",\"reason\":\"The title does not provide an explicit result or direction of effect.\"},{\"text\":\"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\",\"reason\":\"The title mentions an effect on risk but does not state whether rosiglitazone increases, decreases, prevents, or causes the outcomes.\"},{\"text\":\"Lipid-modifying therapies and risk of pancreatitis: a meta-analysis\",\"reason\":\"The therapy class is nonspecific and the title does not state direction or result.\"},{\"text\":\"Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\",\"reason\":\"The title does not state the direction of fenofibrate's effect on cardiovascular events.\"},{\"text\":\"The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\",\"reason\":\"The title mentions LDL-C and HDL-C but does not explicitly state whether pitavastatin increases or reduces either biomarker.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC3572442",
+      "title": "Hyperlipidemia as a Risk Factor for Cardiovascular Disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "condition:cardiovascular_events",
+        "type": "Condition",
+        "name": "Cardiovascular events",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:non_hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "Non-HDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:nonlipid_serum_markers",
+        "type": "Biomarker",
+        "name": "Nonlipid serum markers",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:garlic",
+        "type": "Drug",
+        "name": "Garlic",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:artichoke_leaf_extract",
+        "type": "Drug",
+        "name": "Artichoke leaf extract",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hypercholesterolemia",
+        "type": "Condition",
+        "name": "Hypercholesterolemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:cetp_inhibitors",
+        "type": "Drug",
+        "name": "CETP inhibitors",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:hyperlipidemia",
+        "type": "Condition",
+        "name": "Hyperlipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:myocardial_infarction",
+        "type": "Condition",
+        "name": "Myocardial infarction",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:familial_hypercholesterolemia",
+        "type": "Condition",
+        "name": "Familial hypercholesterolemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "symptom:tendon_xanthomas",
+        "type": "Symptom",
+        "name": "Tendon xanthomas",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:homozygous_familial_hypercholesterolemia",
+        "type": "Condition",
+        "name": "Homozygous familial hypercholesterolemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "riskfactor:familial_defective_apolipoprotein_b100",
+        "type": "RiskFactor",
+        "name": "Familial defective apolipoprotein B100",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:coronary_heart_disease",
+        "type": "Condition",
+        "name": "Coronary heart disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_x",
+        "type": "Biomarker",
+        "name": "Lipoprotein X",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:obstructive_hepatic_disease",
+        "type": "Condition",
+        "name": "Obstructive hepatic disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:sitosterolemia",
+        "type": "Condition",
+        "name": "Sitosterolemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cerebrotendinous_xanthomatosis",
+        "type": "Condition",
+        "name": "Cerebrotendinous xanthomatosis",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:neurologic_disease",
+        "type": "Condition",
+        "name": "Neurologic disease",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:cataracts",
+        "type": "Condition",
+        "name": "Cataracts",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "Total cholesterol",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_a",
+        "type": "Biomarker",
+        "name": "Lipoprotein(a)",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:rosiglitazone",
+        "type": "Drug",
+        "name": "Rosiglitazone",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:atorvastatin",
+        "type": "Drug",
+        "name": "Atorvastatin",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:niacin",
+        "type": "Drug",
+        "name": "Niacin",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:fenofibrate",
+        "type": "Drug",
+        "name": "Fenofibrate",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "drug:pitavastatin",
+        "type": "Drug",
+        "name": "Pitavastatin",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:type_2_diabetes_mellitus",
+        "type": "Condition",
+        "name": "Type 2 diabetes mellitus",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:pancreatitis",
+        "type": "Condition",
+        "name": "Pancreatitis",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:coronary_atherosclerosis",
+        "type": "Condition",
+        "name": "Coronary atherosclerosis",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:obesity",
+        "type": "Condition",
+        "name": "Obesity",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "id": "condition:dyslipidemia",
+        "type": "Condition",
+        "name": "Dyslipidemia",
+        "properties": {
+          "source": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:non_hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-HDL cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_b",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:nonlipid_serum_markers",
+          "type": "Biomarker",
+          "name": "Nonlipid serum markers"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:garlic",
+          "type": "Drug",
+          "name": "Garlic"
+        },
+        "target": {
+          "id": "condition:hypercholesterolemia",
+          "type": "Condition",
+          "name": "Hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:artichoke_leaf_extract",
+          "type": "Drug",
+          "name": "Artichoke leaf extract"
+        },
+        "target": {
+          "id": "condition:hypercholesterolemia",
+          "type": "Condition",
+          "name": "Hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Artichoke leaf extract for treating hypercholesterolaemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:cetp_inhibitors",
+          "type": "Drug",
+          "name": "CETP inhibitors"
+        },
+        "target": {
+          "id": "condition:hyperlipidemia",
+          "type": "Condition",
+          "name": "Hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Current status of CETP inhibitors in the treatment of hyperlipidemia: an update",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial infarction"
+        },
+        "properties": {
+          "confidence": 0.75,
+          "evidence": "Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "id": "condition:familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Familial hypercholesterolemia"
+        },
+        "target": {
+          "id": "symptom:tendon_xanthomas",
+          "type": "Symptom",
+          "name": "Tendon xanthomas"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Familial hypercholesterolemia"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \u2013 40 years old) CVD is common",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Familial hypercholesterolemia"
+        },
+        "target": {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "Total cholesterol"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:homozygous_familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Homozygous familial hypercholesterolemia"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial infarction"
+        },
+        "properties": {
+          "confidence": 0.75,
+          "evidence": "Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20.",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:familial_defective_apolipoprotein_b100",
+          "type": "RiskFactor",
+          "name": "Familial defective apolipoprotein B100"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:familial_defective_apolipoprotein_b100",
+          "type": "RiskFactor",
+          "name": "Familial defective apolipoprotein B100"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Familial Defective Apolipoprotein B100 increases LDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:lipoprotein_x",
+          "type": "Biomarker",
+          "name": "Lipoprotein X"
+        },
+        "target": {
+          "id": "condition:obstructive_hepatic_disease",
+          "type": "Condition",
+          "name": "Obstructive hepatic disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Lp(X) Associate with obstructive hepatic disease, CVD risk unclear",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "id": "condition:sitosterolemia",
+          "type": "Condition",
+          "name": "Sitosterolemia"
+        },
+        "target": {
+          "id": "symptom:tendon_xanthomas",
+          "type": "Symptom",
+          "name": "Tendon xanthomas"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:cerebrotendinous_xanthomatosis",
+          "type": "Condition",
+          "name": "Cerebrotendinous xanthomatosis"
+        },
+        "target": {
+          "id": "condition:neurologic_disease",
+          "type": "Condition",
+          "name": "Neurologic disease"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "id": "condition:cerebrotendinous_xanthomatosis",
+          "type": "Condition",
+          "name": "Cerebrotendinous xanthomatosis"
+        },
+        "target": {
+          "id": "symptom:tendon_xanthomas",
+          "type": "Symptom",
+          "name": "Tendon xanthomas"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:cerebrotendinous_xanthomatosis",
+          "type": "Condition",
+          "name": "Cerebrotendinous xanthomatosis"
+        },
+        "target": {
+          "id": "condition:cataracts",
+          "type": "Condition",
+          "name": "Cataracts"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults",
+          "source_pmid": "",
+          "source_pmcid": "PMC3572442",
+          "chunk_id": "PMC3572442-chunk-0006",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-21"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory",
+        "reason": "The text explicitly states that the relationship to cardiovascular disease is unclear and contradictory, so no association was extracted."
+      },
+      {
+        "text": "Lp(X) Associate with obstructive hepatic disease, CVD risk unclear",
+        "reason": "Association with obstructive hepatic disease was extracted, but the cardiovascular disease risk portion was not extracted because the text says it is unclear."
+      },
+      {
+        "text": "Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials",
+        "reason": "The title mentions risk but does not state a direction or result supporting an adverse effect or association."
+      },
+      {
+        "text": "Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis",
+        "reason": "The title does not provide an explicit result or direction of effect."
+      },
+      {
+        "text": "Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes",
+        "reason": "The title mentions an effect on risk but does not state whether rosiglitazone increases, decreases, prevents, or causes the outcomes."
+      },
+      {
+        "text": "Lipid-modifying therapies and risk of pancreatitis: a meta-analysis",
+        "reason": "The therapy class is nonspecific and the title does not state direction or result."
+      },
+      {
+        "text": "Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial",
+        "reason": "The title does not state the direction of fenofibrate's effect on cardiovascular events."
+      },
+      {
+        "text": "The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C",
+        "reason": "The title mentions LDL-C and HDL-C but does not explicitly state whether pitavastatin increases or reduces either biomarker."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0984ca96dc59dd11006a37e9191dfc81a1942a7adee4f92730",
+    "created_at": 1782049049.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0984ca96dc59dd11006a37e919ecb081a1bb7d18282af2576e",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0984ca96dc59dd11006a37e984842481a1bb73d13ec86da132",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC3572442\",\"title\":\"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:nonlipid_serum_markers\",\"type\":\"Biomarker\",\"name\":\"Nonlipid serum markers\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:garlic\",\"type\":\"Drug\",\"name\":\"Garlic\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:artichoke_leaf_extract\",\"type\":\"Drug\",\"name\":\"Artichoke leaf extract\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:cetp_inhibitors\",\"type\":\"Drug\",\"name\":\"CETP inhibitors\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_x\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein X\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obstructive_hepatic_disease\",\"type\":\"Condition\",\"name\":\"Obstructive hepatic disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:sitosterolemia\",\"type\":\"Condition\",\"name\":\"Sitosterolemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:neurologic_disease\",\"type\":\"Condition\",\"name\":\"Neurologic disease\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:cataracts\",\"type\":\"Condition\",\"name\":\"Cataracts\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:rosiglitazone\",\"type\":\"Drug\",\"name\":\"Rosiglitazone\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:fenofibrate\",\"type\":\"Drug\",\"name\":\"Fenofibrate\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"drug:pitavastatin\",\"type\":\"Drug\",\"name\":\"Pitavastatin\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:type_2_diabetes_mellitus\",\"type\":\"Condition\",\"name\":\"Type 2 diabetes mellitus\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:coronary_atherosclerosis\",\"type\":\"Condition\",\"name\":\"Coronary atherosclerosis\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:obesity\",\"type\":\"Condition\",\"name\":\"Obesity\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}},{\"id\":\"condition:dyslipidemia\",\"type\":\"Condition\",\"name\":\"Dyslipidemia\",\"properties\":{\"source\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-21\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Association of LDL cholesterol, non-HDL cholesterol, and apolipoprotein B levels with risk of cardiovascular events among patients treated with statins: a meta-analysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonlipid_serum_markers\",\"type\":\"Biomarker\",\"name\":\"Nonlipid serum markers\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Effects of statins on nonlipid serum markers associated with cardiovascular disease: a systematic review\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:garlic\",\"type\":\"Drug\",\"name\":\"Garlic\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Garlic for treating hypercholesterolemia. A meta-analysis of randomized clinical trials\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:artichoke_leaf_extract\",\"type\":\"Drug\",\"name\":\"Artichoke leaf extract\"},\"target\":{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Artichoke leaf extract for treating hypercholesterolaemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:cetp_inhibitors\",\"type\":\"Drug\",\"name\":\"CETP inhibitors\"},\"target\":{\"id\":\"condition:hyperlipidemia\",\"type\":\"Condition\",\"name\":\"Hyperlipidemia\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Current status of CETP inhibitors in the treatment of hyperlipidemia: an update\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"Plasma HDL cholesterol and risk of myocardial infarction: a mendelian randomisation study\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Comparison of preventive effect on cardiovascular events with different statins. -The CIRCLE study\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common, associated with tendon xanthomas, premature (20 \u2013 40 years old) CVD is common\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"target\":{\"id\":\"biomarker:total_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Total cholesterol\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Familial Hypercholesterolemia relatively common (1 in 500 heterozygote); TC exceeds 300 mg/dL, family history of elevated TC common\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"Homozygotes are rare, but have TC > 600 and if not treated usually die of MI prior to age 20.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Familial Defective Apolipoprotein B100 increases LDL and has a phenotype that is indistinguishable from that of FH, including increased susceptibility to CHD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:familial_defective_apolipoprotein_b100\",\"type\":\"RiskFactor\",\"name\":\"Familial defective apolipoprotein B100\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Familial Defective Apolipoprotein B100 increases LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_x\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein X\"},\"target\":{\"id\":\"condition:obstructive_hepatic_disease\",\"type\":\"Condition\",\"name\":\"Obstructive hepatic disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lp(X) Associate with obstructive hepatic disease, CVD risk unclear\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:sitosterolemia\",\"type\":\"Condition\",\"name\":\"Sitosterolemia\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"condition:neurologic_disease\",\"type\":\"Condition\",\"name\":\"Neurologic disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"symptom:tendon_xanthomas\",\"type\":\"Symptom\",\"name\":\"Tendon xanthomas\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:cerebrotendinous_xanthomatosis\",\"type\":\"Condition\",\"name\":\"Cerebrotendinous xanthomatosis\"},\"target\":{\"id\":\"condition:cataracts\",\"type\":\"Condition\",\"name\":\"Cataracts\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC3572442\",\"chunk_id\":\"PMC3572442-chunk-0006\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-21\"}}],\"rejected_candidates\":[{\"text\":\"Elevated Plasma Lipoprotein(a) Relationship to CVD unclear, studies contradictory\",\"reason\":\"The text explicitly states that the relationship to cardiovascular disease is unclear and contradictory, so no association was extracted.\"},{\"text\":\"Lp(X) Associate with obstructive hepatic disease, CVD risk unclear\",\"reason\":\"Association with obstructive hepatic disease was extracted, but the cardiovascular disease risk portion was not extracted because the text says it is unclear.\"},{\"text\":\"Statins and risk of incident diabetes: a collaborative meta-analysis of randomised statin trials\",\"reason\":\"The title mentions risk but does not state a direction or result supporting an adverse effect or association.\"},{\"text\":\"Risk of incident diabetes with intensive-dose compared with moderate-dose statin therapy: a meta-analysis\",\"reason\":\"The title does not provide an explicit result or direction of effect.\"},{\"text\":\"Effect of rosiglitazone on the risk of myocardial infarction and death from cardiovascular causes\",\"reason\":\"The title mentions an effect on risk but does not state whether rosiglitazone increases, decreases, prevents, or causes the outcomes.\"},{\"text\":\"Lipid-modifying therapies and risk of pancreatitis: a meta-analysis\",\"reason\":\"The therapy class is nonspecific and the title does not state direction or result.\"},{\"text\":\"Effects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\",\"reason\":\"The title does not state the direction of fenofibrate's effect on cardiovascular events.\"},{\"text\":\"The clinical impact of pitavastatin: comparative studies with other statins on LDL-C and HDL-C\",\"reason\":\"The title mentions LDL-C and HDL-C but does not explicitly state whether pitavastatin increases or reduces either biomarker.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782049229.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "medium",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3511,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 11374,
+      "output_tokens_details": {
+        "reasoning_tokens": 5111
+      },
+      "total_tokens": 14885
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true
+  },
+  "started_at": "2026-06-21T13:37:34.070231+00:00",
+  "finished_at": "2026-06-21T13:40:34.733278+00:00",
+  "duration_ms": 180663.045,
+  "status": "ok",
+  "error": ""
+}

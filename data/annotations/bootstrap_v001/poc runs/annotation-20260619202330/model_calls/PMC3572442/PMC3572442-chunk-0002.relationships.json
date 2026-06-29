@@ -1,0 +1,407 @@
+{
+  "provider": "ollama",
+  "model": "qwen2.5:7b-instruct",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "qwen2.5:7b-instruct",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout_seconds": 600,
+    "messages": [
+      {
+        "role": "user",
+        "content": "You extract simple biomedical knowledge graph relationships for MedGraphRAG.\nUse only the chunk text and only the supplied candidate entities.\nReturn relationships only when the text explicitly supports them.\nEach evidence value must be a short exact quote or close excerpt from the chunk.\nDo not invent entities, facts, identifiers, citations, or outside medical knowledge.\n\nAllowed relationship types and directions:\n- TREATS: Drug -> Condition\n- PREVENTS: Drug -> Condition\n- REDUCES: Drug -> Biomarker\n- INCREASES: Drug -> Biomarker\n- ASSOCIATED_WITH: any biomedical entity -> any biomedical entity\n- HAS_ADVERSE_EFFECT: Drug -> Condition\n- CAUSES: Condition -> Condition\n- HAS_SYMPTOM: Condition -> Symptom\n- INCREASES_RISK_OF: RiskFactor -> Condition\n- INTERACTS_WITH: Drug -> Drug\n- CONTRAINDICATED_FOR: Drug -> Condition\n\nInput JSON:\n{\n  \"document\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"PMC3572442\",\n    \"title\": \"Hyperlipidemia as a Risk Factor for Cardiovascular Disease\"\n  },\n  \"chunk\": {\n    \"id\": \"PMC3572442-chunk-0002\",\n    \"section\": \"INTRO\",\n    \"text\": \"commonly used clinical classification. See Table 1. The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\\n\\nSignificance of hyperlipidemia\\n\\nHealth care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States. A landmark study that helped establish that therapeutic interventions to lower cholesterol levels result in reduced risk of cardiovascular morbidity or mortality was the Lipid Research Clinics Coronary Primary Prevention Trial, which was published in two parts (each using a different statistical analysis) in 1984. However, numerous other trials, both prior to and after 1984, also contributed to the evidence of a CVD-hyperlipidemia link. The scientific and medical communities took several decades to agree that this relationship truly exists. A complete history of the cholesterol controversy can be found in a multi-part review (available on line) which was published over a 3 year span in the Journal of Lipid Research.\\n\\nDiagnosis\\n\\nMost cases of hyperlipidemia are found because a lipid panel screen is done as a part of a routine health care evaluation or because plasma lipids are checked after a cardiovascular event. The United States Preventive Services Task Force has posted screening recommendations for lipid disorders on its web site. The group does not recommend universal screening. Its guidelines are summarized in Box 2.\\n\\nNot all experts agree with these recommendations, primarily because they believe that the overall incidence of CVD in the United States is so high that screening should be more aggressive. For example, the American Heart Association states on its web site that \\u201cThe American Heart Association urges all Americans to have their physicians determine their total and HDL blood cholesterol levels. This is very important for those people with a family history of heart disease, high blood pressure or stroke.\\u201d Screening refers to testing lipids in people who are without symptoms or associated disease. Any person who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\\n\\nClassification of hyperlipidemia\\n\\nAbnormal lipid profiles are generally a combination of abnormalities of the lipoprotein fractions noted in Box 1. The degree of increased risk of CVD depends on the exact pattern and the underlying cause. Primary care physicians do not necessarily need full knowledge of all hyperlipidemic syndromes, but all physicians should be fully aware of their own individual limitations and capabilities. It is vital to know common primary and\"\n  },\n  \"candidate_entities\": [\n    {\n      \"type\": \"Drug\",\n      \"name\": \"ATP-III\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipid concentrations\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol levels\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"CVD-hyperlipidemia\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"plasma lipids\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"lipid disorders\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"HDL\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"cholesterol\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"heart disease\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"high blood pressure\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"stroke\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hypothyroidism\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"diabetes\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"renal insufficiency\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"angina\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"myocardial infarction\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"onset of claudication\"\n    },\n    {\n      \"type\": \"Symptom\",\n      \"name\": \"vessel bruit\"\n    },\n    {\n      \"type\": \"Biomarker\",\n      \"name\": \"lipoprotein fractions\"\n    },\n    {\n      \"type\": \"Condition\",\n      \"name\": \"hyperlipidemic syndromes\"\n    }\n  ]\n}\n"
+      }
+    ],
+    "stream": false,
+    "options": {
+      "temperature": 0
+    },
+    "format": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_local_relationship_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol levels\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"A landmark study that helped establish that therapeutic interventions to lower cholesterol levels result in reduced risk of cardiovascular morbidity or mortality was the Lipid Research Clinics Coronary Primary Prevention Trial, which was published in two parts (each using a different statistical analysis) in 1984.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"plasma lipids\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Most cases of hyperlipidemia are found because a lipid panel screen is done as a part of a routine health care evaluation or because plasma lipids are checked after a cardiovascular event.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipid concentrations\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD-hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"angina\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"onset of claudication\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"vessel bruit\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"diabetes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"renal insufficiency\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ATP-III\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": []\n}",
+  "parsed_json": {
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Biomarker",
+          "name": "cholesterol levels"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "A landmark study that helped establish that therapeutic interventions to lower cholesterol levels result in reduced risk of cardiovascular morbidity or mortality was the Lipid Research Clinics Coronary Primary Prevention Trial, which was published in two parts (each using a different statistical analysis) in 1984."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "plasma lipids"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Most cases of hyperlipidemia are found because a lipid panel screen is done as a part of a routine health care evaluation or because plasma lipids are checked after a cardiovascular event."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Biomarker",
+          "name": "lipid concentrations"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States."
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "CVD-hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States."
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "myocardial infarction"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "angina"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.)."
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "myocardial infarction"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "onset of claudication"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.)."
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "type": "Condition",
+          "name": "myocardial infarction"
+        },
+        "target": {
+          "type": "Symptom",
+          "name": "vessel bruit"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.)."
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "Condition",
+          "name": "hypothyroidism"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup."
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "Condition",
+          "name": "diabetes"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup."
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "type": "Condition",
+          "name": "renal insufficiency"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup."
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "type": "Drug",
+          "name": "ATP-III"
+        },
+        "target": {
+          "type": "Condition",
+          "name": "hyperlipidemia"
+        },
+        "properties": {
+          "confidence": 1,
+          "evidence": "The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012."
+        }
+      }
+    ],
+    "rejected_candidates": []
+  },
+  "raw_response": {
+    "model": "qwen2.5:7b-instruct",
+    "created_at": "2026-06-19T20:37:51.4865762Z",
+    "message": {
+      "role": "assistant",
+      "content": "{\n  \"relationships\": [\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"cholesterol levels\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"A landmark study that helped establish that therapeutic interventions to lower cholesterol levels result in reduced risk of cardiovascular morbidity or mortality was the Lipid Research Clinics Coronary Primary Prevention Trial, which was published in two parts (each using a different statistical analysis) in 1984.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"plasma lipids\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Most cases of hyperlipidemia are found because a lipid panel screen is done as a part of a routine health care evaluation or because plasma lipids are checked after a cardiovascular event.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Biomarker\",\n        \"name\": \"lipid concentrations\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"ASSOCIATED_WITH\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"CVD-hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Health care providers are concerned about hyperlipidemia because of the well established association between lipid concentrations and the risk of CVD, the leading cause of death in the United States.\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"angina\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"onset of claudication\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"HAS_SYMPTOM\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"myocardial infarction\"\n      },\n      \"target\": {\n        \"type\": \"Symptom\",\n        \"name\": \"vessel bruit\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup. This also holds true for anyone who presents with evidence of CVD (e.g. angina, myocardial infarction, onset of claudication, discovery of a vessel bruit, etc.).\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"hypothyroidism\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"diabetes\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"INCREASES_RISK_OF\",\n      \"source\": {\n        \"type\": \"Condition\",\n        \"name\": \"renal insufficiency\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"Anyone who is diagnosed with diseases related to hyperlipidemia (e.g. hypothyroidism, diabetes, renal insufficiency, etc.) should have a lipid evaluation as a part of the diagnostic workup.\"\n      }\n    },\n    {\n      \"type\": \"HAS_ADVERSE_EFFECT\",\n      \"source\": {\n        \"type\": \"Drug\",\n        \"name\": \"ATP-III\"\n      },\n      \"target\": {\n        \"type\": \"Condition\",\n        \"name\": \"hyperlipidemia\"\n      },\n      \"properties\": {\n        \"confidence\": 1,\n        \"evidence\": \"The NCEP is currently revising its recommendations with an updated version of ATP-III guidelines expected to be released in the autumn of 2012.\"\n      }\n    }\n  ]\n  , \"rejected_candidates\": []\n}"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 228465034600,
+    "load_duration": 133400900,
+    "prompt_eval_count": 1399,
+    "prompt_eval_duration": 22211200000,
+    "eval_count": 1572,
+    "eval_duration": 206077489000
+  },
+  "started_at": "2026-06-19T20:34:01.003975+00:00",
+  "finished_at": "2026-06-19T20:37:51.487799+00:00",
+  "duration_ms": 230483.826,
+  "status": "ok",
+  "error": ""
+}
