@@ -1,0 +1,1953 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4911828\nTitle: Triglyceride and cardiovascular risk: A critical appraisal\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4911828-chunk-0005\nChunk Section: CONCL\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nome patients with atherogenic dyslipidemia and metabolic syndrome may benefit from these combinations.\n\nREFERENCES\n\nRetest reliability of plasma cholesterol and triglyceride. The Lipid Research Clinics Prevalence Study\n\nPlasma triglyceride level and mortality from coronary heart disease\n\nThe role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease in nine diabetic population samples from the WHO multinational study\n\nNational Cholesterol Education Program (U.S.). Working Group on Lipoprotein Measurement\n\nAtherogenesis: A postprandial phenomenon\n\nFamilial lipoprotein lipase deficiency, Apo-C-II deficiency, and hepatic lipase deficiency\n\nQuantitative studies of transfer in vivo of low density, Sf 12-60, and Sf 60-400 lipoproteins between plasma and arterial intima in humans\n\nEpidemiology as a guide to clinical decisions. The association between triglyceride and coronary heart disease\n\nFasting versus nonfasting triglycerides and the prediction of cardiovascular risk: Do we need to revisit the oral triglyceride tolerance test?\n\nPlasma lipids in non-fasting patients and signal values of laboratory results\n\nNonfasting lipids, lipoproteins, and apolipoproteins in individuals with and without diabetes: 58 434 individuals from the Copenhagen general population study\n\nComparison of LDL cholesterol concentrations by Friedewald calculation and direct measurement in relation to cardiovascular events in 27,331 women\n\nMajor lipids, apolipoproteins, and risk of vascular disease\n\nRemnant cholesterol as a causal risk factor for ischemic heart disease\n\nGenetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\n\nTriglyceride-mediated pathways and coronary disease: Collaborative analysis of 101 studies\n\nLow nonfasting triglycerides and reduced all-cause mortality: A mendelian randomization study\n\nLoss-of-function mutations in APOC3 and risk of ischemic vascular disease\n\nLoss-of-function mutations in APOC3, triglycerides, and coronary disease\n\nExome sequencing, ANGPTL3 mutations, and familial combined hypolipidemia\n\nEfficacy and safety of cholesterol-lowering treatment: Prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins\n\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\n\nEfficacy of cholesterol-lowering therapy in 18,686 people with diabetes in 14 randomised trials of statins: A meta-analysis\n\nEfficacy and safety of more intensive lowering of LDL cholesterol: A meta-analysis of data from 170,000 participants in 26 randomised trials\n\nThe effects of lowering LDL cholesterol with statin therapy in people at low risk of vascular disease: Meta-analysis of individual data from 27 randomised trials\n\nEfficacy and safety of LDL-lowering therapy among men and women: Meta-analysis of individual data from 174,000 participants in 27 randomised trials\n\nCholesterol lowering with simvastatin improves prognosis of diabetic patients with coronary heart disease. A subgroup analysis of the Scandinavian Simvastatin Survival Study (4S)\n\nThe metabolic syndrome and risk of major coronary events in the Scandinavian Simvastatin Survival Study (4S) and the Air Force/Texas Coronary Atherosclerosis Prevention Study (AFCAPS/TexCAPS)\n\nVLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events in the Cholesterol and Recurrent Events (CARE) trial\n\nMetabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes in the West of Scotland Coronary Prevention Study\n\nReduction of low-density lipoprotein cholesterol in patients with coronary heart disease and metabolic syndrome: Analysis of the Treating to New Targets study\n\nInfluence of baseline lipids on effectiveness of pravastatin in the CARE trial. Cholesterol and recurrent events\n\nPrevention of cardiovascular events and death with pravastatin in patients with coronary heart disease and a broad range of initial cholesterol levels. The Long-Term Intervention with Pravastatin in Ischaemic Disease (LIPID) Study Group\n\nHeart Protection Study Collaborative Group. MRC/BHF heart protection study of cholesterol lowering with simvastatin in 20,536 high-risk individuals: A randomised placebo-controlled trial\n\nPrevention of coronary heart disease with pravastatin in men with hypercholesterolemia. West of Scotland Coronary Prevention Study Group\n\nPrevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations, in the Anglo-Scandinavian Cardiac Outcomes Trial \u2013 Lipid Lowering Arm (ASCOT-LLA): A multicentre randomised controlled trial\n\nRelation between baseline and on-treatment lipid parameters and first acute major coronary events in the Air Force/Texas Coronary Atherosclerosis Prevention Study (AFCAPS/TexCAPS)\n\nRelation of gemfibrozil treatment and lipid levels with major coronary events: VA-HIT: A randomized controlled trial\n\nRelationship between lipid levels and clinical outcomes in the long-term intervention with pravastatin in ischemic disease (LIPID) trial: To what extent is the reduction in coronary events with pravastatin explained by on-study lipid levels?\n\nPlasma triglycerides and cardiovascular events in the treating to new targets and incremental decrease in end-points through aggressive lipid lowering trials of statins in patients with coronary artery disease\n\nJoint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk in the Helsinki Heart Study. Implications for treatment\n\nGemfibrozil for the secondary prevention of coronary heart disease in men with low levels of high-density lipoprotein cholesterol. Veterans Affairs High-Density Lipoprotein Cholesterol Intervention Trial Study Group\n\nBezafibrate Infarction Prevention (BIP) Study.\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4911828\",\"title\":\"Triglyceride and cardiovascular risk: A critical appraisal\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:simvastatin\",\"type\":\"Drug\",\"name\":\"Simvastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:bezafibrate\",\"type\":\"Drug\",\"name\":\"Bezafibrate\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherogenic_dyslipidemia\",\"type\":\"Condition\",\"name\":\"Atherogenic Dyslipidemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic Heart Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:major_coronary_events\",\"type\":\"Condition\",\"name\":\"Major Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:stroke_events\",\"type\":\"Condition\",\"name\":\"Stroke Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypertension\",\"type\":\"Condition\",\"name\":\"Hypertension\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary Artery Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:familial_combined_hypolipidemia\",\"type\":\"Condition\",\"name\":\"Familial Combined Hypolipidemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:glucose\",\"type\":\"Biomarker\",\"name\":\"Glucose\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipids\",\"type\":\"Biomarker\",\"name\":\"Lipids\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_ciii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein CIII\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_e\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein E\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The association between triglyceride and coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:glucose\",\"type\":\"Biomarker\",\"name\":\"Glucose\"},\"target\":{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Comparison of LDL cholesterol concentrations by Friedewald calculation and direct measurement in relation to cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipids\",\"type\":\"Biomarker\",\"name\":\"Lipids\"},\"target\":{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Major lipids, apolipoproteins, and risk of vascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\"},\"target\":{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Major lipids, apolipoproteins, and risk of vascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Remnant cholesterol as a causal risk factor for ischemic heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"cholesterol-lowering treatment: Prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The effects of lowering LDL cholesterol with statin therapy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:simvastatin\",\"type\":\"Drug\",\"name\":\"Simvastatin\"},\"target\":{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Cholesterol lowering with simvastatin improves prognosis of diabetic patients with coronary heart disease.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:major_coronary_events\",\"type\":\"Condition\",\"name\":\"Major Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"The metabolic syndrome and risk of major coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_ciii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein CIII\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_e\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein E\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\"},\"target\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of cardiovascular events and death with pravastatin in patients with coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary heart disease with pravastatin in men with hypercholesterolemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:stroke_events\",\"type\":\"Condition\",\"name\":\"Stroke Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"reduction in coronary events with pravastatin explained by on-study lipid levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL Cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gemfibrozil for the secondary prevention of coronary heart disease in men with low levels of high-density lipoprotein cholesterol.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"these combinations\",\"reason\":\"The drug combination is not specified in the chunk, so no Drug entity or TREATS relationship can be supported.\"},{\"text\":\"Atherogenesis: A postprandial phenomenon\",\"reason\":\"The phrase does not provide a supported relationship between ontology-defined biomedical entities.\"},{\"text\":\"Low nonfasting triglycerides and reduced all-cause mortality\",\"reason\":\"All-cause mortality/death is not modeled as a disease or clinical condition for the available relationship types in this extraction.\"},{\"text\":\"Loss-of-function mutations in APOC3 and risk of ischemic vascular disease\",\"reason\":\"Genetic loss-of-function mutations are not represented by the allowed entity types for this extraction, and no supported relationship was created.\"},{\"text\":\"Exome sequencing, ANGPTL3 mutations, and familial combined hypolipidemia\",\"reason\":\"ANGPTL3 mutations are genetic variants outside the defined entity ontology; the title does not provide a supported ontology relationship.\"},{\"text\":\"Bezafibrate Infarction Prevention (BIP) Study.\",\"reason\":\"This appears as a study title/name and does not explicitly state an observed preventive effect in the provided chunk.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4911828",
+      "title": "Triglyceride and cardiovascular risk: A critical appraisal",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:simvastatin",
+        "type": "Drug",
+        "name": "Simvastatin",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:pravastatin",
+        "type": "Drug",
+        "name": "Pravastatin",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:atorvastatin",
+        "type": "Drug",
+        "name": "Atorvastatin",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:gemfibrozil",
+        "type": "Drug",
+        "name": "Gemfibrozil",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:bezafibrate",
+        "type": "Drug",
+        "name": "Bezafibrate",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:atherogenic_dyslipidemia",
+        "type": "Condition",
+        "name": "Atherogenic Dyslipidemia",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:metabolic_syndrome",
+        "type": "Condition",
+        "name": "Metabolic Syndrome",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_heart_disease",
+        "type": "Condition",
+        "name": "Coronary Heart Disease",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:arterial_disease",
+        "type": "Condition",
+        "name": "Arterial Disease",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_events",
+        "type": "Condition",
+        "name": "Cardiovascular Events",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:vascular_disease",
+        "type": "Condition",
+        "name": "Vascular Disease",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:ischemic_heart_disease",
+        "type": "Condition",
+        "name": "Ischemic Heart Disease",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:myocardial_infarction",
+        "type": "Condition",
+        "name": "Myocardial Infarction",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:major_coronary_events",
+        "type": "Condition",
+        "name": "Major Coronary Events",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:recurrent_coronary_events",
+        "type": "Condition",
+        "name": "Recurrent Coronary Events",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:diabetes",
+        "type": "Condition",
+        "name": "Diabetes",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_events",
+        "type": "Condition",
+        "name": "Coronary Events",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:stroke_events",
+        "type": "Condition",
+        "name": "Stroke Events",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:hypercholesterolemia",
+        "type": "Condition",
+        "name": "Hypercholesterolemia",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:hypertension",
+        "type": "Condition",
+        "name": "Hypertension",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_artery_disease",
+        "type": "Condition",
+        "name": "Coronary Artery Disease",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:familial_combined_hypolipidemia",
+        "type": "Condition",
+        "name": "Familial Combined Hypolipidemia",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:cholesterol",
+        "type": "Biomarker",
+        "name": "Cholesterol",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:glucose",
+        "type": "Biomarker",
+        "name": "Glucose",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:lipids",
+        "type": "Biomarker",
+        "name": "Lipids",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoproteins",
+        "type": "Biomarker",
+        "name": "Apolipoproteins",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL Cholesterol",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL Cholesterol",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:remnant_cholesterol",
+        "type": "Biomarker",
+        "name": "Remnant Cholesterol",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:vldl",
+        "type": "Biomarker",
+        "name": "VLDL",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_ciii",
+        "type": "Biomarker",
+        "name": "Apolipoprotein CIII",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_e",
+        "type": "Biomarker",
+        "name": "Apolipoprotein E",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:c_reactive_protein",
+        "type": "Biomarker",
+        "name": "C-reactive Protein",
+        "properties": {
+          "source": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "The association between triglyceride and coronary heart disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:arterial_disease",
+          "type": "Condition",
+          "name": "Arterial Disease"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:glucose",
+          "type": "Biomarker",
+          "name": "Glucose"
+        },
+        "target": {
+          "id": "condition:arterial_disease",
+          "type": "Condition",
+          "name": "Arterial Disease"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL Cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular Events"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Comparison of LDL cholesterol concentrations by Friedewald calculation and direct measurement in relation to cardiovascular events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:lipids",
+          "type": "Biomarker",
+          "name": "Lipids"
+        },
+        "target": {
+          "id": "condition:vascular_disease",
+          "type": "Condition",
+          "name": "Vascular Disease"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Major lipids, apolipoproteins, and risk of vascular disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoproteins",
+          "type": "Biomarker",
+          "name": "Apolipoproteins"
+        },
+        "target": {
+          "id": "condition:vascular_disease",
+          "type": "Condition",
+          "name": "Vascular Disease"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "Major lipids, apolipoproteins, and risk of vascular disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant Cholesterol"
+        },
+        "target": {
+          "id": "condition:ischemic_heart_disease",
+          "type": "Condition",
+          "name": "Ischemic Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Remnant cholesterol as a causal risk factor for ischemic heart disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial Infarction"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant Cholesterol"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial Infarction"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:cholesterol",
+          "type": "Biomarker",
+          "name": "Cholesterol"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "cholesterol-lowering treatment: Prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL Cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "The effects of lowering LDL cholesterol with statin therapy",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:simvastatin",
+          "type": "Drug",
+          "name": "Simvastatin"
+        },
+        "target": {
+          "id": "biomarker:cholesterol",
+          "type": "Biomarker",
+          "name": "Cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Cholesterol lowering with simvastatin improves prognosis of diabetic patients with coronary heart disease.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:metabolic_syndrome",
+          "type": "Condition",
+          "name": "Metabolic Syndrome"
+        },
+        "target": {
+          "id": "condition:major_coronary_events",
+          "type": "Condition",
+          "name": "Major Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "The metabolic syndrome and risk of major coronary events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:vldl",
+          "type": "Biomarker",
+          "name": "VLDL"
+        },
+        "target": {
+          "id": "condition:recurrent_coronary_events",
+          "type": "Condition",
+          "name": "Recurrent Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_b",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B"
+        },
+        "target": {
+          "id": "condition:recurrent_coronary_events",
+          "type": "Condition",
+          "name": "Recurrent Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_ciii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein CIII"
+        },
+        "target": {
+          "id": "condition:recurrent_coronary_events",
+          "type": "Condition",
+          "name": "Recurrent Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_e",
+          "type": "Biomarker",
+          "name": "Apolipoprotein E"
+        },
+        "target": {
+          "id": "condition:recurrent_coronary_events",
+          "type": "Condition",
+          "name": "Recurrent Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:metabolic_syndrome",
+          "type": "Condition",
+          "name": "Metabolic Syndrome"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:c_reactive_protein",
+          "type": "Biomarker",
+          "name": "C-reactive Protein"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:metabolic_syndrome",
+          "type": "Condition",
+          "name": "Metabolic Syndrome"
+        },
+        "target": {
+          "id": "condition:diabetes",
+          "type": "Condition",
+          "name": "Diabetes"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:c_reactive_protein",
+          "type": "Biomarker",
+          "name": "C-reactive Protein"
+        },
+        "target": {
+          "id": "condition:diabetes",
+          "type": "Condition",
+          "name": "Diabetes"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:pravastatin",
+          "type": "Drug",
+          "name": "Pravastatin"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular Events"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Prevention of cardiovascular events and death with pravastatin in patients with coronary heart disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:pravastatin",
+          "type": "Drug",
+          "name": "Pravastatin"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Prevention of coronary heart disease with pravastatin in men with hypercholesterolemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:atorvastatin",
+          "type": "Drug",
+          "name": "Atorvastatin"
+        },
+        "target": {
+          "id": "condition:coronary_events",
+          "type": "Condition",
+          "name": "Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:atorvastatin",
+          "type": "Drug",
+          "name": "Atorvastatin"
+        },
+        "target": {
+          "id": "condition:stroke_events",
+          "type": "Condition",
+          "name": "Stroke Events"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:pravastatin",
+          "type": "Drug",
+          "name": "Pravastatin"
+        },
+        "target": {
+          "id": "condition:coronary_events",
+          "type": "Condition",
+          "name": "Coronary Events"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "reduction in coronary events with pravastatin explained by on-study lipid levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL Cholesterol"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL Cholesterol"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:gemfibrozil",
+          "type": "Drug",
+          "name": "Gemfibrozil"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary Heart Disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Gemfibrozil for the secondary prevention of coronary heart disease in men with low levels of high-density lipoprotein cholesterol.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4911828",
+          "chunk_id": "PMC4911828-chunk-0005",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "these combinations",
+        "reason": "The drug combination is not specified in the chunk, so no Drug entity or TREATS relationship can be supported."
+      },
+      {
+        "text": "Atherogenesis: A postprandial phenomenon",
+        "reason": "The phrase does not provide a supported relationship between ontology-defined biomedical entities."
+      },
+      {
+        "text": "Low nonfasting triglycerides and reduced all-cause mortality",
+        "reason": "All-cause mortality/death is not modeled as a disease or clinical condition for the available relationship types in this extraction."
+      },
+      {
+        "text": "Loss-of-function mutations in APOC3 and risk of ischemic vascular disease",
+        "reason": "Genetic loss-of-function mutations are not represented by the allowed entity types for this extraction, and no supported relationship was created."
+      },
+      {
+        "text": "Exome sequencing, ANGPTL3 mutations, and familial combined hypolipidemia",
+        "reason": "ANGPTL3 mutations are genetic variants outside the defined entity ontology; the title does not provide a supported ontology relationship."
+      },
+      {
+        "text": "Bezafibrate Infarction Prevention (BIP) Study.",
+        "reason": "This appears as a study title/name and does not explicitly state an observed preventive effect in the provided chunk."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_01286bf361a7e5e3006a4412429404819cafe79fb81e95bc6f",
+    "created_at": 1782846018.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_01286bf361a7e5e3006a4412434780819cb836de108812d9cc",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_01286bf361a7e5e3006a4412ea6664819cb59c25978a565da0",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4911828\",\"title\":\"Triglyceride and cardiovascular risk: A critical appraisal\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:simvastatin\",\"type\":\"Drug\",\"name\":\"Simvastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:bezafibrate\",\"type\":\"Drug\",\"name\":\"Bezafibrate\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherogenic_dyslipidemia\",\"type\":\"Condition\",\"name\":\"Atherogenic Dyslipidemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic Heart Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:major_coronary_events\",\"type\":\"Condition\",\"name\":\"Major Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:stroke_events\",\"type\":\"Condition\",\"name\":\"Stroke Events\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Hypercholesterolemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypertension\",\"type\":\"Condition\",\"name\":\"Hypertension\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary Artery Disease\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:familial_combined_hypolipidemia\",\"type\":\"Condition\",\"name\":\"Familial Combined Hypolipidemia\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:glucose\",\"type\":\"Biomarker\",\"name\":\"Glucose\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipids\",\"type\":\"Biomarker\",\"name\":\"Lipids\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_ciii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein CIII\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_e\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein E\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\",\"properties\":{\"source\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The association between triglyceride and coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:glucose\",\"type\":\"Biomarker\",\"name\":\"Glucose\"},\"target\":{\"id\":\"condition:arterial_disease\",\"type\":\"Condition\",\"name\":\"Arterial Disease\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"The role of circulating glucose and triglyceride concentrations and their interactions with other \u201crisk factors\u201d as determinants of arterial disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Comparison of LDL cholesterol concentrations by Friedewald calculation and direct measurement in relation to cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipids\",\"type\":\"Biomarker\",\"name\":\"Lipids\"},\"target\":{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Major lipids, apolipoproteins, and risk of vascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoproteins\"},\"target\":{\"id\":\"condition:vascular_disease\",\"type\":\"Condition\",\"name\":\"Vascular Disease\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"Major lipids, apolipoproteins, and risk of vascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Remnant cholesterol as a causal risk factor for ischemic heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant Cholesterol\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial Infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Genetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"cholesterol-lowering treatment: Prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The effects of lowering LDL cholesterol with statin therapy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:simvastatin\",\"type\":\"Drug\",\"name\":\"Simvastatin\"},\"target\":{\"id\":\"biomarker:cholesterol\",\"type\":\"Biomarker\",\"name\":\"Cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Cholesterol lowering with simvastatin improves prognosis of diabetic patients with coronary heart disease.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:major_coronary_events\",\"type\":\"Condition\",\"name\":\"Major Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"The metabolic syndrome and risk of major coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_ciii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein CIII\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_e\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein E\"},\"target\":{\"id\":\"condition:recurrent_coronary_events\",\"type\":\"Condition\",\"name\":\"Recurrent Coronary Events\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"VLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic Syndrome\"},\"target\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive Protein\"},\"target\":{\"id\":\"condition:diabetes\",\"type\":\"Condition\",\"name\":\"Diabetes\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"Metabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of cardiovascular events and death with pravastatin in patients with coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary heart disease with pravastatin in men with hypercholesterolemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:atorvastatin\",\"type\":\"Drug\",\"name\":\"Atorvastatin\"},\"target\":{\"id\":\"condition:stroke_events\",\"type\":\"Condition\",\"name\":\"Stroke Events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Prevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:pravastatin\",\"type\":\"Drug\",\"name\":\"Pravastatin\"},\"target\":{\"id\":\"condition:coronary_events\",\"type\":\"Condition\",\"name\":\"Coronary Events\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"reduction in coronary events with pravastatin explained by on-study lipid levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL Cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL Cholesterol\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Joint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary Heart Disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gemfibrozil for the secondary prevention of coronary heart disease in men with low levels of high-density lipoprotein cholesterol.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4911828\",\"chunk_id\":\"PMC4911828-chunk-0005\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"these combinations\",\"reason\":\"The drug combination is not specified in the chunk, so no Drug entity or TREATS relationship can be supported.\"},{\"text\":\"Atherogenesis: A postprandial phenomenon\",\"reason\":\"The phrase does not provide a supported relationship between ontology-defined biomedical entities.\"},{\"text\":\"Low nonfasting triglycerides and reduced all-cause mortality\",\"reason\":\"All-cause mortality/death is not modeled as a disease or clinical condition for the available relationship types in this extraction.\"},{\"text\":\"Loss-of-function mutations in APOC3 and risk of ischemic vascular disease\",\"reason\":\"Genetic loss-of-function mutations are not represented by the allowed entity types for this extraction, and no supported relationship was created.\"},{\"text\":\"Exome sequencing, ANGPTL3 mutations, and familial combined hypolipidemia\",\"reason\":\"ANGPTL3 mutations are genetic variants outside the defined entity ontology; the title does not provide a supported ontology relationship.\"},{\"text\":\"Bezafibrate Infarction Prevention (BIP) Study.\",\"reason\":\"This appears as a study title/name and does not explicitly state an observed preventive effect in the provided chunk.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782846250.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3473,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 18643,
+      "output_tokens_details": {
+        "reasoning_tokens": 11381
+      },
+      "total_tokens": 22116
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T19:00:18.864873+00:00",
+  "finished_at": "2026-06-30T19:04:11.200980+00:00",
+  "duration_ms": 232336.119,
+  "status": "ok",
+  "error": ""
+}

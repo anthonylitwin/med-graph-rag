@@ -1,0 +1,1962 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4866746\nTitle: Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4866746-chunk-0003\nChunk Section: INTRO\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nads to endothelial monocyte adhesion and an enhanced inflammatory response. TRL remnants have also been shown to induce early monocyte and neutrophil activation.\n\nAdditionally, TRL remnants are known to increase the production of reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death. TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2, a process that is known to contribute to vascular injury and atherosclerosis. TRLs and their remnants enhance platelet aggregation and clot formation and amplify the coagulation cascade by 1) supporting the assembly of the prothombinase complex and 2) upregulating the expression of plasminogen activator inhibitor-1 and plasminogen activator inhibitor-1 antigen. They have also been shown to upregulate the endothelial expression of tissue factor, a key initiator of the coagulation cascade. Finally, TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL and have been shown to significantly correlate with impairment of coronary vasodilation.\n\nKey components of TRL metabolism have also been shown to be associated with CVD, in particular apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL. ApoC-III is thought to contribute to the progression of atherosclerosis via a number of mechanisms: it can impair VLDL binding to cellular receptors, resulting in small, dense LDL particle formation, and has been shown to induce the expression of proinflammatory mediators and to stimulate monocyte activation and the adhesion of monocytes to endothelial cells. It is also thought to induce apoptosis and may accumulate on atheroprotective HDL particles on secretion, thus rendering them dysfunctional.\n\nGenetic evidence\n\nThe fact that monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD suggests that raised TG and remnant cholesterol levels contribute to this process. Conversely, a recent Mendelian randomization study based on data from 10,208 individuals included in the Copenhagen City Heart Study found that subjects with genetically confirmed reduction in non-fasting plasma TG levels had reduced all-cause mortality. An additional meta-analysis involving 188,578 genotyped individuals with 185 different single nucleotide polymorphisms found that the strength of a variant\u2019s effect on TG levels strongly correlated with the magnitude of its effect on coronary artery disease, even after adjustment for effects on LDL-C and HDL-C. These results support the hypothesis that TRLs causally influence cardiovascular risk.\n\nSequence variants in several key genes involved in the metabolism of TRLs, such as those encoding LPL and the proteins that regulate it, appear to be strongly associated with CVD risk. For example, apoC-III, an apolipoprotein playing a central role in TG metabolism by inhibiting LPL, is overexpressed in hypertriglyceridemia and is significantly associated with cardiovascular risk. In one study, which evaluated 18,666 genes in 3,734 participants, four loss-of-function mutations were identified in APOC3, the gene encoding apoC-III. Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels, and a 40% lower risk of coronary heart disease than noncarriers. Similarly, a second study, which analyzed data from 75,725 participants, found that heterozygosity of loss-of-function mutations in APOC3 were associated with a mean reduction in nonfasting TG levels of 44% and a corresponding 41% decrease in the incidence of ischemic vascular disease compared with wild-type individuals. In addition, mutations in the gene encoding apoAV (APOA5), an activator of LPL, have also been shown to be associated with CVD risk. Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers. Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers. Furthermore, polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk. Finally, loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.\n\nGenetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels. As this association was not observed for genetically elevated LDL-C, this suggests that the inflammatory component of atherosclerosis may be driven by elevated TRLs and remnant cholesterol. Taken together, these findings are consistent with the hypothesis that elevated TG levels, and consequently TRLs, are causally associated with CVD.\n\nEpidemiological evidence\n\nIn the Pravastatin or Atorvastatin Evaluation and Infection Therapy-Thrombolysis In Myocardial Infarction 22 (PROVE IT-TIMI 22) trial, it was demonstrated that, among patients receiving statin therapy following acute coronary syndrome, an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels (Table 1), even after adjustment for HDL-C and LDL-C levels (hazard ratio 0.8; P=0.025). A wealth of epidemiological evidence exists, demonstrating that both fasting and nonfasting TG levels are significant predictors of cardiovascular events, even in individuals who have already achieved guideline-recommended\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:tumor_necrosis_factor_alpha\",\"type\":\"Biomarker\",\"name\":\"Tumor necrosis factor-alpha\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:interleukin_1_beta\",\"type\":\"Biomarker\",\"name\":\"Interleukin-1 beta\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:plasminogen_activator_inhibitor_1\",\"type\":\"Biomarker\",\"name\":\"Plasminogen activator inhibitor-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:tissue_factor\",\"type\":\"Biomarker\",\"name\":\"Tissue factor\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive protein\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_vascular_disease\",\"type\":\"Condition\",\"name\":\"Ischemic vascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"symptom:impaired_coronary_vasodilation\",\"type\":\"Symptom\",\"name\":\"Impaired coronary vasodilation\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:hyperlipoproteinemia_type_3\",\"type\":\"RiskFactor\",\"name\":\"Hyperlipoproteinemia type 3\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants are known to increase the production of reactive oxygen species\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:tumor_necrosis_factor_alpha\",\"type\":\"Biomarker\",\"name\":\"Tumor necrosis factor-alpha\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:interleukin_1_beta\",\"type\":\"Biomarker\",\"name\":\"Interleukin-1 beta\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"biomarker:plasminogen_activator_inhibitor_1\",\"type\":\"Biomarker\",\"name\":\"Plasminogen activator inhibitor-1\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"TRLs and their remnants enhance platelet aggregation and clot formation and amplify the coagulation cascade by 1) supporting the assembly of the prothombinase complex and 2) upregulating the expression of plasminogen activator inhibitor-1 and plasminogen activator inhibitor-1 antigen.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"biomarker:tissue_factor\",\"type\":\"Biomarker\",\"name\":\"Tissue factor\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"They have also been shown to upregulate the endothelial expression of tissue factor, a key initiator of the coagulation cascade.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"symptom:impaired_coronary_vasodilation\",\"type\":\"Symptom\",\"name\":\"Impaired coronary vasodilation\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL and have been shown to significantly correlate with impairment of coronary vasodilation.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"apoC-III, an apolipoprotein playing a central role in TG metabolism by inhibiting LPL, is overexpressed in hypertriglyceridemia and is significantly associated with cardiovascular risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"ApoC-III is thought to contribute to the progression of atherosclerosis via a number of mechanisms\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:hyperlipoproteinemia_type_3\",\"type\":\"RiskFactor\",\"name\":\"Hyperlipoproteinemia type 3\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"elevated TG levels, and consequently TRLs, are causally associated with CVD.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"The fact that monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD suggests that raised TG and remnant cholesterol levels contribute to this process.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"the strength of a variant\u2019s effect on TG levels strongly correlated with the magnitude of its effect on coronary artery disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"These results support the hypothesis that TRLs causally influence cardiovascular risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels, and a 40% lower risk of coronary heart disease than noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"condition:ischemic_vascular_disease\",\"type\":\"Condition\",\"name\":\"Ischemic vascular disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"heterozygosity of loss-of-function mutations in APOC3 were associated with a mean reduction in nonfasting TG levels of 44% and a corresponding 41% decrease in the incidence of ischemic vascular disease compared with wild-type individuals.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive protein\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"among patients receiving statin therapy following acute coronary syndrome\",\"reason\":\"No TREATS or PREVENTS relationship was extracted because the text only describes patients receiving statin therapy after acute coronary syndrome and does not explicitly state that statins treat or prevent the condition in this chunk.\"},{\"text\":\"As this association was not observed for genetically elevated LDL-C\",\"reason\":\"No positive association involving LDL cholesterol and low-grade inflammation was extracted because the statement explicitly says the association was not observed.\"},{\"text\":\"TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL\",\"reason\":\"No REDUCES relationship was extracted because REDUCES is defined only for Drug-to-Biomarker relationships, and TRL remnants are not a Drug.\"},{\"text\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"reason\":\"No CAUSES relationship was extracted because the ontology restricts CAUSES to Condition-to-Condition relationships, while reactive oxygen species is represented as a Biomarker.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4866746",
+      "title": "Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "biomarker:triglyceride_rich_lipoproteins",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoproteins",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoprotein remnants",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:reactive_oxygen_species",
+        "type": "Biomarker",
+        "name": "Reactive oxygen species",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:tumor_necrosis_factor_alpha",
+        "type": "Biomarker",
+        "name": "Tumor necrosis factor-alpha",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:interleukin_1_beta",
+        "type": "Biomarker",
+        "name": "Interleukin-1 beta",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:plasminogen_activator_inhibitor_1",
+        "type": "Biomarker",
+        "name": "Plasminogen activator inhibitor-1",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:tissue_factor",
+        "type": "Biomarker",
+        "name": "Tissue factor",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_c_iii",
+        "type": "Biomarker",
+        "name": "Apolipoprotein C-III",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_lipase",
+        "type": "Biomarker",
+        "name": "Lipoprotein lipase",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:remnant_lipoprotein_cholesterol",
+        "type": "Biomarker",
+        "name": "Remnant lipoprotein cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:c_reactive_protein",
+        "type": "Biomarker",
+        "name": "C-reactive protein",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:hypertriglyceridemia",
+        "type": "Condition",
+        "name": "Hypertriglyceridemia",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:atherosclerosis",
+        "type": "Condition",
+        "name": "Atherosclerosis",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_artery_disease",
+        "type": "Condition",
+        "name": "Coronary artery disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_heart_disease",
+        "type": "Condition",
+        "name": "Coronary heart disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:ischemic_vascular_disease",
+        "type": "Condition",
+        "name": "Ischemic vascular disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:myocardial_infarction",
+        "type": "Condition",
+        "name": "Myocardial infarction",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:low_grade_inflammation",
+        "type": "Condition",
+        "name": "Low-grade inflammation",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_events",
+        "type": "Condition",
+        "name": "Cardiovascular events",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:acute_coronary_syndrome",
+        "type": "Condition",
+        "name": "Acute coronary syndrome",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "symptom:impaired_coronary_vasodilation",
+        "type": "Symptom",
+        "name": "Impaired coronary vasodilation",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:hyperlipoproteinemia_type_3",
+        "type": "RiskFactor",
+        "name": "Hyperlipoproteinemia type 3",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:apoc3_loss_of_function_mutations",
+        "type": "RiskFactor",
+        "name": "APOC3 loss-of-function mutations",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:nonsynonymous_apoa5_mutations",
+        "type": "RiskFactor",
+        "name": "Nonsynonymous APOA5 mutations",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:apoa5_promoter_polymorphisms",
+        "type": "RiskFactor",
+        "name": "APOA5 promoter polymorphisms",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:angptl4_loss_of_function_variants",
+        "type": "RiskFactor",
+        "name": "ANGPTL4 loss-of-function variants",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:reactive_oxygen_species",
+          "type": "Biomarker",
+          "name": "Reactive oxygen species"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "TRL remnants are known to increase the production of reactive oxygen species",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:tumor_necrosis_factor_alpha",
+          "type": "Biomarker",
+          "name": "Tumor necrosis factor-alpha"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:interleukin_1_beta",
+          "type": "Biomarker",
+          "name": "Interleukin-1 beta"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "target": {
+          "id": "biomarker:plasminogen_activator_inhibitor_1",
+          "type": "Biomarker",
+          "name": "Plasminogen activator inhibitor-1"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "TRLs and their remnants enhance platelet aggregation and clot formation and amplify the coagulation cascade by 1) supporting the assembly of the prothombinase complex and 2) upregulating the expression of plasminogen activator inhibitor-1 and plasminogen activator inhibitor-1 antigen.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "target": {
+          "id": "biomarker:tissue_factor",
+          "type": "Biomarker",
+          "name": "Tissue factor"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "They have also been shown to upregulate the endothelial expression of tissue factor, a key initiator of the coagulation cascade.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "symptom:impaired_coronary_vasodilation",
+          "type": "Symptom",
+          "name": "Impaired coronary vasodilation"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL and have been shown to significantly correlate with impairment of coronary vasodilation.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "apoC-III, an apolipoprotein playing a central role in TG metabolism by inhibiting LPL, is overexpressed in hypertriglyceridemia and is significantly associated with cardiovascular risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "target": {
+          "id": "condition:hypertriglyceridemia",
+          "type": "Condition",
+          "name": "Hypertriglyceridemia"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "target": {
+          "id": "biomarker:lipoprotein_lipase",
+          "type": "Biomarker",
+          "name": "Lipoprotein lipase"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "ApoC-III is thought to contribute to the progression of atherosclerosis via a number of mechanisms",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:hyperlipoproteinemia_type_3",
+          "type": "RiskFactor",
+          "name": "Hyperlipoproteinemia type 3"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "elevated TG levels, and consequently TRLs, are causally associated with CVD.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant lipoprotein cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "The fact that monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD suggests that raised TG and remnant cholesterol levels contribute to this process.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:coronary_artery_disease",
+          "type": "Condition",
+          "name": "Coronary artery disease"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "the strength of a variant\u2019s effect on TG levels strongly correlated with the magnitude of its effect on coronary artery disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "These results support the hypothesis that TRLs causally influence cardiovascular risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:apoc3_loss_of_function_mutations",
+          "type": "RiskFactor",
+          "name": "APOC3 loss-of-function mutations"
+        },
+        "target": {
+          "id": "biomarker:apolipoprotein_c_iii",
+          "type": "Biomarker",
+          "name": "Apolipoprotein C-III"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:apoc3_loss_of_function_mutations",
+          "type": "RiskFactor",
+          "name": "APOC3 loss-of-function mutations"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:apoc3_loss_of_function_mutations",
+          "type": "RiskFactor",
+          "name": "APOC3 loss-of-function mutations"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels, and a 40% lower risk of coronary heart disease than noncarriers.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:apoc3_loss_of_function_mutations",
+          "type": "RiskFactor",
+          "name": "APOC3 loss-of-function mutations"
+        },
+        "target": {
+          "id": "condition:ischemic_vascular_disease",
+          "type": "Condition",
+          "name": "Ischemic vascular disease"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "heterozygosity of loss-of-function mutations in APOC3 were associated with a mean reduction in nonfasting TG levels of 44% and a corresponding 41% decrease in the incidence of ischemic vascular disease compared with wild-type individuals.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:nonsynonymous_apoa5_mutations",
+          "type": "RiskFactor",
+          "name": "Nonsynonymous APOA5 mutations"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:nonsynonymous_apoa5_mutations",
+          "type": "RiskFactor",
+          "name": "Nonsynonymous APOA5 mutations"
+        },
+        "target": {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:nonsynonymous_apoa5_mutations",
+          "type": "RiskFactor",
+          "name": "Nonsynonymous APOA5 mutations"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial infarction"
+        },
+        "properties": {
+          "confidence": 0.96,
+          "evidence": "Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:nonsynonymous_apoa5_mutations",
+          "type": "RiskFactor",
+          "name": "Nonsynonymous APOA5 mutations"
+        },
+        "target": {
+          "id": "condition:coronary_artery_disease",
+          "type": "Condition",
+          "name": "Coronary artery disease"
+        },
+        "properties": {
+          "confidence": 0.96,
+          "evidence": "Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:apoa5_promoter_polymorphisms",
+          "type": "RiskFactor",
+          "name": "APOA5 promoter polymorphisms"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:apoa5_promoter_polymorphisms",
+          "type": "RiskFactor",
+          "name": "APOA5 promoter polymorphisms"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:angptl4_loss_of_function_variants",
+          "type": "RiskFactor",
+          "name": "ANGPTL4 loss-of-function variants"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:angptl4_loss_of_function_variants",
+          "type": "RiskFactor",
+          "name": "ANGPTL4 loss-of-function variants"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:low_grade_inflammation",
+          "type": "Condition",
+          "name": "Low-grade inflammation"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant lipoprotein cholesterol"
+        },
+        "target": {
+          "id": "condition:low_grade_inflammation",
+          "type": "Condition",
+          "name": "Low-grade inflammation"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:c_reactive_protein",
+          "type": "Biomarker",
+          "name": "C-reactive protein"
+        },
+        "target": {
+          "id": "condition:low_grade_inflammation",
+          "type": "Condition",
+          "name": "Low-grade inflammation"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "increased low-grade inflammation, marked by elevated C-reactive protein levels.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "both fasting and nonfasting TG levels are significant predictors of cardiovascular events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0003",
+          "extractor": "MedGraphRAG",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG v1.1",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "among patients receiving statin therapy following acute coronary syndrome",
+        "reason": "No TREATS or PREVENTS relationship was extracted because the text only describes patients receiving statin therapy after acute coronary syndrome and does not explicitly state that statins treat or prevent the condition in this chunk."
+      },
+      {
+        "text": "As this association was not observed for genetically elevated LDL-C",
+        "reason": "No positive association involving LDL cholesterol and low-grade inflammation was extracted because the statement explicitly says the association was not observed."
+      },
+      {
+        "text": "TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL",
+        "reason": "No REDUCES relationship was extracted because REDUCES is defined only for Drug-to-Biomarker relationships, and TRL remnants are not a Drug."
+      },
+      {
+        "text": "reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death",
+        "reason": "No CAUSES relationship was extracted because the ontology restricts CAUSES to Condition-to-Condition relationships, while reactive oxygen species is represented as a Biomarker."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0b0b597ffdb406df006a4407562afc819f96e59f43f93024c8",
+    "created_at": 1782843222.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0b0b597ffdb406df006a440757c538819fb9e2683ddf0bbd86",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0b0b597ffdb406df006a44080be750819fb7a4ae5120341ad8",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:tumor_necrosis_factor_alpha\",\"type\":\"Biomarker\",\"name\":\"Tumor necrosis factor-alpha\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:interleukin_1_beta\",\"type\":\"Biomarker\",\"name\":\"Interleukin-1 beta\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:plasminogen_activator_inhibitor_1\",\"type\":\"Biomarker\",\"name\":\"Plasminogen activator inhibitor-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:tissue_factor\",\"type\":\"Biomarker\",\"name\":\"Tissue factor\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive protein\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_vascular_disease\",\"type\":\"Condition\",\"name\":\"Ischemic vascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"symptom:impaired_coronary_vasodilation\",\"type\":\"Symptom\",\"name\":\"Impaired coronary vasodilation\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:hyperlipoproteinemia_type_3\",\"type\":\"RiskFactor\",\"name\":\"Hyperlipoproteinemia type 3\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants are known to increase the production of reactive oxygen species\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:tumor_necrosis_factor_alpha\",\"type\":\"Biomarker\",\"name\":\"Tumor necrosis factor-alpha\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:interleukin_1_beta\",\"type\":\"Biomarker\",\"name\":\"Interleukin-1 beta\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the proapoptotic cytokines, tumor necrosis factor-\u03b1, and interleukin-1\u03b2\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"biomarker:plasminogen_activator_inhibitor_1\",\"type\":\"Biomarker\",\"name\":\"Plasminogen activator inhibitor-1\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"TRLs and their remnants enhance platelet aggregation and clot formation and amplify the coagulation cascade by 1) supporting the assembly of the prothombinase complex and 2) upregulating the expression of plasminogen activator inhibitor-1 and plasminogen activator inhibitor-1 antigen.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"biomarker:tissue_factor\",\"type\":\"Biomarker\",\"name\":\"Tissue factor\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"They have also been shown to upregulate the endothelial expression of tissue factor, a key initiator of the coagulation cascade.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"symptom:impaired_coronary_vasodilation\",\"type\":\"Symptom\",\"name\":\"Impaired coronary vasodilation\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL and have been shown to significantly correlate with impairment of coronary vasodilation.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"apoC-III, an apolipoprotein playing a central role in TG metabolism by inhibiting LPL, is overexpressed in hypertriglyceridemia and is significantly associated with cardiovascular risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"apoC-III, a key contributor to hypertriglyceridemia due to its inhibitory effects on LPL.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"ApoC-III is thought to contribute to the progression of atherosclerosis via a number of mechanisms\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:hyperlipoproteinemia_type_3\",\"type\":\"RiskFactor\",\"name\":\"Hyperlipoproteinemia type 3\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"elevated TG levels, and consequently TRLs, are causally associated with CVD.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"The fact that monogenic disorders of TG metabolism, such as hyperlipoproteinemia type 3, predispose individuals to CVD suggests that raised TG and remnant cholesterol levels contribute to this process.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"the strength of a variant\u2019s effect on TG levels strongly correlated with the magnitude of its effect on coronary artery disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"These results support the hypothesis that TRLs causally influence cardiovascular risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"biomarker:apolipoprotein_c_iii\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein C-III\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Heterozygous carriers of any of these mutations had 46% lower circulating levels of apoC-III, corresponding to 39% lower plasma TG levels, and a 40% lower risk of coronary heart disease than noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoc3_loss_of_function_mutations\",\"type\":\"RiskFactor\",\"name\":\"APOC3 loss-of-function mutations\"},\"target\":{\"id\":\"condition:ischemic_vascular_disease\",\"type\":\"Condition\",\"name\":\"Ischemic vascular disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"heterozygosity of loss-of-function mutations in APOC3 were associated with a mean reduction in nonfasting TG levels of 44% and a corresponding 41% decrease in the incidence of ischemic vascular disease compared with wild-type individuals.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Carriers of nonsynonymous APOA5 mutations have higher plasma TG levels, lower HDL-C levels, but similar overall cholesterol levels, compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:nonsynonymous_apoa5_mutations\",\"type\":\"RiskFactor\",\"name\":\"Nonsynonymous APOA5 mutations\"},\"target\":{\"id\":\"condition:coronary_artery_disease\",\"type\":\"Condition\",\"name\":\"Coronary artery disease\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Carriers of these mutations were shown to have a 2.2-fold higher risk of myocardial infarction (MI) and coronary artery disease compared with noncarriers.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:apoa5_promoter_polymorphisms\",\"type\":\"RiskFactor\",\"name\":\"APOA5 promoter polymorphisms\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"polymorphisms in the APOA5 promoter region, which led to decreased APOA5 expression, were strongly related to increased plasma TG levels and a concordant increase in coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:angptl4_loss_of_function_variants\",\"type\":\"RiskFactor\",\"name\":\"ANGPTL4 loss-of-function variants\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"loss-of-function variants in the gene encoding angiopoietin-like protein 4 (ANGPTL4), an inhibitor of LPL, were found to be associated with substantially decreased TG levels and decreased coronary heart disease risk.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Genetically elevated levels of TG and remnant lipoprotein cholesterol are also associated with increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:c_reactive_protein\",\"type\":\"Biomarker\",\"name\":\"C-reactive protein\"},\"target\":{\"id\":\"condition:low_grade_inflammation\",\"type\":\"Condition\",\"name\":\"Low-grade inflammation\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"increased low-grade inflammation, marked by elevated C-reactive protein levels.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0003\",\"extractor\":\"MedGraphRAG\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"among patients receiving statin therapy following acute coronary syndrome\",\"reason\":\"No TREATS or PREVENTS relationship was extracted because the text only describes patients receiving statin therapy after acute coronary syndrome and does not explicitly state that statins treat or prevent the condition in this chunk.\"},{\"text\":\"As this association was not observed for genetically elevated LDL-C\",\"reason\":\"No positive association involving LDL cholesterol and low-grade inflammation was extracted because the statement explicitly says the association was not observed.\"},{\"text\":\"TRL remnants suppress the atheroprotective and anti-inflammatory effects of HDL\",\"reason\":\"No REDUCES relationship was extracted because REDUCES is defined only for Drug-to-Biomarker relationships, and TRL remnants are not a Drug.\"},{\"text\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"reason\":\"No CAUSES relationship was extracted because the ontology restricts CAUSES to Condition-to-Condition relationships, while reactive oxygen species is represented as a Biomarker.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782843473.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3513,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 19142,
+      "output_tokens_details": {
+        "reasoning_tokens": 11394
+      },
+      "total_tokens": 22655
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T18:13:42.340595+00:00",
+  "finished_at": "2026-06-30T18:17:54.098600+00:00",
+  "duration_ms": 251758.011,
+  "status": "ok",
+  "error": ""
+}
