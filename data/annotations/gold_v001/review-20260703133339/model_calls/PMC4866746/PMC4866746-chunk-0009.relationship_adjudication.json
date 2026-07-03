@@ -1,0 +1,1434 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0009\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"REF\",\n    \"start_char\": \"43962\",\n    \"end_char\": \"49961\",\n    \"text\": \"y raising HDL cholesterol and reducing triglycerides in patients with coronary artery disease. The Bezafibrate Infarction Prevention (BIP) study\\n\\nEffects of long-term fenofibrate therapy on cardiovascular events in 9795 people with type 2 diabetes mellitus (the FIELD study): randomised controlled trial\\n\\nEfficacy of fibrates for cardiovascular risk reduction in persons with atherogenic dyslipidemia: a meta-analysis\\n\\nSafety considerations with fibrate therapy\\n\\nRhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\\n\\nGemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\\n\\nEffects of combination lipid therapy in type 2 diabetes mellitus\\n\\nMeta-analysis of the effect of nicotinic acid alone or in combination on cardiovascular events and atherosclerosis\\n\\nThe current state of niacin in cardiovascular disease prevention: a systematic review and meta-regression\\n\\nFifteen year mortality in coronary drug project patients: long-term benefit with niacin\\n\\nHPS2-THRIVE randomized placebo-controlled trial in 25 673 high-risk patients of ER niacin/laropiprant: trial design, pre-specified muscle and liver outcomes, and reasons for stopping study treatment\\n\\nNiacin in patients with low HDL cholesterol levels receiving intensive statin therapy\\n\\nRelationship of lipoproteins to cardiovascular events: the AIM-HIGH Trial (atherothrombosis intervention in metabolic syndrome with low HDL/high triglycerides and impact on global health outcomes)\\n\\nSafety considerations with niacin therapy\\n\\nn-3 fatty acids and serum lipoproteins: human studies\\n\\nDietary supplementation with n-3 polyunsaturated fatty acids and vitamin E after myocardial infarction: results of the GISSI-Prevenzione trial. Gruppo Italiano per lo Studio della Sopravvivenza nell\\u2019Infarto miocardico\\n\\nEffects of eicosap-entaenoic acid on major coronary events in hypercholesterolaemic patients (JELIS): a randomised open-label, blinded endpoint analysis\\n\\nn-3 fatty acids and cardiovascular events after myocardial infarction\\n\\nOMEGA, a randomized, placebo-controlled trial to test the effect of highly purified omega-3 fatty acids on top of modern guideline-adjusted therapy after myocardial infarction\\n\\nOmega-3 free fatty acids for the treatment of severe hypertriglyceridemia: the Epanova for lowering very high triglycerides (EVOLVE) trial\\n\\nn-3 Fatty acids from fish or fish-oil supplements, but not alpha-linolenic acid, benefit cardiovascular disease outcomes in primary- and secondary-prevention studies: a systematic review\\n\\nEicosapentaenoic acid ethyl ester (AMR101) therapy in patients with very high triglyceride levels (from the multi-center, placebo-controlled, randomized, double-blind, 12-week study with an open-label extension [MARINE] trial)\\n\\nEfficacy and safety of eicosapentaenoic acid ethyl ester (AMR101) therapy in statin-treated patients with persistent high triglycerides (from the ANCHOR study)\\n\\nOmega-3 fatty acids in high-risk cardiovascular patients: a meta-analysis of randomized controlled trials\\n\\nSafety and efficacy of Omacor in severe hypertriglyceridemia\\n\\nRosuvastatin-associated adverse effects and drug-drug interactions in the clinical setting of dyslipidemia\\n\\nAn antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\\n\\nApolipoprotein C-III: going back to the future for a lipid drug target\\n\\nGene therapy for lipoprotein lipase deficiency\\n\\nEmerging LDL therapies: mipomersen-antisense oligonucleotide therapy in the management of hypercholesterolemia\\n\\nUse of microsomal triglyceride transfer protein inhibitors in patients with homozygous familial hypercholesterolemia: translating clinical trial experience into clinical practice\\n\\nThird Report of the National Cholesterol Education Program (NCEP) Expert Panel on Detection, Evaluation, and Treatment of High Blood Cholesterol in Adults (Adult Treatment Panel III) final report\\n\\nEstimation of the concentration of low-density lipoprotein cholesterol in plasma, without use of the preparative ultracentrifuge\\n\\nNovel unbiased equations to calculate triglyceride-rich lipoprotein cholesterol from routine non-fasting lipids\\n\\nFriedewald-estimated versus directly measured low-density lipoprotein cholesterol and treatment implications\\n\\nLong-term risk of cardiovascular events across a spectrum of adverse major plasma lipid combinations in the Framingham Heart Study\\n\\nCoronary heart disease prediction from lipoprotein cholesterol levels, triglycerides, lipoprotein(a), apolipoproteins A-I and B, and HDL density sub-fractions: the Atherosclerosis Risk in Communities (ARIC) Study\\n\\nThe importance of triglycerides: results from the Prospective Cardiovascular Munster (PROCAM) Study\\n\\nMechanism of action of niacin\\n\\nEffects of omega-3 fatty acids on serum markers of cardiovascular disease risk: a systematic review\\n\\nThe effect of omega-3 carboxylic acids on apolipoprotein CIII containing lipoproteins in moderate to severe hypertriglyceridemia\\n\\nOverview of prescription omega-3 fatty acid products for hypertriglyceridemia\\n\\nDemystifying the management of hypertriglyceridaemia\\n\\nOverview of triglyceride-rich lipoprotein metabolism.\\n\\nAbbreviations: Apo, apolipoprotein; IDL, intermediate-density lipoprotein; LDL, low-density lipoprotein; LPL, lipoprotein lipase; VLDL, very low-density lipoprotein.\\n\\nProposed pathophysiology of triglyceride-rich lipoproteins in the progression of atherosclerosis.\\n\\nNote: Adapted by permission from Macmillan Publishers Ltd: [Nature Reviews Cardiology] Watts GF, Ooi EM, Chan DC. Demystifying the management of hypertriglyceridaemia. Nat Rev Cardiol. 2013;10(11):648\\u2013661, Copyright \\u00a9 2013.\\n\\nAbbreviations: LPL, lipoprotein lipase; TRL, triglyceride-rich lipoproteins; TRL-R, triglyceride-rich lipoprotein remnants.\\n\\nKey studies investigating the association between triglycerides and cardiovascular disease\\n\\nStudy Population (sample size) Key findings ERFC: individual record\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:33942b4574e92664\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein C-III\",\n      \"normalized_name\": \"Apolipoprotein C-III\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apolipoprotein C-III\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47210\",\n      \"evidence_end_char\": \"47230\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone biomarker/protein explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:139ebcd2fa8d7090\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:plasma_pravastatin_concentration\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"plasma pravastatin concentrations\",\n      \"normalized_name\": \"Plasma pravastatin concentration\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"plasma pravastatin concentrations\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44533\",\n      \"evidence_end_char\": \"44566\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=revised; reason=Supported as a pharmacokinetic measured concentration; revised to match the plural wording in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dbf01e317037f511\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglyceride-rich lipoproteins\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"49381\",\n      \"evidence_end_char\": \"49411\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipoprotein biomarker class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:4dbdcf5f53b52ef7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44001\",\n      \"evidence_end_char\": \"44014\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:cd8793a5855d06ef\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:atherogenic_dyslipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherogenic Dyslipidemia\",\n      \"normalized_name\": \"Atherogenic Dyslipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherogenic dyslipidemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44338\",\n      \"evidence_end_char\": \"44362\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8669f334f81cfc38\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerosis\",\n      \"normalized_name\": \"Atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherosclerosis\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44773\",\n      \"evidence_end_char\": \"44788\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0671144143a6a7a2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular Disease\",\n      \"normalized_name\": \"Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44821\",\n      \"evidence_end_char\": \"44843\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition/disease category explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:24a15cf6abbd35e9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:homozygous_familial_hypercholesterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Homozygous familial hypercholesterolemia\",\n      \"normalized_name\": \"Homozygous familial hypercholesterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"homozygous familial hypercholesterolemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47635\",\n      \"evidence_end_char\": \"47675\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone inherited lipid disorder explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:46a676c639905c59\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hypercholesterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypercholesterolemia\",\n      \"normalized_name\": \"Hypercholesterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypercholesterolemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47537\",\n      \"evidence_end_char\": \"47557\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:243b322e0c88512b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"46243\",\n      \"evidence_end_char\": \"46263\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f199b5a27f9ae7b4\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:lipoprotein_lipase_deficiency\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Lipoprotein lipase deficiency\",\n      \"normalized_name\": \"Lipoprotein lipase deficiency\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lipoprotein lipase deficiency\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47416\",\n      \"evidence_end_char\": \"47445\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone metabolic/genetic condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b115b168f4caded8\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:rhabdomyolysis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Rhabdomyolysis\",\n      \"normalized_name\": \"Rhabdomyolysis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Rhabdomyolysis\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44425\",\n      \"evidence_end_char\": \"44439\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a93b2e5c8ae248ec\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Severe Hypertriglyceridemia\",\n      \"normalized_name\": \"Severe Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"severe hypertriglyceridemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"46236\",\n      \"evidence_end_char\": \"46263\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Specific severity-qualified condition explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:58ffcbc1f235a6aa\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:apolipoprotein_c_iii_antisense_inhibitor\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"antisense inhibitor of apolipoprotein C-III\",\n      \"normalized_name\": \"Apolipoprotein C-III antisense inhibitor\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"antisense inhibitor of apolipoprotein C-III\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47187\",\n      \"evidence_end_char\": \"47230\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=revised; reason=The chunk supports a drug/intervention class targeting apolipoprotein C-III, but the extracted text was normalized into a different word order.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1788d049b25fe4e8\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:eicosapentaenoic_acid_ethyl_ester\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Eicosapentaenoic acid ethyl ester\",\n      \"normalized_name\": \"Eicosapentaenoic acid ethyl ester\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Eicosapentaenoic acid ethyl ester\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"46518\",\n      \"evidence_end_char\": \"46551\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug entity explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bb4d1b8f17207dfd\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44279\",\n      \"evidence_end_char\": \"44287\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b4e0c45e99321c0\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gemfibrozil\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44478\",\n      \"evidence_end_char\": \"44489\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7b391eb8080ff50f\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:hmg_coa_reductase_inhibitors\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"HMG-CoA reductase inhibitors\",\n      \"normalized_name\": \"HMG-CoA reductase inhibitors\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HMG-CoA reductase inhibitors\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44445\",\n      \"evidence_end_char\": \"44473\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:56d1f5ef2792be35\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:microsomal_triglyceride_transfer_protein_inhibitors\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Microsomal triglyceride transfer protein inhibitors\",\n      \"normalized_name\": \"Microsomal triglyceride transfer protein inhibitors\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"microsomal triglyceride transfer protein inhibitors\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47566\",\n      \"evidence_end_char\": \"47617\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c3791c616cef770a\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:mipomersen_antisense_oligonucleotide\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"mipomersen\",\n      \"normalized_name\": \"Mipomersen\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"mipomersen\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47471\",\n      \"evidence_end_char\": \"47481\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=revised; reason=The standalone drug is mipomersen; the surrounding words describe its antisense oligonucleotide therapy class.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2d49ad01c8138a70\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omacor\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omacor\",\n      \"normalized_name\": \"Omacor\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omacor\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47037\",\n      \"evidence_end_char\": \"47043\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug/product name explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9415215911e9339e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids_from_fish_or_fish_oil_supplements\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"n-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"n-3 Fatty acids from fish or fish-oil supplements\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=revised; reason=The evidence supports omega-3/n-3 fatty acids; the source phrase should not be part of the core drug entity.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ee27f550051b7058\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_free_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 free fatty acids\",\n      \"normalized_name\": \"Omega-3 free fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega-3 free fatty acids\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"46190\",\n      \"evidence_end_char\": \"46214\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug/product class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3905dee511b08380\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:pravastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pravastatin\",\n      \"normalized_name\": \"Pravastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pravastatin\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44540\",\n      \"evidence_end_char\": \"44551\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bc70590168705d4b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:prescription_omega_3_fatty_acid_products\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Prescription omega-3 fatty acid products\",\n      \"normalized_name\": \"Prescription omega-3 fatty acid products\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"prescription omega-3 fatty acid products\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"49010\",\n      \"evidence_end_char\": \"49050\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug/product class explicitly mentioned.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:hdl_cholesterol\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"43972\",\n      \"evidence_end_char\": \"43987\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important lipid biomarker explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:coronary_artery_disease\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"coronary artery disease\",\n      \"normalized_name\": \"Coronary artery disease\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"coronary artery disease\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44032\",\n      \"evidence_end_char\": \"44055\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important cardiovascular condition explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:bezafibrate\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Bezafibrate\",\n      \"normalized_name\": \"Bezafibrate\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"Bezafibrate\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44061\",\n      \"evidence_end_char\": \"44072\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone fibrate drug explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:fenofibrate\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"fenofibrate\",\n      \"normalized_name\": \"Fenofibrate\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"fenofibrate\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44128\",\n      \"evidence_end_char\": \"44139\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone fibrate drug explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:type_2_diabetes_mellitus\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"type 2 diabetes mellitus\",\n      \"normalized_name\": \"Type 2 diabetes mellitus\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"type 2 diabetes mellitus\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44193\",\n      \"evidence_end_char\": \"44217\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important metabolic condition explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:niacin\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"niacin\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"44811\",\n      \"evidence_end_char\": \"44817\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone drug/vitamin therapy repeatedly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:myocardial_infarction\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"myocardial infarction\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important cardiovascular condition explicitly mentioned in multiple reference titles but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:laropiprant\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"laropiprant\",\n      \"normalized_name\": \"Laropiprant\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"ER niacin/laropiprant\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone drug component explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:rosuvastatin\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Rosuvastatin\",\n      \"normalized_name\": \"Rosuvastatin\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"Rosuvastatin-associated\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47076\",\n      \"evidence_end_char\": \"47098\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone statin drug explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:ldl_cholesterol\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"low-density lipoprotein cholesterol\",\n      \"normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"low-density lipoprotein cholesterol\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important lipid biomarker explicitly mentioned but missing from candidates.\"\n    },\n    {\n      \"entity_gold_id\": \"addition:PMC4866746-chunk-0009:lipoprotein_lipase\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"lipoprotein lipase\",\n      \"normalized_name\": \"Lipoprotein lipase\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"lipoprotein lipase\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": \"47416\",\n      \"evidence_end_char\": \"47434\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone enzyme/protein biomarker explicitly mentioned but missing from candidates.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:288ce1c37e1fd9b0\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:gene_therapy\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gene therapy\",\n      \"source_normalized_name\": \"Gene therapy\",\n      \"target_entity_id\": \"condition:lipoprotein_lipase_deficiency\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Lipoprotein lipase deficiency\",\n      \"target_normalized_name\": \"Lipoprotein lipase deficiency\",\n      \"evidence_text\": \"Gene therapy for lipoprotein lipase deficiency\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47399,\n      \"evidence_end_char\": 47445,\n      \"confidence_gold\": 0.86,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:530b06854d6c252b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:omega_3_free_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 free fatty acids\",\n      \"source_normalized_name\": \"Omega-3 free fatty acids\",\n      \"target_entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Severe Hypertriglyceridemia\",\n      \"target_normalized_name\": \"Severe Hypertriglyceridemia\",\n      \"evidence_text\": \"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 46190,\n      \"evidence_end_char\": 46263,\n      \"confidence_gold\": 0.97,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:ff185e74dfe81cd6\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"Key studies investigating the association between triglycerides and cardiovascular disease\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 49802,\n      \"evidence_end_char\": 49892,\n      \"confidence_gold\": 0.96,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:1ebc29982585b70e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:omacor\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omacor\",\n      \"source_normalized_name\": \"Omacor\",\n      \"target_entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Severe Hypertriglyceridemia\",\n      \"target_normalized_name\": \"Severe Hypertriglyceridemia\",\n      \"evidence_text\": \"Safety and efficacy of Omacor in severe hypertriglyceridemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47014,\n      \"evidence_end_char\": 47074,\n      \"confidence_gold\": 0.78,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:18385faa6afa4102\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:apolipoprotein_c_iii_antisense_inhibitor\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Apolipoprotein C-III antisense inhibitor\",\n      \"source_normalized_name\": \"Apolipoprotein C-III antisense inhibitor\",\n      \"target_entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Apolipoprotein C-III\",\n      \"target_normalized_name\": \"Apolipoprotein C-III\",\n      \"evidence_text\": \"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47184,\n      \"evidence_end_char\": 47325,\n      \"confidence_gold\": 0.96,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:fb5e6e6b6d0b6870\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"Efficacy of fibrates for cardiovascular risk reduction in persons with atherogenic dyslipidemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 44267,\n      \"evidence_end_char\": 44362,\n      \"confidence_gold\": 0.76,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c8871e78b2c4a1f3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:gemfibrozil\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gemfibrozil\",\n      \"source_normalized_name\": \"Gemfibrozil\",\n      \"target_entity_id\": \"biomarker:plasma_pravastatin_concentration\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Plasma pravastatin concentration\",\n      \"target_normalized_name\": \"Plasma pravastatin concentration\",\n      \"evidence_text\": \"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 44511,\n      \"evidence_end_char\": 44606,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:f06d41270c88e2b7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids_from_fish_or_fish_oil_supplements\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids from fish or fish-oil supplements\",\n      \"source_normalized_name\": \"Omega-3 fatty acids from fish or fish-oil supplements\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"n-3 Fatty acids from fish or fish-oil supplements, but not alpha-linolenic acid, benefit cardiovascular disease outcomes in primary- and secondary-prevention studies\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 46330,\n      \"evidence_end_char\": 46495,\n      \"confidence_gold\": 0.82,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:d6c5154fb420f320\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:eicosapentaenoic_acid_ethyl_ester\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Eicosapentaenoic acid ethyl ester\",\n      \"source_normalized_name\": \"Eicosapentaenoic acid ethyl ester\",\n      \"target_entity_id\": \"condition:hypertriglyceridemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Hypertriglyceridemia\",\n      \"target_normalized_name\": \"Hypertriglyceridemia\",\n      \"evidence_text\": \"Eicosapentaenoic acid ethyl ester (AMR101) therapy in patients with very high triglyceride levels\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 46518,\n      \"evidence_end_char\": 46615,\n      \"confidence_gold\": 0.77,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:a4d2ad685d6be230\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INTERACTS_WITH\",\n      \"source_entity_id\": \"drug:gemfibrozil\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gemfibrozil\",\n      \"source_normalized_name\": \"Gemfibrozil\",\n      \"target_entity_id\": \"drug:hmg_coa_reductase_inhibitors\",\n      \"target_entity_type\": \"Drug\",\n      \"target_entity_text\": \"HMG-CoA reductase inhibitors\",\n      \"target_normalized_name\": \"HMG-CoA reductase inhibitors\",\n      \"evidence_text\": \"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 44425,\n      \"evidence_end_char\": 44509,\n      \"confidence_gold\": 0.84,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:5a188b3ceff4aabc\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:prescription_omega_3_fatty_acid_products\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Prescription omega-3 fatty acid products\",\n      \"source_normalized_name\": \"Prescription omega-3 fatty acid products\",\n      \"target_entity_id\": \"condition:hypertriglyceridemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Hypertriglyceridemia\",\n      \"target_normalized_name\": \"Hypertriglyceridemia\",\n      \"evidence_text\": \"Overview of prescription omega-3 fatty acid products for hypertriglyceridemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 48998,\n      \"evidence_end_char\": 49075,\n      \"confidence_gold\": 0.86,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:6e584e021da1e670\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:microsomal_triglyceride_transfer_protein_inhibitors\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Microsomal triglyceride transfer protein inhibitors\",\n      \"source_normalized_name\": \"Microsomal triglyceride transfer protein inhibitors\",\n      \"target_entity_id\": \"condition:homozygous_familial_hypercholesterolemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Homozygous familial hypercholesterolemia\",\n      \"target_normalized_name\": \"Homozygous familial hypercholesterolemia\",\n      \"evidence_text\": \"Use of microsomal triglyceride transfer protein inhibitors in patients with homozygous familial hypercholesterolemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47559,\n      \"evidence_end_char\": 47675,\n      \"confidence_gold\": 0.78,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:58c1836e8c084951\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_free_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 free fatty acids\",\n      \"source_normalized_name\": \"Omega-3 free fatty acids\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia: the Epanova for lowering very high triglycerides (EVOLVE) trial\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 46190,\n      \"evidence_end_char\": 46328,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c1ce9e4a69e09f76\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"source_normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"target_entity_id\": \"condition:atherosclerosis\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Atherosclerosis\",\n      \"target_normalized_name\": \"Atherosclerosis\",\n      \"evidence_text\": \"Proposed pathophysiology of triglyceride-rich lipoproteins in the progression of atherosclerosis.\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 49353,\n      \"evidence_end_char\": 49450,\n      \"confidence_gold\": 0.72,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:85f6f75627aeabac\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INTERACTS_WITH\",\n      \"source_entity_id\": \"drug:gemfibrozil\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gemfibrozil\",\n      \"source_normalized_name\": \"Gemfibrozil\",\n      \"target_entity_id\": \"drug:pravastatin\",\n      \"target_entity_type\": \"Drug\",\n      \"target_entity_text\": \"Pravastatin\",\n      \"target_normalized_name\": \"Pravastatin\",\n      \"evidence_text\": \"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 44511,\n      \"evidence_end_char\": 44606,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:079f51742b4de1d7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:mipomersen_antisense_oligonucleotide\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Mipomersen-antisense oligonucleotide\",\n      \"source_normalized_name\": \"Mipomersen-antisense oligonucleotide\",\n      \"target_entity_id\": \"condition:hypercholesterolemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Hypercholesterolemia\",\n      \"target_normalized_name\": \"Hypercholesterolemia\",\n      \"evidence_text\": \"mipomersen-antisense oligonucleotide therapy in the management of hypercholesterolemia\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47471,\n      \"evidence_end_char\": 47557,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:a6792df2e1c2137e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:apolipoprotein_c_iii_antisense_inhibitor\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Apolipoprotein C-III antisense inhibitor\",\n      \"source_normalized_name\": \"Apolipoprotein C-III antisense inhibitor\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 47184,\n      \"evidence_end_char\": 47325,\n      \"confidence_gold\": 0.96,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:4d12648d3edde48c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0009\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"HAS_ADVERSE_EFFECT\",\n      \"source_entity_id\": \"drug:hmg_coa_reductase_inhibitors_and_gemfibrozil_combination_therapy\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\n      \"source_normalized_name\": \"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\n      \"target_entity_id\": \"condition:rhabdomyolysis\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Rhabdomyolysis\",\n      \"target_normalized_name\": \"Rhabdomyolysis\",\n      \"evidence_text\": \"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\n      \"evidence_section\": \"REF\",\n      \"evidence_start_char\": 44425,\n      \"evidence_end_char\": 44509,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0009.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:288ce1c37e1fd9b0\",\"decision\":\"rejected\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:gene_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gene therapy\",\"source_normalized_name\":\"Gene therapy\",\"target_entity_id\":\"condition:lipoprotein_lipase_deficiency\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Lipoprotein lipase deficiency\",\"target_normalized_name\":\"Lipoprotein lipase deficiency\",\"evidence_text\":\"Gene therapy for lipoprotein lipase deficiency\",\"evidence_start_char\":\"47399\",\"evidence_end_char\":\"47445\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rejected because the source endpoint Gene therapy is not among the accepted entity rows, despite the title supporting the semantic relation.\"},{\"relationship_gold_id\":\"silver_relationship:530b06854d6c252b\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:omega_3_free_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 free fatty acids\",\"source_normalized_name\":\"Omega-3 free fatty acids\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe Hypertriglyceridemia\",\"target_normalized_name\":\"Severe Hypertriglyceridemia\",\"evidence_text\":\"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia\",\"evidence_start_char\":\"46190\",\"evidence_end_char\":\"46263\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The title explicitly states omega-3 free fatty acids are for the treatment of severe hypertriglyceridemia.\"},{\"relationship_gold_id\":\"silver_relationship:ff185e74dfe81cd6\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"evidence_start_char\":\"49802\",\"evidence_end_char\":\"49892\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states an association between triglycerides and cardiovascular disease.\"},{\"relationship_gold_id\":\"silver_relationship:1ebc29982585b70e\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:omacor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omacor\",\"source_normalized_name\":\"Omacor\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe Hypertriglyceridemia\",\"target_normalized_name\":\"Severe Hypertriglyceridemia\",\"evidence_text\":\"Safety and efficacy of Omacor in severe hypertriglyceridemia\",\"evidence_start_char\":\"47014\",\"evidence_end_char\":\"47074\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"A drug's safety and efficacy in severe hypertriglyceridemia strongly implies therapeutic use for that condition.\"},{\"relationship_gold_id\":\"silver_relationship:18385faa6afa4102\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:apolipoprotein_c_iii_antisense_inhibitor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Apolipoprotein C-III antisense inhibitor\",\"source_normalized_name\":\"Apolipoprotein C-III antisense inhibitor\",\"target_entity_id\":\"biomarker:apolipoprotein_c_iii\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Apolipoprotein C-III\",\"target_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\"evidence_start_char\":\"47184\",\"evidence_end_char\":\"47325\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly says the antisense inhibitor substantially decreases fasting apolipoprotein C-III.\"},{\"relationship_gold_id\":\"silver_relationship:fb5e6e6b6d0b6870\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Efficacy of fibrates for cardiovascular risk reduction in persons with atherogenic dyslipidemia\",\"evidence_start_char\":\"44267\",\"evidence_end_char\":\"44362\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Cardiovascular risk reduction by fibrates strongly implies prevention or reduced risk of cardiovascular disease outcomes.\"},{\"relationship_gold_id\":\"silver_relationship:c8871e78b2c4a1f3\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"biomarker:plasma_pravastatin_concentration\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"plasma pravastatin concentrations\",\"target_normalized_name\":\"Plasma pravastatin concentration\",\"evidence_text\":\"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\"evidence_start_char\":\"44511\",\"evidence_end_char\":\"44606\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that gemfibrozil increases plasma pravastatin concentrations.\"},{\"relationship_gold_id\":\"silver_relationship:f06d41270c88e2b7\",\"decision\":\"revised\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:omega_3_fatty_acids_from_fish_or_fish_oil_supplements\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"n-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"n-3 Fatty acids from fish or fish-oil supplements, but not alpha-linolenic acid, benefit cardiovascular disease outcomes in primary- and secondary-prevention studies\",\"evidence_start_char\":\"46330\",\"evidence_end_char\":\"46495\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Revised the source text/normalization to match the accepted omega-3 fatty acids entity; the evidence states benefit for cardiovascular disease outcomes in prevention studies.\"},{\"relationship_gold_id\":\"silver_relationship:d6c5154fb420f320\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:eicosapentaenoic_acid_ethyl_ester\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Eicosapentaenoic acid ethyl ester\",\"source_normalized_name\":\"Eicosapentaenoic acid ethyl ester\",\"target_entity_id\":\"condition:hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypertriglyceridemia\",\"target_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Eicosapentaenoic acid ethyl ester (AMR101) therapy in patients with very high triglyceride levels\",\"evidence_start_char\":\"46518\",\"evidence_end_char\":\"46615\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Therapy in patients with very high triglyceride levels strongly implies treatment of hypertriglyceridemia.\"},{\"relationship_gold_id\":\"silver_relationship:a4d2ad685d6be230\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:hmg_coa_reductase_inhibitors\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"HMG-CoA reductase inhibitors\",\"target_normalized_name\":\"HMG-CoA reductase inhibitors\",\"evidence_text\":\"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"evidence_start_char\":\"44425\",\"evidence_end_char\":\"44509\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The phrase combination therapy with gemfibrozil and HMG-CoA reductase inhibitors supports a drug-drug interaction/coadministration relationship.\"},{\"relationship_gold_id\":\"silver_relationship:5a188b3ceff4aabc\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:prescription_omega_3_fatty_acid_products\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Prescription omega-3 fatty acid products\",\"source_normalized_name\":\"Prescription omega-3 fatty acid products\",\"target_entity_id\":\"condition:hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypertriglyceridemia\",\"target_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Overview of prescription omega-3 fatty acid products for hypertriglyceridemia\",\"evidence_start_char\":\"48998\",\"evidence_end_char\":\"49075\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Prescription omega-3 fatty acid products being described as for hypertriglyceridemia strongly implies therapeutic use.\"},{\"relationship_gold_id\":\"silver_relationship:6e584e021da1e670\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:microsomal_triglyceride_transfer_protein_inhibitors\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Microsomal triglyceride transfer protein inhibitors\",\"source_normalized_name\":\"Microsomal triglyceride transfer protein inhibitors\",\"target_entity_id\":\"condition:homozygous_familial_hypercholesterolemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Homozygous familial hypercholesterolemia\",\"target_normalized_name\":\"Homozygous familial hypercholesterolemia\",\"evidence_text\":\"Use of microsomal triglyceride transfer protein inhibitors in patients with homozygous familial hypercholesterolemia\",\"evidence_start_char\":\"47559\",\"evidence_end_char\":\"47675\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Use of the inhibitors in patients with homozygous familial hypercholesterolemia strongly implies treatment/management of that condition.\"},{\"relationship_gold_id\":\"silver_relationship:58c1836e8c084951\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_free_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 free fatty acids\",\"source_normalized_name\":\"Omega-3 free fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia: the Epanova for lowering very high triglycerides (EVOLVE) trial\",\"evidence_start_char\":\"46190\",\"evidence_end_char\":\"46328\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly describes Epanova/omega-3 free fatty acids as for lowering very high triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c1ce9e4a69e09f76\",\"decision\":\"rejected\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich lipoproteins\",\"target_entity_id\":\"condition:atherosclerosis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Atherosclerosis\",\"target_normalized_name\":\"Atherosclerosis\",\"evidence_text\":\"Proposed pathophysiology of triglyceride-rich lipoproteins in the progression of atherosclerosis.\",\"evidence_start_char\":\"49353\",\"evidence_end_char\":\"49450\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"Rejected because the evidence is framed as proposed pathophysiology, making the relationship speculative under the acceptance rules.\"},{\"relationship_gold_id\":\"silver_relationship:85f6f75627aeabac\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:pravastatin\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"Pravastatin\",\"target_normalized_name\":\"Pravastatin\",\"evidence_text\":\"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\"evidence_start_char\":\"44511\",\"evidence_end_char\":\"44606\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Gemfibrozil changing pravastatin concentrations and renal clearance explicitly supports a pharmacokinetic interaction with pravastatin.\"},{\"relationship_gold_id\":\"silver_relationship:079f51742b4de1d7\",\"decision\":\"revised\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:mipomersen_antisense_oligonucleotide\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"mipomersen\",\"source_normalized_name\":\"Mipomersen\",\"target_entity_id\":\"condition:hypercholesterolemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypercholesterolemia\",\"target_normalized_name\":\"Hypercholesterolemia\",\"evidence_text\":\"mipomersen-antisense oligonucleotide therapy in the management of hypercholesterolemia\",\"evidence_start_char\":\"47471\",\"evidence_end_char\":\"47557\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Revised the source text/normalization to match the accepted mipomersen entity; the evidence explicitly states therapy in the management of hypercholesterolemia.\"},{\"relationship_gold_id\":\"silver_relationship:a6792df2e1c2137e\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:apolipoprotein_c_iii_antisense_inhibitor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Apolipoprotein C-III antisense inhibitor\",\"source_normalized_name\":\"Apolipoprotein C-III antisense inhibitor\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\"evidence_start_char\":\"47184\",\"evidence_end_char\":\"47325\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states the antisense inhibitor substantially decreases triglyceride levels.\"},{\"relationship_gold_id\":\"silver_relationship:4d12648d3edde48c\",\"decision\":\"rejected\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:hmg_coa_reductase_inhibitors_and_gemfibrozil_combination_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"source_normalized_name\":\"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"target_entity_id\":\"condition:rhabdomyolysis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Rhabdomyolysis\",\"target_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"evidence_start_char\":\"44425\",\"evidence_end_char\":\"44509\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rejected because the combination-therapy source endpoint is not an accepted entity row, even though the title supports an adverse effect for the combination.\"}],\"relationship_additions\":[{\"relationship_gold_id\":\"addition:PMC4866746-chunk-0009:niacin_prevents_cardiovascular_disease\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"addition:PMC4866746-chunk-0009:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"The current state of niacin in cardiovascular disease prevention: a systematic review and meta-regression\",\"evidence_start_char\":\"44790\",\"evidence_end_char\":\"44895\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The title places niacin in the context of cardiovascular disease prevention, supporting a preventive-use relationship with accepted endpoints.\"}],\"review_notes\":\"Reviewed all 18 candidate relationships against accepted entity rows. Rejected unsupported endpoint relationships for Gene therapy and the HMG-CoA reductase inhibitor/gemfibrozil combination source, and rejected the triglyceride-rich lipoprotein relationship because it is explicitly framed as proposed/speculative.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:288ce1c37e1fd9b0",
+        "decision": "rejected",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:gene_therapy",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gene therapy",
+        "source_normalized_name": "Gene therapy",
+        "target_entity_id": "condition:lipoprotein_lipase_deficiency",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Lipoprotein lipase deficiency",
+        "target_normalized_name": "Lipoprotein lipase deficiency",
+        "evidence_text": "Gene therapy for lipoprotein lipase deficiency",
+        "evidence_start_char": "47399",
+        "evidence_end_char": "47445",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Rejected because the source endpoint Gene therapy is not among the accepted entity rows, despite the title supporting the semantic relation."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:530b06854d6c252b",
+        "decision": "accepted",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:omega_3_free_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 free fatty acids",
+        "source_normalized_name": "Omega-3 free fatty acids",
+        "target_entity_id": "condition:severe_hypertriglyceridemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Severe Hypertriglyceridemia",
+        "target_normalized_name": "Severe Hypertriglyceridemia",
+        "evidence_text": "Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia",
+        "evidence_start_char": "46190",
+        "evidence_end_char": "46263",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The title explicitly states omega-3 free fatty acids are for the treatment of severe hypertriglyceridemia."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:ff185e74dfe81cd6",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "Key studies investigating the association between triglycerides and cardiovascular disease",
+        "evidence_start_char": "49802",
+        "evidence_end_char": "49892",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states an association between triglycerides and cardiovascular disease."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:1ebc29982585b70e",
+        "decision": "accepted",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:omacor",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omacor",
+        "source_normalized_name": "Omacor",
+        "target_entity_id": "condition:severe_hypertriglyceridemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Severe Hypertriglyceridemia",
+        "target_normalized_name": "Severe Hypertriglyceridemia",
+        "evidence_text": "Safety and efficacy of Omacor in severe hypertriglyceridemia",
+        "evidence_start_char": "47014",
+        "evidence_end_char": "47074",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "A drug's safety and efficacy in severe hypertriglyceridemia strongly implies therapeutic use for that condition."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:18385faa6afa4102",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:apolipoprotein_c_iii_antisense_inhibitor",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Apolipoprotein C-III antisense inhibitor",
+        "source_normalized_name": "Apolipoprotein C-III antisense inhibitor",
+        "target_entity_id": "biomarker:apolipoprotein_c_iii",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Apolipoprotein C-III",
+        "target_normalized_name": "Apolipoprotein C-III",
+        "evidence_text": "An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency",
+        "evidence_start_char": "47184",
+        "evidence_end_char": "47325",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly says the antisense inhibitor substantially decreases fasting apolipoprotein C-III."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:fb5e6e6b6d0b6870",
+        "decision": "accepted",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "Efficacy of fibrates for cardiovascular risk reduction in persons with atherogenic dyslipidemia",
+        "evidence_start_char": "44267",
+        "evidence_end_char": "44362",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Cardiovascular risk reduction by fibrates strongly implies prevention or reduced risk of cardiovascular disease outcomes."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c8871e78b2c4a1f3",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:gemfibrozil",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gemfibrozil",
+        "source_normalized_name": "Gemfibrozil",
+        "target_entity_id": "biomarker:plasma_pravastatin_concentration",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "plasma pravastatin concentrations",
+        "target_normalized_name": "Plasma pravastatin concentration",
+        "evidence_text": "Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance",
+        "evidence_start_char": "44511",
+        "evidence_end_char": "44606",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that gemfibrozil increases plasma pravastatin concentrations."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:f06d41270c88e2b7",
+        "decision": "revised",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:omega_3_fatty_acids_from_fish_or_fish_oil_supplements",
+        "source_entity_type": "Drug",
+        "source_entity_text": "n-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "n-3 Fatty acids from fish or fish-oil supplements, but not alpha-linolenic acid, benefit cardiovascular disease outcomes in primary- and secondary-prevention studies",
+        "evidence_start_char": "46330",
+        "evidence_end_char": "46495",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Revised the source text/normalization to match the accepted omega-3 fatty acids entity; the evidence states benefit for cardiovascular disease outcomes in prevention studies."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:d6c5154fb420f320",
+        "decision": "accepted",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:eicosapentaenoic_acid_ethyl_ester",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Eicosapentaenoic acid ethyl ester",
+        "source_normalized_name": "Eicosapentaenoic acid ethyl ester",
+        "target_entity_id": "condition:hypertriglyceridemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Hypertriglyceridemia",
+        "target_normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "Eicosapentaenoic acid ethyl ester (AMR101) therapy in patients with very high triglyceride levels",
+        "evidence_start_char": "46518",
+        "evidence_end_char": "46615",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Therapy in patients with very high triglyceride levels strongly implies treatment of hypertriglyceridemia."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:a4d2ad685d6be230",
+        "decision": "accepted",
+        "relationship_type": "INTERACTS_WITH",
+        "source_entity_id": "drug:gemfibrozil",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gemfibrozil",
+        "source_normalized_name": "Gemfibrozil",
+        "target_entity_id": "drug:hmg_coa_reductase_inhibitors",
+        "target_entity_type": "Drug",
+        "target_entity_text": "HMG-CoA reductase inhibitors",
+        "target_normalized_name": "HMG-CoA reductase inhibitors",
+        "evidence_text": "Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy",
+        "evidence_start_char": "44425",
+        "evidence_end_char": "44509",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The phrase combination therapy with gemfibrozil and HMG-CoA reductase inhibitors supports a drug-drug interaction/coadministration relationship."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:5a188b3ceff4aabc",
+        "decision": "accepted",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:prescription_omega_3_fatty_acid_products",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Prescription omega-3 fatty acid products",
+        "source_normalized_name": "Prescription omega-3 fatty acid products",
+        "target_entity_id": "condition:hypertriglyceridemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Hypertriglyceridemia",
+        "target_normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "Overview of prescription omega-3 fatty acid products for hypertriglyceridemia",
+        "evidence_start_char": "48998",
+        "evidence_end_char": "49075",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Prescription omega-3 fatty acid products being described as for hypertriglyceridemia strongly implies therapeutic use."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:6e584e021da1e670",
+        "decision": "accepted",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:microsomal_triglyceride_transfer_protein_inhibitors",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Microsomal triglyceride transfer protein inhibitors",
+        "source_normalized_name": "Microsomal triglyceride transfer protein inhibitors",
+        "target_entity_id": "condition:homozygous_familial_hypercholesterolemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Homozygous familial hypercholesterolemia",
+        "target_normalized_name": "Homozygous familial hypercholesterolemia",
+        "evidence_text": "Use of microsomal triglyceride transfer protein inhibitors in patients with homozygous familial hypercholesterolemia",
+        "evidence_start_char": "47559",
+        "evidence_end_char": "47675",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Use of the inhibitors in patients with homozygous familial hypercholesterolemia strongly implies treatment/management of that condition."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:58c1836e8c084951",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_free_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 free fatty acids",
+        "source_normalized_name": "Omega-3 free fatty acids",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia: the Epanova for lowering very high triglycerides (EVOLVE) trial",
+        "evidence_start_char": "46190",
+        "evidence_end_char": "46328",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly describes Epanova/omega-3 free fatty acids as for lowering very high triglycerides."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c1ce9e4a69e09f76",
+        "decision": "rejected",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglyceride_rich_lipoproteins",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglyceride-rich lipoproteins",
+        "source_normalized_name": "Triglyceride-rich lipoproteins",
+        "target_entity_id": "condition:atherosclerosis",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Atherosclerosis",
+        "target_normalized_name": "Atherosclerosis",
+        "evidence_text": "Proposed pathophysiology of triglyceride-rich lipoproteins in the progression of atherosclerosis.",
+        "evidence_start_char": "49353",
+        "evidence_end_char": "49450",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "yes",
+        "reason": "Rejected because the evidence is framed as proposed pathophysiology, making the relationship speculative under the acceptance rules."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:85f6f75627aeabac",
+        "decision": "accepted",
+        "relationship_type": "INTERACTS_WITH",
+        "source_entity_id": "drug:gemfibrozil",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gemfibrozil",
+        "source_normalized_name": "Gemfibrozil",
+        "target_entity_id": "drug:pravastatin",
+        "target_entity_type": "Drug",
+        "target_entity_text": "Pravastatin",
+        "target_normalized_name": "Pravastatin",
+        "evidence_text": "Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance",
+        "evidence_start_char": "44511",
+        "evidence_end_char": "44606",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Gemfibrozil changing pravastatin concentrations and renal clearance explicitly supports a pharmacokinetic interaction with pravastatin."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:079f51742b4de1d7",
+        "decision": "revised",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:mipomersen_antisense_oligonucleotide",
+        "source_entity_type": "Drug",
+        "source_entity_text": "mipomersen",
+        "source_normalized_name": "Mipomersen",
+        "target_entity_id": "condition:hypercholesterolemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Hypercholesterolemia",
+        "target_normalized_name": "Hypercholesterolemia",
+        "evidence_text": "mipomersen-antisense oligonucleotide therapy in the management of hypercholesterolemia",
+        "evidence_start_char": "47471",
+        "evidence_end_char": "47557",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Revised the source text/normalization to match the accepted mipomersen entity; the evidence explicitly states therapy in the management of hypercholesterolemia."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:a6792df2e1c2137e",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:apolipoprotein_c_iii_antisense_inhibitor",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Apolipoprotein C-III antisense inhibitor",
+        "source_normalized_name": "Apolipoprotein C-III antisense inhibitor",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency",
+        "evidence_start_char": "47184",
+        "evidence_end_char": "47325",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states the antisense inhibitor substantially decreases triglyceride levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:4d12648d3edde48c",
+        "decision": "rejected",
+        "relationship_type": "HAS_ADVERSE_EFFECT",
+        "source_entity_id": "drug:hmg_coa_reductase_inhibitors_and_gemfibrozil_combination_therapy",
+        "source_entity_type": "Drug",
+        "source_entity_text": "HMG-CoA reductase inhibitors and gemfibrozil combination therapy",
+        "source_normalized_name": "HMG-CoA reductase inhibitors and gemfibrozil combination therapy",
+        "target_entity_id": "condition:rhabdomyolysis",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Rhabdomyolysis",
+        "target_normalized_name": "Rhabdomyolysis",
+        "evidence_text": "Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy",
+        "evidence_start_char": "44425",
+        "evidence_end_char": "44509",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Rejected because the combination-therapy source endpoint is not an accepted entity row, even though the title supports an adverse effect for the combination."
+      }
+    ],
+    "relationship_additions": [
+      {
+        "relationship_gold_id": "addition:PMC4866746-chunk-0009:niacin_prevents_cardiovascular_disease",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "addition:PMC4866746-chunk-0009:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "The current state of niacin in cardiovascular disease prevention: a systematic review and meta-regression",
+        "evidence_start_char": "44790",
+        "evidence_end_char": "44895",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The title places niacin in the context of cardiovascular disease prevention, supporting a preventive-use relationship with accepted endpoints."
+      }
+    ],
+    "review_notes": "Reviewed all 18 candidate relationships against accepted entity rows. Rejected unsupported endpoint relationships for Gene therapy and the HMG-CoA reductase inhibitor/gemfibrozil combination source, and rejected the triglyceride-rich lipoprotein relationship because it is explicitly framed as proposed/speculative."
+  },
+  "raw_response": {
+    "id": "resp_0c9bb99a502d0780006a47ee3e82f481a1af777293da442d0a",
+    "created_at": 1783098942.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0c9bb99a502d0780006a47ee3f0d6881a1bb1685b1344d12c7",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0c9bb99a502d0780006a47eed8625481a18f25f54af5ffef37",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:288ce1c37e1fd9b0\",\"decision\":\"rejected\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:gene_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gene therapy\",\"source_normalized_name\":\"Gene therapy\",\"target_entity_id\":\"condition:lipoprotein_lipase_deficiency\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Lipoprotein lipase deficiency\",\"target_normalized_name\":\"Lipoprotein lipase deficiency\",\"evidence_text\":\"Gene therapy for lipoprotein lipase deficiency\",\"evidence_start_char\":\"47399\",\"evidence_end_char\":\"47445\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rejected because the source endpoint Gene therapy is not among the accepted entity rows, despite the title supporting the semantic relation.\"},{\"relationship_gold_id\":\"silver_relationship:530b06854d6c252b\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:omega_3_free_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 free fatty acids\",\"source_normalized_name\":\"Omega-3 free fatty acids\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe Hypertriglyceridemia\",\"target_normalized_name\":\"Severe Hypertriglyceridemia\",\"evidence_text\":\"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia\",\"evidence_start_char\":\"46190\",\"evidence_end_char\":\"46263\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The title explicitly states omega-3 free fatty acids are for the treatment of severe hypertriglyceridemia.\"},{\"relationship_gold_id\":\"silver_relationship:ff185e74dfe81cd6\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"evidence_start_char\":\"49802\",\"evidence_end_char\":\"49892\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states an association between triglycerides and cardiovascular disease.\"},{\"relationship_gold_id\":\"silver_relationship:1ebc29982585b70e\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:omacor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omacor\",\"source_normalized_name\":\"Omacor\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe Hypertriglyceridemia\",\"target_normalized_name\":\"Severe Hypertriglyceridemia\",\"evidence_text\":\"Safety and efficacy of Omacor in severe hypertriglyceridemia\",\"evidence_start_char\":\"47014\",\"evidence_end_char\":\"47074\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"A drug's safety and efficacy in severe hypertriglyceridemia strongly implies therapeutic use for that condition.\"},{\"relationship_gold_id\":\"silver_relationship:18385faa6afa4102\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:apolipoprotein_c_iii_antisense_inhibitor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Apolipoprotein C-III antisense inhibitor\",\"source_normalized_name\":\"Apolipoprotein C-III antisense inhibitor\",\"target_entity_id\":\"biomarker:apolipoprotein_c_iii\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Apolipoprotein C-III\",\"target_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\"evidence_start_char\":\"47184\",\"evidence_end_char\":\"47325\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly says the antisense inhibitor substantially decreases fasting apolipoprotein C-III.\"},{\"relationship_gold_id\":\"silver_relationship:fb5e6e6b6d0b6870\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Efficacy of fibrates for cardiovascular risk reduction in persons with atherogenic dyslipidemia\",\"evidence_start_char\":\"44267\",\"evidence_end_char\":\"44362\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Cardiovascular risk reduction by fibrates strongly implies prevention or reduced risk of cardiovascular disease outcomes.\"},{\"relationship_gold_id\":\"silver_relationship:c8871e78b2c4a1f3\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"biomarker:plasma_pravastatin_concentration\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"plasma pravastatin concentrations\",\"target_normalized_name\":\"Plasma pravastatin concentration\",\"evidence_text\":\"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\"evidence_start_char\":\"44511\",\"evidence_end_char\":\"44606\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that gemfibrozil increases plasma pravastatin concentrations.\"},{\"relationship_gold_id\":\"silver_relationship:f06d41270c88e2b7\",\"decision\":\"revised\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:omega_3_fatty_acids_from_fish_or_fish_oil_supplements\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"n-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"n-3 Fatty acids from fish or fish-oil supplements, but not alpha-linolenic acid, benefit cardiovascular disease outcomes in primary- and secondary-prevention studies\",\"evidence_start_char\":\"46330\",\"evidence_end_char\":\"46495\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Revised the source text/normalization to match the accepted omega-3 fatty acids entity; the evidence states benefit for cardiovascular disease outcomes in prevention studies.\"},{\"relationship_gold_id\":\"silver_relationship:d6c5154fb420f320\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:eicosapentaenoic_acid_ethyl_ester\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Eicosapentaenoic acid ethyl ester\",\"source_normalized_name\":\"Eicosapentaenoic acid ethyl ester\",\"target_entity_id\":\"condition:hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypertriglyceridemia\",\"target_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Eicosapentaenoic acid ethyl ester (AMR101) therapy in patients with very high triglyceride levels\",\"evidence_start_char\":\"46518\",\"evidence_end_char\":\"46615\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Therapy in patients with very high triglyceride levels strongly implies treatment of hypertriglyceridemia.\"},{\"relationship_gold_id\":\"silver_relationship:a4d2ad685d6be230\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:hmg_coa_reductase_inhibitors\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"HMG-CoA reductase inhibitors\",\"target_normalized_name\":\"HMG-CoA reductase inhibitors\",\"evidence_text\":\"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"evidence_start_char\":\"44425\",\"evidence_end_char\":\"44509\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The phrase combination therapy with gemfibrozil and HMG-CoA reductase inhibitors supports a drug-drug interaction/coadministration relationship.\"},{\"relationship_gold_id\":\"silver_relationship:5a188b3ceff4aabc\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:prescription_omega_3_fatty_acid_products\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Prescription omega-3 fatty acid products\",\"source_normalized_name\":\"Prescription omega-3 fatty acid products\",\"target_entity_id\":\"condition:hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypertriglyceridemia\",\"target_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Overview of prescription omega-3 fatty acid products for hypertriglyceridemia\",\"evidence_start_char\":\"48998\",\"evidence_end_char\":\"49075\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Prescription omega-3 fatty acid products being described as for hypertriglyceridemia strongly implies therapeutic use.\"},{\"relationship_gold_id\":\"silver_relationship:6e584e021da1e670\",\"decision\":\"accepted\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:microsomal_triglyceride_transfer_protein_inhibitors\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Microsomal triglyceride transfer protein inhibitors\",\"source_normalized_name\":\"Microsomal triglyceride transfer protein inhibitors\",\"target_entity_id\":\"condition:homozygous_familial_hypercholesterolemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Homozygous familial hypercholesterolemia\",\"target_normalized_name\":\"Homozygous familial hypercholesterolemia\",\"evidence_text\":\"Use of microsomal triglyceride transfer protein inhibitors in patients with homozygous familial hypercholesterolemia\",\"evidence_start_char\":\"47559\",\"evidence_end_char\":\"47675\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Use of the inhibitors in patients with homozygous familial hypercholesterolemia strongly implies treatment/management of that condition.\"},{\"relationship_gold_id\":\"silver_relationship:58c1836e8c084951\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_free_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 free fatty acids\",\"source_normalized_name\":\"Omega-3 free fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Omega-3 free fatty acids for the treatment of severe hypertriglyceridemia: the Epanova for lowering very high triglycerides (EVOLVE) trial\",\"evidence_start_char\":\"46190\",\"evidence_end_char\":\"46328\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly describes Epanova/omega-3 free fatty acids as for lowering very high triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c1ce9e4a69e09f76\",\"decision\":\"rejected\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich lipoproteins\",\"target_entity_id\":\"condition:atherosclerosis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Atherosclerosis\",\"target_normalized_name\":\"Atherosclerosis\",\"evidence_text\":\"Proposed pathophysiology of triglyceride-rich lipoproteins in the progression of atherosclerosis.\",\"evidence_start_char\":\"49353\",\"evidence_end_char\":\"49450\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"Rejected because the evidence is framed as proposed pathophysiology, making the relationship speculative under the acceptance rules.\"},{\"relationship_gold_id\":\"silver_relationship:85f6f75627aeabac\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:pravastatin\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"Pravastatin\",\"target_normalized_name\":\"Pravastatin\",\"evidence_text\":\"Gemfibrozil increases plasma pravastatin concentrations and reduces pravastatin renal clearance\",\"evidence_start_char\":\"44511\",\"evidence_end_char\":\"44606\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Gemfibrozil changing pravastatin concentrations and renal clearance explicitly supports a pharmacokinetic interaction with pravastatin.\"},{\"relationship_gold_id\":\"silver_relationship:079f51742b4de1d7\",\"decision\":\"revised\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:mipomersen_antisense_oligonucleotide\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"mipomersen\",\"source_normalized_name\":\"Mipomersen\",\"target_entity_id\":\"condition:hypercholesterolemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Hypercholesterolemia\",\"target_normalized_name\":\"Hypercholesterolemia\",\"evidence_text\":\"mipomersen-antisense oligonucleotide therapy in the management of hypercholesterolemia\",\"evidence_start_char\":\"47471\",\"evidence_end_char\":\"47557\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Revised the source text/normalization to match the accepted mipomersen entity; the evidence explicitly states therapy in the management of hypercholesterolemia.\"},{\"relationship_gold_id\":\"silver_relationship:a6792df2e1c2137e\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:apolipoprotein_c_iii_antisense_inhibitor\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Apolipoprotein C-III antisense inhibitor\",\"source_normalized_name\":\"Apolipoprotein C-III antisense inhibitor\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"An antisense inhibitor of apolipoprotein C-III substantially decreases fasting apolipoprotein C-III and triglyceride levels in LPL deficiency\",\"evidence_start_char\":\"47184\",\"evidence_end_char\":\"47325\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states the antisense inhibitor substantially decreases triglyceride levels.\"},{\"relationship_gold_id\":\"silver_relationship:4d12648d3edde48c\",\"decision\":\"rejected\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:hmg_coa_reductase_inhibitors_and_gemfibrozil_combination_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"source_normalized_name\":\"HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"target_entity_id\":\"condition:rhabdomyolysis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Rhabdomyolysis\",\"target_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"Rhabdomyolysis with HMG-CoA reductase inhibitors and gemfibrozil combination therapy\",\"evidence_start_char\":\"44425\",\"evidence_end_char\":\"44509\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rejected because the combination-therapy source endpoint is not an accepted entity row, even though the title supports an adverse effect for the combination.\"}],\"relationship_additions\":[{\"relationship_gold_id\":\"addition:PMC4866746-chunk-0009:niacin_prevents_cardiovascular_disease\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"addition:PMC4866746-chunk-0009:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"The current state of niacin in cardiovascular disease prevention: a systematic review and meta-regression\",\"evidence_start_char\":\"44790\",\"evidence_end_char\":\"44895\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The title places niacin in the context of cardiovascular disease prevention, supporting a preventive-use relationship with accepted endpoints.\"}],\"review_notes\":\"Reviewed all 18 candidate relationships against accepted entity rows. Rejected unsupported endpoint relationships for Gene therapy and the HMG-CoA reductase inhibitor/gemfibrozil combination source, and rejected the triglyceride-rich lipoprotein relationship because it is explicitly framed as proposed/speculative.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783099126.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 18926,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 14386,
+      "output_tokens_details": {
+        "reasoning_tokens": 10358
+      },
+      "total_tokens": 33312
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:15:42.740879+00:00",
+  "finished_at": "2026-07-03T17:18:47.446056+00:00",
+  "duration_ms": 193062.154,
+  "status": "ok",
+  "error": ""
+}

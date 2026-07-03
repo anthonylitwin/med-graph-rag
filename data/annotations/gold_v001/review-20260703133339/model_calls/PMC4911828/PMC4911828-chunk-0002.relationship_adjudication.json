@@ -1,0 +1,1203 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4911828-chunk-0002\",\n    \"document_id\": \"paper:PMC4911828\",\n    \"pmcid\": \"PMC4911828\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"5496\",\n    \"end_char\": \"11493\",\n    \"text\": \"on which assessed over 300,000 participants from 68 prospective studies found a CAD hazard ratio (HR) of 1.37 (95% confidence interval [95% CI]: 1.31\\u20131.42) with increased TG, which attenuated to an insignificant hazard of 0.99 (95% CI: 0.94\\u20131.05) after adjustment for HDL-C and non-HDL-C. This largest epidemiological study thus concluded that \\u201cfor population-wide assessment of vascular risk, TG measurement provides no additional information about vascular risk with given knowledge of HDL-C and TC levels, although there may be separate reasons to measure TG concentration (e.g., prevention of pancreatitis).\\u201d\\n\\nGenetic studies\\n\\nWhile genome-wide association studies (GWAS) have found a causal association between raised TG and CVD, the functions of many GWAS-identified genetic variants are largely unknown. A Mendelian randomization candidate gene approach has suggested that the around 30 genes variants or more, in association to lifestyle factors and obesity, can modestly increase TG. Of these, mutations in at least six different genes such as lower plateau limit (LPL), APOC2, APOA5, LMF1, GPIHBP1, and GPD1A can increase TG substantially and are identified as monogenic disorders. A number of these studies have clearly linked high TG with increased CV risk. Table 4 summarizes the CVD risk with high TG in those genetic studies.\\n\\nGenetic studies linking TG with cardiovascular risk\\n\\nInterestingly, a significantly reduced risk of ischemic CVD has also been found with genetically reduced TG. Since LPL is the principal TG-metabolizing enzyme and apo's C3 and A5 modulates LPL function as well as modulate liver uptake of remnant cholesterol, targeting these three important proteins may yield reduced CV risk.\\n\\nIn this regard, some studies have found a 24% and a 46% relative risk reduction, in ischemic CVD for APOA5 and LPL, respectively (with corresponding reduction in nonfasting TG by 35\\u201336%), compared with non-TG reducing alleles. In Copenhagen general population, a 41% ischemic CVD reduction was seen with APOC3 loss-of-function heterozygosity (along with the corresponding reduction in nonfasting TG by 44%). Another study from 18 different cohorts found a 40% reduction in CHD observed with 39% corresponding reduction in TG. Recently, angiopoietin-like 3 and 4 (ANGPTL3 and ANGPTL4) mutations have also been found to cause reduced TG and LDL-C, making this protein an another new drug target.\\n\\nTaken together, it is increasingly appearing through genetic studies that high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality.\\n\\nClinical intervention trial\\n\\nThe effect of lowering TG to CVD risk reduction has been complicated by some major issues. First, although a number of trials of statin or fibrate monotherapy have examined the potential role of baseline TG with or without HDL-C level on CVD risk, most clinical trials have excluded the patient with high TG of >400 mg/dL. Thus, it is yet unknown whether reducing TG and TGRLP provides CV benefit. Second, no large-scale randomized trials have directly examined the effect of reducing TG on CVD risk, in people with raised TG. Thus, only the secondary subgroup analyses from these trials have been left out to assess the CVD risk in patient with high TG, with or without low HDL.\\n\\nThe major CV outcome trials of statin and fibrates as a monotherapy or combination therapy, in order of their publication, have been cited as a timeline in Figure 1. Overall statin therapy has been associated with significant reduction in almost all the CV outcomes, irrespective of severity of baseline risk, gender, with or without background diabetes, and intensive statin therapy additionally lowered the risk by ~15\\u201316%. Nevertheless, a significant amount of residual risk still appears to remain. Figures 2 and 3 depict the residual risk in major statin trials. Figure 4 depicts the relative risk reduction with conventional versus intensive statin therapy. Figure 5 depicts the residual risk with intensive statin therapy. Figure 6 summarizes the outcome with statins in patient with diabetes versus no diabetes. Figure 7 depicts residual CV risk with statins in patients with diabetes versus no diabetes. These findings clearly suggest that additional agents are required to reduce remaining CV residual risk with statins. The big question is, does lowering of TG reduce CV risk in clinical trials?\\n\\nMajor statin and fibrates trials in order of their publication\\n\\nResidual cardiovascular risk in major statin trials (statin vs. control)\\n\\nResidual risk still persisting with statins in major statin trials\\n\\nRisk reduction with conventional versus intensive statin therapy\\n\\nResidual cardiovascular risk after intensive statin therapy\\n\\nOutcomes with statins in diabetes versus no diabetes\\n\\nResidual risk with statins in diabetes versus no diabetes\\n\\nAlthough several statin trials such as Scandinavian Simvastatin Survival Study (4S), the cholesterol and recurrent events (CARE) trial, the West of Scotland Coronary Prevention Study (WOSCOPS), the Air Force/Texas Coronary Atherosclerosis Prevention Study (AFCAPS/TexCAPS), and the treating to new targets (TNT) study found increased CV risk with higher baseline TG. Only 4S and CARE found a greater CVD risk reduction in high TG subgroup with statin therapy. Interestingly, in the Long-term Intervention with Pravastatin in Ischemic Disease (LIPID), the Heart Protection Study and WOSCOPS, CVD reductions were similar across all baselines of TG. Intriguingly, the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.\\n\\nSome statin trials have also assessed the potential effect of on-treatment TG levels on CVD risk, mainly in the secondary analyses and found mixed results. AFCAPS/TexCAPS found no association of on-treatment\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:330b42b30d9dee14\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL-C\",\n      \"normalized_name\": \"HDL Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"5764\",\n      \"evidence_end_char\": \"5769\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions HDL-C, a standard abbreviation for HDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:512a5fbb4304fcde\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL-C\",\n      \"normalized_name\": \"LDL Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7858\",\n      \"evidence_end_char\": \"7863\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions LDL-C, a standard abbreviation for LDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d3c9ca0595f955e6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"non-HDL-C\",\n      \"normalized_name\": \"Non-HDL Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"non-HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"5774\",\n      \"evidence_end_char\": \"5783\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions non-HDL-C as a cholesterol biomarker.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:44485cd03814be58\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:remnant_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"remnant cholesterol\",\n      \"normalized_name\": \"Remnant Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"remnant cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7129\",\n      \"evidence_end_char\": \"7148\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly mentions remnant cholesterol as a lipid-related biomarker.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:66b5fe28334ced1b\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:total_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TC\",\n      \"normalized_name\": \"Total Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TC\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"5994\",\n      \"evidence_end_char\": \"5996\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk mentions TC levels, where TC is used as the biomarker abbreviation for total cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:82cca0574a7f4b59\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TG-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich Lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TG-rich lipoproteins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"8011\",\n      \"evidence_end_char\": \"8031\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions TG-rich lipoproteins, the abbreviated form of triglyceride-rich lipoproteins.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bd2413d98e261491\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TG\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TG\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"5667\",\n      \"evidence_end_char\": \"5669\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk repeatedly uses TG as the triglyceride biomarker.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d839d67ea4d20c3c\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:all_cause_mortality\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"all-cause mortality\",\n      \"normalized_name\": \"All-cause Mortality\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"all-cause mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"8091\",\n      \"evidence_end_char\": \"8110\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly identifies all-cause mortality as an outcome associated with TG-rich lipoproteins or remnant cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fe45ee4187e2c28d\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CVD\",\n      \"normalized_name\": \"Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CVD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6226\",\n      \"evidence_end_char\": \"6229\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk repeatedly uses CVD as the abbreviation for cardiovascular disease.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:728fca7b46b8f42f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:coronary_artery_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CAD\",\n      \"normalized_name\": \"Coronary Artery Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CAD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"5576\",\n      \"evidence_end_char\": \"5579\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk mentions a CAD hazard ratio, supporting coronary artery disease as the normalized concept.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3d107c085517255b\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CHD\",\n      \"normalized_name\": \"Coronary Heart Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CHD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7692\",\n      \"evidence_end_char\": \"7695\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk mentions CHD in the context of reduced risk, supporting coronary heart disease.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dc53aa22911d4439\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:diabetes\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"diabetes\",\n      \"normalized_name\": \"Diabetes\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"diabetes\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"9168\",\n      \"evidence_end_char\": \"9176\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly mentions diabetes in relation to statin trial outcomes.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:440453d4db3c1f06\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:ischemic_cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"ischemic CVD\",\n      \"normalized_name\": \"Ischemic Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic CVD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6938\",\n      \"evidence_end_char\": \"6950\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions ischemic CVD, supporting ischemic cardiovascular disease as the normalized concept.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f9d0e30a79bab8f3\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"metabolic syndrome\",\n      \"normalized_name\": \"Metabolic Syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"11149\",\n      \"evidence_end_char\": \"11167\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly mentions metabolic syndrome.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3499520f7222fc60\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:pancreatitis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"pancreatitis\",\n      \"normalized_name\": \"Pancreatitis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pancreatitis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6093\",\n      \"evidence_end_char\": \"6105\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly mentions prevention of pancreatitis.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:4ae5e6a441898beb\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"8865\",\n      \"evidence_end_char\": \"8873\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly discusses fibrates as a drug class in cardiovascular outcome trials.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:25c0d1e600093ca1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"9590\",\n      \"evidence_end_char\": \"9597\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly discusses statins as a drug class in cardiovascular outcome trials.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0b93315ad45d4d6e\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"riskfactor:obesity\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"obesity\",\n      \"normalized_name\": \"Obesity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"obesity\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6454\",\n      \"evidence_end_char\": \"6461\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=The chunk explicitly lists obesity as a factor associated with increased TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:lpl\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LPL\",\n      \"normalized_name\": \"LPL\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"LPL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6570\",\n      \"evidence_end_char\": \"6573\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names LPL among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:apoc2\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"APOC2\",\n      \"normalized_name\": \"APOC2\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"APOC2\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6576\",\n      \"evidence_end_char\": \"6581\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names APOC2 among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:apoa5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"APOA5\",\n      \"normalized_name\": \"APOA5\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"APOA5\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6583\",\n      \"evidence_end_char\": \"6588\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names APOA5 among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:lmf1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LMF1\",\n      \"normalized_name\": \"LMF1\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"LMF1\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6590\",\n      \"evidence_end_char\": \"6594\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names LMF1 among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:gpihbp1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"GPIHBP1\",\n      \"normalized_name\": \"GPIHBP1\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"GPIHBP1\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6596\",\n      \"evidence_end_char\": \"6603\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names GPIHBP1 among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:gpd1a\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"GPD1A\",\n      \"normalized_name\": \"GPD1A\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"GPD1A\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"6609\",\n      \"evidence_end_char\": \"6614\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk names GPD1A among genes whose mutations can substantially increase TG.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:apoc3\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"APOC3\",\n      \"normalized_name\": \"APOC3\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"APOC3\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7523\",\n      \"evidence_end_char\": \"7528\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk explicitly discusses APOC3 loss-of-function heterozygosity in relation to ischemic CVD reduction and TG reduction.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:angptl3\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ANGPTL3\",\n      \"normalized_name\": \"ANGPTL3\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"ANGPTL3\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7782\",\n      \"evidence_end_char\": \"7789\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk explicitly names ANGPTL3 mutations as causing reduced TG and LDL-C.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:angptl4\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ANGPTL4\",\n      \"normalized_name\": \"ANGPTL4\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"ANGPTL4\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"7794\",\n      \"evidence_end_char\": \"7801\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The chunk explicitly names ANGPTL4 mutations as causing reduced TG and LDL-C.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:42eadff6e21fa3cc\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:statins\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Statins\",\n      \"source_normalized_name\": \"Statins\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"Only 4S and CARE found a greater CVD risk reduction in high TG subgroup with statin therapy\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10744,\n      \"evidence_end_char\": 10835,\n      \"confidence_gold\": 0.86,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:554c0a5c8775bea1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:remnant_cholesterol\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Remnant Cholesterol\",\n      \"source_normalized_name\": \"Remnant Cholesterol\",\n      \"target_entity_id\": \"condition:all_cause_mortality\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"All-cause Mortality\",\n      \"target_normalized_name\": \"All-cause Mortality\",\n      \"evidence_text\": \"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7988,\n      \"evidence_end_char\": 8110,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:9f7dfb245a13b3a3\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:coronary_heart_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Coronary Heart Disease\",\n      \"target_normalized_name\": \"Coronary Heart Disease\",\n      \"evidence_text\": \"a 40% reduction in CHD observed with 39% corresponding reduction in TG\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7673,\n      \"evidence_end_char\": 7743,\n      \"confidence_gold\": 0.84,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:7331435c3dbc72ce\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:remnant_cholesterol\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Remnant Cholesterol\",\n      \"source_normalized_name\": \"Remnant Cholesterol\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7988,\n      \"evidence_end_char\": 8110,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:1158b23d5dd5c266\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglyceride-rich Lipoproteins\",\n      \"source_normalized_name\": \"Triglyceride-rich Lipoproteins\",\n      \"target_entity_id\": \"condition:all_cause_mortality\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"All-cause Mortality\",\n      \"target_normalized_name\": \"All-cause Mortality\",\n      \"evidence_text\": \"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7988,\n      \"evidence_end_char\": 8110,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:cb41e00b6e4b4bf7\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:ischemic_cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Ischemic Cardiovascular Disease\",\n      \"target_normalized_name\": \"Ischemic Cardiovascular Disease\",\n      \"evidence_text\": \"a significantly reduced risk of ischemic CVD has also been found with genetically reduced TG\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 6906,\n      \"evidence_end_char\": 6998,\n      \"confidence_gold\": 0.88,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:22f95c1138a6bb7f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"genome-wide association studies (GWAS) have found a causal association between raised TG and CVD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 6133,\n      \"evidence_end_char\": 6229,\n      \"confidence_gold\": 0.94,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:6aefcd15ca1c2e6d\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglyceride-rich Lipoproteins\",\n      \"source_normalized_name\": \"Triglyceride-rich Lipoproteins\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7988,\n      \"evidence_end_char\": 8110,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0002.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:42eadff6e21fa3cc\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:statins\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statins\",\"source_normalized_name\":\"Statins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Only 4S and CARE found a greater CVD risk reduction in high TG subgroup with statin therapy\",\"evidence_start_char\":\"10744\",\"evidence_end_char\":\"10835\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Evidence explicitly states CVD risk reduction with statin therapy; REDUCES is more precise than PREVENTS.\"},{\"relationship_gold_id\":\"silver_relationship:554c0a5c8775bea1\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant Cholesterol\",\"source_normalized_name\":\"Remnant Cholesterol\",\"target_entity_id\":\"condition:all_cause_mortality\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"All-cause Mortality\",\"target_normalized_name\":\"All-cause Mortality\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text calls high remnant cholesterol a causal risk factor for all-cause mortality, supporting increased risk rather than only association.\"},{\"relationship_gold_id\":\"silver_relationship:9f7dfb245a13b3a3\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Coronary Heart Disease\",\"target_normalized_name\":\"Coronary Heart Disease\",\"evidence_text\":\"a 40% reduction in CHD observed with 39% corresponding reduction in TG\",\"evidence_start_char\":\"7673\",\"evidence_end_char\":\"7743\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links reduction in TG with reduction in CHD, supporting an association between triglycerides and coronary heart disease.\"},{\"relationship_gold_id\":\"silver_relationship:7331435c3dbc72ce\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant Cholesterol\",\"source_normalized_name\":\"Remnant Cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly identifies high remnant cholesterol as a causal risk factor for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH.\"},{\"relationship_gold_id\":\"silver_relationship:1158b23d5dd5c266\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich Lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich Lipoproteins\",\"target_entity_id\":\"condition:all_cause_mortality\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"All-cause Mortality\",\"target_normalized_name\":\"All-cause Mortality\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for all-cause mortality, supporting increased risk.\"},{\"relationship_gold_id\":\"silver_relationship:cb41e00b6e4b4bf7\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic Cardiovascular Disease\",\"target_normalized_name\":\"Ischemic Cardiovascular Disease\",\"evidence_text\":\"a significantly reduced risk of ischemic CVD has also been found with genetically reduced TG\",\"evidence_start_char\":\"6906\",\"evidence_end_char\":\"6998\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links genetically reduced TG with reduced ischemic CVD risk, supporting an association between triglycerides and ischemic CVD.\"},{\"relationship_gold_id\":\"silver_relationship:22f95c1138a6bb7f\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"genome-wide association studies (GWAS) have found a causal association between raised TG and CVD\",\"evidence_start_char\":\"6133\",\"evidence_end_char\":\"6229\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links raised TG causally with CVD, supporting increased CVD risk rather than a nonspecific association.\"},{\"relationship_gold_id\":\"silver_relationship:6aefcd15ca1c2e6d\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich Lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich Lipoproteins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate endpoints are supported by accepted entity rows. Several ASSOCIATED_WITH candidates were revised to INCREASES_RISK_OF where the evidence explicitly used causal risk factor language.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:42eadff6e21fa3cc",
+        "decision": "revised",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:statins",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Statins",
+        "source_normalized_name": "Statins",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "Only 4S and CARE found a greater CVD risk reduction in high TG subgroup with statin therapy",
+        "evidence_start_char": "10744",
+        "evidence_end_char": "10835",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Evidence explicitly states CVD risk reduction with statin therapy; REDUCES is more precise than PREVENTS."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:554c0a5c8775bea1",
+        "decision": "revised",
+        "relationship_type": "INCREASES_RISK_OF",
+        "source_entity_id": "biomarker:remnant_cholesterol",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Remnant Cholesterol",
+        "source_normalized_name": "Remnant Cholesterol",
+        "target_entity_id": "condition:all_cause_mortality",
+        "target_entity_type": "Condition",
+        "target_entity_text": "All-cause Mortality",
+        "target_normalized_name": "All-cause Mortality",
+        "evidence_text": "high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality",
+        "evidence_start_char": "7988",
+        "evidence_end_char": "8110",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The text calls high remnant cholesterol a causal risk factor for all-cause mortality, supporting increased risk rather than only association."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:9f7dfb245a13b3a3",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:coronary_heart_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Coronary Heart Disease",
+        "target_normalized_name": "Coronary Heart Disease",
+        "evidence_text": "a 40% reduction in CHD observed with 39% corresponding reduction in TG",
+        "evidence_start_char": "7673",
+        "evidence_end_char": "7743",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly links reduction in TG with reduction in CHD, supporting an association between triglycerides and coronary heart disease."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:7331435c3dbc72ce",
+        "decision": "revised",
+        "relationship_type": "INCREASES_RISK_OF",
+        "source_entity_id": "biomarker:remnant_cholesterol",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Remnant Cholesterol",
+        "source_normalized_name": "Remnant Cholesterol",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality",
+        "evidence_start_char": "7988",
+        "evidence_end_char": "8110",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly identifies high remnant cholesterol as a causal risk factor for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:1158b23d5dd5c266",
+        "decision": "revised",
+        "relationship_type": "INCREASES_RISK_OF",
+        "source_entity_id": "biomarker:triglyceride_rich_lipoproteins",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglyceride-rich Lipoproteins",
+        "source_normalized_name": "Triglyceride-rich Lipoproteins",
+        "target_entity_id": "condition:all_cause_mortality",
+        "target_entity_type": "Condition",
+        "target_entity_text": "All-cause Mortality",
+        "target_normalized_name": "All-cause Mortality",
+        "evidence_text": "high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality",
+        "evidence_start_char": "7988",
+        "evidence_end_char": "8110",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for all-cause mortality, supporting increased risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:cb41e00b6e4b4bf7",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:ischemic_cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Ischemic Cardiovascular Disease",
+        "target_normalized_name": "Ischemic Cardiovascular Disease",
+        "evidence_text": "a significantly reduced risk of ischemic CVD has also been found with genetically reduced TG",
+        "evidence_start_char": "6906",
+        "evidence_end_char": "6998",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly links genetically reduced TG with reduced ischemic CVD risk, supporting an association between triglycerides and ischemic CVD."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:22f95c1138a6bb7f",
+        "decision": "revised",
+        "relationship_type": "INCREASES_RISK_OF",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "genome-wide association studies (GWAS) have found a causal association between raised TG and CVD",
+        "evidence_start_char": "6133",
+        "evidence_end_char": "6229",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly links raised TG causally with CVD, supporting increased CVD risk rather than a nonspecific association."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:6aefcd15ca1c2e6d",
+        "decision": "revised",
+        "relationship_type": "INCREASES_RISK_OF",
+        "source_entity_id": "biomarker:triglyceride_rich_lipoproteins",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglyceride-rich Lipoproteins",
+        "source_normalized_name": "Triglyceride-rich Lipoproteins",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality",
+        "evidence_start_char": "7988",
+        "evidence_end_char": "8110",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH."
+      }
+    ],
+    "relationship_additions": [],
+    "review_notes": "All candidate endpoints are supported by accepted entity rows. Several ASSOCIATED_WITH candidates were revised to INCREASES_RISK_OF where the evidence explicitly used causal risk factor language."
+  },
+  "raw_response": {
+    "id": "resp_05ee32807bdf775f006a47f45fc6408192a92d2193450e9df5",
+    "created_at": 1783100511.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_05ee32807bdf775f006a47f460c3988192bc806844227048fa",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_05ee32807bdf775f006a47f488f3f4819285e0a9e4c9b2b6e7",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:42eadff6e21fa3cc\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:statins\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statins\",\"source_normalized_name\":\"Statins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"Only 4S and CARE found a greater CVD risk reduction in high TG subgroup with statin therapy\",\"evidence_start_char\":\"10744\",\"evidence_end_char\":\"10835\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Evidence explicitly states CVD risk reduction with statin therapy; REDUCES is more precise than PREVENTS.\"},{\"relationship_gold_id\":\"silver_relationship:554c0a5c8775bea1\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant Cholesterol\",\"source_normalized_name\":\"Remnant Cholesterol\",\"target_entity_id\":\"condition:all_cause_mortality\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"All-cause Mortality\",\"target_normalized_name\":\"All-cause Mortality\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text calls high remnant cholesterol a causal risk factor for all-cause mortality, supporting increased risk rather than only association.\"},{\"relationship_gold_id\":\"silver_relationship:9f7dfb245a13b3a3\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Coronary Heart Disease\",\"target_normalized_name\":\"Coronary Heart Disease\",\"evidence_text\":\"a 40% reduction in CHD observed with 39% corresponding reduction in TG\",\"evidence_start_char\":\"7673\",\"evidence_end_char\":\"7743\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links reduction in TG with reduction in CHD, supporting an association between triglycerides and coronary heart disease.\"},{\"relationship_gold_id\":\"silver_relationship:7331435c3dbc72ce\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant Cholesterol\",\"source_normalized_name\":\"Remnant Cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly identifies high remnant cholesterol as a causal risk factor for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH.\"},{\"relationship_gold_id\":\"silver_relationship:1158b23d5dd5c266\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich Lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich Lipoproteins\",\"target_entity_id\":\"condition:all_cause_mortality\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"All-cause Mortality\",\"target_normalized_name\":\"All-cause Mortality\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for all-cause mortality, supporting increased risk.\"},{\"relationship_gold_id\":\"silver_relationship:cb41e00b6e4b4bf7\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic Cardiovascular Disease\",\"target_normalized_name\":\"Ischemic Cardiovascular Disease\",\"evidence_text\":\"a significantly reduced risk of ischemic CVD has also been found with genetically reduced TG\",\"evidence_start_char\":\"6906\",\"evidence_end_char\":\"6998\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links genetically reduced TG with reduced ischemic CVD risk, supporting an association between triglycerides and ischemic CVD.\"},{\"relationship_gold_id\":\"silver_relationship:22f95c1138a6bb7f\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"genome-wide association studies (GWAS) have found a causal association between raised TG and CVD\",\"evidence_start_char\":\"6133\",\"evidence_end_char\":\"6229\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links raised TG causally with CVD, supporting increased CVD risk rather than a nonspecific association.\"},{\"relationship_gold_id\":\"silver_relationship:6aefcd15ca1c2e6d\",\"decision\":\"revised\",\"relationship_type\":\"INCREASES_RISK_OF\",\"source_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglyceride-rich Lipoproteins\",\"source_normalized_name\":\"Triglyceride-rich Lipoproteins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"high concentrations of TG-rich lipoproteins or remnant cholesterol are causal risk factors for CVD and all-cause mortality\",\"evidence_start_char\":\"7988\",\"evidence_end_char\":\"8110\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that high concentrations of TG-rich lipoproteins are causal risk factors for CVD, so INCREASES_RISK_OF is more specific than ASSOCIATED_WITH.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate endpoints are supported by accepted entity rows. Several ASSOCIATED_WITH candidates were revised to INCREASES_RISK_OF where the evidence explicitly used causal risk factor language.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783100565.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 12440,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 4312,
+      "output_tokens_details": {
+        "reasoning_tokens": 2588
+      },
+      "total_tokens": 16752
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:41:51.712679+00:00",
+  "finished_at": "2026-07-03T17:42:45.835144+00:00",
+  "duration_ms": 57101.88,
+  "status": "ok",
+  "error": ""
+}

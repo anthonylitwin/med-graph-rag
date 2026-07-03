@@ -1,0 +1,931 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0004\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"16489\",\n    \"end_char\": \"22486\",\n    \"text\": \"ollowing acute coronary syndrome, an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels (Table 1), even after adjustment for HDL-C and LDL-C levels (hazard ratio 0.8; P=0.025). A wealth of epidemiological evidence exists, demonstrating that both fasting and nonfasting TG levels are significant predictors of cardiovascular events, even in individuals who have already achieved guideline-recommended LDL-C levels with lipid-lowering therapy.\\n\\nHowever, nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels. The Women\\u2019s Health Study (n=26,509) showed that both fasting and nonfasting TG levels were strongly associated with an increased risk of cardiovascular events, independent of baseline cardiovascular risk factors (age, blood pressure, smoking, and use of hormone therapy). However, after adjustment for TC and HDL-C levels and indicators of insulin resistance, the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90). In contrast, the association between nonfasting TG levels and cardiovascular risk remained strong even after adjustment for other lipid levels and markers of insulin resistance (P=0.006). Likewise, two prospective cohort studies using data from the Copenhagen City Heart Study found that the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels (all P<0.001) (Table 1). That being said, these associations were not adjusted for other lipid parameters.\\n\\nA number of studies have found that the association between plasma TG levels (both fasting and nonfasting) and cardiovascular risk is often attenuated once adjusted for other lipid parameters, including HDL-C and non-HDL-C. An analysis conducted by the Emerging Risk Factors Collaboration, which included data from 302,430 individuals from 68 long-term prospective studies, demonstrated that there was a significant and stepwise association between fasting and nonfasting TG levels and CVD risk. However, this association was no longer significant after adjustment for HDL-C and non-HDL-C (Table 1). Likewise, in a combined analysis of the Incremental Decrease in End Points through Aggressive Lipid Lowering (IDEAL) and Treating to New Targets (TNT) trials in patients achieving low LDL-C (<70 mg/dL [1.8 mmol/L]), CVD risk increased incrementally with increasing on-treatment fasting TG level, with patients in the highest quintile experiencing a 63% higher rate of cardiovascular events than those in the lowest quintile (P<0.001). However, this association was also attenuated (P=0.044) after adjustment for HDL-C and apoB/apoA1 (Table 1). Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C, and this may explain why this association is weakened after adjustment for these parameters.\\n\\nElevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs, have also been shown to be associated with CVD. Using data from 73,513 subjects, Varbo et al found that every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk, independent of low HDL-C.\\n\\nAvailable treatment options to reduce TG levels and their potential impact on cardiovascular outcomes\\n\\nAlthough the clinical definition of the severity of hypertriglyceridemia differs among guidelines, the majority of guidelines define severe hypertriglyceridemia as a TG level of \\u2265500 mg/dL (\\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis. Guidelines also acknowledge that a TG level of <150 mg/dL (<1.7 mmol/L) is desirable, and if elevated TG or non-HDL-C levels remain following lifestyle intervention and statin therapy, a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids (Table 2).\\n\\nFibrates\\n\\nFibrates decrease TG levels by \\u223c36%, non-HDL-C levels by \\u223c6%\\u201316%, and LDL-C levels by \\u223c8% and increase HDL C levels by \\u223c10%. Of note, however, fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia. To date, cardiovascular outcome studies of fibrates have produced varied results, with some studies suggesting a small benefit, particularly in patients with other factors besides hypertriglyceridemia, such as low HDL-C or metabolic syndrome, and others showing no benefit. A meta-analysis including data from 45,058 participants from 18 clinical trials showed that fibrate therapy was associated with a significant decrease in major cardiovascular events (relative risk [RR] reduction 10%; P=0.048), although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92). In another meta-analysis of 7,389 patients with high TG levels (>200 mg/dL [2.3 mmol/L]), fibrate therapy was associated with a 25% decrease in vascular events, and in 5,068 patients with both high TG and low HDL-C levels (<40 mg/dL [1 mmol/L]), a 29% decrease in vascular events was observed.\\n\\nFibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis, especially when used in combination with other lipid-lowering therapies. Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects. However, fenofibrate appears to be better tolerated than other fibrates, with no cases of rhabdomyolysis observed with fenofibrate\\u2013statin combination therapy in two large-scale clinical trials. Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:6bdd11a551d922c2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apolipoprotein_b\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein B\",\n      \"normalized_name\": \"Apolipoprotein B\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein B\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f432c4c72df04786\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:creatinine\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Creatinine\",\n      \"normalized_name\": \"Creatinine\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"creatinine\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21846,\n      \"evidence_end_char\": 21856,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:067b188487cbdd6d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:fasting_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Fasting triglycerides\",\n      \"normalized_name\": \"Fasting triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Fasting triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:518b65da5b0e39bd\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dd3277642ce94e65\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL cholesterol\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:68e6880c6ea0d38e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Non-HDL cholesterol\",\n      \"normalized_name\": \"Non-HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Non-HDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:784f4a35207a3797\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Nonfasting triglycerides\",\n      \"normalized_name\": \"Nonfasting triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Nonfasting triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6537b1b360ecc8eb\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:remnant_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Remnant cholesterol\",\n      \"normalized_name\": \"Remnant cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"remnant cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19565,\n      \"evidence_end_char\": 19584,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fcbb8b2694b11e15\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglyceride-rich lipoproteins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2c89930b7b385238\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:17cae4f8466ada1b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Cardiovascular disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:eaa0225bfe9b5bc3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16899,\n      \"evidence_end_char\": 16920,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:87426317724f7579\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20047,\n      \"evidence_end_char\": 20067,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6c48044c9e376963\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic heart disease\",\n      \"normalized_name\": \"Ischemic heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17992,\n      \"evidence_end_char\": 18014,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e96044811b605337\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic stroke\",\n      \"normalized_name\": \"Ischemic stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic stroke\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17971,\n      \"evidence_end_char\": 17986,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bf5cd74fdb2c7ab2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic syndrome\",\n      \"normalized_name\": \"Metabolic syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21088,\n      \"evidence_end_char\": 21106,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ab3e76989774cda3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Myocardial infarction\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b357a3816434ae5\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myopathy\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myopathy\",\n      \"normalized_name\": \"Myopathy\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myopathy\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21865,\n      \"evidence_end_char\": 21873,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:49cb7a99ef92b9fe\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:pancreatitis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Pancreatitis\",\n      \"normalized_name\": \"Pancreatitis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pancreatitis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20295,\n      \"evidence_end_char\": 20307,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f18784be91a88b7c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:recurrent_coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Recurrent coronary heart disease\",\n      \"normalized_name\": \"Recurrent coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"recurrent coronary heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16616,\n      \"evidence_end_char\": 16648,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:76ca06d7868cb2f5\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:rhabdomyolysis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Rhabdomyolysis\",\n      \"normalized_name\": \"Rhabdomyolysis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"rhabdomyolysis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21895,\n      \"evidence_end_char\": 21909,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8cbd0873022479c9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Severe hypertriglyceridemia\",\n      \"normalized_name\": \"Severe hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"severe hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20128,\n      \"evidence_end_char\": 20155,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c414cace86416141\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:vascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Vascular events\",\n      \"normalized_name\": \"Vascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16905,\n      \"evidence_end_char\": 16920,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:df94a5ca9fdb0489\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fenofibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fenofibrate\",\n      \"normalized_name\": \"Fenofibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fenofibrate\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22183,\n      \"evidence_end_char\": 22194,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3a843525d9c31b75\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20568,\n      \"evidence_end_char\": 20576,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:14ea600b276a4853\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Gemfibrozil\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21984,\n      \"evidence_end_char\": 21995,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:10a58fe42b4b886c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"niacin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20578,\n      \"evidence_end_char\": 20584,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6b82a6ff1838db1b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20589,\n      \"evidence_end_char\": 20608,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:cb22764d4d496ac2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22085,\n      \"evidence_end_char\": 22092,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7fdab2a1a4f04c3a\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:tg_lowering_therapy\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"TG-lowering therapy\",\n      \"normalized_name\": \"TG-lowering therapy\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TG-lowering therapy\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20253,\n      \"evidence_end_char\": 20272,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:6bdd11a551d922c2\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apoB\",\"revised_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly mentions apoB as a lipid/apolipoprotein biomarker; normalization to Apolipoprotein B is appropriate.\"},{\"entity_gold_id\":\"silver_entity:f432c4c72df04786\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Creatinine\",\"revised_normalized_name\":\"Creatinine\",\"evidence_text\":\"creatinine\",\"evidence_start_char\":\"21846\",\"evidence_end_char\":\"21856\",\"reason\":\"Creatinine is explicitly mentioned as a measured laboratory biomarker affected by fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:067b188487cbdd6d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"fasting TG level\",\"revised_normalized_name\":\"Fasting triglycerides\",\"evidence_text\":\"fasting TG level\",\"evidence_start_char\":\"16539\",\"evidence_end_char\":\"16555\",\"reason\":\"The chunk uses TG as the abbreviation for triglycerides and discusses fasting TG levels as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:518b65da5b0e39bd\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"16715\",\"evidence_end_char\":\"16720\",\"reason\":\"HDL-C is explicitly mentioned and is the standard abbreviation for HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:dd3277642ce94e65\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"16725\",\"evidence_end_char\":\"16730\",\"reason\":\"LDL-C is explicitly mentioned and is the standard abbreviation for LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:68e6880c6ea0d38e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"non-HDL-C\",\"revised_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"non-HDL-C\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly discusses non-HDL-C levels, corresponding to non-HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:784f4a35207a3797\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"nonfasting TG levels\",\"revised_normalized_name\":\"Nonfasting triglycerides\",\"evidence_text\":\"nonfasting TG levels\",\"evidence_start_char\":\"16848\",\"evidence_end_char\":\"16868\",\"reason\":\"The chunk explicitly discusses nonfasting TG levels, where TG denotes triglycerides.\"},{\"entity_gold_id\":\"silver_entity:6537b1b360ecc8eb\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Remnant cholesterol\",\"revised_normalized_name\":\"Remnant cholesterol\",\"evidence_text\":\"remnant cholesterol\",\"evidence_start_char\":\"19565\",\"evidence_end_char\":\"19584\",\"reason\":\"Remnant cholesterol is explicitly mentioned as a lipid biomarker associated with CVD.\"},{\"entity_gold_id\":\"silver_entity:fcbb8b2694b11e15\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRLs\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"TRLs\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly mentions TRLs in relation to remnant cholesterol; normalization to triglyceride-rich lipoproteins is appropriate.\"},{\"entity_gold_id\":\"silver_entity:2c89930b7b385238\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TG levels\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TG levels\",\"evidence_start_char\":\"16668\",\"evidence_end_char\":\"16677\",\"reason\":\"TG levels are repeatedly discussed as a biomarker; TG is normalized to triglycerides.\"},{\"entity_gold_id\":\"silver_entity:17cae4f8466ada1b\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The abbreviation CVD is explicitly used in the chunk and corresponds to cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:eaa0225bfe9b5bc3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular events\",\"revised_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"16899\",\"evidence_end_char\":\"16920\",\"reason\":\"Cardiovascular events are explicitly discussed as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:87426317724f7579\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"20047\",\"evidence_end_char\":\"20067\",\"reason\":\"Hypertriglyceridemia is explicitly mentioned as a clinical condition.\"},{\"entity_gold_id\":\"silver_entity:6c48044c9e376963\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Ischemic heart disease\",\"revised_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"ischemic heart disease\",\"evidence_start_char\":\"17992\",\"evidence_end_char\":\"18014\",\"reason\":\"Ischemic heart disease is explicitly listed among cardiovascular events.\"},{\"entity_gold_id\":\"silver_entity:e96044811b605337\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Ischemic stroke\",\"revised_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"ischemic stroke\",\"evidence_start_char\":\"17971\",\"evidence_end_char\":\"17986\",\"reason\":\"Ischemic stroke is explicitly listed among cardiovascular events.\"},{\"entity_gold_id\":\"silver_entity:bf5cd74fdb2c7ab2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"21088\",\"evidence_end_char\":\"21106\",\"reason\":\"Metabolic syndrome is explicitly mentioned as a patient factor relevant to fibrate benefit.\"},{\"entity_gold_id\":\"silver_entity:ab3e76989774cda3\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"MI\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"MI\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk lists MI among cardiovascular events; normalization to myocardial infarction is appropriate.\"},{\"entity_gold_id\":\"silver_entity:3b357a3816434ae5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myopathy\",\"revised_normalized_name\":\"Myopathy\",\"evidence_text\":\"myopathy\",\"evidence_start_char\":\"21865\",\"evidence_end_char\":\"21873\",\"reason\":\"Myopathy is explicitly mentioned as an adverse effect of fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:49cb7a99ef92b9fe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Pancreatitis\",\"revised_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"pancreatitis\",\"evidence_start_char\":\"20295\",\"evidence_end_char\":\"20307\",\"reason\":\"Pancreatitis is explicitly mentioned as a risk reduced by TG-lowering therapy in severe hypertriglyceridemia.\"},{\"entity_gold_id\":\"silver_entity:f18784be91a88b7c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Recurrent coronary heart disease\",\"revised_normalized_name\":\"Recurrent coronary heart disease\",\"evidence_text\":\"recurrent coronary heart disease\",\"evidence_start_char\":\"16616\",\"evidence_end_char\":\"16648\",\"reason\":\"Recurrent coronary heart disease is explicitly mentioned as a clinical outcome/risk.\"},{\"entity_gold_id\":\"silver_entity:76ca06d7868cb2f5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Rhabdomyolysis\",\"revised_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"rhabdomyolysis\",\"evidence_start_char\":\"21895\",\"evidence_end_char\":\"21909\",\"reason\":\"Rhabdomyolysis is explicitly mentioned as a rare adverse effect.\"},{\"entity_gold_id\":\"silver_entity:8cbd0873022479c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Severe hypertriglyceridemia\",\"revised_normalized_name\":\"Severe hypertriglyceridemia\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"20128\",\"evidence_end_char\":\"20155\",\"reason\":\"Severe hypertriglyceridemia is explicitly defined as a clinically meaningful severity category.\"},{\"entity_gold_id\":\"silver_entity:c414cace86416141\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Vascular events\",\"revised_normalized_name\":\"Vascular events\",\"evidence_text\":\"vascular events\",\"evidence_start_char\":\"21608\",\"evidence_end_char\":\"21623\",\"reason\":\"Vascular events are explicitly mentioned later in the chunk as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:df94a5ca9fdb0489\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fenofibrate\",\"revised_normalized_name\":\"Fenofibrate\",\"evidence_text\":\"fenofibrate\",\"evidence_start_char\":\"22183\",\"evidence_end_char\":\"22194\",\"reason\":\"Fenofibrate is explicitly mentioned as a fibrate drug.\"},{\"entity_gold_id\":\"silver_entity:3a843525d9c31b75\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fibrates\",\"revised_normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"20568\",\"evidence_end_char\":\"20576\",\"reason\":\"Fibrates are explicitly mentioned as TG-lowering agents and discussed as a drug class.\"},{\"entity_gold_id\":\"silver_entity:14ea600b276a4853\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Gemfibrozil\",\"revised_normalized_name\":\"Gemfibrozil\",\"evidence_text\":\"Gemfibrozil\",\"evidence_start_char\":\"21984\",\"evidence_end_char\":\"21995\",\"reason\":\"Gemfibrozil is explicitly mentioned as a fibrate drug with statin interaction concerns.\"},{\"entity_gold_id\":\"silver_entity:10a58fe42b4b886c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Niacin\",\"revised_normalized_name\":\"Niacin\",\"evidence_text\":\"niacin\",\"evidence_start_char\":\"20578\",\"evidence_end_char\":\"20584\",\"reason\":\"Niacin is explicitly listed as a TG-lowering agent.\"},{\"entity_gold_id\":\"silver_entity:6b82a6ff1838db1b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Omega-3 fatty acids\",\"revised_normalized_name\":\"Omega-3 fatty acids\",\"evidence_text\":\"omega-3 fatty acids\",\"evidence_start_char\":\"20589\",\"evidence_end_char\":\"20608\",\"reason\":\"Omega-3 fatty acids are explicitly listed as TG-lowering agents.\"},{\"entity_gold_id\":\"silver_entity:cb22764d4d496ac2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Statins\",\"revised_normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22085\",\"evidence_end_char\":\"22092\",\"reason\":\"Statins are explicitly mentioned in the context of renal clearance and combination therapy.\"},{\"entity_gold_id\":\"silver_entity:7fdab2a1a4f04c3a\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"TG-lowering therapy\",\"evidence_start_char\":\"20253\",\"evidence_end_char\":\"20272\",\"reason\":\"The phrase is a broad therapeutic approach rather than a specific standalone drug or drug class; the specific TG-lowering agents are captured separately.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:acute_coronary_syndrome\",\"entity_type\":\"Condition\",\"entity_text\":\"acute coronary syndrome\",\"normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"acute coronary syndrome\",\"evidence_start_char\":\"16498\",\"evidence_end_char\":\"16521\",\"reason\":\"Explicitly present at the start of the chunk and clinically important context for recurrent coronary disease risk.\"},{\"entity_gold_id\":\"gold_addition:insulin_resistance\",\"entity_type\":\"Condition\",\"entity_text\":\"insulin resistance\",\"normalized_name\":\"Insulin resistance\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Explicitly mentioned as an adjustment factor/marker relevant to cardiovascular risk associations.\"},{\"entity_gold_id\":\"gold_addition:total_cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"TC\",\"normalized_name\":\"Total cholesterol\",\"evidence_text\":\"TC\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"TC levels are explicitly mentioned as lipid parameters used in adjustment.\"},{\"entity_gold_id\":\"gold_addition:apob_apoa1_ratio\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB/apoA1\",\"normalized_name\":\"Apolipoprotein B/Apolipoprotein A1 ratio\",\"evidence_text\":\"apoB/apoA1\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The apoB/apoA1 ratio is explicitly mentioned as an adjustment biomarker and is distinct from apoB alone.\"},{\"entity_gold_id\":\"gold_addition:smoking\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"smoking\",\"normalized_name\":\"Smoking\",\"evidence_text\":\"smoking\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Smoking is explicitly listed among baseline cardiovascular risk factors.\"},{\"entity_gold_id\":\"gold_addition:blood_pressure\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"blood pressure\",\"normalized_name\":\"Blood pressure\",\"evidence_text\":\"blood pressure\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Blood pressure is explicitly listed among baseline cardiovascular risk factors.\"}],\"review_notes\":\"Accepted abbreviation-based entities when the abbreviation was explicitly present in the chunk and the normalized biomedical concept was clear. Rejected only the broad TG-lowering therapy term because it is not a specific drug or drug class and specific agents are already represented.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:6bdd11a551d922c2",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "apoB",
+        "revised_normalized_name": "Apolipoprotein B",
+        "evidence_text": "apoB",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The chunk explicitly mentions apoB as a lipid/apolipoprotein biomarker; normalization to Apolipoprotein B is appropriate."
+      },
+      {
+        "entity_gold_id": "silver_entity:f432c4c72df04786",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Creatinine",
+        "revised_normalized_name": "Creatinine",
+        "evidence_text": "creatinine",
+        "evidence_start_char": "21846",
+        "evidence_end_char": "21856",
+        "reason": "Creatinine is explicitly mentioned as a measured laboratory biomarker affected by fibrate therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:067b188487cbdd6d",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "fasting TG level",
+        "revised_normalized_name": "Fasting triglycerides",
+        "evidence_text": "fasting TG level",
+        "evidence_start_char": "16539",
+        "evidence_end_char": "16555",
+        "reason": "The chunk uses TG as the abbreviation for triglycerides and discusses fasting TG levels as a biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:518b65da5b0e39bd",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "HDL-C",
+        "revised_normalized_name": "HDL cholesterol",
+        "evidence_text": "HDL-C",
+        "evidence_start_char": "16715",
+        "evidence_end_char": "16720",
+        "reason": "HDL-C is explicitly mentioned and is the standard abbreviation for HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:dd3277642ce94e65",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LDL-C",
+        "revised_normalized_name": "LDL cholesterol",
+        "evidence_text": "LDL-C",
+        "evidence_start_char": "16725",
+        "evidence_end_char": "16730",
+        "reason": "LDL-C is explicitly mentioned and is the standard abbreviation for LDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:68e6880c6ea0d38e",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "non-HDL-C",
+        "revised_normalized_name": "Non-HDL cholesterol",
+        "evidence_text": "non-HDL-C",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The chunk explicitly discusses non-HDL-C levels, corresponding to non-HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:784f4a35207a3797",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "nonfasting TG levels",
+        "revised_normalized_name": "Nonfasting triglycerides",
+        "evidence_text": "nonfasting TG levels",
+        "evidence_start_char": "16848",
+        "evidence_end_char": "16868",
+        "reason": "The chunk explicitly discusses nonfasting TG levels, where TG denotes triglycerides."
+      },
+      {
+        "entity_gold_id": "silver_entity:6537b1b360ecc8eb",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Remnant cholesterol",
+        "revised_normalized_name": "Remnant cholesterol",
+        "evidence_text": "remnant cholesterol",
+        "evidence_start_char": "19565",
+        "evidence_end_char": "19584",
+        "reason": "Remnant cholesterol is explicitly mentioned as a lipid biomarker associated with CVD."
+      },
+      {
+        "entity_gold_id": "silver_entity:fcbb8b2694b11e15",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TRLs",
+        "revised_normalized_name": "Triglyceride-rich lipoproteins",
+        "evidence_text": "TRLs",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The chunk explicitly mentions TRLs in relation to remnant cholesterol; normalization to triglyceride-rich lipoproteins is appropriate."
+      },
+      {
+        "entity_gold_id": "silver_entity:2c89930b7b385238",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TG levels",
+        "revised_normalized_name": "Triglycerides",
+        "evidence_text": "TG levels",
+        "evidence_start_char": "16668",
+        "evidence_end_char": "16677",
+        "reason": "TG levels are repeatedly discussed as a biomarker; TG is normalized to triglycerides."
+      },
+      {
+        "entity_gold_id": "silver_entity:17cae4f8466ada1b",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "CVD",
+        "revised_normalized_name": "Cardiovascular disease",
+        "evidence_text": "CVD",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The abbreviation CVD is explicitly used in the chunk and corresponds to cardiovascular disease."
+      },
+      {
+        "entity_gold_id": "silver_entity:eaa0225bfe9b5bc3",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Cardiovascular events",
+        "revised_normalized_name": "Cardiovascular events",
+        "evidence_text": "cardiovascular events",
+        "evidence_start_char": "16899",
+        "evidence_end_char": "16920",
+        "reason": "Cardiovascular events are explicitly discussed as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:87426317724f7579",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hypertriglyceridemia",
+        "revised_normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "hypertriglyceridemia",
+        "evidence_start_char": "20047",
+        "evidence_end_char": "20067",
+        "reason": "Hypertriglyceridemia is explicitly mentioned as a clinical condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:6c48044c9e376963",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Ischemic heart disease",
+        "revised_normalized_name": "Ischemic heart disease",
+        "evidence_text": "ischemic heart disease",
+        "evidence_start_char": "17992",
+        "evidence_end_char": "18014",
+        "reason": "Ischemic heart disease is explicitly listed among cardiovascular events."
+      },
+      {
+        "entity_gold_id": "silver_entity:e96044811b605337",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Ischemic stroke",
+        "revised_normalized_name": "Ischemic stroke",
+        "evidence_text": "ischemic stroke",
+        "evidence_start_char": "17971",
+        "evidence_end_char": "17986",
+        "reason": "Ischemic stroke is explicitly listed among cardiovascular events."
+      },
+      {
+        "entity_gold_id": "silver_entity:bf5cd74fdb2c7ab2",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Metabolic syndrome",
+        "revised_normalized_name": "Metabolic syndrome",
+        "evidence_text": "metabolic syndrome",
+        "evidence_start_char": "21088",
+        "evidence_end_char": "21106",
+        "reason": "Metabolic syndrome is explicitly mentioned as a patient factor relevant to fibrate benefit."
+      },
+      {
+        "entity_gold_id": "silver_entity:ab3e76989774cda3",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "MI",
+        "revised_normalized_name": "Myocardial infarction",
+        "evidence_text": "MI",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The chunk lists MI among cardiovascular events; normalization to myocardial infarction is appropriate."
+      },
+      {
+        "entity_gold_id": "silver_entity:3b357a3816434ae5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Myopathy",
+        "revised_normalized_name": "Myopathy",
+        "evidence_text": "myopathy",
+        "evidence_start_char": "21865",
+        "evidence_end_char": "21873",
+        "reason": "Myopathy is explicitly mentioned as an adverse effect of fibrate therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:49cb7a99ef92b9fe",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Pancreatitis",
+        "revised_normalized_name": "Pancreatitis",
+        "evidence_text": "pancreatitis",
+        "evidence_start_char": "20295",
+        "evidence_end_char": "20307",
+        "reason": "Pancreatitis is explicitly mentioned as a risk reduced by TG-lowering therapy in severe hypertriglyceridemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:f18784be91a88b7c",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Recurrent coronary heart disease",
+        "revised_normalized_name": "Recurrent coronary heart disease",
+        "evidence_text": "recurrent coronary heart disease",
+        "evidence_start_char": "16616",
+        "evidence_end_char": "16648",
+        "reason": "Recurrent coronary heart disease is explicitly mentioned as a clinical outcome/risk."
+      },
+      {
+        "entity_gold_id": "silver_entity:76ca06d7868cb2f5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Rhabdomyolysis",
+        "revised_normalized_name": "Rhabdomyolysis",
+        "evidence_text": "rhabdomyolysis",
+        "evidence_start_char": "21895",
+        "evidence_end_char": "21909",
+        "reason": "Rhabdomyolysis is explicitly mentioned as a rare adverse effect."
+      },
+      {
+        "entity_gold_id": "silver_entity:8cbd0873022479c9",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Severe hypertriglyceridemia",
+        "revised_normalized_name": "Severe hypertriglyceridemia",
+        "evidence_text": "severe hypertriglyceridemia",
+        "evidence_start_char": "20128",
+        "evidence_end_char": "20155",
+        "reason": "Severe hypertriglyceridemia is explicitly defined as a clinically meaningful severity category."
+      },
+      {
+        "entity_gold_id": "silver_entity:c414cace86416141",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Vascular events",
+        "revised_normalized_name": "Vascular events",
+        "evidence_text": "vascular events",
+        "evidence_start_char": "21608",
+        "evidence_end_char": "21623",
+        "reason": "Vascular events are explicitly mentioned later in the chunk as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:df94a5ca9fdb0489",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Fenofibrate",
+        "revised_normalized_name": "Fenofibrate",
+        "evidence_text": "fenofibrate",
+        "evidence_start_char": "22183",
+        "evidence_end_char": "22194",
+        "reason": "Fenofibrate is explicitly mentioned as a fibrate drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:3a843525d9c31b75",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Fibrates",
+        "revised_normalized_name": "Fibrates",
+        "evidence_text": "fibrates",
+        "evidence_start_char": "20568",
+        "evidence_end_char": "20576",
+        "reason": "Fibrates are explicitly mentioned as TG-lowering agents and discussed as a drug class."
+      },
+      {
+        "entity_gold_id": "silver_entity:14ea600b276a4853",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Gemfibrozil",
+        "revised_normalized_name": "Gemfibrozil",
+        "evidence_text": "Gemfibrozil",
+        "evidence_start_char": "21984",
+        "evidence_end_char": "21995",
+        "reason": "Gemfibrozil is explicitly mentioned as a fibrate drug with statin interaction concerns."
+      },
+      {
+        "entity_gold_id": "silver_entity:10a58fe42b4b886c",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Niacin",
+        "revised_normalized_name": "Niacin",
+        "evidence_text": "niacin",
+        "evidence_start_char": "20578",
+        "evidence_end_char": "20584",
+        "reason": "Niacin is explicitly listed as a TG-lowering agent."
+      },
+      {
+        "entity_gold_id": "silver_entity:6b82a6ff1838db1b",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Omega-3 fatty acids",
+        "revised_normalized_name": "Omega-3 fatty acids",
+        "evidence_text": "omega-3 fatty acids",
+        "evidence_start_char": "20589",
+        "evidence_end_char": "20608",
+        "reason": "Omega-3 fatty acids are explicitly listed as TG-lowering agents."
+      },
+      {
+        "entity_gold_id": "silver_entity:cb22764d4d496ac2",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Statins",
+        "revised_normalized_name": "Statins",
+        "evidence_text": "statins",
+        "evidence_start_char": "22085",
+        "evidence_end_char": "22092",
+        "reason": "Statins are explicitly mentioned in the context of renal clearance and combination therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:7fdab2a1a4f04c3a",
+        "decision": "rejected",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "TG-lowering therapy",
+        "evidence_start_char": "20253",
+        "evidence_end_char": "20272",
+        "reason": "The phrase is a broad therapeutic approach rather than a specific standalone drug or drug class; the specific TG-lowering agents are captured separately."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:acute_coronary_syndrome",
+        "entity_type": "Condition",
+        "entity_text": "acute coronary syndrome",
+        "normalized_name": "Acute coronary syndrome",
+        "evidence_text": "acute coronary syndrome",
+        "evidence_start_char": "16498",
+        "evidence_end_char": "16521",
+        "reason": "Explicitly present at the start of the chunk and clinically important context for recurrent coronary disease risk."
+      },
+      {
+        "entity_gold_id": "gold_addition:insulin_resistance",
+        "entity_type": "Condition",
+        "entity_text": "insulin resistance",
+        "normalized_name": "Insulin resistance",
+        "evidence_text": "insulin resistance",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Explicitly mentioned as an adjustment factor/marker relevant to cardiovascular risk associations."
+      },
+      {
+        "entity_gold_id": "gold_addition:total_cholesterol",
+        "entity_type": "Biomarker",
+        "entity_text": "TC",
+        "normalized_name": "Total cholesterol",
+        "evidence_text": "TC",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "TC levels are explicitly mentioned as lipid parameters used in adjustment."
+      },
+      {
+        "entity_gold_id": "gold_addition:apob_apoa1_ratio",
+        "entity_type": "Biomarker",
+        "entity_text": "apoB/apoA1",
+        "normalized_name": "Apolipoprotein B/Apolipoprotein A1 ratio",
+        "evidence_text": "apoB/apoA1",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The apoB/apoA1 ratio is explicitly mentioned as an adjustment biomarker and is distinct from apoB alone."
+      },
+      {
+        "entity_gold_id": "gold_addition:smoking",
+        "entity_type": "RiskFactor",
+        "entity_text": "smoking",
+        "normalized_name": "Smoking",
+        "evidence_text": "smoking",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Smoking is explicitly listed among baseline cardiovascular risk factors."
+      },
+      {
+        "entity_gold_id": "gold_addition:blood_pressure",
+        "entity_type": "RiskFactor",
+        "entity_text": "blood pressure",
+        "normalized_name": "Blood pressure",
+        "evidence_text": "blood pressure",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Blood pressure is explicitly listed among baseline cardiovascular risk factors."
+      }
+    ],
+    "review_notes": "Accepted abbreviation-based entities when the abbreviation was explicitly present in the chunk and the normalized biomedical concept was clear. Rejected only the broad TG-lowering therapy term because it is not a specific drug or drug class and specific agents are already represented."
+  },
+  "raw_response": {
+    "id": "resp_0ca4321895c1cde5006a47e7b3dc60819e9cc58d10f2b6b67c",
+    "created_at": 1783097267.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0ca4321895c1cde5006a47e7b4ac38819e91017b60a6bd3d12",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0ca4321895c1cde5006a47e88d4bac819eb8190fae081b96a6",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:6bdd11a551d922c2\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apoB\",\"revised_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly mentions apoB as a lipid/apolipoprotein biomarker; normalization to Apolipoprotein B is appropriate.\"},{\"entity_gold_id\":\"silver_entity:f432c4c72df04786\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Creatinine\",\"revised_normalized_name\":\"Creatinine\",\"evidence_text\":\"creatinine\",\"evidence_start_char\":\"21846\",\"evidence_end_char\":\"21856\",\"reason\":\"Creatinine is explicitly mentioned as a measured laboratory biomarker affected by fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:067b188487cbdd6d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"fasting TG level\",\"revised_normalized_name\":\"Fasting triglycerides\",\"evidence_text\":\"fasting TG level\",\"evidence_start_char\":\"16539\",\"evidence_end_char\":\"16555\",\"reason\":\"The chunk uses TG as the abbreviation for triglycerides and discusses fasting TG levels as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:518b65da5b0e39bd\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"16715\",\"evidence_end_char\":\"16720\",\"reason\":\"HDL-C is explicitly mentioned and is the standard abbreviation for HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:dd3277642ce94e65\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"16725\",\"evidence_end_char\":\"16730\",\"reason\":\"LDL-C is explicitly mentioned and is the standard abbreviation for LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:68e6880c6ea0d38e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"non-HDL-C\",\"revised_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"non-HDL-C\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly discusses non-HDL-C levels, corresponding to non-HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:784f4a35207a3797\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"nonfasting TG levels\",\"revised_normalized_name\":\"Nonfasting triglycerides\",\"evidence_text\":\"nonfasting TG levels\",\"evidence_start_char\":\"16848\",\"evidence_end_char\":\"16868\",\"reason\":\"The chunk explicitly discusses nonfasting TG levels, where TG denotes triglycerides.\"},{\"entity_gold_id\":\"silver_entity:6537b1b360ecc8eb\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Remnant cholesterol\",\"revised_normalized_name\":\"Remnant cholesterol\",\"evidence_text\":\"remnant cholesterol\",\"evidence_start_char\":\"19565\",\"evidence_end_char\":\"19584\",\"reason\":\"Remnant cholesterol is explicitly mentioned as a lipid biomarker associated with CVD.\"},{\"entity_gold_id\":\"silver_entity:fcbb8b2694b11e15\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRLs\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"TRLs\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk explicitly mentions TRLs in relation to remnant cholesterol; normalization to triglyceride-rich lipoproteins is appropriate.\"},{\"entity_gold_id\":\"silver_entity:2c89930b7b385238\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TG levels\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TG levels\",\"evidence_start_char\":\"16668\",\"evidence_end_char\":\"16677\",\"reason\":\"TG levels are repeatedly discussed as a biomarker; TG is normalized to triglycerides.\"},{\"entity_gold_id\":\"silver_entity:17cae4f8466ada1b\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The abbreviation CVD is explicitly used in the chunk and corresponds to cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:eaa0225bfe9b5bc3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular events\",\"revised_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"16899\",\"evidence_end_char\":\"16920\",\"reason\":\"Cardiovascular events are explicitly discussed as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:87426317724f7579\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"20047\",\"evidence_end_char\":\"20067\",\"reason\":\"Hypertriglyceridemia is explicitly mentioned as a clinical condition.\"},{\"entity_gold_id\":\"silver_entity:6c48044c9e376963\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Ischemic heart disease\",\"revised_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"ischemic heart disease\",\"evidence_start_char\":\"17992\",\"evidence_end_char\":\"18014\",\"reason\":\"Ischemic heart disease is explicitly listed among cardiovascular events.\"},{\"entity_gold_id\":\"silver_entity:e96044811b605337\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Ischemic stroke\",\"revised_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"ischemic stroke\",\"evidence_start_char\":\"17971\",\"evidence_end_char\":\"17986\",\"reason\":\"Ischemic stroke is explicitly listed among cardiovascular events.\"},{\"entity_gold_id\":\"silver_entity:bf5cd74fdb2c7ab2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"21088\",\"evidence_end_char\":\"21106\",\"reason\":\"Metabolic syndrome is explicitly mentioned as a patient factor relevant to fibrate benefit.\"},{\"entity_gold_id\":\"silver_entity:ab3e76989774cda3\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"MI\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"MI\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk lists MI among cardiovascular events; normalization to myocardial infarction is appropriate.\"},{\"entity_gold_id\":\"silver_entity:3b357a3816434ae5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myopathy\",\"revised_normalized_name\":\"Myopathy\",\"evidence_text\":\"myopathy\",\"evidence_start_char\":\"21865\",\"evidence_end_char\":\"21873\",\"reason\":\"Myopathy is explicitly mentioned as an adverse effect of fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:49cb7a99ef92b9fe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Pancreatitis\",\"revised_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"pancreatitis\",\"evidence_start_char\":\"20295\",\"evidence_end_char\":\"20307\",\"reason\":\"Pancreatitis is explicitly mentioned as a risk reduced by TG-lowering therapy in severe hypertriglyceridemia.\"},{\"entity_gold_id\":\"silver_entity:f18784be91a88b7c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Recurrent coronary heart disease\",\"revised_normalized_name\":\"Recurrent coronary heart disease\",\"evidence_text\":\"recurrent coronary heart disease\",\"evidence_start_char\":\"16616\",\"evidence_end_char\":\"16648\",\"reason\":\"Recurrent coronary heart disease is explicitly mentioned as a clinical outcome/risk.\"},{\"entity_gold_id\":\"silver_entity:76ca06d7868cb2f5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Rhabdomyolysis\",\"revised_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"rhabdomyolysis\",\"evidence_start_char\":\"21895\",\"evidence_end_char\":\"21909\",\"reason\":\"Rhabdomyolysis is explicitly mentioned as a rare adverse effect.\"},{\"entity_gold_id\":\"silver_entity:8cbd0873022479c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Severe hypertriglyceridemia\",\"revised_normalized_name\":\"Severe hypertriglyceridemia\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"20128\",\"evidence_end_char\":\"20155\",\"reason\":\"Severe hypertriglyceridemia is explicitly defined as a clinically meaningful severity category.\"},{\"entity_gold_id\":\"silver_entity:c414cace86416141\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Vascular events\",\"revised_normalized_name\":\"Vascular events\",\"evidence_text\":\"vascular events\",\"evidence_start_char\":\"21608\",\"evidence_end_char\":\"21623\",\"reason\":\"Vascular events are explicitly mentioned later in the chunk as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:df94a5ca9fdb0489\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fenofibrate\",\"revised_normalized_name\":\"Fenofibrate\",\"evidence_text\":\"fenofibrate\",\"evidence_start_char\":\"22183\",\"evidence_end_char\":\"22194\",\"reason\":\"Fenofibrate is explicitly mentioned as a fibrate drug.\"},{\"entity_gold_id\":\"silver_entity:3a843525d9c31b75\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fibrates\",\"revised_normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"20568\",\"evidence_end_char\":\"20576\",\"reason\":\"Fibrates are explicitly mentioned as TG-lowering agents and discussed as a drug class.\"},{\"entity_gold_id\":\"silver_entity:14ea600b276a4853\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Gemfibrozil\",\"revised_normalized_name\":\"Gemfibrozil\",\"evidence_text\":\"Gemfibrozil\",\"evidence_start_char\":\"21984\",\"evidence_end_char\":\"21995\",\"reason\":\"Gemfibrozil is explicitly mentioned as a fibrate drug with statin interaction concerns.\"},{\"entity_gold_id\":\"silver_entity:10a58fe42b4b886c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Niacin\",\"revised_normalized_name\":\"Niacin\",\"evidence_text\":\"niacin\",\"evidence_start_char\":\"20578\",\"evidence_end_char\":\"20584\",\"reason\":\"Niacin is explicitly listed as a TG-lowering agent.\"},{\"entity_gold_id\":\"silver_entity:6b82a6ff1838db1b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Omega-3 fatty acids\",\"revised_normalized_name\":\"Omega-3 fatty acids\",\"evidence_text\":\"omega-3 fatty acids\",\"evidence_start_char\":\"20589\",\"evidence_end_char\":\"20608\",\"reason\":\"Omega-3 fatty acids are explicitly listed as TG-lowering agents.\"},{\"entity_gold_id\":\"silver_entity:cb22764d4d496ac2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Statins\",\"revised_normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22085\",\"evidence_end_char\":\"22092\",\"reason\":\"Statins are explicitly mentioned in the context of renal clearance and combination therapy.\"},{\"entity_gold_id\":\"silver_entity:7fdab2a1a4f04c3a\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"TG-lowering therapy\",\"evidence_start_char\":\"20253\",\"evidence_end_char\":\"20272\",\"reason\":\"The phrase is a broad therapeutic approach rather than a specific standalone drug or drug class; the specific TG-lowering agents are captured separately.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:acute_coronary_syndrome\",\"entity_type\":\"Condition\",\"entity_text\":\"acute coronary syndrome\",\"normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"acute coronary syndrome\",\"evidence_start_char\":\"16498\",\"evidence_end_char\":\"16521\",\"reason\":\"Explicitly present at the start of the chunk and clinically important context for recurrent coronary disease risk.\"},{\"entity_gold_id\":\"gold_addition:insulin_resistance\",\"entity_type\":\"Condition\",\"entity_text\":\"insulin resistance\",\"normalized_name\":\"Insulin resistance\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Explicitly mentioned as an adjustment factor/marker relevant to cardiovascular risk associations.\"},{\"entity_gold_id\":\"gold_addition:total_cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"TC\",\"normalized_name\":\"Total cholesterol\",\"evidence_text\":\"TC\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"TC levels are explicitly mentioned as lipid parameters used in adjustment.\"},{\"entity_gold_id\":\"gold_addition:apob_apoa1_ratio\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB/apoA1\",\"normalized_name\":\"Apolipoprotein B/Apolipoprotein A1 ratio\",\"evidence_text\":\"apoB/apoA1\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The apoB/apoA1 ratio is explicitly mentioned as an adjustment biomarker and is distinct from apoB alone.\"},{\"entity_gold_id\":\"gold_addition:smoking\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"smoking\",\"normalized_name\":\"Smoking\",\"evidence_text\":\"smoking\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Smoking is explicitly listed among baseline cardiovascular risk factors.\"},{\"entity_gold_id\":\"gold_addition:blood_pressure\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"blood pressure\",\"normalized_name\":\"Blood pressure\",\"evidence_text\":\"blood pressure\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Blood pressure is explicitly listed among baseline cardiovascular risk factors.\"}],\"review_notes\":\"Accepted abbreviation-based entities when the abbreviation was explicitly present in the chunk and the normalized biomedical concept was clear. Rejected only the broad TG-lowering therapy term because it is not a specific drug or drug class and specific agents are already represented.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783097511.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 10376,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 17794,
+      "output_tokens_details": {
+        "reasoning_tokens": 14493
+      },
+      "total_tokens": 28170
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T16:47:48.777821+00:00",
+  "finished_at": "2026-07-03T16:51:51.955278+00:00",
+  "duration_ms": 254877.973,
+  "status": "ok",
+  "error": ""
+}

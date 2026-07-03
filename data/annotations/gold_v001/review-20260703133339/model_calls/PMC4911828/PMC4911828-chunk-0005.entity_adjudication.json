@@ -1,0 +1,987 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4911828-chunk-0005\",\n    \"document_id\": \"paper:PMC4911828\",\n    \"pmcid\": \"PMC4911828\",\n    \"section\": \"CONCL\",\n    \"start_char\": \"21980\",\n    \"end_char\": \"27971\",\n    \"text\": \"ome patients with atherogenic dyslipidemia and metabolic syndrome may benefit from these combinations.\\n\\nREFERENCES\\n\\nRetest reliability of plasma cholesterol and triglyceride. The Lipid Research Clinics Prevalence Study\\n\\nPlasma triglyceride level and mortality from coronary heart disease\\n\\nThe role of circulating glucose and triglyceride concentrations and their interactions with other \\u201crisk factors\\u201d as determinants of arterial disease in nine diabetic population samples from the WHO multinational study\\n\\nNational Cholesterol Education Program (U.S.). Working Group on Lipoprotein Measurement\\n\\nAtherogenesis: A postprandial phenomenon\\n\\nFamilial lipoprotein lipase deficiency, Apo-C-II deficiency, and hepatic lipase deficiency\\n\\nQuantitative studies of transfer in vivo of low density, Sf 12-60, and Sf 60-400 lipoproteins between plasma and arterial intima in humans\\n\\nEpidemiology as a guide to clinical decisions. The association between triglyceride and coronary heart disease\\n\\nFasting versus nonfasting triglycerides and the prediction of cardiovascular risk: Do we need to revisit the oral triglyceride tolerance test?\\n\\nPlasma lipids in non-fasting patients and signal values of laboratory results\\n\\nNonfasting lipids, lipoproteins, and apolipoproteins in individuals with and without diabetes: 58 434 individuals from the Copenhagen general population study\\n\\nComparison of LDL cholesterol concentrations by Friedewald calculation and direct measurement in relation to cardiovascular events in 27,331 women\\n\\nMajor lipids, apolipoproteins, and risk of vascular disease\\n\\nRemnant cholesterol as a causal risk factor for ischemic heart disease\\n\\nGenetically elevated non-fasting triglycerides and calculated remnant cholesterol as causal risk factors for myocardial infarction\\n\\nTriglyceride-mediated pathways and coronary disease: Collaborative analysis of 101 studies\\n\\nLow nonfasting triglycerides and reduced all-cause mortality: A mendelian randomization study\\n\\nLoss-of-function mutations in APOC3 and risk of ischemic vascular disease\\n\\nLoss-of-function mutations in APOC3, triglycerides, and coronary disease\\n\\nExome sequencing, ANGPTL3 mutations, and familial combined hypolipidemia\\n\\nEfficacy and safety of cholesterol-lowering treatment: Prospective meta-analysis of data from 90,056 participants in 14 randomised trials of statins\\n\\nMeta-analysis of cardiovascular outcomes trials comparing intensive versus moderate statin therapy\\n\\nEfficacy of cholesterol-lowering therapy in 18,686 people with diabetes in 14 randomised trials of statins: A meta-analysis\\n\\nEfficacy and safety of more intensive lowering of LDL cholesterol: A meta-analysis of data from 170,000 participants in 26 randomised trials\\n\\nThe effects of lowering LDL cholesterol with statin therapy in people at low risk of vascular disease: Meta-analysis of individual data from 27 randomised trials\\n\\nEfficacy and safety of LDL-lowering therapy among men and women: Meta-analysis of individual data from 174,000 participants in 27 randomised trials\\n\\nCholesterol lowering with simvastatin improves prognosis of diabetic patients with coronary heart disease. A subgroup analysis of the Scandinavian Simvastatin Survival Study (4S)\\n\\nThe metabolic syndrome and risk of major coronary events in the Scandinavian Simvastatin Survival Study (4S) and the Air Force/Texas Coronary Atherosclerosis Prevention Study (AFCAPS/TexCAPS)\\n\\nVLDL, apolipoproteins B, CIII, and E, and risk of recurrent coronary events in the Cholesterol and Recurrent Events (CARE) trial\\n\\nMetabolic syndrome with and without C-reactive protein as a predictor of coronary heart disease and diabetes in the West of Scotland Coronary Prevention Study\\n\\nReduction of low-density lipoprotein cholesterol in patients with coronary heart disease and metabolic syndrome: Analysis of the Treating to New Targets study\\n\\nInfluence of baseline lipids on effectiveness of pravastatin in the CARE trial. Cholesterol and recurrent events\\n\\nPrevention of cardiovascular events and death with pravastatin in patients with coronary heart disease and a broad range of initial cholesterol levels. The Long-Term Intervention with Pravastatin in Ischaemic Disease (LIPID) Study Group\\n\\nHeart Protection Study Collaborative Group. MRC/BHF heart protection study of cholesterol lowering with simvastatin in 20,536 high-risk individuals: A randomised placebo-controlled trial\\n\\nPrevention of coronary heart disease with pravastatin in men with hypercholesterolemia. West of Scotland Coronary Prevention Study Group\\n\\nPrevention of coronary and stroke events with atorvastatin in hypertensive patients who have average or lower-than-average cholesterol concentrations, in the Anglo-Scandinavian Cardiac Outcomes Trial \\u2013 Lipid Lowering Arm (ASCOT-LLA): A multicentre randomised controlled trial\\n\\nRelation between baseline and on-treatment lipid parameters and first acute major coronary events in the Air Force/Texas Coronary Atherosclerosis Prevention Study (AFCAPS/TexCAPS)\\n\\nRelation of gemfibrozil treatment and lipid levels with major coronary events: VA-HIT: A randomized controlled trial\\n\\nRelationship between lipid levels and clinical outcomes in the long-term intervention with pravastatin in ischemic disease (LIPID) trial: To what extent is the reduction in coronary events with pravastatin explained by on-study lipid levels?\\n\\nPlasma triglycerides and cardiovascular events in the treating to new targets and incremental decrease in end-points through aggressive lipid lowering trials of statins in patients with coronary artery disease\\n\\nJoint effects of serum triglyceride and LDL cholesterol and HDL cholesterol concentrations on coronary heart disease risk in the Helsinki Heart Study. Implications for treatment\\n\\nGemfibrozil for the secondary prevention of coronary heart disease in men with low levels of high-density lipoprotein cholesterol. Veterans Affairs High-Density Lipoprotein Cholesterol Intervention Trial Study Group\\n\\nBezafibrate Infarction Prevention (BIP) Study.\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:585db7651d486170\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoprotein_b\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein B\",\n      \"normalized_name\": \"Apolipoprotein B\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein B\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:143f59f78586169f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoprotein_ciii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein CIII\",\n      \"normalized_name\": \"Apolipoprotein CIII\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein CIII\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f4f79d967ba7f573\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoprotein_e\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein E\",\n      \"normalized_name\": \"Apolipoprotein E\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein E\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b47279d59f498b3f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoproteins\",\n      \"normalized_name\": \"Apolipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apolipoproteins\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23223,\n      \"evidence_end_char\": 23238,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0bde42df99a2d5ec\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:c_reactive_protein\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"C-reactive Protein\",\n      \"normalized_name\": \"C-reactive Protein\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"C-reactive protein\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25537,\n      \"evidence_end_char\": 25555,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f8982a8e773bf5a5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Cholesterol\",\n      \"normalized_name\": \"Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cholesterol\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22125,\n      \"evidence_end_char\": 22136,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d251680cd254d6f2\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:glucose\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Glucose\",\n      \"normalized_name\": \"Glucose\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"glucose\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22293,\n      \"evidence_end_char\": 22300,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:45f857e6af03fe3b\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL Cholesterol\",\n      \"normalized_name\": \"HDL Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 27589,\n      \"evidence_end_char\": 27604,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bdb16010e5fe1fe2\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL Cholesterol\",\n      \"normalized_name\": \"LDL Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23360,\n      \"evidence_end_char\": 23375,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c6f7258cf7d9d7ef\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:lipids\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipids\",\n      \"normalized_name\": \"Lipids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lipids\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23114,\n      \"evidence_end_char\": 23120,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:de7956390f8d69f1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:remnant_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Remnant Cholesterol\",\n      \"normalized_name\": \"Remnant Cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Remnant cholesterol\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23555,\n      \"evidence_end_char\": 23574,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1b6f7a5d8b03bee1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22989,\n      \"evidence_end_char\": 23002,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:52ca8909d7158f41\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:vldl\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"VLDL\",\n      \"normalized_name\": \"VLDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"VLDL\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25371,\n      \"evidence_end_char\": 25375,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7973ac622a299274\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:arterial_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Arterial Disease\",\n      \"normalized_name\": \"Arterial Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"arterial disease\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22401,\n      \"evidence_end_char\": 22417,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2c36e3a8f70b71e6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:atherogenic_dyslipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherogenic Dyslipidemia\",\n      \"normalized_name\": \"Atherogenic Dyslipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherogenic dyslipidemia\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 21998,\n      \"evidence_end_char\": 22022,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b27cbc102a2efa6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular Events\",\n      \"normalized_name\": \"Cardiovascular Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23455,\n      \"evidence_end_char\": 23476,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a941b0625dde3fe6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:coronary_artery_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary Artery Disease\",\n      \"normalized_name\": \"Coronary Artery Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary artery disease\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 27504,\n      \"evidence_end_char\": 27527,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f7605993441f3f69\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:coronary_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary Events\",\n      \"normalized_name\": \"Coronary Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary events\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25219,\n      \"evidence_end_char\": 25234,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f3626de26d35a3bf\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary Heart Disease\",\n      \"normalized_name\": \"Coronary Heart Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary heart disease\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22245,\n      \"evidence_end_char\": 22267,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1551fd3c6de91632\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:diabetes\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Diabetes\",\n      \"normalized_name\": \"Diabetes\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"diabetes\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23271,\n      \"evidence_end_char\": 23279,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9b3474fd93c1aac3\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:familial_combined_hypolipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Familial Combined Hypolipidemia\",\n      \"normalized_name\": \"Familial Combined Hypolipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"familial combined hypolipidemia\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 24136,\n      \"evidence_end_char\": 24167,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c93f49553d75e912\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:hypercholesterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypercholesterolemia\",\n      \"normalized_name\": \"Hypercholesterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypercholesterolemia\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 26427,\n      \"evidence_end_char\": 26447,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:12969f847b2de9c4\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:hypertension\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertension\",\n      \"normalized_name\": \"Hypertension\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hypertension\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:50f5fb5a519916aa\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:ischemic_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic Heart Disease\",\n      \"normalized_name\": \"Ischemic Heart Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic heart disease\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23603,\n      \"evidence_end_char\": 23625,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e2bbbccfcabf23ec\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:major_coronary_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Major Coronary Events\",\n      \"normalized_name\": \"Major Coronary Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"major coronary events\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25213,\n      \"evidence_end_char\": 25234,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:799fae9887d12f15\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic Syndrome\",\n      \"normalized_name\": \"Metabolic Syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 22027,\n      \"evidence_end_char\": 22045,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a4936d9b72240c5e\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial Infarction\",\n      \"normalized_name\": \"Myocardial Infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myocardial infarction\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23736,\n      \"evidence_end_char\": 23757,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:10b5648baba690be\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:recurrent_coronary_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Recurrent Coronary Events\",\n      \"normalized_name\": \"Recurrent Coronary Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"recurrent coronary events\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25421,\n      \"evidence_end_char\": 25446,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:728cdee83dc2142a\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:stroke_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Stroke Events\",\n      \"normalized_name\": \"Stroke Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"stroke events\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 26526,\n      \"evidence_end_char\": 26539,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b113c404e27b8e2e\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:vascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Vascular Disease\",\n      \"normalized_name\": \"Vascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular disease\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 23537,\n      \"evidence_end_char\": 23553,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d50d4f86355972e5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:atorvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Atorvastatin\",\n      \"normalized_name\": \"Atorvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atorvastatin\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 26545,\n      \"evidence_end_char\": 26557,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:11ddc06008967ed4\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:bezafibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Bezafibrate\",\n      \"normalized_name\": \"Bezafibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Bezafibrate\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 27925,\n      \"evidence_end_char\": 27936,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d292952a4bf739a5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gemfibrozil\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 26969,\n      \"evidence_end_char\": 26980,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:759bb30916164776\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:pravastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pravastatin\",\n      \"normalized_name\": \"Pravastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pravastatin\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25870,\n      \"evidence_end_char\": 25881,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a0ee760330c931b2\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:simvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Simvastatin\",\n      \"normalized_name\": \"Simvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"simvastatin\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 25024,\n      \"evidence_end_char\": 25035,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:03a9fad38bc2b0c4\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"CONCL\",\n      \"evidence_start_char\": 24310,\n      \"evidence_end_char\": 24317,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0005.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:585db7651d486170\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein B as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:143f59f78586169f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein CIII; normalized name should use the standard C-III form.\"},{\"entity_gold_id\":\"silver_entity:f4f79d967ba7f573\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein E as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:b47279d59f498b3f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins\",\"evidence_start_char\":\"23223\",\"evidence_end_char\":\"23238\",\"reason\":\"Apolipoproteins are explicitly mentioned as a standalone biomarker class.\"},{\"entity_gold_id\":\"silver_entity:0bde42df99a2d5ec\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"C-reactive protein\",\"evidence_start_char\":\"25537\",\"evidence_end_char\":\"25555\",\"reason\":\"C-reactive protein is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:f8982a8e773bf5a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cholesterol\",\"evidence_start_char\":\"22125\",\"evidence_end_char\":\"22136\",\"reason\":\"Cholesterol is explicitly mentioned as a plasma/lipid measurement biomarker.\"},{\"entity_gold_id\":\"silver_entity:d251680cd254d6f2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"glucose\",\"evidence_start_char\":\"22293\",\"evidence_end_char\":\"22300\",\"reason\":\"Glucose is explicitly mentioned as a circulating concentration biomarker.\"},{\"entity_gold_id\":\"silver_entity:45f857e6af03fe3b\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"HDL cholesterol\",\"evidence_start_char\":\"27589\",\"evidence_end_char\":\"27604\",\"reason\":\"HDL cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:bdb16010e5fe1fe2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LDL cholesterol\",\"evidence_start_char\":\"23360\",\"evidence_end_char\":\"23375\",\"reason\":\"LDL cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:c6f7258cf7d9d7ef\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"lipids\",\"evidence_start_char\":\"23114\",\"evidence_end_char\":\"23120\",\"reason\":\"Lipids are explicitly mentioned as measured laboratory/biomarker parameters.\"},{\"entity_gold_id\":\"silver_entity:de7956390f8d69f1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Remnant cholesterol\",\"evidence_start_char\":\"23555\",\"evidence_end_char\":\"23574\",\"reason\":\"Remnant cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:1b6f7a5d8b03bee1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"22989\",\"evidence_end_char\":\"23002\",\"reason\":\"Triglycerides are explicitly mentioned as lipid biomarkers.\"},{\"entity_gold_id\":\"silver_entity:52ca8909d7158f41\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"25371\",\"evidence_end_char\":\"25375\",\"reason\":\"VLDL is explicitly mentioned and is a standalone lipoprotein biomarker.\"},{\"entity_gold_id\":\"silver_entity:7973ac622a299274\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"arterial disease\",\"evidence_start_char\":\"22401\",\"evidence_end_char\":\"22417\",\"reason\":\"Arterial disease is explicitly mentioned as a disease endpoint.\"},{\"entity_gold_id\":\"silver_entity:2c36e3a8f70b71e6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherogenic dyslipidemia\",\"evidence_start_char\":\"21998\",\"evidence_end_char\":\"22022\",\"reason\":\"Atherogenic dyslipidemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:3b27cbc102a2efa6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"23455\",\"evidence_end_char\":\"23476\",\"reason\":\"Cardiovascular events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:a941b0625dde3fe6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary artery disease\",\"evidence_start_char\":\"27504\",\"evidence_end_char\":\"27527\",\"reason\":\"Coronary artery disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:f7605993441f3f69\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary events\",\"evidence_start_char\":\"25219\",\"evidence_end_char\":\"25234\",\"reason\":\"Coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:f3626de26d35a3bf\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"22245\",\"evidence_end_char\":\"22267\",\"reason\":\"Coronary heart disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:1551fd3c6de91632\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"diabetes\",\"evidence_start_char\":\"23271\",\"evidence_end_char\":\"23279\",\"reason\":\"Diabetes is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:9b3474fd93c1aac3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"familial combined hypolipidemia\",\"evidence_start_char\":\"24136\",\"evidence_end_char\":\"24167\",\"reason\":\"Familial combined hypolipidemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:c93f49553d75e912\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypercholesterolemia\",\"evidence_start_char\":\"26427\",\"evidence_end_char\":\"26447\",\"reason\":\"Hypercholesterolemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:12969f847b2de9c4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"Hypertension\",\"evidence_text\":\"hypertensive patients\",\"evidence_start_char\":\"26561\",\"evidence_end_char\":\"26581\",\"reason\":\"The chunk refers to hypertensive patients, which supports the normalized condition hypertension.\"},{\"entity_gold_id\":\"silver_entity:50f5fb5a519916aa\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"ischemic heart disease\",\"evidence_start_char\":\"23603\",\"evidence_end_char\":\"23625\",\"reason\":\"Ischemic heart disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:e2bbbccfcabf23ec\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"major coronary events\",\"evidence_start_char\":\"25213\",\"evidence_end_char\":\"25234\",\"reason\":\"Major coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:799fae9887d12f15\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"22027\",\"evidence_end_char\":\"22045\",\"reason\":\"Metabolic syndrome is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:a4936d9b72240c5e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"23736\",\"evidence_end_char\":\"23757\",\"reason\":\"Myocardial infarction is explicitly mentioned as a condition/event.\"},{\"entity_gold_id\":\"silver_entity:10b5648baba690be\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"recurrent coronary events\",\"evidence_start_char\":\"25421\",\"evidence_end_char\":\"25446\",\"reason\":\"Recurrent coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:728cdee83dc2142a\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"stroke events\",\"evidence_start_char\":\"26526\",\"evidence_end_char\":\"26539\",\"reason\":\"Stroke events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:b113c404e27b8e2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular disease\",\"evidence_start_char\":\"23537\",\"evidence_end_char\":\"23553\",\"reason\":\"Vascular disease is explicitly mentioned as a condition/outcome.\"},{\"entity_gold_id\":\"silver_entity:d50d4f86355972e5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atorvastatin\",\"evidence_start_char\":\"26545\",\"evidence_end_char\":\"26557\",\"reason\":\"Atorvastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:11ddc06008967ed4\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Bezafibrate\",\"evidence_start_char\":\"27925\",\"evidence_end_char\":\"27936\",\"reason\":\"Bezafibrate is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:d292952a4bf739a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gemfibrozil\",\"evidence_start_char\":\"26969\",\"evidence_end_char\":\"26980\",\"reason\":\"Gemfibrozil is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:759bb30916164776\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"pravastatin\",\"evidence_start_char\":\"25870\",\"evidence_end_char\":\"25881\",\"reason\":\"Pravastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:a0ee760330c931b2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"simvastatin\",\"evidence_start_char\":\"25024\",\"evidence_end_char\":\"25035\",\"reason\":\"Simvastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:03a9fad38bc2b0c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"24310\",\"evidence_end_char\":\"24317\",\"reason\":\"Statins are explicitly mentioned as a drug class.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:lipoprotein_lipase_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"lipoprotein lipase deficiency\",\"normalized_name\":\"Lipoprotein Lipase Deficiency\",\"evidence_text\":\"Familial lipoprotein lipase deficiency\",\"evidence_start_char\":\"22525\",\"evidence_end_char\":\"22565\",\"reason\":\"A specific deficiency disorder is explicitly mentioned in the reference list and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:apoc2_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"Apo-C-II deficiency\",\"normalized_name\":\"Apolipoprotein C-II Deficiency\",\"evidence_text\":\"Apo-C-II deficiency\",\"evidence_start_char\":\"22567\",\"evidence_end_char\":\"22586\",\"reason\":\"A specific apolipoprotein deficiency condition is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:hepatic_lipase_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"hepatic lipase deficiency\",\"normalized_name\":\"Hepatic Lipase Deficiency\",\"evidence_text\":\"hepatic lipase deficiency\",\"evidence_start_char\":\"22592\",\"evidence_end_char\":\"22617\",\"reason\":\"A specific enzyme deficiency condition is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:apoc3_mutations\",\"entity_type\":\"Biomarker\",\"entity_text\":\"APOC3 mutations\",\"normalized_name\":\"APOC3 Loss-of-function Mutations\",\"evidence_text\":\"Loss-of-function mutations in APOC3\",\"evidence_start_char\":\"23954\",\"evidence_end_char\":\"23988\",\"reason\":\"A genetic biomarker involving APOC3 loss-of-function mutations is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:angptl3_mutations\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ANGPTL3 mutations\",\"normalized_name\":\"ANGPTL3 Mutations\",\"evidence_text\":\"ANGPTL3 mutations\",\"evidence_start_char\":\"24114\",\"evidence_end_char\":\"24131\",\"reason\":\"A genetic biomarker involving ANGPTL3 mutations is explicitly mentioned and was missing from the candidates.\"}],\"review_notes\":\"Most accepted entities occur in the references section rather than the conclusion sentence, but they are explicitly supported by the chunk text. Candidate entities with null offsets were accepted only where the concept was supported by nearby coordinated or adjectival evidence in the chunk.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:585db7651d486170",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apolipoproteins B, CIII, and E",
+        "evidence_start_char": "25377",
+        "evidence_end_char": "25407",
+        "reason": "The coordinated reference title explicitly includes apolipoprotein B as a biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:143f59f78586169f",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "Apolipoprotein C-III",
+        "evidence_text": "apolipoproteins B, CIII, and E",
+        "evidence_start_char": "25377",
+        "evidence_end_char": "25407",
+        "reason": "The coordinated reference title explicitly includes apolipoprotein CIII; normalized name should use the standard C-III form."
+      },
+      {
+        "entity_gold_id": "silver_entity:f4f79d967ba7f573",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apolipoproteins B, CIII, and E",
+        "evidence_start_char": "25377",
+        "evidence_end_char": "25407",
+        "reason": "The coordinated reference title explicitly includes apolipoprotein E as a biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:b47279d59f498b3f",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apolipoproteins",
+        "evidence_start_char": "23223",
+        "evidence_end_char": "23238",
+        "reason": "Apolipoproteins are explicitly mentioned as a standalone biomarker class."
+      },
+      {
+        "entity_gold_id": "silver_entity:0bde42df99a2d5ec",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "C-reactive protein",
+        "evidence_start_char": "25537",
+        "evidence_end_char": "25555",
+        "reason": "C-reactive protein is explicitly mentioned and is a standalone biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:f8982a8e773bf5a5",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cholesterol",
+        "evidence_start_char": "22125",
+        "evidence_end_char": "22136",
+        "reason": "Cholesterol is explicitly mentioned as a plasma/lipid measurement biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:d251680cd254d6f2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "glucose",
+        "evidence_start_char": "22293",
+        "evidence_end_char": "22300",
+        "reason": "Glucose is explicitly mentioned as a circulating concentration biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:45f857e6af03fe3b",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "HDL cholesterol",
+        "evidence_start_char": "27589",
+        "evidence_end_char": "27604",
+        "reason": "HDL cholesterol is explicitly mentioned and is a standalone biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:bdb16010e5fe1fe2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "LDL cholesterol",
+        "evidence_start_char": "23360",
+        "evidence_end_char": "23375",
+        "reason": "LDL cholesterol is explicitly mentioned and is a standalone biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:c6f7258cf7d9d7ef",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "lipids",
+        "evidence_start_char": "23114",
+        "evidence_end_char": "23120",
+        "reason": "Lipids are explicitly mentioned as measured laboratory/biomarker parameters."
+      },
+      {
+        "entity_gold_id": "silver_entity:de7956390f8d69f1",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Remnant cholesterol",
+        "evidence_start_char": "23555",
+        "evidence_end_char": "23574",
+        "reason": "Remnant cholesterol is explicitly mentioned and is a standalone biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:1b6f7a5d8b03bee1",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "triglycerides",
+        "evidence_start_char": "22989",
+        "evidence_end_char": "23002",
+        "reason": "Triglycerides are explicitly mentioned as lipid biomarkers."
+      },
+      {
+        "entity_gold_id": "silver_entity:52ca8909d7158f41",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "VLDL",
+        "evidence_start_char": "25371",
+        "evidence_end_char": "25375",
+        "reason": "VLDL is explicitly mentioned and is a standalone lipoprotein biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:7973ac622a299274",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "arterial disease",
+        "evidence_start_char": "22401",
+        "evidence_end_char": "22417",
+        "reason": "Arterial disease is explicitly mentioned as a disease endpoint."
+      },
+      {
+        "entity_gold_id": "silver_entity:2c36e3a8f70b71e6",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atherogenic dyslipidemia",
+        "evidence_start_char": "21998",
+        "evidence_end_char": "22022",
+        "reason": "Atherogenic dyslipidemia is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:3b27cbc102a2efa6",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular events",
+        "evidence_start_char": "23455",
+        "evidence_end_char": "23476",
+        "reason": "Cardiovascular events are explicitly mentioned as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:a941b0625dde3fe6",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "coronary artery disease",
+        "evidence_start_char": "27504",
+        "evidence_end_char": "27527",
+        "reason": "Coronary artery disease is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:f7605993441f3f69",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "coronary events",
+        "evidence_start_char": "25219",
+        "evidence_end_char": "25234",
+        "reason": "Coronary events are explicitly mentioned as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:f3626de26d35a3bf",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "coronary heart disease",
+        "evidence_start_char": "22245",
+        "evidence_end_char": "22267",
+        "reason": "Coronary heart disease is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:1551fd3c6de91632",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "diabetes",
+        "evidence_start_char": "23271",
+        "evidence_end_char": "23279",
+        "reason": "Diabetes is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:9b3474fd93c1aac3",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "familial combined hypolipidemia",
+        "evidence_start_char": "24136",
+        "evidence_end_char": "24167",
+        "reason": "Familial combined hypolipidemia is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:c93f49553d75e912",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hypercholesterolemia",
+        "evidence_start_char": "26427",
+        "evidence_end_char": "26447",
+        "reason": "Hypercholesterolemia is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:12969f847b2de9c4",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "Hypertension",
+        "evidence_text": "hypertensive patients",
+        "evidence_start_char": "26561",
+        "evidence_end_char": "26581",
+        "reason": "The chunk refers to hypertensive patients, which supports the normalized condition hypertension."
+      },
+      {
+        "entity_gold_id": "silver_entity:50f5fb5a519916aa",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "ischemic heart disease",
+        "evidence_start_char": "23603",
+        "evidence_end_char": "23625",
+        "reason": "Ischemic heart disease is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:e2bbbccfcabf23ec",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "major coronary events",
+        "evidence_start_char": "25213",
+        "evidence_end_char": "25234",
+        "reason": "Major coronary events are explicitly mentioned as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:799fae9887d12f15",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "metabolic syndrome",
+        "evidence_start_char": "22027",
+        "evidence_end_char": "22045",
+        "reason": "Metabolic syndrome is explicitly mentioned as a condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:a4936d9b72240c5e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "myocardial infarction",
+        "evidence_start_char": "23736",
+        "evidence_end_char": "23757",
+        "reason": "Myocardial infarction is explicitly mentioned as a condition/event."
+      },
+      {
+        "entity_gold_id": "silver_entity:10b5648baba690be",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "recurrent coronary events",
+        "evidence_start_char": "25421",
+        "evidence_end_char": "25446",
+        "reason": "Recurrent coronary events are explicitly mentioned as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:728cdee83dc2142a",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "stroke events",
+        "evidence_start_char": "26526",
+        "evidence_end_char": "26539",
+        "reason": "Stroke events are explicitly mentioned as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:b113c404e27b8e2e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "vascular disease",
+        "evidence_start_char": "23537",
+        "evidence_end_char": "23553",
+        "reason": "Vascular disease is explicitly mentioned as a condition/outcome."
+      },
+      {
+        "entity_gold_id": "silver_entity:d50d4f86355972e5",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atorvastatin",
+        "evidence_start_char": "26545",
+        "evidence_end_char": "26557",
+        "reason": "Atorvastatin is explicitly mentioned as a drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:11ddc06008967ed4",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Bezafibrate",
+        "evidence_start_char": "27925",
+        "evidence_end_char": "27936",
+        "reason": "Bezafibrate is explicitly mentioned as a drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:d292952a4bf739a5",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "gemfibrozil",
+        "evidence_start_char": "26969",
+        "evidence_end_char": "26980",
+        "reason": "Gemfibrozil is explicitly mentioned as a drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:759bb30916164776",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "pravastatin",
+        "evidence_start_char": "25870",
+        "evidence_end_char": "25881",
+        "reason": "Pravastatin is explicitly mentioned as a drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:a0ee760330c931b2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "simvastatin",
+        "evidence_start_char": "25024",
+        "evidence_end_char": "25035",
+        "reason": "Simvastatin is explicitly mentioned as a drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:03a9fad38bc2b0c4",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "statins",
+        "evidence_start_char": "24310",
+        "evidence_end_char": "24317",
+        "reason": "Statins are explicitly mentioned as a drug class."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:PMC4911828-chunk-0005:lipoprotein_lipase_deficiency",
+        "entity_type": "Condition",
+        "entity_text": "lipoprotein lipase deficiency",
+        "normalized_name": "Lipoprotein Lipase Deficiency",
+        "evidence_text": "Familial lipoprotein lipase deficiency",
+        "evidence_start_char": "22525",
+        "evidence_end_char": "22565",
+        "reason": "A specific deficiency disorder is explicitly mentioned in the reference list and was missing from the candidates."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4911828-chunk-0005:apoc2_deficiency",
+        "entity_type": "Condition",
+        "entity_text": "Apo-C-II deficiency",
+        "normalized_name": "Apolipoprotein C-II Deficiency",
+        "evidence_text": "Apo-C-II deficiency",
+        "evidence_start_char": "22567",
+        "evidence_end_char": "22586",
+        "reason": "A specific apolipoprotein deficiency condition is explicitly mentioned and was missing from the candidates."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4911828-chunk-0005:hepatic_lipase_deficiency",
+        "entity_type": "Condition",
+        "entity_text": "hepatic lipase deficiency",
+        "normalized_name": "Hepatic Lipase Deficiency",
+        "evidence_text": "hepatic lipase deficiency",
+        "evidence_start_char": "22592",
+        "evidence_end_char": "22617",
+        "reason": "A specific enzyme deficiency condition is explicitly mentioned and was missing from the candidates."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4911828-chunk-0005:apoc3_mutations",
+        "entity_type": "Biomarker",
+        "entity_text": "APOC3 mutations",
+        "normalized_name": "APOC3 Loss-of-function Mutations",
+        "evidence_text": "Loss-of-function mutations in APOC3",
+        "evidence_start_char": "23954",
+        "evidence_end_char": "23988",
+        "reason": "A genetic biomarker involving APOC3 loss-of-function mutations is explicitly mentioned and was missing from the candidates."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4911828-chunk-0005:angptl3_mutations",
+        "entity_type": "Biomarker",
+        "entity_text": "ANGPTL3 mutations",
+        "normalized_name": "ANGPTL3 Mutations",
+        "evidence_text": "ANGPTL3 mutations",
+        "evidence_start_char": "24114",
+        "evidence_end_char": "24131",
+        "reason": "A genetic biomarker involving ANGPTL3 mutations is explicitly mentioned and was missing from the candidates."
+      }
+    ],
+    "review_notes": "Most accepted entities occur in the references section rather than the conclusion sentence, but they are explicitly supported by the chunk text. Candidate entities with null offsets were accepted only where the concept was supported by nearby coordinated or adjectival evidence in the chunk."
+  },
+  "raw_response": {
+    "id": "resp_0ef67247d241f226006a47f6a4ae1881a1a203437b48e08e91",
+    "created_at": 1783101092.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0ef67247d241f226006a47f6a5357c81a1ba0c916050e417b6",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0ef67247d241f226006a47f6e6d58481a183ca80882489a007",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:585db7651d486170\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein B as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:143f59f78586169f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein CIII; normalized name should use the standard C-III form.\"},{\"entity_gold_id\":\"silver_entity:f4f79d967ba7f573\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins B, CIII, and E\",\"evidence_start_char\":\"25377\",\"evidence_end_char\":\"25407\",\"reason\":\"The coordinated reference title explicitly includes apolipoprotein E as a biomarker.\"},{\"entity_gold_id\":\"silver_entity:b47279d59f498b3f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoproteins\",\"evidence_start_char\":\"23223\",\"evidence_end_char\":\"23238\",\"reason\":\"Apolipoproteins are explicitly mentioned as a standalone biomarker class.\"},{\"entity_gold_id\":\"silver_entity:0bde42df99a2d5ec\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"C-reactive protein\",\"evidence_start_char\":\"25537\",\"evidence_end_char\":\"25555\",\"reason\":\"C-reactive protein is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:f8982a8e773bf5a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cholesterol\",\"evidence_start_char\":\"22125\",\"evidence_end_char\":\"22136\",\"reason\":\"Cholesterol is explicitly mentioned as a plasma/lipid measurement biomarker.\"},{\"entity_gold_id\":\"silver_entity:d251680cd254d6f2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"glucose\",\"evidence_start_char\":\"22293\",\"evidence_end_char\":\"22300\",\"reason\":\"Glucose is explicitly mentioned as a circulating concentration biomarker.\"},{\"entity_gold_id\":\"silver_entity:45f857e6af03fe3b\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"HDL cholesterol\",\"evidence_start_char\":\"27589\",\"evidence_end_char\":\"27604\",\"reason\":\"HDL cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:bdb16010e5fe1fe2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LDL cholesterol\",\"evidence_start_char\":\"23360\",\"evidence_end_char\":\"23375\",\"reason\":\"LDL cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:c6f7258cf7d9d7ef\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"lipids\",\"evidence_start_char\":\"23114\",\"evidence_end_char\":\"23120\",\"reason\":\"Lipids are explicitly mentioned as measured laboratory/biomarker parameters.\"},{\"entity_gold_id\":\"silver_entity:de7956390f8d69f1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Remnant cholesterol\",\"evidence_start_char\":\"23555\",\"evidence_end_char\":\"23574\",\"reason\":\"Remnant cholesterol is explicitly mentioned and is a standalone biomarker.\"},{\"entity_gold_id\":\"silver_entity:1b6f7a5d8b03bee1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"22989\",\"evidence_end_char\":\"23002\",\"reason\":\"Triglycerides are explicitly mentioned as lipid biomarkers.\"},{\"entity_gold_id\":\"silver_entity:52ca8909d7158f41\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"25371\",\"evidence_end_char\":\"25375\",\"reason\":\"VLDL is explicitly mentioned and is a standalone lipoprotein biomarker.\"},{\"entity_gold_id\":\"silver_entity:7973ac622a299274\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"arterial disease\",\"evidence_start_char\":\"22401\",\"evidence_end_char\":\"22417\",\"reason\":\"Arterial disease is explicitly mentioned as a disease endpoint.\"},{\"entity_gold_id\":\"silver_entity:2c36e3a8f70b71e6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherogenic dyslipidemia\",\"evidence_start_char\":\"21998\",\"evidence_end_char\":\"22022\",\"reason\":\"Atherogenic dyslipidemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:3b27cbc102a2efa6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"23455\",\"evidence_end_char\":\"23476\",\"reason\":\"Cardiovascular events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:a941b0625dde3fe6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary artery disease\",\"evidence_start_char\":\"27504\",\"evidence_end_char\":\"27527\",\"reason\":\"Coronary artery disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:f7605993441f3f69\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary events\",\"evidence_start_char\":\"25219\",\"evidence_end_char\":\"25234\",\"reason\":\"Coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:f3626de26d35a3bf\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"22245\",\"evidence_end_char\":\"22267\",\"reason\":\"Coronary heart disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:1551fd3c6de91632\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"diabetes\",\"evidence_start_char\":\"23271\",\"evidence_end_char\":\"23279\",\"reason\":\"Diabetes is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:9b3474fd93c1aac3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"familial combined hypolipidemia\",\"evidence_start_char\":\"24136\",\"evidence_end_char\":\"24167\",\"reason\":\"Familial combined hypolipidemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:c93f49553d75e912\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypercholesterolemia\",\"evidence_start_char\":\"26427\",\"evidence_end_char\":\"26447\",\"reason\":\"Hypercholesterolemia is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:12969f847b2de9c4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"Hypertension\",\"evidence_text\":\"hypertensive patients\",\"evidence_start_char\":\"26561\",\"evidence_end_char\":\"26581\",\"reason\":\"The chunk refers to hypertensive patients, which supports the normalized condition hypertension.\"},{\"entity_gold_id\":\"silver_entity:50f5fb5a519916aa\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"ischemic heart disease\",\"evidence_start_char\":\"23603\",\"evidence_end_char\":\"23625\",\"reason\":\"Ischemic heart disease is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:e2bbbccfcabf23ec\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"major coronary events\",\"evidence_start_char\":\"25213\",\"evidence_end_char\":\"25234\",\"reason\":\"Major coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:799fae9887d12f15\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"22027\",\"evidence_end_char\":\"22045\",\"reason\":\"Metabolic syndrome is explicitly mentioned as a condition.\"},{\"entity_gold_id\":\"silver_entity:a4936d9b72240c5e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"23736\",\"evidence_end_char\":\"23757\",\"reason\":\"Myocardial infarction is explicitly mentioned as a condition/event.\"},{\"entity_gold_id\":\"silver_entity:10b5648baba690be\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"recurrent coronary events\",\"evidence_start_char\":\"25421\",\"evidence_end_char\":\"25446\",\"reason\":\"Recurrent coronary events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:728cdee83dc2142a\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"stroke events\",\"evidence_start_char\":\"26526\",\"evidence_end_char\":\"26539\",\"reason\":\"Stroke events are explicitly mentioned as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:b113c404e27b8e2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular disease\",\"evidence_start_char\":\"23537\",\"evidence_end_char\":\"23553\",\"reason\":\"Vascular disease is explicitly mentioned as a condition/outcome.\"},{\"entity_gold_id\":\"silver_entity:d50d4f86355972e5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atorvastatin\",\"evidence_start_char\":\"26545\",\"evidence_end_char\":\"26557\",\"reason\":\"Atorvastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:11ddc06008967ed4\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Bezafibrate\",\"evidence_start_char\":\"27925\",\"evidence_end_char\":\"27936\",\"reason\":\"Bezafibrate is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:d292952a4bf739a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gemfibrozil\",\"evidence_start_char\":\"26969\",\"evidence_end_char\":\"26980\",\"reason\":\"Gemfibrozil is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:759bb30916164776\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"pravastatin\",\"evidence_start_char\":\"25870\",\"evidence_end_char\":\"25881\",\"reason\":\"Pravastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:a0ee760330c931b2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"simvastatin\",\"evidence_start_char\":\"25024\",\"evidence_end_char\":\"25035\",\"reason\":\"Simvastatin is explicitly mentioned as a drug.\"},{\"entity_gold_id\":\"silver_entity:03a9fad38bc2b0c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"24310\",\"evidence_end_char\":\"24317\",\"reason\":\"Statins are explicitly mentioned as a drug class.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:lipoprotein_lipase_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"lipoprotein lipase deficiency\",\"normalized_name\":\"Lipoprotein Lipase Deficiency\",\"evidence_text\":\"Familial lipoprotein lipase deficiency\",\"evidence_start_char\":\"22525\",\"evidence_end_char\":\"22565\",\"reason\":\"A specific deficiency disorder is explicitly mentioned in the reference list and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:apoc2_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"Apo-C-II deficiency\",\"normalized_name\":\"Apolipoprotein C-II Deficiency\",\"evidence_text\":\"Apo-C-II deficiency\",\"evidence_start_char\":\"22567\",\"evidence_end_char\":\"22586\",\"reason\":\"A specific apolipoprotein deficiency condition is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:hepatic_lipase_deficiency\",\"entity_type\":\"Condition\",\"entity_text\":\"hepatic lipase deficiency\",\"normalized_name\":\"Hepatic Lipase Deficiency\",\"evidence_text\":\"hepatic lipase deficiency\",\"evidence_start_char\":\"22592\",\"evidence_end_char\":\"22617\",\"reason\":\"A specific enzyme deficiency condition is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:apoc3_mutations\",\"entity_type\":\"Biomarker\",\"entity_text\":\"APOC3 mutations\",\"normalized_name\":\"APOC3 Loss-of-function Mutations\",\"evidence_text\":\"Loss-of-function mutations in APOC3\",\"evidence_start_char\":\"23954\",\"evidence_end_char\":\"23988\",\"reason\":\"A genetic biomarker involving APOC3 loss-of-function mutations is explicitly mentioned and was missing from the candidates.\"},{\"entity_gold_id\":\"gold_addition:PMC4911828-chunk-0005:angptl3_mutations\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ANGPTL3 mutations\",\"normalized_name\":\"ANGPTL3 Mutations\",\"evidence_text\":\"ANGPTL3 mutations\",\"evidence_start_char\":\"24114\",\"evidence_end_char\":\"24131\",\"reason\":\"A genetic biomarker involving ANGPTL3 mutations is explicitly mentioned and was missing from the candidates.\"}],\"review_notes\":\"Most accepted entities occur in the references section rather than the conclusion sentence, but they are explicitly supported by the chunk text. Candidate entities with null offsets were accepted only where the concept was supported by nearby coordinated or adjectival evidence in the chunk.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783101184.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 12057,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 8072,
+      "output_tokens_details": {
+        "reasoning_tokens": 4660
+      },
+      "total_tokens": 20129
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:51:33.289336+00:00",
+  "finished_at": "2026-07-03T17:53:05.674554+00:00",
+  "duration_ms": 96885.063,
+  "status": "ok",
+  "error": ""
+}

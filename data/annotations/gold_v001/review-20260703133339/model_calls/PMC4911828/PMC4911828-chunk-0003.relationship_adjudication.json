@@ -1,0 +1,1452 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4911828-chunk-0003\",\n    \"document_id\": \"paper:PMC4911828\",\n    \"pmcid\": \"PMC4911828\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"10993\",\n    \"end_char\": \"16990\",\n    \"text\": \"ar across all baselines of TG. Intriguingly, the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.\\n\\nSome statin trials have also assessed the potential effect of on-treatment TG levels on CVD risk, mainly in the secondary analyses and found mixed results. AFCAPS/TexCAPS found no association of on-treatment TG level to CVD risk, similar in line to Veterans Affairs HDL Intervention Trial (VA-HIT) where TG level was not predictive of CVD event, despite significant benefit observed in CV outcome in these trials. In contrast, the LIPID study found 11% decrease in CVD risk (14% after adjustment for other risk factors) with each 1 mmol/L decrease in TG with pravastatin, despite no association of baseline TG level to CVD risk in the placebo arm. It should be noted, however, that in LIPID trial, the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C. Similarly, in the pravastatin or atorvastatin evaluation and infection therapy-thrombolysis in myocardial infarction (PROVE IT-TIMI) trial each 10 mg/dL decrease in on-treatment TG level was associated with 1.8% CVD risk reduction (1.4% after adjustment for other risk factors). Beside, reduction of on-treatment TG to <150 mg/dL was associated with a 27% reduction in CVD risk. Interestingly, a combined data (post hoc) from the Incremental Decrease in Endpoints through Aggressive Lipid Lowering study and TNT, also found ~ 30% higher CVD risk with on-treatment TG of >150 mg/dL although after adjustment for all confounders there found to be no association.\\n\\nThese findings collectively suggest that statin-treated patients with high TG may exhibit an increased risk for CVD. However, these patients also displayed several other metabolic abnormalities including high non-HDL-C and Apo-B. Thus, the predictive effect of TG to CV risk still remains unknown.\\n\\nThe results from TG lowering trials with fibrates are another conflicting area. The first trial with gemfibrozil monotherapy in primary prevention of the Helsinki Heart Study (HHS) and subsequent trial of gemfibrozil monotherapy in the secondary prevention of VA-HIT found a significant benefit in CV outcome. However, subsequent studies with other fibrates failed to demonstrate any benefit. Bezafibrate Infarction Prevention (BIP) study failed to show any significant benefit in CV reduction in secondary prevention trial in monotherapy. Two studies with fenofibrate in combination to statin, the Fenofibrate Intervention and Event Lowering in Diabetes (FIELD) study and Action to Control CV Risk in Diabetes (ACCORD-LIPID) trial also failed to demonstrate any significant CV benefit. While gemfibrozil demonstrated a reduction in CV risk across all the categories of baseline TG in VA-HIT, benefit was only observed in subgroups with increased baseline TG level, with or without low HDL in HHS, BIP, FIELD, and ACCORD-LIPID study. Table 5 shows the results from these fibrates trial. A meta-analysis from 18 trials (n = 45058) with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events (P < 0\\u00b70001) although no benefit on stroke, CV mortality, and risk of all-cause mortality was noted and significant increase in serum creatinine was also observed (HR: 1\\u00b799, 95% CI: 1\\u00b746\\u20132\\u00b770; P < 0\\u00b70001). This reflects a blend of effects. However, a random-effect meta-analysis from 5 fibrate study [Figure 8] from subgroups with atherogenic dyslipidemia (n = 4726) found a 35% relative risk reduction in CV events as compared to insignificant 6% reduction in those without atherogenic dyslipidemia (high TG with low HDL-C). Similarly, a recent meta-analysis also found 28% relative risk reduction in CV events in subgroups with atherogenic dyslipidemia. It is worthwhile to note that median TG and HDL level were modestly high and low, respectively, across these trials, and thus, the effect of lowering moderately high TG to CV risk reduction is truly unknown [Table 6] at this point of time. Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\\n\\nOutcome in major fibrate (except clofibrate) trials\\n\\nCardiovascular risk reduction in different subgroups across fibrate trials\\n\\nMedian TG and HDL level in fibrates trial and other important outcomes\\n\\nDifference in triglycerides and high-density lipoprotein with different fibrates\\n\\nOther TG lowering medications such as omega-3 fatty acids have minimal beneficial evidence with regards to CVD risk reduction. This could be either due to the lack of efficacy or benefit that is not mediated directly to TG reduction but by other unidentified mechanisms. For example, the Japan eicosapentaenoic acid (EPA) Lipid Intervention Study (JELIS) found no benefit in CVD risk reduction in relation to baseline TG. However, subgroup analysis found that combination therapy with statin plus EPA (up to 1.8 g/d) reduced CVD risk by 53% (compared to statin monotherapy), in patients with baseline TG \\u2265150 mg/dL and HDL-C <40 mg/dL. Interestingly, this CV benefit in JELIS was not attributed to TG lowering (difference in TG reduction was only 5% between groups). REDUCE-IT (clinical trials number NCT01492361) and STRENGTH (clinical trials number NCT02104817) are two large-scale, randomized, placebo-controlled trial of purified n-3 fatty acids along with statins which are currently undergoing with expected result in 2016 and 2019, respectively.\\n\\nSeveral other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \\u2013 Apo-C, cholesteryl ester transfer protein\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:9271dc208022b1cd\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoprotein_b\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"apo-B\",\n      \"normalized_name\": \"Apolipoprotein B\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apo-B\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by the chunk as the Apo-B abbreviation; normalized to Apolipoprotein B.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1210e0bc3acea171\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:apolipoprotein_c\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apo-C\",\n      \"normalized_name\": \"Apolipoprotein C\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apo-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by the chunk as the Apo-C abbreviation in antisense therapy targets; normalized to Apolipoprotein C.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d9e7121b5685e083\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL-C\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by HDL-C and HDL/high-density lipoprotein mentions; normalized to HDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6d8c57e2fbd861f8\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL-C\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by the LDL-C abbreviation in the lipid subtype list; normalized to LDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:259f01382a86b5f6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"non-HDL-C\",\n      \"normalized_name\": \"Non-HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"non-HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by the non-HDL-C abbreviation; normalized to Non-HDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8e3a6e3dd6a6c5e5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:serum_creatinine\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Serum creatinine\",\n      \"normalized_name\": \"Serum creatinine\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"serum creatinine\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"14424\",\n      \"evidence_end_char\": \"14440\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone biomarker explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:087cf8ba737c5770\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:total_cholesterol_to_hdl_cholesterol_ratio\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ratio of TC to HDL-C\",\n      \"normalized_name\": \"Total cholesterol to HDL cholesterol ratio\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ratio of TC to HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by the stated ratio of TC to HDL-C; normalized to expanded cholesterol names.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9458bfe5995a3f12\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"15527\",\n      \"evidence_end_char\": \"15540\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone biomarker explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8982d0120eb1f68a\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:atherogenic_dyslipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherogenic Dyslipidemia\",\n      \"normalized_name\": \"Atherogenic Dyslipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherogenic dyslipidemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"14219\",\n      \"evidence_end_char\": \"14243\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:14b0eadb222456da\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CVD\",\n      \"normalized_name\": \"Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CVD risk\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by repeated CVD mentions; normalized to Cardiovascular Disease.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9a4f97ed18628518\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CV events\",\n      \"normalized_name\": \"Cardiovascular Events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CV events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported by CV events mentions; normalized to Cardiovascular Events.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:961f5aee6fd3f754\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic Syndrome\",\n      \"normalized_name\": \"Metabolic Syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"11149\",\n      \"evidence_end_char\": \"11167\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9e4879ae8fcf9736\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"condition:stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Stroke\",\n      \"normalized_name\": \"Stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"stroke\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"14332\",\n      \"evidence_end_char\": \"14338\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone condition explicitly mentioned as an outcome in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e9c450b2c99dfe72\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:antisense_therapies_targeting_apolipoprotein_b_apolipoprotein_c\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"antisense therapies targeting Apo-B \\u2013 Apo-C\",\n      \"normalized_name\": \"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"antisense therapies targeting Apo-B \\u2013 Apo-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported as a therapeutic class/strategy in clinical development, with Apo-B/Apo-C abbreviations normalized.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:72e7ce06c5ea2de7\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:atorvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Atorvastatin\",\n      \"normalized_name\": \"Atorvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atorvastatin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"12124\",\n      \"evidence_end_char\": \"12136\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b7efc6f108e8a38b\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:bezafibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Bezafibrate\",\n      \"normalized_name\": \"Bezafibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Bezafibrate\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"13445\",\n      \"evidence_end_char\": \"13456\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:69c4a069960cfb89\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:clofibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Clofibrate\",\n      \"normalized_name\": \"Clofibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"clofibrate\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"15345\",\n      \"evidence_end_char\": \"15355\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9cab65428ab85b0a\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:eicosapentaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Eicosapentaenoic acid\",\n      \"normalized_name\": \"Eicosapentaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"eicosapentaenoic acid\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"15889\",\n      \"evidence_end_char\": \"15910\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug/n-3 fatty acid explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c29bc9ca8e5d74bd\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:fenofibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fenofibrate\",\n      \"normalized_name\": \"Fenofibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fenofibrate\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"13609\",\n      \"evidence_end_char\": \"13620\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7e0fa13323d4335e\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"13093\",\n      \"evidence_end_char\": \"13101\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Drug class explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3dcdba1927406c07\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gemfibrozil\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"13153\",\n      \"evidence_end_char\": \"13164\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6ba0ed51bc4affb6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:lomitapide\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Lomitapide\",\n      \"normalized_name\": \"Lomitapide\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lomitapide\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16857\",\n      \"evidence_end_char\": \"16867\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e997503b144ad85b\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:mipomersen\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Mipomersen\",\n      \"normalized_name\": \"Mipomersen\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"mipomersen\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16898\",\n      \"evidence_end_char\": \"16908\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ef4a9e254dac72e8\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"15633\",\n      \"evidence_end_char\": \"15652\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Drug/supplement class explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5e616e2a8ea36fe5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:pravastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pravastatin\",\n      \"normalized_name\": \"Pravastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pravastatin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"11845\",\n      \"evidence_end_char\": \"11856\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5f825e4a819d96ca\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:proprotein_convertase_subtilisin_kexin_type_9_inhibitors\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"normalized_name\": \"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16765\",\n      \"evidence_end_char\": \"16821\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Drug class explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2fdf7abd1e8151ff\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:purified_n_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Purified n-3 fatty acids\",\n      \"normalized_name\": \"Purified n-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"purified n-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16520\",\n      \"evidence_end_char\": \"16544\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Drug/supplement formulation explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f35c12dd7f91ff65\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:statin_plus_eicosapentaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"statin plus EPA\",\n      \"normalized_name\": \"Statin plus eicosapentaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statin plus EPA\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=Supported as a combination therapy in the chunk; EPA is normalized to eicosapentaenoic acid.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f8d44a5c31fd1498\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16556\",\n      \"evidence_end_char\": \"16563\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Drug class explicitly mentioned in the chunk.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:high_triglycerides\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"high TG\",\n      \"normalized_name\": \"High triglycerides\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"high TG\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Central risk-factor state explicitly mentioned in relation to CVD risk.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:low_hdl_c\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"low HDL-C\",\n      \"normalized_name\": \"Low HDL cholesterol\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"low HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Explicitly mentioned as part of atherogenic dyslipidemia and subgroup definitions.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:microsomal_tg_protein_inhibitors\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"microsomal TG protein inhibitors\",\n      \"normalized_name\": \"Microsomal triglyceride transfer protein inhibitors\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"microsomal TG protein inhibitors\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important missing drug class explicitly listed among newer TG-lowering drugs.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:antisense_oligonucleotides\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"antisense oligonucleotides\",\n      \"normalized_name\": \"Antisense oligonucleotides\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"antisense oligonucleotides (mipomersen)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important missing therapeutic class explicitly listed with mipomersen.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:cholesteryl_ester_transfer_protein\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4911828\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"cholesteryl ester transfer protein\",\n      \"normalized_name\": \"Cholesteryl ester transfer protein\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"cholesteryl ester transfer protein\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Explicitly present as a biomedical protein concept at the end of the chunk.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:ddb85c4a47b360cc\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:total_cholesterol_to_hdl_cholesterol_ratio\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Total cholesterol to HDL cholesterol ratio\",\n      \"source_normalized_name\": \"Total cholesterol to HDL cholesterol ratio\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11984,\n      \"evidence_end_char\": 12090,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c39b8150ef0ee631\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:antisense_therapies_targeting_apolipoprotein_b_apolipoprotein_c\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\n      \"source_normalized_name\": \"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \\u2013 Apo-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16649,\n      \"evidence_end_char\": 16954,\n      \"confidence_gold\": 0.86,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:e1c9605ae5818aa4\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Other TG lowering medications such as omega-3 fatty acids have minimal beneficial evidence with regards to CVD risk reduction.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 15595,\n      \"evidence_end_char\": 15721,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:70a663c13aca589d\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"reduction of on-treatment TG to <150 mg/dL was associated with a 27% reduction in CVD risk.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 12378,\n      \"evidence_end_char\": 12469,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:6aebfbae6165419f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:cardiovascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Events\",\n      \"target_normalized_name\": \"Cardiovascular Events\",\n      \"evidence_text\": \"with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 14182,\n      \"evidence_end_char\": 14295,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:ba844d41405357f1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:statins\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Statins\",\n      \"source_normalized_name\": \"Statins\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11038,\n      \"evidence_end_char\": 11284,\n      \"confidence_gold\": 0.72,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:9c077465485ff94f\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:proprotein_convertase_subtilisin_kexin_type_9_inhibitors\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"source_normalized_name\": \"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16649,\n      \"evidence_end_char\": 16821,\n      \"confidence_gold\": 0.88,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:a9dd162d7d99d5e1\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:mipomersen\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Mipomersen\",\n      \"source_normalized_name\": \"Mipomersen\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16649,\n      \"evidence_end_char\": 16909,\n      \"confidence_gold\": 0.88,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:17654eb18297ac11\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:statin_plus_eicosapentaenoic_acid\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Statin plus eicosapentaenoic acid\",\n      \"source_normalized_name\": \"Statin plus eicosapentaenoic acid\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"combination therapy with statin plus EPA (up to 1.8 g/d) reduced CVD risk by 53% (compared to statin monotherapy)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16055,\n      \"evidence_end_char\": 16168,\n      \"confidence_gold\": 0.96,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:dcf69b483d1cfdd5\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:apolipoprotein_b\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Apolipoprotein B\",\n      \"source_normalized_name\": \"Apolipoprotein B\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11984,\n      \"evidence_end_char\": 12090,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:25d8c06647eda3d9\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 15192,\n      \"evidence_end_char\": 15310,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:d15db224315ffcac\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:lomitapide\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Lomitapide\",\n      \"source_normalized_name\": \"Lomitapide\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16649,\n      \"evidence_end_char\": 16868,\n      \"confidence_gold\": 0.88,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:3bcab805740f38a6\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:ldl_cholesterol\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"LDL cholesterol\",\n      \"source_normalized_name\": \"LDL cholesterol\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11984,\n      \"evidence_end_char\": 12090,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:e25ef9615f36c0f2\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:serum_creatinine\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Serum creatinine\",\n      \"target_normalized_name\": \"Serum creatinine\",\n      \"evidence_text\": \"A meta-analysis from 18 trials (n = 45058) with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events (P < 0\\u00b70001) although no benefit on stroke, CV mortality, and risk of all-cause mortality was noted and significant increase in serum creatinine was also observed (HR: 1\\u00b799, 95% CI: 1\\u00b746\\u20132\\u00b770; P < 0\\u00b70001).\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 14139,\n      \"evidence_end_char\": 14501,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:3747ac2eae794c33\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:hdl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"HDL cholesterol\",\n      \"target_normalized_name\": \"HDL cholesterol\",\n      \"evidence_text\": \"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 15192,\n      \"evidence_end_char\": 15310,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:10e687c4d9d8bc79\",\n      \"document_id\": \"paper:PMC4911828\",\n      \"chunk_id\": \"PMC4911828-chunk-0003\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4911828\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:gemfibrozil\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gemfibrozil\",\n      \"source_normalized_name\": \"Gemfibrozil\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular Disease\",\n      \"target_normalized_name\": \"Cardiovascular Disease\",\n      \"evidence_text\": \"gemfibrozil demonstrated a reduction in CV risk across all the categories of baseline TG in VA-HIT\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 13845,\n      \"evidence_end_char\": 13943,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4911828/PMC4911828-chunk-0003.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:ddb85c4a47b360cc\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:total_cholesterol_to_hdl_cholesterol_ratio\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Total cholesterol to HDL cholesterol ratio\",\"source_normalized_name\":\"Total cholesterol to HDL cholesterol ratio\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists the ratio of TC to HDL-C among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:c39b8150ef0ee631\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:antisense_therapies_targeting_apolipoprotein_b_apolipoprotein_c\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\"source_normalized_name\":\"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence states that the listed newer drugs, including antisense therapies targeting Apo-B\u2013Apo-C, have TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:e1c9605ae5818aa4\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Other TG lowering medications such as omega-3 fatty acids have minimal beneficial evidence with regards to CVD risk reduction.\",\"evidence_start_char\":\"15595\",\"evidence_end_char\":\"15721\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Omega-3 fatty acids are explicitly described as TG-lowering medications.\"},{\"relationship_gold_id\":\"silver_relationship:70a663c13aca589d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"reduction of on-treatment TG to <150 mg/dL was associated with a 27% reduction in CVD risk.\",\"evidence_start_char\":\"12378\",\"evidence_end_char\":\"12469\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that reduction of on-treatment TG was associated with reduced CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:6aebfbae6165419f\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Events\",\"target_normalized_name\":\"Cardiovascular Events\",\"evidence_text\":\"with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events\",\"evidence_start_char\":\"14182\",\"evidence_end_char\":\"14295\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports relative risk reduction for CV events with fibrate therapy, supporting a preventive effect on cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:ba844d41405357f1\",\"decision\":\"rejected\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:statins\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statins\",\"source_normalized_name\":\"Statins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.\",\"evidence_start_char\":\"11038\",\"evidence_end_char\":\"11284\",\"direction_verified\":\"needs_review\",\"explicit_or_implied\":\"weak_implication\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"The asserted statin benefit is framed as speculative with 'perhaps suggest' and 'could be beneficial', so it cannot be accepted under the non-speculative rule.\"},{\"relationship_gold_id\":\"silver_relationship:9c077465485ff94f\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:proprotein_convertase_subtilisin_kexin_type_9_inhibitors\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\"source_normalized_name\":\"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16821\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly includes proprotein convertase subtilisin/kexin type-9 inhibitors among newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:a9dd162d7d99d5e1\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:mipomersen\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Mipomersen\",\"source_normalized_name\":\"Mipomersen\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen)\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Mipomersen is named in parentheses within the list of newer drugs described as having TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:17654eb18297ac11\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:statin_plus_eicosapentaenoic_acid\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statin plus eicosapentaenoic acid\",\"source_normalized_name\":\"Statin plus eicosapentaenoic acid\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"combination therapy with statin plus EPA (up to 1.8 g/d) reduced CVD risk by 53% (compared to statin monotherapy)\",\"evidence_start_char\":\"16055\",\"evidence_end_char\":\"16168\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that statin plus EPA reduced CVD risk by 53%, supporting a preventive effect.\"},{\"relationship_gold_id\":\"silver_relationship:dcf69b483d1cfdd5\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:apolipoprotein_b\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Apolipoprotein B\",\"source_normalized_name\":\"Apolipoprotein B\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists apo-B among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:25d8c06647eda3d9\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\"evidence_start_char\":\"15192\",\"evidence_end_char\":\"15310\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly refers to TG-lowering properties of different fibrates.\"},{\"relationship_gold_id\":\"silver_relationship:d15db224315ffcac\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:lomitapide\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Lomitapide\",\"source_normalized_name\":\"Lomitapide\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide)\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16868\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Lomitapide is named in parentheses within the list of newer drugs described as having TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:3bcab805740f38a6\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:ldl_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"LDL cholesterol\",\"source_normalized_name\":\"LDL cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists LDL-C among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:e25ef9615f36c0f2\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:serum_creatinine\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Serum creatinine\",\"target_normalized_name\":\"Serum creatinine\",\"evidence_text\":\"A meta-analysis from 18 trials (n = 45058) with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events (P < 0\u00b70001) although no benefit on stroke, CV mortality, and risk of all-cause mortality was noted and significant increase in serum creatinine was also observed (HR: 1\u00b799, 95% CI: 1\u00b746\u20132\u00b770; P < 0\u00b70001).\",\"evidence_start_char\":\"14139\",\"evidence_end_char\":\"14501\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports a significant increase in serum creatinine with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:3747ac2eae794c33\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\"evidence_start_char\":\"15192\",\"evidence_end_char\":\"15310\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly refers to HDL-raising properties of different fibrates.\"},{\"relationship_gold_id\":\"silver_relationship:10e687c4d9d8bc79\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"gemfibrozil demonstrated a reduction in CV risk across all the categories of baseline TG in VA-HIT\",\"evidence_start_char\":\"13845\",\"evidence_end_char\":\"13943\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that gemfibrozil demonstrated a reduction in cardiovascular risk.\"}],\"relationship_additions\":[{\"relationship_gold_id\":\"gold_relationship:microsomal_tg_protein_inhibitors_reduce_triglycerides\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"microsomal TG protein inhibitors\",\"source_normalized_name\":\"Microsomal triglyceride transfer protein inhibitors\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Microsomal TG protein inhibitors are explicitly included in the list of newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"gold_relationship:antisense_oligonucleotides_reduce_triglycerides\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"antisense oligonucleotides\",\"source_normalized_name\":\"Antisense oligonucleotides\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Antisense oligonucleotides are explicitly included in the list of newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"gold_relationship:atherogenic_dyslipidemia_associated_with_high_triglycerides\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"condition:atherogenic_dyslipidemia\",\"source_entity_type\":\"Condition\",\"source_entity_text\":\"atherogenic dyslipidemia\",\"source_normalized_name\":\"Atherogenic Dyslipidemia\",\"target_entity_id\":\"\",\"target_entity_type\":\"RiskFactor\",\"target_entity_text\":\"high TG\",\"target_normalized_name\":\"High triglycerides\",\"evidence_text\":\"atherogenic dyslipidemia (high TG with low HDL-C)\",\"evidence_start_char\":\"14736\",\"evidence_end_char\":\"14784\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The parenthetical explicitly defines atherogenic dyslipidemia as involving high TG.\"},{\"relationship_gold_id\":\"gold_relationship:atherogenic_dyslipidemia_associated_with_low_hdl_c\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"condition:atherogenic_dyslipidemia\",\"source_entity_type\":\"Condition\",\"source_entity_text\":\"atherogenic dyslipidemia\",\"source_normalized_name\":\"Atherogenic Dyslipidemia\",\"target_entity_id\":\"\",\"target_entity_type\":\"RiskFactor\",\"target_entity_text\":\"low HDL-C\",\"target_normalized_name\":\"Low HDL cholesterol\",\"evidence_text\":\"atherogenic dyslipidemia (high TG with low HDL-C)\",\"evidence_start_char\":\"14736\",\"evidence_end_char\":\"14784\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The parenthetical explicitly defines atherogenic dyslipidemia as involving low HDL-C.\"}],\"review_notes\":\"All candidate relationships were reviewed against accepted entities. One statin-CVD candidate was rejected because the supporting text is explicitly speculative. Additional TG-lowering relationships were added for accepted drug-class entities, and definitional associations were added for atherogenic dyslipidemia with high TG and low HDL-C.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:ddb85c4a47b360cc",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:total_cholesterol_to_hdl_cholesterol_ratio",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Total cholesterol to HDL cholesterol ratio",
+        "source_normalized_name": "Total cholesterol to HDL cholesterol ratio",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.",
+        "evidence_start_char": "11984",
+        "evidence_end_char": "12090",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly lists the ratio of TC to HDL-C among lipid subtypes most strongly associated with CVD risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c39b8150ef0ee631",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:antisense_therapies_targeting_apolipoprotein_b_apolipoprotein_c",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Antisense therapies targeting Apolipoprotein B-Apolipoprotein C",
+        "source_normalized_name": "Antisense therapies targeting Apolipoprotein B-Apolipoprotein C",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16954",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence states that the listed newer drugs, including antisense therapies targeting Apo-B\u2013Apo-C, have TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:e1c9605ae5818aa4",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Other TG lowering medications such as omega-3 fatty acids have minimal beneficial evidence with regards to CVD risk reduction.",
+        "evidence_start_char": "15595",
+        "evidence_end_char": "15721",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Omega-3 fatty acids are explicitly described as TG-lowering medications."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:70a663c13aca589d",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "reduction of on-treatment TG to <150 mg/dL was associated with a 27% reduction in CVD risk.",
+        "evidence_start_char": "12378",
+        "evidence_end_char": "12469",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that reduction of on-treatment TG was associated with reduced CVD risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:6aebfbae6165419f",
+        "decision": "accepted",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:cardiovascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Events",
+        "target_normalized_name": "Cardiovascular Events",
+        "evidence_text": "with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events",
+        "evidence_start_char": "14182",
+        "evidence_end_char": "14295",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly reports relative risk reduction for CV events with fibrate therapy, supporting a preventive effect on cardiovascular events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:ba844d41405357f1",
+        "decision": "rejected",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:statins",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Statins",
+        "source_normalized_name": "Statins",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.",
+        "evidence_start_char": "11038",
+        "evidence_end_char": "11284",
+        "direction_verified": "needs_review",
+        "explicit_or_implied": "weak_implication",
+        "negated": "no",
+        "speculative": "yes",
+        "reason": "The asserted statin benefit is framed as speculative with 'perhaps suggest' and 'could be beneficial', so it cannot be accepted under the non-speculative rule."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:9c077465485ff94f",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:proprotein_convertase_subtilisin_kexin_type_9_inhibitors",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Proprotein convertase subtilisin/kexin type-9 inhibitors",
+        "source_normalized_name": "Proprotein convertase subtilisin/kexin type-9 inhibitors",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16821",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly includes proprotein convertase subtilisin/kexin type-9 inhibitors among newer drugs with TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:a9dd162d7d99d5e1",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:mipomersen",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Mipomersen",
+        "source_normalized_name": "Mipomersen",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen)",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16909",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Mipomersen is named in parentheses within the list of newer drugs described as having TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:17654eb18297ac11",
+        "decision": "accepted",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:statin_plus_eicosapentaenoic_acid",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Statin plus eicosapentaenoic acid",
+        "source_normalized_name": "Statin plus eicosapentaenoic acid",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "combination therapy with statin plus EPA (up to 1.8 g/d) reduced CVD risk by 53% (compared to statin monotherapy)",
+        "evidence_start_char": "16055",
+        "evidence_end_char": "16168",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that statin plus EPA reduced CVD risk by 53%, supporting a preventive effect."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:dcf69b483d1cfdd5",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:apolipoprotein_b",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Apolipoprotein B",
+        "source_normalized_name": "Apolipoprotein B",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.",
+        "evidence_start_char": "11984",
+        "evidence_end_char": "12090",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly lists apo-B among lipid subtypes most strongly associated with CVD risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:25d8c06647eda3d9",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.",
+        "evidence_start_char": "15192",
+        "evidence_end_char": "15310",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly refers to TG-lowering properties of different fibrates."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:d15db224315ffcac",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:lomitapide",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Lomitapide",
+        "source_normalized_name": "Lomitapide",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide)",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16868",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Lomitapide is named in parentheses within the list of newer drugs described as having TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:3bcab805740f38a6",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:ldl_cholesterol",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "LDL cholesterol",
+        "source_normalized_name": "LDL cholesterol",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.",
+        "evidence_start_char": "11984",
+        "evidence_end_char": "12090",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly lists LDL-C among lipid subtypes most strongly associated with CVD risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:e25ef9615f36c0f2",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:serum_creatinine",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Serum creatinine",
+        "target_normalized_name": "Serum creatinine",
+        "evidence_text": "A meta-analysis from 18 trials (n = 45058) with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events (P < 0\u00b70001) although no benefit on stroke, CV mortality, and risk of all-cause mortality was noted and significant increase in serum creatinine was also observed (HR: 1\u00b799, 95% CI: 1\u00b746\u20132\u00b770; P < 0\u00b70001).",
+        "evidence_start_char": "14139",
+        "evidence_end_char": "14501",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly reports a significant increase in serum creatinine with fibrate therapy."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:3747ac2eae794c33",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:hdl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "HDL cholesterol",
+        "target_normalized_name": "HDL cholesterol",
+        "evidence_text": "Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.",
+        "evidence_start_char": "15192",
+        "evidence_end_char": "15310",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly refers to HDL-raising properties of different fibrates."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:10e687c4d9d8bc79",
+        "decision": "accepted",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:gemfibrozil",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gemfibrozil",
+        "source_normalized_name": "Gemfibrozil",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular Disease",
+        "target_normalized_name": "Cardiovascular Disease",
+        "evidence_text": "gemfibrozil demonstrated a reduction in CV risk across all the categories of baseline TG in VA-HIT",
+        "evidence_start_char": "13845",
+        "evidence_end_char": "13943",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that gemfibrozil demonstrated a reduction in cardiovascular risk."
+      }
+    ],
+    "relationship_additions": [
+      {
+        "relationship_gold_id": "gold_relationship:microsomal_tg_protein_inhibitors_reduce_triglycerides",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "",
+        "source_entity_type": "Drug",
+        "source_entity_text": "microsomal TG protein inhibitors",
+        "source_normalized_name": "Microsomal triglyceride transfer protein inhibitors",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16954",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Microsomal TG protein inhibitors are explicitly included in the list of newer drugs with TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "gold_relationship:antisense_oligonucleotides_reduce_triglycerides",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "",
+        "source_entity_type": "Drug",
+        "source_entity_text": "antisense oligonucleotides",
+        "source_normalized_name": "Antisense oligonucleotides",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C",
+        "evidence_start_char": "16649",
+        "evidence_end_char": "16954",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Antisense oligonucleotides are explicitly included in the list of newer drugs with TG-lowering properties."
+      },
+      {
+        "relationship_gold_id": "gold_relationship:atherogenic_dyslipidemia_associated_with_high_triglycerides",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "condition:atherogenic_dyslipidemia",
+        "source_entity_type": "Condition",
+        "source_entity_text": "atherogenic dyslipidemia",
+        "source_normalized_name": "Atherogenic Dyslipidemia",
+        "target_entity_id": "",
+        "target_entity_type": "RiskFactor",
+        "target_entity_text": "high TG",
+        "target_normalized_name": "High triglycerides",
+        "evidence_text": "atherogenic dyslipidemia (high TG with low HDL-C)",
+        "evidence_start_char": "14736",
+        "evidence_end_char": "14784",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The parenthetical explicitly defines atherogenic dyslipidemia as involving high TG."
+      },
+      {
+        "relationship_gold_id": "gold_relationship:atherogenic_dyslipidemia_associated_with_low_hdl_c",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "condition:atherogenic_dyslipidemia",
+        "source_entity_type": "Condition",
+        "source_entity_text": "atherogenic dyslipidemia",
+        "source_normalized_name": "Atherogenic Dyslipidemia",
+        "target_entity_id": "",
+        "target_entity_type": "RiskFactor",
+        "target_entity_text": "low HDL-C",
+        "target_normalized_name": "Low HDL cholesterol",
+        "evidence_text": "atherogenic dyslipidemia (high TG with low HDL-C)",
+        "evidence_start_char": "14736",
+        "evidence_end_char": "14784",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The parenthetical explicitly defines atherogenic dyslipidemia as involving low HDL-C."
+      }
+    ],
+    "review_notes": "All candidate relationships were reviewed against accepted entities. One statin-CVD candidate was rejected because the supporting text is explicitly speculative. Additional TG-lowering relationships were added for accepted drug-class entities, and definitional associations were added for atherogenic dyslipidemia with high TG and low HDL-C."
+  },
+  "raw_response": {
+    "id": "resp_018931e7776f7386006a47f5074b6881a389ea3b1b2fe0fd72",
+    "created_at": 1783100679.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_018931e7776f7386006a47f507e01c81a389bc9ae04868da2d",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_018931e7776f7386006a47f538014081a3a9d5e8d8f14d483a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:ddb85c4a47b360cc\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:total_cholesterol_to_hdl_cholesterol_ratio\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Total cholesterol to HDL cholesterol ratio\",\"source_normalized_name\":\"Total cholesterol to HDL cholesterol ratio\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists the ratio of TC to HDL-C among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:c39b8150ef0ee631\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:antisense_therapies_targeting_apolipoprotein_b_apolipoprotein_c\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\"source_normalized_name\":\"Antisense therapies targeting Apolipoprotein B-Apolipoprotein C\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence states that the listed newer drugs, including antisense therapies targeting Apo-B\u2013Apo-C, have TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:e1c9605ae5818aa4\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Other TG lowering medications such as omega-3 fatty acids have minimal beneficial evidence with regards to CVD risk reduction.\",\"evidence_start_char\":\"15595\",\"evidence_end_char\":\"15721\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Omega-3 fatty acids are explicitly described as TG-lowering medications.\"},{\"relationship_gold_id\":\"silver_relationship:70a663c13aca589d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"reduction of on-treatment TG to <150 mg/dL was associated with a 27% reduction in CVD risk.\",\"evidence_start_char\":\"12378\",\"evidence_end_char\":\"12469\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that reduction of on-treatment TG was associated with reduced CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:6aebfbae6165419f\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Events\",\"target_normalized_name\":\"Cardiovascular Events\",\"evidence_text\":\"with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events\",\"evidence_start_char\":\"14182\",\"evidence_end_char\":\"14295\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports relative risk reduction for CV events with fibrate therapy, supporting a preventive effect on cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:ba844d41405357f1\",\"decision\":\"rejected\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:statins\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statins\",\"source_normalized_name\":\"Statins\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the Anglo-Scandinavian Cardiac Outcome Trial found higher CVD reduction in those without having the feature of metabolic syndrome. Taken together, these perhaps suggest that statin therapy could be beneficial in subgroups with or without high TG.\",\"evidence_start_char\":\"11038\",\"evidence_end_char\":\"11284\",\"direction_verified\":\"needs_review\",\"explicit_or_implied\":\"weak_implication\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"The asserted statin benefit is framed as speculative with 'perhaps suggest' and 'could be beneficial', so it cannot be accepted under the non-speculative rule.\"},{\"relationship_gold_id\":\"silver_relationship:9c077465485ff94f\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:proprotein_convertase_subtilisin_kexin_type_9_inhibitors\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\"source_normalized_name\":\"Proprotein convertase subtilisin/kexin type-9 inhibitors\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16821\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly includes proprotein convertase subtilisin/kexin type-9 inhibitors among newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:a9dd162d7d99d5e1\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:mipomersen\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Mipomersen\",\"source_normalized_name\":\"Mipomersen\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen)\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Mipomersen is named in parentheses within the list of newer drugs described as having TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:17654eb18297ac11\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:statin_plus_eicosapentaenoic_acid\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Statin plus eicosapentaenoic acid\",\"source_normalized_name\":\"Statin plus eicosapentaenoic acid\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"combination therapy with statin plus EPA (up to 1.8 g/d) reduced CVD risk by 53% (compared to statin monotherapy)\",\"evidence_start_char\":\"16055\",\"evidence_end_char\":\"16168\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that statin plus EPA reduced CVD risk by 53%, supporting a preventive effect.\"},{\"relationship_gold_id\":\"silver_relationship:dcf69b483d1cfdd5\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:apolipoprotein_b\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Apolipoprotein B\",\"source_normalized_name\":\"Apolipoprotein B\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists apo-B among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:25d8c06647eda3d9\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\"evidence_start_char\":\"15192\",\"evidence_end_char\":\"15310\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly refers to TG-lowering properties of different fibrates.\"},{\"relationship_gold_id\":\"silver_relationship:d15db224315ffcac\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:lomitapide\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Lomitapide\",\"source_normalized_name\":\"Lomitapide\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide)\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16868\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Lomitapide is named in parentheses within the list of newer drugs described as having TG-lowering properties.\"},{\"relationship_gold_id\":\"silver_relationship:3bcab805740f38a6\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:ldl_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"LDL cholesterol\",\"source_normalized_name\":\"LDL cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"the lipids subtype most strongly associated with CVD risk were apo-B, LDL-C, and the ratio of TC to HDL-C.\",\"evidence_start_char\":\"11984\",\"evidence_end_char\":\"12090\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly lists LDL-C among lipid subtypes most strongly associated with CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:e25ef9615f36c0f2\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:serum_creatinine\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Serum creatinine\",\"target_normalized_name\":\"Serum creatinine\",\"evidence_text\":\"A meta-analysis from 18 trials (n = 45058) with fibrate therapy with or without atherogenic dyslipidemia found 13% relative risk reduction for any CV events (P < 0\u00b70001) although no benefit on stroke, CV mortality, and risk of all-cause mortality was noted and significant increase in serum creatinine was also observed (HR: 1\u00b799, 95% CI: 1\u00b746\u20132\u00b770; P < 0\u00b70001).\",\"evidence_start_char\":\"14139\",\"evidence_end_char\":\"14501\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports a significant increase in serum creatinine with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:3747ac2eae794c33\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Figure 9 demonstrates the difference in TG lowering and HDL raising properties of different fibrates across the trial.\",\"evidence_start_char\":\"15192\",\"evidence_end_char\":\"15310\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly refers to HDL-raising properties of different fibrates.\"},{\"relationship_gold_id\":\"silver_relationship:10e687c4d9d8bc79\",\"decision\":\"accepted\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular Disease\",\"target_normalized_name\":\"Cardiovascular Disease\",\"evidence_text\":\"gemfibrozil demonstrated a reduction in CV risk across all the categories of baseline TG in VA-HIT\",\"evidence_start_char\":\"13845\",\"evidence_end_char\":\"13943\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that gemfibrozil demonstrated a reduction in cardiovascular risk.\"}],\"relationship_additions\":[{\"relationship_gold_id\":\"gold_relationship:microsomal_tg_protein_inhibitors_reduce_triglycerides\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"microsomal TG protein inhibitors\",\"source_normalized_name\":\"Microsomal triglyceride transfer protein inhibitors\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Microsomal TG protein inhibitors are explicitly included in the list of newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"gold_relationship:antisense_oligonucleotides_reduce_triglycerides\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"antisense oligonucleotides\",\"source_normalized_name\":\"Antisense oligonucleotides\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Several other newer drugs are also in a clinical development program that has TG-lowering properties. This includes proprotein convertase subtilisin/kexin type-9 inhibitors, microsomal TG protein inhibitors (lomitapide), antisense oligonucleotides (mipomersen), antisense therapies targeting Apo-B \u2013 Apo-C\",\"evidence_start_char\":\"16649\",\"evidence_end_char\":\"16954\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Antisense oligonucleotides are explicitly included in the list of newer drugs with TG-lowering properties.\"},{\"relationship_gold_id\":\"gold_relationship:atherogenic_dyslipidemia_associated_with_high_triglycerides\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"condition:atherogenic_dyslipidemia\",\"source_entity_type\":\"Condition\",\"source_entity_text\":\"atherogenic dyslipidemia\",\"source_normalized_name\":\"Atherogenic Dyslipidemia\",\"target_entity_id\":\"\",\"target_entity_type\":\"RiskFactor\",\"target_entity_text\":\"high TG\",\"target_normalized_name\":\"High triglycerides\",\"evidence_text\":\"atherogenic dyslipidemia (high TG with low HDL-C)\",\"evidence_start_char\":\"14736\",\"evidence_end_char\":\"14784\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The parenthetical explicitly defines atherogenic dyslipidemia as involving high TG.\"},{\"relationship_gold_id\":\"gold_relationship:atherogenic_dyslipidemia_associated_with_low_hdl_c\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"condition:atherogenic_dyslipidemia\",\"source_entity_type\":\"Condition\",\"source_entity_text\":\"atherogenic dyslipidemia\",\"source_normalized_name\":\"Atherogenic Dyslipidemia\",\"target_entity_id\":\"\",\"target_entity_type\":\"RiskFactor\",\"target_entity_text\":\"low HDL-C\",\"target_normalized_name\":\"Low HDL cholesterol\",\"evidence_text\":\"atherogenic dyslipidemia (high TG with low HDL-C)\",\"evidence_start_char\":\"14736\",\"evidence_end_char\":\"14784\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The parenthetical explicitly defines atherogenic dyslipidemia as involving low HDL-C.\"}],\"review_notes\":\"All candidate relationships were reviewed against accepted entities. One statin-CVD candidate was rejected because the supporting text is explicitly speculative. Additional TG-lowering relationships were added for accepted drug-class entities, and definitional associations were added for atherogenic dyslipidemia with high TG and low HDL-C.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783100760.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 17728,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 7425,
+      "output_tokens_details": {
+        "reasoning_tokens": 3106
+      },
+      "total_tokens": 25153
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:44:39.177949+00:00",
+  "finished_at": "2026-07-03T17:46:01.872072+00:00",
+  "duration_ms": 85671.003,
+  "status": "ok",
+  "error": ""
+}

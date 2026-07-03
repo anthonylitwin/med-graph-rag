@@ -1,0 +1,861 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4287928-chunk-0004\",\n    \"document_id\": \"paper:PMC4287928\",\n    \"pmcid\": \"PMC4287928\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"16494\",\n    \"end_char\": \"22486\",\n    \"text\": \"risk (Davignonet al, ). Statins increase the expression of PCSK9, an effect that may attenuate the LDL-C lowering produced with these agents (Dubucet al,). Conversely, therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels. Phase 2 clinical trials have demonstrated efficacy of PCSK9 antibody in achieving LDL-C reductions of up to 73% when added on to statin background therapy. In this trial when atorvastatin dose was increased from 10 to 80 mg daily and PCSK9 antibody was added, LDL-C was reduced by 73%, as compared to a 17% reduction with atorvastatin 80 mg alone (Rothet al,) (Fig2). Large Phase 3 clinical trials are testing the efficacy of PCSK9 antibodies to reduce major adverse cardiovascular events (NCT01764633 and NCT01663402). Because inhibition of PCSK9 does not impair hepatic lipid export, this approach is unlikely to cause hepatic steatosis. However, it is premature to assess whether very low LDL-C levels achieved in some patients treated with PCSK9 antibodies will lead to adverse long-term effects, or whether immunologic reactions to the antibodies will occur.\\n\\nEffect of PCSK9 inhibition on low-density lipoprotein (LDL) cholesterol levels\\n\\nPatients with primary hypercholesterolemia were treated with atorvastatin 10 mg during a run-in period and then randomly assigned to treatment with atorvastatin 80 mg daily with alirocumab (SAR236553) every 2 weeks, atorvastatin 10 mg daily with alirocumab (SAR236553) every 2 weeks, or atorvastatin 80 mg daily with placebo every 2 weeks. Alirocumab produced a profound reduction in LDL-C compared with placebo. There was minimal additional LDL-C reduction when alirocumab was administered with atorvastatin 80 mg, compared with atorvastatin 10 mg daily [Reproduced with permission from Rothet al ].\\n\\nLipoprotein (a)\\n\\nLipoprotein (Lp)(a) is an LDL-like particle in which apoB is covalently bound to apo(a). Both moieties may mediate atherogenicity. Apo(a) is structurally similar to plasminogen and can interfere with plasminogen activation and fibrinolysis (Hancocket al,). Lp(a) can also carry oxidized phospholipids that may be pro-inflammatory (Wiesneret al,). Epidemiologic data suggest that a high level of Lp(a) is an independent risk factor for the development of cardiovascular disease (Erqouet al,). Serum levels of Lp(a) are influenced by genetic factors (Boerwinkleet al,), but not by diet or lifestyle factors (Thomaset al,). In cohort studies, cardiovascular risk associated with Lp(a) is independent of smoking, diabetes, hypertension, as well as LDL-C (Lucet al,) (Fig3).\\n\\nRelation of Lp(a) and LDL-C to CHD risk\\n\\nProspective cohort study of 9,133 middle-aged men, without history of CHD and not on lipid-lowering therapy. In models adjusted for smoking, diabetes, and hypertension, levels of Lp(a) and LDL-C were independently predictive of incident CHD [Drawn from data in Lucet al ].\\n\\nNiacin exerts the greatest Lp(a) lowering effects among currently available lipid-modifying therapies. However, a 21% average reduction in Lp(a) with niacin was not associated with a lower event rate in the niacin arm, compared with placebo. This may indicate either that Lp(a) is not causally related to risk or that niacin produced other undesirable effects that negated a benefit of raising Lp(a) (Bodenet al,). PCSK9 antibodies lower Lp(a) concentrations by mechanisms as yet unknown (McKenneyet al,). Lipoprotein apheresis can also remove Lp(a) from the circulation. In a prospective observational study in patients with elevated Lp(a), the initiation of lipoprotein apheresis was accompanied by a reduced incidence of cardiovascular events (Leebmannet al,). Novel approaches to the reduction of Lp(a) involve the use of antisense oligonucleotides. Mipomersen reduces Lp(a) by approximately 25% (Visseret al,) and antisense oligonucleotide to apo (a) has been shown to lower Lp(a) concentrations in a Phase 1 clinical study (Vineyet al,). The latter approach may provide the best tool to determine whether Lp(a) plays a direct, causative role in cardiovascular disease.\\n\\nTargets for reduction of triglyceride-rich lipoproteins\\n\\nTriglyceride-rich lipoproteins include VLDL, chylomicrons and the remnant particles formed from them upon the action of lipases. These particles contain apoB, C, and E and are believed to be atherogenic.Post hoc and meta-analyses of statin trials suggest that higher level of triglyceride-rich lipoproteins and their associated cholesterol correlate with higher cardiovascular risk (Milleret al,; Bruckertet al,).\\n\\nNiacin and fibrates reduce triglycerides and have been in therapeutic use for many years. Early studies of these agents indicated a cardiovascular benefit. Although subsequent studies utilizing these agents in addition to statins failed to show overall benefit (Bodenet al,),post-hoc analyses suggest that patients with significant baseline hypertriglyceridemia benefit from fibrates (Leeet al,). Other strategies to reduce triglyceride-rich lipoproteins, outlined below, are under active investigation.\\n\\nOmega-3 fatty acids\\n\\nPopulation studies demonstrate that cohorts with low levels of eicosapentaenoic acid (EPA) and docosahexaenoic acid (DHA) have higher levels of cardiovascular risk. Omega-3 fatty acids are found in fish oils and plants and have been observed to lower triglyceride levels, improve endothelial function, and have favorable effects on thrombotic and arrhythmic potential. The triglyceride-lowering effects of omega-3 fatty acids are due to multiple mechanisms, including stimulation of transcription factors such as PPAR \\u03b1, increased hepatic and extrahepatic fatty acid oxidation, and decreased hepatic incorporation of fatty acids into triglyceride resulting in decreased VLDL synthesis (Sheareret al,). Despite efficacy in triglyceride lowering, data\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:51e4b954a26b18c8\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL cholesterol\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bf604c1e4f5f234f\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:lipoprotein_a\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein(a)\",\n      \"normalized_name\": \"Lipoprotein(a)\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Lipoprotein(a)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b04d530ecbb5ab79\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:pcsk9\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"PCSK9\",\n      \"normalized_name\": \"PCSK9\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"PCSK9\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16553,\n      \"evidence_end_char\": 16558,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b9d83dcaa2f2532a\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglyceride-rich lipoproteins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20763,\n      \"evidence_end_char\": 20793,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7bebdf09031b0afc\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21237,\n      \"evidence_end_char\": 21250,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:62582ac04e5f3494\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 18930,\n      \"evidence_end_char\": 18952,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fcd57ee7214a052c\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary heart disease\",\n      \"normalized_name\": \"Coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Coronary heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ffaaf76dc0e98589\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:primary_hypercholesterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Primary hypercholesterolemia\",\n      \"normalized_name\": \"Primary hypercholesterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"primary hypercholesterolemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17871,\n      \"evidence_end_char\": 17899,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9f7007908ad4ab08\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:alirocumab\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Alirocumab\",\n      \"normalized_name\": \"Alirocumab\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"alirocumab\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 18035,\n      \"evidence_end_char\": 18045,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:694490d6edfc6db2\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:atorvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Atorvastatin\",\n      \"normalized_name\": \"Atorvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atorvastatin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17087,\n      \"evidence_end_char\": 17099,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:36f3cccd3ffce3ce\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21221,\n      \"evidence_end_char\": 21229,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7d8cd1a245fbd08e\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:mipomersen\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Mipomersen\",\n      \"normalized_name\": \"Mipomersen\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Mipomersen\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20416,\n      \"evidence_end_char\": 20426,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6b93f35c9538ac56\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Niacin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19562,\n      \"evidence_end_char\": 19568,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9314a18393a27364\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21715,\n      \"evidence_end_char\": 21734,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:4abff9bf9a9b0425\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:pcsk9_antibodies\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"PCSK9 antibodies\",\n      \"normalized_name\": \"PCSK9 antibodies\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"PCSK9 antibodies\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17338,\n      \"evidence_end_char\": 17354,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:edde7434dc6108ee\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:small_interfering_rna\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Small interfering RNA\",\n      \"normalized_name\": \"Small interfering RNA\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"small interfering RNA\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16724,\n      \"evidence_end_char\": 16745,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:66e80f117c4c0218\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16518,\n      \"evidence_end_char\": 16525,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:32749132756f02f4\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:apo_a_antisense_oligonucleotide\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"apo(a) antisense oligonucleotide\",\n      \"normalized_name\": \"apo(a) antisense oligonucleotide\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apo(a) antisense oligonucleotide\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b16976ad822594a5\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"riskfactor:high_lipoprotein_a\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"High lipoprotein(a)\",\n      \"normalized_name\": \"High lipoprotein(a)\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"High lipoprotein(a)\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:65b805eae3b6b4b8\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"riskfactor:low_levels_of_eicosapentaenoic_acid_and_docosahexaenoic_acid\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"Low levels of eicosapentaenoic acid and docosahexaenoic acid\",\n      \"normalized_name\": \"Low levels of eicosapentaenoic acid and docosahexaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Low levels of eicosapentaenoic acid and docosahexaenoic acid\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0004.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:51e4b954a26b18c8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"16593\",\"evidence_end_char\":\"16598\",\"reason\":\"The chunk explicitly discusses LDL-C as the cholesterol biomarker lowered by statins and PCSK9-directed therapy.\"},{\"entity_gold_id\":\"silver_entity:bf604c1e4f5f234f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lipoprotein (a)\",\"revised_normalized_name\":\"Lipoprotein(a)\",\"evidence_text\":\"Lipoprotein (a)\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The standalone lipid particle is explicitly present; normalization removes spacing variation.\"},{\"entity_gold_id\":\"silver_entity:b04d530ecbb5ab79\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"PCSK9\",\"evidence_start_char\":\"16553\",\"evidence_end_char\":\"16558\",\"reason\":\"PCSK9 is explicitly discussed as a biomarker/therapeutic target.\"},{\"entity_gold_id\":\"silver_entity:b9d83dcaa2f2532a\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglyceride-rich lipoproteins\",\"evidence_start_char\":\"20763\",\"evidence_end_char\":\"20793\",\"reason\":\"Triglyceride-rich lipoproteins are explicitly named as a lipid biomarker class.\"},{\"entity_gold_id\":\"silver_entity:7bebdf09031b0afc\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"21237\",\"evidence_end_char\":\"21250\",\"reason\":\"Triglycerides are explicitly discussed as a lipid biomarker lowered by therapies.\"},{\"entity_gold_id\":\"silver_entity:62582ac04e5f3494\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"18930\",\"evidence_end_char\":\"18952\",\"reason\":\"Cardiovascular disease is explicitly named as the condition associated with Lp(a).\"},{\"entity_gold_id\":\"silver_entity:fcd57ee7214a052c\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CHD\",\"revised_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"CHD\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk uses the abbreviation CHD in relation to risk and incident disease; normalization to coronary heart disease is appropriate.\"},{\"entity_gold_id\":\"silver_entity:ffaaf76dc0e98589\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"primary hypercholesterolemia\",\"evidence_start_char\":\"17871\",\"evidence_end_char\":\"17899\",\"reason\":\"Primary hypercholesterolemia is explicitly named as the patient condition.\"},{\"entity_gold_id\":\"silver_entity:9f7007908ad4ab08\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"alirocumab\",\"evidence_start_char\":\"18035\",\"evidence_end_char\":\"18045\",\"reason\":\"Alirocumab is explicitly named as a treatment.\"},{\"entity_gold_id\":\"silver_entity:694490d6edfc6db2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atorvastatin\",\"evidence_start_char\":\"17087\",\"evidence_end_char\":\"17099\",\"reason\":\"Atorvastatin is explicitly named as a drug therapy.\"},{\"entity_gold_id\":\"silver_entity:36f3cccd3ffce3ce\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"21221\",\"evidence_end_char\":\"21229\",\"reason\":\"Fibrates are explicitly named as lipid-modifying drugs.\"},{\"entity_gold_id\":\"silver_entity:7d8cd1a245fbd08e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Mipomersen\",\"evidence_start_char\":\"20416\",\"evidence_end_char\":\"20426\",\"reason\":\"Mipomersen is explicitly named as a therapy that reduces Lp(a).\"},{\"entity_gold_id\":\"silver_entity:6b93f35c9538ac56\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"19562\",\"evidence_end_char\":\"19568\",\"reason\":\"Niacin is explicitly named as a lipid-modifying therapy.\"},{\"entity_gold_id\":\"silver_entity:9314a18393a27364\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Omega-3 fatty acids\",\"evidence_start_char\":\"21715\",\"evidence_end_char\":\"21734\",\"reason\":\"Omega-3 fatty acids are explicitly discussed as agents with triglyceride-lowering effects.\"},{\"entity_gold_id\":\"silver_entity:4abff9bf9a9b0425\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"PCSK9 antibodies\",\"evidence_start_char\":\"17338\",\"evidence_end_char\":\"17354\",\"reason\":\"PCSK9 antibodies are explicitly named as a therapeutic class.\"},{\"entity_gold_id\":\"silver_entity:edde7434dc6108ee\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"small interfering RNA\",\"evidence_start_char\":\"16724\",\"evidence_end_char\":\"16745\",\"reason\":\"Small interfering RNA is explicitly mentioned as a therapeutic approach targeting PCSK9 expression.\"},{\"entity_gold_id\":\"silver_entity:66e80f117c4c0218\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Statins\",\"evidence_start_char\":\"16518\",\"evidence_end_char\":\"16525\",\"reason\":\"Statins are explicitly named as a drug class.\"},{\"entity_gold_id\":\"silver_entity:32749132756f02f4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"antisense oligonucleotide to apo(a)\",\"revised_normalized_name\":\"apo(a) antisense oligonucleotide\",\"evidence_text\":\"antisense oligonucleotide to apo (a)\",\"evidence_start_char\":\"20481\",\"evidence_end_char\":\"20515\",\"reason\":\"The therapeutic antisense oligonucleotide targeting apo(a) is explicitly described, with minor wording/spacing normalization.\"},{\"entity_gold_id\":\"silver_entity:b16976ad822594a5\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"high level of Lp(a)\",\"revised_normalized_name\":\"High lipoprotein(a)\",\"evidence_text\":\"a high level of Lp(a)\",\"evidence_start_char\":\"18855\",\"evidence_end_char\":\"18876\",\"reason\":\"The chunk explicitly states that a high level of Lp(a) is an independent risk factor for cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:65b805eae3b6b4b8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"low levels of eicosapentaenoic acid and docosahexaenoic acid\",\"revised_normalized_name\":\"Low eicosapentaenoic acid and docosahexaenoic acid levels\",\"evidence_text\":\"low levels of eicosapentaenoic acid (EPA) and docosahexaenoic acid (DHA)\",\"evidence_start_char\":\"21785\",\"evidence_end_char\":\"21857\",\"reason\":\"The chunk explicitly associates low EPA and DHA levels with higher cardiovascular risk.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:ldlr\",\"entity_type\":\"Biomarker\",\"entity_text\":\"LDLR\",\"normalized_name\":\"Low-density lipoprotein receptor\",\"evidence_text\":\"LDLR\",\"evidence_start_char\":\"16847\",\"evidence_end_char\":\"16851\",\"reason\":\"LDLR is explicitly mentioned as the receptor recycled to the hepatocyte surface during PCSK9 inhibition.\"},{\"entity_gold_id\":\"gold_addition:major_adverse_cardiovascular_events\",\"entity_type\":\"Condition\",\"entity_text\":\"major adverse cardiovascular events\",\"normalized_name\":\"Major adverse cardiovascular events\",\"evidence_text\":\"major adverse cardiovascular events\",\"evidence_start_char\":\"17365\",\"evidence_end_char\":\"17400\",\"reason\":\"This clinically important cardiovascular outcome is explicitly named.\"},{\"entity_gold_id\":\"gold_addition:hepatic_steatosis\",\"entity_type\":\"Condition\",\"entity_text\":\"hepatic steatosis\",\"normalized_name\":\"Hepatic steatosis\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"17532\",\"evidence_end_char\":\"17549\",\"reason\":\"Hepatic steatosis is explicitly mentioned as a potential adverse condition considered with PCSK9 inhibition.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_b\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB\",\"normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"apoB is explicitly described as part of the Lp(a) particle.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_a\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apo(a)\",\"normalized_name\":\"Apolipoprotein(a)\",\"evidence_text\":\"apo(a)\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"apo(a) is explicitly described as a component of Lp(a) and as a target of antisense therapy.\"},{\"entity_gold_id\":\"gold_addition:vldl\",\"entity_type\":\"Biomarker\",\"entity_text\":\"VLDL\",\"normalized_name\":\"Very-low-density lipoprotein\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"20834\",\"evidence_end_char\":\"20838\",\"reason\":\"VLDL is explicitly listed as a triglyceride-rich lipoprotein.\"},{\"entity_gold_id\":\"gold_addition:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"20840\",\"evidence_end_char\":\"20852\",\"reason\":\"Chylomicrons are explicitly listed as triglyceride-rich lipoproteins.\"},{\"entity_gold_id\":\"gold_addition:hypertriglyceridemia\",\"entity_type\":\"Condition\",\"entity_text\":\"hypertriglyceridemia\",\"normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"21551\",\"evidence_end_char\":\"21571\",\"reason\":\"Baseline hypertriglyceridemia is explicitly named as a condition relevant to fibrate benefit.\"},{\"entity_gold_id\":\"gold_addition:eicosapentaenoic_acid\",\"entity_type\":\"Biomarker\",\"entity_text\":\"eicosapentaenoic acid (EPA)\",\"normalized_name\":\"Eicosapentaenoic acid\",\"evidence_text\":\"eicosapentaenoic acid (EPA)\",\"evidence_start_char\":\"21799\",\"evidence_end_char\":\"21826\",\"reason\":\"EPA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids.\"},{\"entity_gold_id\":\"gold_addition:docosahexaenoic_acid\",\"entity_type\":\"Biomarker\",\"entity_text\":\"docosahexaenoic acid (DHA)\",\"normalized_name\":\"Docosahexaenoic acid\",\"evidence_text\":\"docosahexaenoic acid (DHA)\",\"evidence_start_char\":\"21831\",\"evidence_end_char\":\"21857\",\"reason\":\"DHA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Several were normalized for abbreviation, spacing, or phrase order; additions capture important explicitly present lipid biomarkers, outcomes, and conditions not included in the candidate list.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:51e4b954a26b18c8",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LDL-C",
+        "revised_normalized_name": "LDL cholesterol",
+        "evidence_text": "LDL-C",
+        "evidence_start_char": "16593",
+        "evidence_end_char": "16598",
+        "reason": "The chunk explicitly discusses LDL-C as the cholesterol biomarker lowered by statins and PCSK9-directed therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:bf604c1e4f5f234f",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Lipoprotein (a)",
+        "revised_normalized_name": "Lipoprotein(a)",
+        "evidence_text": "Lipoprotein (a)",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The standalone lipid particle is explicitly present; normalization removes spacing variation."
+      },
+      {
+        "entity_gold_id": "silver_entity:b04d530ecbb5ab79",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "PCSK9",
+        "evidence_start_char": "16553",
+        "evidence_end_char": "16558",
+        "reason": "PCSK9 is explicitly discussed as a biomarker/therapeutic target."
+      },
+      {
+        "entity_gold_id": "silver_entity:b9d83dcaa2f2532a",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "triglyceride-rich lipoproteins",
+        "evidence_start_char": "20763",
+        "evidence_end_char": "20793",
+        "reason": "Triglyceride-rich lipoproteins are explicitly named as a lipid biomarker class."
+      },
+      {
+        "entity_gold_id": "silver_entity:7bebdf09031b0afc",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "triglycerides",
+        "evidence_start_char": "21237",
+        "evidence_end_char": "21250",
+        "reason": "Triglycerides are explicitly discussed as a lipid biomarker lowered by therapies."
+      },
+      {
+        "entity_gold_id": "silver_entity:62582ac04e5f3494",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular disease",
+        "evidence_start_char": "18930",
+        "evidence_end_char": "18952",
+        "reason": "Cardiovascular disease is explicitly named as the condition associated with Lp(a)."
+      },
+      {
+        "entity_gold_id": "silver_entity:fcd57ee7214a052c",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "CHD",
+        "revised_normalized_name": "Coronary heart disease",
+        "evidence_text": "CHD",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The chunk uses the abbreviation CHD in relation to risk and incident disease; normalization to coronary heart disease is appropriate."
+      },
+      {
+        "entity_gold_id": "silver_entity:ffaaf76dc0e98589",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "primary hypercholesterolemia",
+        "evidence_start_char": "17871",
+        "evidence_end_char": "17899",
+        "reason": "Primary hypercholesterolemia is explicitly named as the patient condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:9f7007908ad4ab08",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "alirocumab",
+        "evidence_start_char": "18035",
+        "evidence_end_char": "18045",
+        "reason": "Alirocumab is explicitly named as a treatment."
+      },
+      {
+        "entity_gold_id": "silver_entity:694490d6edfc6db2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atorvastatin",
+        "evidence_start_char": "17087",
+        "evidence_end_char": "17099",
+        "reason": "Atorvastatin is explicitly named as a drug therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:36f3cccd3ffce3ce",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "fibrates",
+        "evidence_start_char": "21221",
+        "evidence_end_char": "21229",
+        "reason": "Fibrates are explicitly named as lipid-modifying drugs."
+      },
+      {
+        "entity_gold_id": "silver_entity:7d8cd1a245fbd08e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Mipomersen",
+        "evidence_start_char": "20416",
+        "evidence_end_char": "20426",
+        "reason": "Mipomersen is explicitly named as a therapy that reduces Lp(a)."
+      },
+      {
+        "entity_gold_id": "silver_entity:6b93f35c9538ac56",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Niacin",
+        "evidence_start_char": "19562",
+        "evidence_end_char": "19568",
+        "reason": "Niacin is explicitly named as a lipid-modifying therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:9314a18393a27364",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Omega-3 fatty acids",
+        "evidence_start_char": "21715",
+        "evidence_end_char": "21734",
+        "reason": "Omega-3 fatty acids are explicitly discussed as agents with triglyceride-lowering effects."
+      },
+      {
+        "entity_gold_id": "silver_entity:4abff9bf9a9b0425",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "PCSK9 antibodies",
+        "evidence_start_char": "17338",
+        "evidence_end_char": "17354",
+        "reason": "PCSK9 antibodies are explicitly named as a therapeutic class."
+      },
+      {
+        "entity_gold_id": "silver_entity:edde7434dc6108ee",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "small interfering RNA",
+        "evidence_start_char": "16724",
+        "evidence_end_char": "16745",
+        "reason": "Small interfering RNA is explicitly mentioned as a therapeutic approach targeting PCSK9 expression."
+      },
+      {
+        "entity_gold_id": "silver_entity:66e80f117c4c0218",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Statins",
+        "evidence_start_char": "16518",
+        "evidence_end_char": "16525",
+        "reason": "Statins are explicitly named as a drug class."
+      },
+      {
+        "entity_gold_id": "silver_entity:32749132756f02f4",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "antisense oligonucleotide to apo(a)",
+        "revised_normalized_name": "apo(a) antisense oligonucleotide",
+        "evidence_text": "antisense oligonucleotide to apo (a)",
+        "evidence_start_char": "20481",
+        "evidence_end_char": "20515",
+        "reason": "The therapeutic antisense oligonucleotide targeting apo(a) is explicitly described, with minor wording/spacing normalization."
+      },
+      {
+        "entity_gold_id": "silver_entity:b16976ad822594a5",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "RiskFactor",
+        "revised_entity_text": "high level of Lp(a)",
+        "revised_normalized_name": "High lipoprotein(a)",
+        "evidence_text": "a high level of Lp(a)",
+        "evidence_start_char": "18855",
+        "evidence_end_char": "18876",
+        "reason": "The chunk explicitly states that a high level of Lp(a) is an independent risk factor for cardiovascular disease."
+      },
+      {
+        "entity_gold_id": "silver_entity:65b805eae3b6b4b8",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "RiskFactor",
+        "revised_entity_text": "low levels of eicosapentaenoic acid and docosahexaenoic acid",
+        "revised_normalized_name": "Low eicosapentaenoic acid and docosahexaenoic acid levels",
+        "evidence_text": "low levels of eicosapentaenoic acid (EPA) and docosahexaenoic acid (DHA)",
+        "evidence_start_char": "21785",
+        "evidence_end_char": "21857",
+        "reason": "The chunk explicitly associates low EPA and DHA levels with higher cardiovascular risk."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:ldlr",
+        "entity_type": "Biomarker",
+        "entity_text": "LDLR",
+        "normalized_name": "Low-density lipoprotein receptor",
+        "evidence_text": "LDLR",
+        "evidence_start_char": "16847",
+        "evidence_end_char": "16851",
+        "reason": "LDLR is explicitly mentioned as the receptor recycled to the hepatocyte surface during PCSK9 inhibition."
+      },
+      {
+        "entity_gold_id": "gold_addition:major_adverse_cardiovascular_events",
+        "entity_type": "Condition",
+        "entity_text": "major adverse cardiovascular events",
+        "normalized_name": "Major adverse cardiovascular events",
+        "evidence_text": "major adverse cardiovascular events",
+        "evidence_start_char": "17365",
+        "evidence_end_char": "17400",
+        "reason": "This clinically important cardiovascular outcome is explicitly named."
+      },
+      {
+        "entity_gold_id": "gold_addition:hepatic_steatosis",
+        "entity_type": "Condition",
+        "entity_text": "hepatic steatosis",
+        "normalized_name": "Hepatic steatosis",
+        "evidence_text": "hepatic steatosis",
+        "evidence_start_char": "17532",
+        "evidence_end_char": "17549",
+        "reason": "Hepatic steatosis is explicitly mentioned as a potential adverse condition considered with PCSK9 inhibition."
+      },
+      {
+        "entity_gold_id": "gold_addition:apolipoprotein_b",
+        "entity_type": "Biomarker",
+        "entity_text": "apoB",
+        "normalized_name": "Apolipoprotein B",
+        "evidence_text": "apoB",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "apoB is explicitly described as part of the Lp(a) particle."
+      },
+      {
+        "entity_gold_id": "gold_addition:apolipoprotein_a",
+        "entity_type": "Biomarker",
+        "entity_text": "apo(a)",
+        "normalized_name": "Apolipoprotein(a)",
+        "evidence_text": "apo(a)",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "apo(a) is explicitly described as a component of Lp(a) and as a target of antisense therapy."
+      },
+      {
+        "entity_gold_id": "gold_addition:vldl",
+        "entity_type": "Biomarker",
+        "entity_text": "VLDL",
+        "normalized_name": "Very-low-density lipoprotein",
+        "evidence_text": "VLDL",
+        "evidence_start_char": "20834",
+        "evidence_end_char": "20838",
+        "reason": "VLDL is explicitly listed as a triglyceride-rich lipoprotein."
+      },
+      {
+        "entity_gold_id": "gold_addition:chylomicrons",
+        "entity_type": "Biomarker",
+        "entity_text": "chylomicrons",
+        "normalized_name": "Chylomicrons",
+        "evidence_text": "chylomicrons",
+        "evidence_start_char": "20840",
+        "evidence_end_char": "20852",
+        "reason": "Chylomicrons are explicitly listed as triglyceride-rich lipoproteins."
+      },
+      {
+        "entity_gold_id": "gold_addition:hypertriglyceridemia",
+        "entity_type": "Condition",
+        "entity_text": "hypertriglyceridemia",
+        "normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "hypertriglyceridemia",
+        "evidence_start_char": "21551",
+        "evidence_end_char": "21571",
+        "reason": "Baseline hypertriglyceridemia is explicitly named as a condition relevant to fibrate benefit."
+      },
+      {
+        "entity_gold_id": "gold_addition:eicosapentaenoic_acid",
+        "entity_type": "Biomarker",
+        "entity_text": "eicosapentaenoic acid (EPA)",
+        "normalized_name": "Eicosapentaenoic acid",
+        "evidence_text": "eicosapentaenoic acid (EPA)",
+        "evidence_start_char": "21799",
+        "evidence_end_char": "21826",
+        "reason": "EPA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids."
+      },
+      {
+        "entity_gold_id": "gold_addition:docosahexaenoic_acid",
+        "entity_type": "Biomarker",
+        "entity_text": "docosahexaenoic acid (DHA)",
+        "normalized_name": "Docosahexaenoic acid",
+        "evidence_text": "docosahexaenoic acid (DHA)",
+        "evidence_start_char": "21831",
+        "evidence_end_char": "21857",
+        "reason": "DHA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids."
+      }
+    ],
+    "review_notes": "All candidate entities were supported by the chunk. Several were normalized for abbreviation, spacing, or phrase order; additions capture important explicitly present lipid biomarkers, outcomes, and conditions not included in the candidate list."
+  },
+  "raw_response": {
+    "id": "resp_0d56e5fe331e4805006a47d60fc3988191bff10eb9e2d146e1",
+    "created_at": 1783092751.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0d56e5fe331e4805006a47d61026748191b4e451a4aa9430f7",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0d56e5fe331e4805006a47d6c4e3f88191b6c63a2a46aee179",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:51e4b954a26b18c8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"16593\",\"evidence_end_char\":\"16598\",\"reason\":\"The chunk explicitly discusses LDL-C as the cholesterol biomarker lowered by statins and PCSK9-directed therapy.\"},{\"entity_gold_id\":\"silver_entity:bf604c1e4f5f234f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lipoprotein (a)\",\"revised_normalized_name\":\"Lipoprotein(a)\",\"evidence_text\":\"Lipoprotein (a)\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The standalone lipid particle is explicitly present; normalization removes spacing variation.\"},{\"entity_gold_id\":\"silver_entity:b04d530ecbb5ab79\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"PCSK9\",\"evidence_start_char\":\"16553\",\"evidence_end_char\":\"16558\",\"reason\":\"PCSK9 is explicitly discussed as a biomarker/therapeutic target.\"},{\"entity_gold_id\":\"silver_entity:b9d83dcaa2f2532a\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglyceride-rich lipoproteins\",\"evidence_start_char\":\"20763\",\"evidence_end_char\":\"20793\",\"reason\":\"Triglyceride-rich lipoproteins are explicitly named as a lipid biomarker class.\"},{\"entity_gold_id\":\"silver_entity:7bebdf09031b0afc\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"21237\",\"evidence_end_char\":\"21250\",\"reason\":\"Triglycerides are explicitly discussed as a lipid biomarker lowered by therapies.\"},{\"entity_gold_id\":\"silver_entity:62582ac04e5f3494\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"18930\",\"evidence_end_char\":\"18952\",\"reason\":\"Cardiovascular disease is explicitly named as the condition associated with Lp(a).\"},{\"entity_gold_id\":\"silver_entity:fcd57ee7214a052c\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CHD\",\"revised_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"CHD\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The chunk uses the abbreviation CHD in relation to risk and incident disease; normalization to coronary heart disease is appropriate.\"},{\"entity_gold_id\":\"silver_entity:ffaaf76dc0e98589\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"primary hypercholesterolemia\",\"evidence_start_char\":\"17871\",\"evidence_end_char\":\"17899\",\"reason\":\"Primary hypercholesterolemia is explicitly named as the patient condition.\"},{\"entity_gold_id\":\"silver_entity:9f7007908ad4ab08\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"alirocumab\",\"evidence_start_char\":\"18035\",\"evidence_end_char\":\"18045\",\"reason\":\"Alirocumab is explicitly named as a treatment.\"},{\"entity_gold_id\":\"silver_entity:694490d6edfc6db2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atorvastatin\",\"evidence_start_char\":\"17087\",\"evidence_end_char\":\"17099\",\"reason\":\"Atorvastatin is explicitly named as a drug therapy.\"},{\"entity_gold_id\":\"silver_entity:36f3cccd3ffce3ce\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"21221\",\"evidence_end_char\":\"21229\",\"reason\":\"Fibrates are explicitly named as lipid-modifying drugs.\"},{\"entity_gold_id\":\"silver_entity:7d8cd1a245fbd08e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Mipomersen\",\"evidence_start_char\":\"20416\",\"evidence_end_char\":\"20426\",\"reason\":\"Mipomersen is explicitly named as a therapy that reduces Lp(a).\"},{\"entity_gold_id\":\"silver_entity:6b93f35c9538ac56\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"19562\",\"evidence_end_char\":\"19568\",\"reason\":\"Niacin is explicitly named as a lipid-modifying therapy.\"},{\"entity_gold_id\":\"silver_entity:9314a18393a27364\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Omega-3 fatty acids\",\"evidence_start_char\":\"21715\",\"evidence_end_char\":\"21734\",\"reason\":\"Omega-3 fatty acids are explicitly discussed as agents with triglyceride-lowering effects.\"},{\"entity_gold_id\":\"silver_entity:4abff9bf9a9b0425\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"PCSK9 antibodies\",\"evidence_start_char\":\"17338\",\"evidence_end_char\":\"17354\",\"reason\":\"PCSK9 antibodies are explicitly named as a therapeutic class.\"},{\"entity_gold_id\":\"silver_entity:edde7434dc6108ee\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"small interfering RNA\",\"evidence_start_char\":\"16724\",\"evidence_end_char\":\"16745\",\"reason\":\"Small interfering RNA is explicitly mentioned as a therapeutic approach targeting PCSK9 expression.\"},{\"entity_gold_id\":\"silver_entity:66e80f117c4c0218\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Statins\",\"evidence_start_char\":\"16518\",\"evidence_end_char\":\"16525\",\"reason\":\"Statins are explicitly named as a drug class.\"},{\"entity_gold_id\":\"silver_entity:32749132756f02f4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"antisense oligonucleotide to apo(a)\",\"revised_normalized_name\":\"apo(a) antisense oligonucleotide\",\"evidence_text\":\"antisense oligonucleotide to apo (a)\",\"evidence_start_char\":\"20481\",\"evidence_end_char\":\"20515\",\"reason\":\"The therapeutic antisense oligonucleotide targeting apo(a) is explicitly described, with minor wording/spacing normalization.\"},{\"entity_gold_id\":\"silver_entity:b16976ad822594a5\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"high level of Lp(a)\",\"revised_normalized_name\":\"High lipoprotein(a)\",\"evidence_text\":\"a high level of Lp(a)\",\"evidence_start_char\":\"18855\",\"evidence_end_char\":\"18876\",\"reason\":\"The chunk explicitly states that a high level of Lp(a) is an independent risk factor for cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:65b805eae3b6b4b8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"low levels of eicosapentaenoic acid and docosahexaenoic acid\",\"revised_normalized_name\":\"Low eicosapentaenoic acid and docosahexaenoic acid levels\",\"evidence_text\":\"low levels of eicosapentaenoic acid (EPA) and docosahexaenoic acid (DHA)\",\"evidence_start_char\":\"21785\",\"evidence_end_char\":\"21857\",\"reason\":\"The chunk explicitly associates low EPA and DHA levels with higher cardiovascular risk.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:ldlr\",\"entity_type\":\"Biomarker\",\"entity_text\":\"LDLR\",\"normalized_name\":\"Low-density lipoprotein receptor\",\"evidence_text\":\"LDLR\",\"evidence_start_char\":\"16847\",\"evidence_end_char\":\"16851\",\"reason\":\"LDLR is explicitly mentioned as the receptor recycled to the hepatocyte surface during PCSK9 inhibition.\"},{\"entity_gold_id\":\"gold_addition:major_adverse_cardiovascular_events\",\"entity_type\":\"Condition\",\"entity_text\":\"major adverse cardiovascular events\",\"normalized_name\":\"Major adverse cardiovascular events\",\"evidence_text\":\"major adverse cardiovascular events\",\"evidence_start_char\":\"17365\",\"evidence_end_char\":\"17400\",\"reason\":\"This clinically important cardiovascular outcome is explicitly named.\"},{\"entity_gold_id\":\"gold_addition:hepatic_steatosis\",\"entity_type\":\"Condition\",\"entity_text\":\"hepatic steatosis\",\"normalized_name\":\"Hepatic steatosis\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"17532\",\"evidence_end_char\":\"17549\",\"reason\":\"Hepatic steatosis is explicitly mentioned as a potential adverse condition considered with PCSK9 inhibition.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_b\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB\",\"normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"apoB is explicitly described as part of the Lp(a) particle.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_a\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apo(a)\",\"normalized_name\":\"Apolipoprotein(a)\",\"evidence_text\":\"apo(a)\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"apo(a) is explicitly described as a component of Lp(a) and as a target of antisense therapy.\"},{\"entity_gold_id\":\"gold_addition:vldl\",\"entity_type\":\"Biomarker\",\"entity_text\":\"VLDL\",\"normalized_name\":\"Very-low-density lipoprotein\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"20834\",\"evidence_end_char\":\"20838\",\"reason\":\"VLDL is explicitly listed as a triglyceride-rich lipoprotein.\"},{\"entity_gold_id\":\"gold_addition:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"20840\",\"evidence_end_char\":\"20852\",\"reason\":\"Chylomicrons are explicitly listed as triglyceride-rich lipoproteins.\"},{\"entity_gold_id\":\"gold_addition:hypertriglyceridemia\",\"entity_type\":\"Condition\",\"entity_text\":\"hypertriglyceridemia\",\"normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"21551\",\"evidence_end_char\":\"21571\",\"reason\":\"Baseline hypertriglyceridemia is explicitly named as a condition relevant to fibrate benefit.\"},{\"entity_gold_id\":\"gold_addition:eicosapentaenoic_acid\",\"entity_type\":\"Biomarker\",\"entity_text\":\"eicosapentaenoic acid (EPA)\",\"normalized_name\":\"Eicosapentaenoic acid\",\"evidence_text\":\"eicosapentaenoic acid (EPA)\",\"evidence_start_char\":\"21799\",\"evidence_end_char\":\"21826\",\"reason\":\"EPA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids.\"},{\"entity_gold_id\":\"gold_addition:docosahexaenoic_acid\",\"entity_type\":\"Biomarker\",\"entity_text\":\"docosahexaenoic acid (DHA)\",\"normalized_name\":\"Docosahexaenoic acid\",\"evidence_text\":\"docosahexaenoic acid (DHA)\",\"evidence_start_char\":\"21831\",\"evidence_end_char\":\"21857\",\"reason\":\"DHA is explicitly named and discussed in relation to cardiovascular risk and omega-3 fatty acids.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Several were normalized for abbreviation, spacing, or phrase order; additions capture important explicitly present lipid biomarkers, outcomes, and conditions not included in the candidate list.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783092954.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 7668,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 16145,
+      "output_tokens_details": {
+        "reasoning_tokens": 13452
+      },
+      "total_tokens": 23813
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T15:32:31.811230+00:00",
+  "finished_at": "2026-07-03T15:35:55.783831+00:00",
+  "duration_ms": 211628.058,
+  "status": "ok",
+  "error": ""
+}
