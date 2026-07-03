@@ -1,0 +1,1506 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4866746\nTitle: Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4866746-chunk-0010\nChunk Section: FIG\n\n---\n\n# TEXT TO EXTRACT\n\n```text\npted by permission from Macmillan Publishers Ltd: [Nature Reviews Cardiology] Watts GF, Ooi EM, Chan DC. Demystifying the management of hypertriglyceridaemia. Nat Rev Cardiol. 2013;10(11):648\u2013661, Copyright \u00a9 2013.\n\nAbbreviations: LPL, lipoprotein lipase; TRL, triglyceride-rich lipoproteins; TRL-R, triglyceride-rich lipoprotein remnants.\n\nKey studies investigating the association between triglycerides and cardiovascular disease\n\nStudy Population (sample size) Key findings ERFC: individual record analysis of 68 long-term prospective studies No prior CHD (n=302,430) After adjustment for nonlipid risk factors, TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).The association was no longer significant after adjustment for HDL-C and non-HDL-C (HR 0.99, 95% CI 0.94\u20131.05). Post hoc analysis of two statin trials: IDEAL and TNT CHD and ACS, on potent statin therapy (n=15,779) Risk of CVE occurring after the first year of the trials increased as a function of increasing on-treatment TG, with patients in the 5th quintile of TG having a 63% increase in events versus patients in the first quintile after adjusting for age and sex (P<0.001).After adjustment for HDL-C and apoB/apoAI, the association was attenuated (P=0.044). PROVE IT-TIMI 22 Hospitalized for ACS, on potent statin therapy (n=4,162) On-treatment fasting TG <150 mg/dL was associated with a reduction in CHD risk versus high TG (HR 0.73, 95% CI 0.62\u20130.87; P<0.001). For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively. Prospective Copenhagen City Heart Study: ischemic stroke General population of Denmark (n=13,956) The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001). For men, age-adjusted HRs ranged from 1.4 (95% CI 0.9\u20132.1) in those with baseline TG of 89\u2013176 mg/dL to 3.2 (95% CI 1.7\u20136.2) in those with TG \u2265443 mg/dL versus men with TG <89 mg/dL. For women, HRs ranged from 1.3 (95% CI 1.0\u20131.8) in those with baseline TG of 89\u2013176 mg/dL to 5.1 (95% CI 1.7\u201314.8) in those with TG \u2265443 mg/dL versus women with TG <89 mg/dL. Women\u2019s Health Study Healthy US women (n=26,509) Baseline fasting and nonfasting TG were both strongly associated with CVE. Fasting TG was not significantly associated with CVE after adjustment for TC and HDL-C and measures of insulin resistance.However, nonfasting TG remained significantly associated with CVE after adjustment for TC and HDL-C (P=0.006). Prospective Copenhagen City Heart Study: MI, IHD, and all-cause mortality General population of Copenhagen, Denmark (n=13,981) Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG. The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001). For men, HRs for MI increased from 1.6 (95% CI 1.1\u20132.3) for TG of 88.5\u2013176.1 mg/dL to 4.6 (95% CI 2.7\u20138.0) for TG \u2265442.5 mg/dL versus those with TG <88.5 mg/dL. For women, HRs for MI increased from 2.2 (95% CI 1.6\u20133.2) for TG of 88.5\u2013176.1 mg/dL to 16.8 (95% CI 6.8\u201341.6) for TG \u2265442.5 mg/dL versus those with TG <88.5 mg/dL. Post hoc analysis of the Framingham Heart Study Participants of the Framingham Heart Study without CVD at baseline (n=3,501) High plasma TG levels (>150 mg/dL), in the absence of high LDL-C (>130 mg/dL) or low HDL-C (<40 mg/dL) levels, were not significantly associated with an increased risk of CVD events (P=0.13). ARIC study Participants of the ARIC Study without CVD at baseline (n=12,339) In women, TG was significantly associated with CHD risk after adjustment for age, race, LDL-C, apoB, apoA-1, and HDL-C subfractions (RR 1.29, P<0.01). However, TG was not significantly associated with CHD risk in men. PROCAM study Men and women aged 16\u201365 years (n=19,698) In a logistic function analysis, log-transformed TG levels showed a significant association with CHD incidence (P<0.01). However, after adjustment for HDL-C, this association was no longer significant.\n\nAbbreviations: ACS, acute coronary syndrome; apo, apolipoprotein; ARIC, The Atherosclerosis Risk in Communities; CHD, coronary heart disease; CI, confidence interval; CVD, cardiovascular disease; CVE, cardiovascular events; ERFC, Emerging Risk Factors Collaboration; HDL-C, high-density lipoprotein cholesterol; HR, hazard ratio; IDEAL, Incremental Decrease in End Points through Aggressive Lipid Lowering; IHD, ischemic heart disease; LDL-C, low-density lipoprotein cholesterol; MI, myocardial infarction; non-HDL-C, non-high-density lipoprotein cholesterol; PROCAM, Prospective Cardiovascular Munster; PROVE IT-TIMI 22, Pravastatin or Atorvastatin Evaluation and Infection Therapy-Thrombolysis In Myocardial Infarction 22; RR, relative risk; TC, total cholesterol; TG, triglyceride; TNT, Treating to New Targets.\n\nSummary of available triglyceride-lowering therapies\n\nTG-lowering agent Proposed mechanisms of action Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128 Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212 Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\n\nAbbreviations: apo, apolipoprotein; CETP, cholesteryl ester transfer protein; DGAT-2, diacylglycerol acyltransferase 2; DHA, docosahexaenoic acid; EPA, eicosapentaenoic acid; HDL, high-density lipoprotein; HDL-C,\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Baseline fasting and nonfasting TG were both strongly associated with CVE.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"The association was no longer significant after adjustment for HDL-C and non-HDL-C (HR 0.99, 95% CI 0.94\u20131.05).\",\"reason\":\"Not extracted as an independent triglycerides-coronary heart disease association after lipid adjustment because the text states the association was no longer significant.\"},{\"text\":\"High plasma TG levels (>150 mg/dL), in the absence of high LDL-C (>130 mg/dL) or low HDL-C (<40 mg/dL) levels, were not significantly associated with an increased risk of CVD events (P=0.13).\",\"reason\":\"Not extracted as a positive association because the text explicitly states the association was not significant in this analysis.\"},{\"text\":\"all-cause mortality\",\"reason\":\"Not extracted as a Condition entity or relationship target because all-cause mortality is an outcome rather than a disease, disorder, diagnosis, or clinical condition in the specified ontology.\"},{\"text\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"reason\":\"Not extracted as CAUSES because the ontology defines CAUSES only for Condition-to-Condition relationships, and triglyceride-rich lipoproteins are not a Condition.\"},{\"text\":\"Post hoc analysis of two statin trials: IDEAL and TNT CHD and ACS, on potent statin therapy\",\"reason\":\"Statin therapy is mentioned as background therapy/trial context, but this chunk does not explicitly state a statin effect relationship to extract.\"},{\"text\":\"Fibrates / Niacin / Omega-3 fatty acids TREATS Hypertriglyceridemia\",\"reason\":\"Not extracted as TREATS because the chunk states triglyceride-lowering therapies and biomarker effects, but does not explicitly state treatment of a diagnosed condition.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4866746",
+      "title": "Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:high_density_lipoprotein_cholesterol",
+        "type": "Biomarker",
+        "name": "High-density lipoprotein cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:non_high_density_lipoprotein_cholesterol",
+        "type": "Biomarker",
+        "name": "Non-high-density lipoprotein cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:low_density_lipoprotein_cholesterol",
+        "type": "Biomarker",
+        "name": "Low-density lipoprotein cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:remnant_lipoprotein_cholesterol",
+        "type": "Biomarker",
+        "name": "Remnant lipoprotein cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:coronary_heart_disease",
+        "type": "Condition",
+        "name": "Coronary heart disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_events",
+        "type": "Condition",
+        "name": "Cardiovascular events",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:acute_coronary_syndrome",
+        "type": "Condition",
+        "name": "Acute coronary syndrome",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:ischemic_stroke",
+        "type": "Condition",
+        "name": "Ischemic stroke",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:myocardial_infarction",
+        "type": "Condition",
+        "name": "Myocardial infarction",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:ischemic_heart_disease",
+        "type": "Condition",
+        "name": "Ischemic heart disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:fibrates",
+        "type": "Drug",
+        "name": "Fibrates",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:niacin",
+        "type": "Drug",
+        "name": "Niacin",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:omega_3_fatty_acids",
+        "type": "Drug",
+        "name": "Omega-3 fatty acids",
+        "properties": {
+          "source": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "Key studies investigating the association between triglycerides and cardiovascular disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "Coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "Baseline fasting and nonfasting TG were both strongly associated with CVE.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:acute_coronary_syndrome",
+          "type": "Condition",
+          "name": "Acute coronary syndrome"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:ischemic_stroke",
+          "type": "Condition",
+          "name": "Ischemic stroke"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial infarction"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "condition:ischemic_heart_disease",
+          "type": "Condition",
+          "name": "Ischemic heart disease"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:remnant_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:non_high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-high-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "High-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:low_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Low-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:niacin",
+          "type": "Drug",
+          "name": "Niacin"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:niacin",
+          "type": "Drug",
+          "name": "Niacin"
+        },
+        "target": {
+          "id": "biomarker:non_high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-high-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:niacin",
+          "type": "Drug",
+          "name": "Niacin"
+        },
+        "target": {
+          "id": "biomarker:high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "High-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:niacin",
+          "type": "Drug",
+          "name": "Niacin"
+        },
+        "target": {
+          "id": "biomarker:low_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Low-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:non_high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-high-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:high_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "High-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:low_density_lipoprotein_cholesterol",
+          "type": "Biomarker",
+          "name": "Low-density lipoprotein cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0010",
+          "extractor": "medgraphrag_v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "The association was no longer significant after adjustment for HDL-C and non-HDL-C (HR 0.99, 95% CI 0.94\u20131.05).",
+        "reason": "Not extracted as an independent triglycerides-coronary heart disease association after lipid adjustment because the text states the association was no longer significant."
+      },
+      {
+        "text": "High plasma TG levels (>150 mg/dL), in the absence of high LDL-C (>130 mg/dL) or low HDL-C (<40 mg/dL) levels, were not significantly associated with an increased risk of CVD events (P=0.13).",
+        "reason": "Not extracted as a positive association because the text explicitly states the association was not significant in this analysis."
+      },
+      {
+        "text": "all-cause mortality",
+        "reason": "Not extracted as a Condition entity or relationship target because all-cause mortality is an outcome rather than a disease, disorder, diagnosis, or clinical condition in the specified ontology."
+      },
+      {
+        "text": "Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease",
+        "reason": "Not extracted as CAUSES because the ontology defines CAUSES only for Condition-to-Condition relationships, and triglyceride-rich lipoproteins are not a Condition."
+      },
+      {
+        "text": "Post hoc analysis of two statin trials: IDEAL and TNT CHD and ACS, on potent statin therapy",
+        "reason": "Statin therapy is mentioned as background therapy/trial context, but this chunk does not explicitly state a statin effect relationship to extract."
+      },
+      {
+        "text": "Fibrates / Niacin / Omega-3 fatty acids TREATS Hypertriglyceridemia",
+        "reason": "Not extracted as TREATS because the chunk states triglyceride-lowering therapies and biomarker effects, but does not explicitly state treatment of a diagnosed condition."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_032aa4ed35687570006a440df60c8c819faf0d6e7596379a32",
+    "created_at": 1782844918.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_032aa4ed35687570006a440df689f4819f8980edca2e3d5d09",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_032aa4ed35687570006a440e7342e8819f9c55f189f7084064",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Coronary heart disease\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Baseline fasting and nonfasting TG were both strongly associated with CVE.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:acute_coronary_syndrome\",\"type\":\"Condition\",\"name\":\"Acute coronary syndrome\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-high-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"High-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Low-density lipoprotein cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0010\",\"extractor\":\"medgraphrag_v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"The association was no longer significant after adjustment for HDL-C and non-HDL-C (HR 0.99, 95% CI 0.94\u20131.05).\",\"reason\":\"Not extracted as an independent triglycerides-coronary heart disease association after lipid adjustment because the text states the association was no longer significant.\"},{\"text\":\"High plasma TG levels (>150 mg/dL), in the absence of high LDL-C (>130 mg/dL) or low HDL-C (<40 mg/dL) levels, were not significantly associated with an increased risk of CVD events (P=0.13).\",\"reason\":\"Not extracted as a positive association because the text explicitly states the association was not significant in this analysis.\"},{\"text\":\"all-cause mortality\",\"reason\":\"Not extracted as a Condition entity or relationship target because all-cause mortality is an outcome rather than a disease, disorder, diagnosis, or clinical condition in the specified ontology.\"},{\"text\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"reason\":\"Not extracted as CAUSES because the ontology defines CAUSES only for Condition-to-Condition relationships, and triglyceride-rich lipoproteins are not a Condition.\"},{\"text\":\"Post hoc analysis of two statin trials: IDEAL and TNT CHD and ACS, on potent statin therapy\",\"reason\":\"Statin therapy is mentioned as background therapy/trial context, but this chunk does not explicitly state a statin effect relationship to extract.\"},{\"text\":\"Fibrates / Niacin / Omega-3 fatty acids TREATS Hypertriglyceridemia\",\"reason\":\"Not extracted as TREATS because the chunk states triglyceride-lowering therapies and biomarker effects, but does not explicitly state treatment of a diagnosed condition.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782845091.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3973,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 12612,
+      "output_tokens_details": {
+        "reasoning_tokens": 7250
+      },
+      "total_tokens": 16585
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T18:41:58.310958+00:00",
+  "finished_at": "2026-06-30T18:44:52.379341+00:00",
+  "duration_ms": 174068.393,
+  "status": "ok",
+  "error": ""
+}

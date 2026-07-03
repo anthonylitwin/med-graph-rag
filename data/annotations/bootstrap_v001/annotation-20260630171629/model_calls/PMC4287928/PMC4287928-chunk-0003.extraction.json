@@ -1,0 +1,1817 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4287928\nTitle: Evolving targets for lipid-modifying therapy\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4287928-chunk-0003\nChunk Section: INTRO\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nof clinical development.\n\nExpression of apolipoprotein B100\n\nApolipoprotein (apo) B-containing lipoproteins include LDL, very low-density lipoprotein (VLDL), and VLDL remnants. Because these lipoproteins may promote atherosclerosis, strategies to prevent expression of apoB are attractive. However, interference with hepatic export of apoB-containing lipoproteins also has the potential to promote hepatic steatosis.\n\nMipomersen is a 20-base, 2\u2032-O-(2-methoxy) ethyl-modified antisense oligonucleotide that targets mRNA encoding apoB100. It reduces circulating levels of all lipoprotein species containing apoB100 in humans. In Phases 2 and 3 clinical trials of mipomersen as monotherapy or added to statins in patients with familial hypercholesterolemia (FH), LDL-C reductions of up to 47% were observed (Visseret al,). Because mipomersen does not significantly affect intestinal apoB48 expression, intestinal fat absorption is unaffected and intestinal steatosis is avoided (Crookeet al, ). However, treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases (Visseret al,).\n\nMipomersen is currently approved for the treatment of homozygous familial hypercholesterolemia. However, the long-term benefit/risk profile remains to be determined and might be influenced by tolerability or hepatic safety. Other approaches to knockdown apoB100, including small interfering RNAs, are under investigation (Tadin-Strappset al,).\n\nVLDL assembly \u2013 ACAT and MTP\n\nAnother approach to reduce LDL is to prevent hepatic secretion of its precursor lipoprotein, VLDL, by interfering with the lipidation of apoB. Two enzymes involved in this process, acyl-CoA/cholesterol acyltransferase (ACAT) and microsomal triglyceride transfer protein (MTP), have been targeted.\n\nACAT1 and ACAT2 are expressed in macrophages as well as liver and intestine where they are involved in accumulation of cholesterol ester, foam cells, atherosclerosis, and providing cholesterol ester to secreted VLDL and chylomicrons (Leeet al,; Leonet al,). Surprisingly, clinical trials that used intravascular ultrasound to evaluate non-specific ACAT inhibitors demonstrated that treatment had a neutral to adverse effect on coronary atherosclerosis (Tardifet al,; Nissenet al,). The explanation may be related to toxic effects of increased free cholesterol in macrophages. Selective ACAT2 inhibition might remain a plausible approach to retard atherosclerosis (Ohshiro & Tomoda, ).\n\nMTP transfers neutral lipids to nascent apoB and thereby affects the rate of VLDL and chylomicron synthesis. Loss-of-function mutation of MTP is the cause of abetalipoproteinemia, a condition with defective fat absorption and the absence of circulating apoB-containing lipoproteins. Lomitapide is a small molecule inhibitor of MTP that was shown to lower LDL-C levels by 50% in patients with homozygous FH and has been approved for the use in that condition (Cuchel & Rader,). Although lomitapide is effective in lowering LDL-C, its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat and hepatic steatosis related to inhibition of hepatic lipid export (Cuchelet al,).\n\nThyromimetics or tiromes\n\nThyroid hormone exerts tissue-specific effects, with the thyroid hormone receptor \u03b21 isoform (TR \u03b21) predominating in liver and involved in cholesterol metabolism (Gullberget al,). TR \u03b21 activation depletes intracellular cholesterol concentration, leading to increased expression of the LDL receptor in hepatocytes. Hypolipidemic effects of TR \u03b21 activation are also increased biliary cholesterol excretion through stimulation of cholesterol 7a-hydroxylase (CYP7A1) expression (Linet al,), downregulation of sterol regulatory element-binding protein (SREBP)-1c (Hashimotoet al,), and non-classical signaling pathways (Cordeiroet al,).\n\nThe TR \u03b21 agonists such as eprotirome have been evaluated in clinical trials. On a background of statin treatment, eprotirome lowered LDL-C up to 32%, associated with reductions of apoB, triglycerides, and Lp(a) (Ladensonet al,). Eprotirome was effective in decreasing levels of atherogenic lipoproteins in patients with hypercholesterolemia (Angelinet al,). However, a recent Phase 3 trial was terminated after liver injury was noted in humans and cartilage injury noted in preclinical data with dogs (Sjoukeet al,). Currently, there are no known plans to continue with its development.\n\nPCSK9\n\nbroprotein convertase subtilisin/kexin type 9 (PCSK9) is a secreted protein that regulates the hepatic LDL receptor (LDLR), and in turn circulating levels of LDL-C (Akramet al,; Doet al,). When an LDL particle binds to a hepatocyte LDLR in the absence of PCSK9, the LDL/LDLR complex undergoes endocytosis. In the acidic endosome, the LDLR dissociates from LDL and is recycled back to the hepatocyte surface to receive another LDL cargo, while the LDL undergoes lysosomal degradation. When LDL binds to LDLR in the presence of PCSK9, the LDLR does not dissociate from LDL and is instead channeled toward lysosomal degradation. This action reduces LDLR density on the surface of hepatocytes, allowing levels of LDL-C to rise.\n\nGain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia and premature coronary heart disease, while loss-of-function mutations are associated with lifelong low levels of LDL-C and substantially reduced coronary heart disease risk (Davignonet al, ). Statins increase the expression of PCSK9, an effect that may attenuate the LDL-C lowering produced with these agents (Dubucet al,). Conversely, therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels. Phase 2 clinical trials have demonstrated efficacy of PCSK9 antibody in achieving\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4287928\",\"title\":\"Evolving targets for lipid-modifying therapy\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pcsk9_targeting_small_interfering_rna\",\"type\":\"Drug\",\"name\":\"PCSK9-targeting small interfering RNA\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pcsk9_monoclonal_antibody\",\"type\":\"Drug\",\"name\":\"PCSK9 monoclonal antibody\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:injection_site_reactions\",\"type\":\"Condition\",\"name\":\"Injection site reactions\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:flu_like_symptoms\",\"type\":\"Condition\",\"name\":\"Flu-like symptoms\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:liver_injury\",\"type\":\"Condition\",\"name\":\"Liver injury\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cartilage_injury\",\"type\":\"Condition\",\"name\":\"Cartilage injury\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:premature_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Premature coronary heart disease\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"symptom:gastrointestinal_symptoms\",\"type\":\"Symptom\",\"name\":\"Gastrointestinal symptoms\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:loss_of_function_mtp_mutation\",\"type\":\"RiskFactor\",\"name\":\"Loss-of-function MTP mutation\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B-containing lipoproteins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b100_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B100-containing lipoproteins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:liver_transaminases\",\"type\":\"Biomarker\",\"name\":\"Liver transaminases\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:pcsk9\",\"type\":\"Biomarker\",\"name\":\"PCSK9\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B-containing lipoproteins\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.7,\"evidence\":\"Because these lipoproteins may promote atherosclerosis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b100_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B100-containing lipoproteins\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"It reduces circulating levels of all lipoprotein species containing apoB100 in humans.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"LDL-C reductions of up to 47% were observed\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:injection_site_reactions\",\"type\":\"Condition\",\"name\":\"Injection site reactions\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:flu_like_symptoms\",\"type\":\"Condition\",\"name\":\"Flu-like symptoms\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:liver_transaminases\",\"type\":\"Biomarker\",\"name\":\"Liver transaminases\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.99,\"evidence\":\"Mipomersen is currently approved for the treatment of homozygous familial hypercholesterolemia.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:loss_of_function_mtp_mutation\",\"type\":\"RiskFactor\",\"name\":\"Loss-of-function MTP mutation\"},\"target\":{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Loss-of-function mutation of MTP is the cause of abetalipoproteinemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\"},\"target\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"abetalipoproteinemia, a condition with defective fat absorption\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Lomitapide is a small molecule inhibitor of MTP that was shown to lower LDL-C levels by 50% in patients with homozygous FH\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"lower LDL-C levels by 50% in patients with homozygous FH and has been approved for the use in that condition\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"properties\":{\"confidence\":0.83,\"evidence\":\"its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat and hepatic steatosis related to inhibition of hepatic lipid export\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"target\":{\"id\":\"symptom:gastrointestinal_symptoms\",\"type\":\"Symptom\",\"name\":\"Gastrointestinal symptoms\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"gastrointestinal symptoms related to malabsorption of fat\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"eprotirome lowered LDL-C up to 32%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"condition:liver_injury\",\"type\":\"Condition\",\"name\":\"Liver injury\"},\"properties\":{\"confidence\":0.76,\"evidence\":\"a recent Phase 3 trial was terminated after liver injury was noted in humans\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"condition:cartilage_injury\",\"type\":\"Condition\",\"name\":\"Cartilage injury\"},\"properties\":{\"confidence\":0.72,\"evidence\":\"cartilage injury noted in preclinical data with dogs\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:pcsk9\",\"type\":\"Biomarker\",\"name\":\"PCSK9\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Statins increase the expression of PCSK9\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"Statins increase the expression of PCSK9, an effect that may attenuate the LDL-C lowering produced with these agents\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\"},\"target\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\"},\"target\":{\"id\":\"condition:premature_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Premature coronary heart disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia and premature coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:pcsk9_targeting_small_interfering_rna\",\"type\":\"Drug\",\"name\":\"PCSK9-targeting small interfering RNA\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:pcsk9_monoclonal_antibody\",\"type\":\"Drug\",\"name\":\"PCSK9 monoclonal antibody\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"interference with hepatic export of apoB-containing lipoproteins also has the potential to promote hepatic steatosis\",\"reason\":\"No specific Drug entity is named as the source in this statement; the source is an intervention/process, so no ontology-compliant relationship was extracted.\"},{\"text\":\"Selective ACAT2 inhibition might remain a plausible approach to retard atherosclerosis\",\"reason\":\"Speculative wording and no specific approved or evaluated drug entity; TREATS or PREVENTS was not extracted.\"},{\"text\":\"clinical trials that used intravascular ultrasound to evaluate non-specific ACAT inhibitors demonstrated that treatment had a neutral to adverse effect on coronary atherosclerosis\",\"reason\":\"Effect direction is ambiguous because the text says neutral to adverse; no clear TREATS, PREVENTS, or HAS_ADVERSE_EFFECT relationship was extracted.\"},{\"text\":\"TR \u03b21 activation depletes intracellular cholesterol concentration, leading to increased expression of the LDL receptor in hepatocytes\",\"reason\":\"The source is receptor activation rather than a Drug entity; mechanism statements not fitting the allowed relationship patterns were not extracted.\"},{\"text\":\"loss-of-function mutations are associated with lifelong low levels of LDL-C and substantially reduced coronary heart disease risk\",\"reason\":\"The ontology has no DECREASES_RISK_OF relationship, and the mutation is not a Drug, so a PREVENTS relationship was not extracted.\"},{\"text\":\"intestinal fat absorption is unaffected and intestinal steatosis is avoided\",\"reason\":\"Negative/no-effect statements were not extracted as positive biomedical relationships.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4287928",
+      "title": "Evolving targets for lipid-modifying therapy",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "drug:mipomersen",
+        "type": "Drug",
+        "name": "Mipomersen",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:lomitapide",
+        "type": "Drug",
+        "name": "Lomitapide",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:eprotirome",
+        "type": "Drug",
+        "name": "Eprotirome",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:pcsk9_targeting_small_interfering_rna",
+        "type": "Drug",
+        "name": "PCSK9-targeting small interfering RNA",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "drug:pcsk9_monoclonal_antibody",
+        "type": "Drug",
+        "name": "PCSK9 monoclonal antibody",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:atherosclerosis",
+        "type": "Condition",
+        "name": "Atherosclerosis",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:homozygous_familial_hypercholesterolemia",
+        "type": "Condition",
+        "name": "Homozygous familial hypercholesterolemia",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:familial_hypercholesterolemia",
+        "type": "Condition",
+        "name": "Familial hypercholesterolemia",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:injection_site_reactions",
+        "type": "Condition",
+        "name": "Injection site reactions",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:flu_like_symptoms",
+        "type": "Condition",
+        "name": "Flu-like symptoms",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:hepatic_steatosis",
+        "type": "Condition",
+        "name": "Hepatic steatosis",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:abetalipoproteinemia",
+        "type": "Condition",
+        "name": "Abetalipoproteinemia",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:fat_malabsorption",
+        "type": "Condition",
+        "name": "Fat malabsorption",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:liver_injury",
+        "type": "Condition",
+        "name": "Liver injury",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cartilage_injury",
+        "type": "Condition",
+        "name": "Cartilage injury",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:premature_coronary_heart_disease",
+        "type": "Condition",
+        "name": "Premature coronary heart disease",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "symptom:gastrointestinal_symptoms",
+        "type": "Symptom",
+        "name": "Gastrointestinal symptoms",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:loss_of_function_mtp_mutation",
+        "type": "RiskFactor",
+        "name": "Loss-of-function MTP mutation",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:gain_of_function_pcsk9_mutations",
+        "type": "RiskFactor",
+        "name": "Gain-of-function PCSK9 mutations",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b_containing_lipoproteins",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B-containing lipoproteins",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b100_containing_lipoproteins",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B100-containing lipoproteins",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:liver_transaminases",
+        "type": "Biomarker",
+        "name": "Liver transaminases",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_a",
+        "type": "Biomarker",
+        "name": "Lipoprotein(a)",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:pcsk9",
+        "type": "Biomarker",
+        "name": "PCSK9",
+        "properties": {
+          "source": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apolipoprotein_b_containing_lipoproteins",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B-containing lipoproteins"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "Because these lipoproteins may promote atherosclerosis",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "biomarker:apolipoprotein_b100_containing_lipoproteins",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B100-containing lipoproteins"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "It reduces circulating levels of all lipoprotein species containing apoB100 in humans.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.94,
+          "evidence": "LDL-C reductions of up to 47% were observed",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "condition:injection_site_reactions",
+          "type": "Condition",
+          "name": "Injection site reactions"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "treatment with mipomersen was associated with injection site reactions",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "condition:flu_like_symptoms",
+          "type": "Condition",
+          "name": "Flu-like symptoms"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "condition:hepatic_steatosis",
+          "type": "Condition",
+          "name": "Hepatic steatosis"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "biomarker:liver_transaminases",
+          "type": "Biomarker",
+          "name": "Liver transaminases"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:mipomersen",
+          "type": "Drug",
+          "name": "Mipomersen"
+        },
+        "target": {
+          "id": "condition:homozygous_familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Homozygous familial hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.99,
+          "evidence": "Mipomersen is currently approved for the treatment of homozygous familial hypercholesterolemia.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:loss_of_function_mtp_mutation",
+          "type": "RiskFactor",
+          "name": "Loss-of-function MTP mutation"
+        },
+        "target": {
+          "id": "condition:abetalipoproteinemia",
+          "type": "Condition",
+          "name": "Abetalipoproteinemia"
+        },
+        "properties": {
+          "confidence": 0.93,
+          "evidence": "Loss-of-function mutation of MTP is the cause of abetalipoproteinemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:abetalipoproteinemia",
+          "type": "Condition",
+          "name": "Abetalipoproteinemia"
+        },
+        "target": {
+          "id": "condition:fat_malabsorption",
+          "type": "Condition",
+          "name": "Fat malabsorption"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "abetalipoproteinemia, a condition with defective fat absorption",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:lomitapide",
+          "type": "Drug",
+          "name": "Lomitapide"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "Lomitapide is a small molecule inhibitor of MTP that was shown to lower LDL-C levels by 50% in patients with homozygous FH",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:lomitapide",
+          "type": "Drug",
+          "name": "Lomitapide"
+        },
+        "target": {
+          "id": "condition:homozygous_familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Homozygous familial hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "lower LDL-C levels by 50% in patients with homozygous FH and has been approved for the use in that condition",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:lomitapide",
+          "type": "Drug",
+          "name": "Lomitapide"
+        },
+        "target": {
+          "id": "condition:fat_malabsorption",
+          "type": "Condition",
+          "name": "Fat malabsorption"
+        },
+        "properties": {
+          "confidence": 0.83,
+          "evidence": "its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:lomitapide",
+          "type": "Drug",
+          "name": "Lomitapide"
+        },
+        "target": {
+          "id": "condition:hepatic_steatosis",
+          "type": "Condition",
+          "name": "Hepatic steatosis"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat and hepatic steatosis related to inhibition of hepatic lipid export",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_SYMPTOM",
+        "source": {
+          "id": "condition:fat_malabsorption",
+          "type": "Condition",
+          "name": "Fat malabsorption"
+        },
+        "target": {
+          "id": "symptom:gastrointestinal_symptoms",
+          "type": "Symptom",
+          "name": "Gastrointestinal symptoms"
+        },
+        "properties": {
+          "confidence": 0.8,
+          "evidence": "gastrointestinal symptoms related to malabsorption of fat",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "eprotirome lowered LDL-C up to 32%",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "biomarker:apolipoprotein_b",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "associated with reductions of apoB, triglycerides, and Lp(a)",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "associated with reductions of apoB, triglycerides, and Lp(a)",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "biomarker:lipoprotein_a",
+          "type": "Biomarker",
+          "name": "Lipoprotein(a)"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "associated with reductions of apoB, triglycerides, and Lp(a)",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "condition:liver_injury",
+          "type": "Condition",
+          "name": "Liver injury"
+        },
+        "properties": {
+          "confidence": 0.76,
+          "evidence": "a recent Phase 3 trial was terminated after liver injury was noted in humans",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:eprotirome",
+          "type": "Drug",
+          "name": "Eprotirome"
+        },
+        "target": {
+          "id": "condition:cartilage_injury",
+          "type": "Condition",
+          "name": "Cartilage injury"
+        },
+        "properties": {
+          "confidence": 0.72,
+          "evidence": "cartilage injury noted in preclinical data with dogs",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:pcsk9",
+          "type": "Biomarker",
+          "name": "PCSK9"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "Statins increase the expression of PCSK9",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "Statins increase the expression of PCSK9, an effect that may attenuate the LDL-C lowering produced with these agents",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:gain_of_function_pcsk9_mutations",
+          "type": "RiskFactor",
+          "name": "Gain-of-function PCSK9 mutations"
+        },
+        "target": {
+          "id": "condition:familial_hypercholesterolemia",
+          "type": "Condition",
+          "name": "Familial hypercholesterolemia"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "INCREASES_RISK_OF",
+        "source": {
+          "id": "riskfactor:gain_of_function_pcsk9_mutations",
+          "type": "RiskFactor",
+          "name": "Gain-of-function PCSK9 mutations"
+        },
+        "target": {
+          "id": "condition:premature_coronary_heart_disease",
+          "type": "Condition",
+          "name": "Premature coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia and premature coronary heart disease",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:pcsk9_targeting_small_interfering_rna",
+          "type": "Drug",
+          "name": "PCSK9-targeting small interfering RNA"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:pcsk9_monoclonal_antibody",
+          "type": "Drug",
+          "name": "PCSK9 monoclonal antibody"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4287928",
+          "chunk_id": "PMC4287928-chunk-0003",
+          "extractor": "medgraphrag-v1.1",
+          "model": "unknown",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "interference with hepatic export of apoB-containing lipoproteins also has the potential to promote hepatic steatosis",
+        "reason": "No specific Drug entity is named as the source in this statement; the source is an intervention/process, so no ontology-compliant relationship was extracted."
+      },
+      {
+        "text": "Selective ACAT2 inhibition might remain a plausible approach to retard atherosclerosis",
+        "reason": "Speculative wording and no specific approved or evaluated drug entity; TREATS or PREVENTS was not extracted."
+      },
+      {
+        "text": "clinical trials that used intravascular ultrasound to evaluate non-specific ACAT inhibitors demonstrated that treatment had a neutral to adverse effect on coronary atherosclerosis",
+        "reason": "Effect direction is ambiguous because the text says neutral to adverse; no clear TREATS, PREVENTS, or HAS_ADVERSE_EFFECT relationship was extracted."
+      },
+      {
+        "text": "TR \u03b21 activation depletes intracellular cholesterol concentration, leading to increased expression of the LDL receptor in hepatocytes",
+        "reason": "The source is receptor activation rather than a Drug entity; mechanism statements not fitting the allowed relationship patterns were not extracted."
+      },
+      {
+        "text": "loss-of-function mutations are associated with lifelong low levels of LDL-C and substantially reduced coronary heart disease risk",
+        "reason": "The ontology has no DECREASES_RISK_OF relationship, and the mutation is not a Drug, so a PREVENTS relationship was not extracted."
+      },
+      {
+        "text": "intestinal fat absorption is unaffected and intestinal steatosis is avoided",
+        "reason": "Negative/no-effect statements were not extracted as positive biomedical relationships."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0be631ca78ae6c61006a441633c28c819d9b6f3de5464ab8ec",
+    "created_at": 1782847027.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0be631ca78ae6c61006a441634afb8819dbdca66e137d0ec74",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0be631ca78ae6c61006a4416c04bc0819dae5823e070507a5e",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4287928\",\"title\":\"Evolving targets for lipid-modifying therapy\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pcsk9_targeting_small_interfering_rna\",\"type\":\"Drug\",\"name\":\"PCSK9-targeting small interfering RNA\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"drug:pcsk9_monoclonal_antibody\",\"type\":\"Drug\",\"name\":\"PCSK9 monoclonal antibody\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:injection_site_reactions\",\"type\":\"Condition\",\"name\":\"Injection site reactions\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:flu_like_symptoms\",\"type\":\"Condition\",\"name\":\"Flu-like symptoms\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:liver_injury\",\"type\":\"Condition\",\"name\":\"Liver injury\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cartilage_injury\",\"type\":\"Condition\",\"name\":\"Cartilage injury\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:premature_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Premature coronary heart disease\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"symptom:gastrointestinal_symptoms\",\"type\":\"Symptom\",\"name\":\"Gastrointestinal symptoms\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:loss_of_function_mtp_mutation\",\"type\":\"RiskFactor\",\"name\":\"Loss-of-function MTP mutation\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B-containing lipoproteins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b100_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B100-containing lipoproteins\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:liver_transaminases\",\"type\":\"Biomarker\",\"name\":\"Liver transaminases\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:pcsk9\",\"type\":\"Biomarker\",\"name\":\"PCSK9\",\"properties\":{\"source\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apolipoprotein_b_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B-containing lipoproteins\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.7,\"evidence\":\"Because these lipoproteins may promote atherosclerosis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b100_containing_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B100-containing lipoproteins\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"It reduces circulating levels of all lipoprotein species containing apoB100 in humans.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.94,\"evidence\":\"LDL-C reductions of up to 47% were observed\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:injection_site_reactions\",\"type\":\"Condition\",\"name\":\"Injection site reactions\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:flu_like_symptoms\",\"type\":\"Condition\",\"name\":\"Flu-like symptoms\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"biomarker:liver_transaminases\",\"type\":\"Biomarker\",\"name\":\"Liver transaminases\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"treatment with mipomersen was associated with injection site reactions, flu-like symptoms, and hepatic steatosis with elevated liver transaminases\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:mipomersen\",\"type\":\"Drug\",\"name\":\"Mipomersen\"},\"target\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.99,\"evidence\":\"Mipomersen is currently approved for the treatment of homozygous familial hypercholesterolemia.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:loss_of_function_mtp_mutation\",\"type\":\"RiskFactor\",\"name\":\"Loss-of-function MTP mutation\"},\"target\":{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\"},\"properties\":{\"confidence\":0.93,\"evidence\":\"Loss-of-function mutation of MTP is the cause of abetalipoproteinemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:abetalipoproteinemia\",\"type\":\"Condition\",\"name\":\"Abetalipoproteinemia\"},\"target\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"abetalipoproteinemia, a condition with defective fat absorption\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Lomitapide is a small molecule inhibitor of MTP that was shown to lower LDL-C levels by 50% in patients with homozygous FH\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:homozygous_familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Homozygous familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"lower LDL-C levels by 50% in patients with homozygous FH and has been approved for the use in that condition\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"properties\":{\"confidence\":0.83,\"evidence\":\"its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:lomitapide\",\"type\":\"Drug\",\"name\":\"Lomitapide\"},\"target\":{\"id\":\"condition:hepatic_steatosis\",\"type\":\"Condition\",\"name\":\"Hepatic steatosis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"its use is unlikely to extend beyond FH because of a high incidence of gastrointestinal symptoms related to malabsorption of fat and hepatic steatosis related to inhibition of hepatic lipid export\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_SYMPTOM\",\"source\":{\"id\":\"condition:fat_malabsorption\",\"type\":\"Condition\",\"name\":\"Fat malabsorption\"},\"target\":{\"id\":\"symptom:gastrointestinal_symptoms\",\"type\":\"Symptom\",\"name\":\"Gastrointestinal symptoms\"},\"properties\":{\"confidence\":0.8,\"evidence\":\"gastrointestinal symptoms related to malabsorption of fat\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"eprotirome lowered LDL-C up to 32%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"biomarker:lipoprotein_a\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein(a)\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"associated with reductions of apoB, triglycerides, and Lp(a)\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"condition:liver_injury\",\"type\":\"Condition\",\"name\":\"Liver injury\"},\"properties\":{\"confidence\":0.76,\"evidence\":\"a recent Phase 3 trial was terminated after liver injury was noted in humans\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:eprotirome\",\"type\":\"Drug\",\"name\":\"Eprotirome\"},\"target\":{\"id\":\"condition:cartilage_injury\",\"type\":\"Condition\",\"name\":\"Cartilage injury\"},\"properties\":{\"confidence\":0.72,\"evidence\":\"cartilage injury noted in preclinical data with dogs\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:pcsk9\",\"type\":\"Biomarker\",\"name\":\"PCSK9\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Statins increase the expression of PCSK9\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"Statins increase the expression of PCSK9, an effect that may attenuate the LDL-C lowering produced with these agents\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\"},\"target\":{\"id\":\"condition:familial_hypercholesterolemia\",\"type\":\"Condition\",\"name\":\"Familial hypercholesterolemia\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"INCREASES_RISK_OF\",\"source\":{\"id\":\"riskfactor:gain_of_function_pcsk9_mutations\",\"type\":\"RiskFactor\",\"name\":\"Gain-of-function PCSK9 mutations\"},\"target\":{\"id\":\"condition:premature_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Premature coronary heart disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gain-of-function mutations in PCSK9 are a cause of familial hypercholesterolemia and premature coronary heart disease\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:pcsk9_targeting_small_interfering_rna\",\"type\":\"Drug\",\"name\":\"PCSK9-targeting small interfering RNA\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:pcsk9_monoclonal_antibody\",\"type\":\"Drug\",\"name\":\"PCSK9 monoclonal antibody\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"therapeutic interference with PCSK9 expression or action with small interfering RNA or monoclonal antibody (Frank-Kamenetskyet al,; Diaset al,; Steinet al,) allows greater recycling of LDLR to the hepatocyte surface, resulting in lower LDL-C levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4287928\",\"chunk_id\":\"PMC4287928-chunk-0003\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"unknown\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"interference with hepatic export of apoB-containing lipoproteins also has the potential to promote hepatic steatosis\",\"reason\":\"No specific Drug entity is named as the source in this statement; the source is an intervention/process, so no ontology-compliant relationship was extracted.\"},{\"text\":\"Selective ACAT2 inhibition might remain a plausible approach to retard atherosclerosis\",\"reason\":\"Speculative wording and no specific approved or evaluated drug entity; TREATS or PREVENTS was not extracted.\"},{\"text\":\"clinical trials that used intravascular ultrasound to evaluate non-specific ACAT inhibitors demonstrated that treatment had a neutral to adverse effect on coronary atherosclerosis\",\"reason\":\"Effect direction is ambiguous because the text says neutral to adverse; no clear TREATS, PREVENTS, or HAS_ADVERSE_EFFECT relationship was extracted.\"},{\"text\":\"TR \u03b21 activation depletes intracellular cholesterol concentration, leading to increased expression of the LDL receptor in hepatocytes\",\"reason\":\"The source is receptor activation rather than a Drug entity; mechanism statements not fitting the allowed relationship patterns were not extracted.\"},{\"text\":\"loss-of-function mutations are associated with lifelong low levels of LDL-C and substantially reduced coronary heart disease risk\",\"reason\":\"The ontology has no DECREASES_RISK_OF relationship, and the mutation is not a Drug, so a PREVENTS relationship was not extracted.\"},{\"text\":\"intestinal fat absorption is unaffected and intestinal steatosis is avoided\",\"reason\":\"Negative/no-effect statements were not extracted as positive biomedical relationships.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782847226.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3637,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 15879,
+      "output_tokens_details": {
+        "reasoning_tokens": 9303
+      },
+      "total_tokens": 19516
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T19:17:07.982729+00:00",
+  "finished_at": "2026-06-30T19:20:26.677116+00:00",
+  "duration_ms": 198694.397,
+  "status": "ok",
+  "error": ""
+}

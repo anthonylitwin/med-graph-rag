@@ -1,0 +1,1811 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4866746\nTitle: Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4866746-chunk-0004\nChunk Section: INTRO\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nollowing acute coronary syndrome, an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels (Table 1), even after adjustment for HDL-C and LDL-C levels (hazard ratio 0.8; P=0.025). A wealth of epidemiological evidence exists, demonstrating that both fasting and nonfasting TG levels are significant predictors of cardiovascular events, even in individuals who have already achieved guideline-recommended LDL-C levels with lipid-lowering therapy.\n\nHowever, nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels. The Women\u2019s Health Study (n=26,509) showed that both fasting and nonfasting TG levels were strongly associated with an increased risk of cardiovascular events, independent of baseline cardiovascular risk factors (age, blood pressure, smoking, and use of hormone therapy). However, after adjustment for TC and HDL-C levels and indicators of insulin resistance, the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90). In contrast, the association between nonfasting TG levels and cardiovascular risk remained strong even after adjustment for other lipid levels and markers of insulin resistance (P=0.006). Likewise, two prospective cohort studies using data from the Copenhagen City Heart Study found that the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels (all P<0.001) (Table 1). That being said, these associations were not adjusted for other lipid parameters.\n\nA number of studies have found that the association between plasma TG levels (both fasting and nonfasting) and cardiovascular risk is often attenuated once adjusted for other lipid parameters, including HDL-C and non-HDL-C. An analysis conducted by the Emerging Risk Factors Collaboration, which included data from 302,430 individuals from 68 long-term prospective studies, demonstrated that there was a significant and stepwise association between fasting and nonfasting TG levels and CVD risk. However, this association was no longer significant after adjustment for HDL-C and non-HDL-C (Table 1). Likewise, in a combined analysis of the Incremental Decrease in End Points through Aggressive Lipid Lowering (IDEAL) and Treating to New Targets (TNT) trials in patients achieving low LDL-C (<70 mg/dL [1.8 mmol/L]), CVD risk increased incrementally with increasing on-treatment fasting TG level, with patients in the highest quintile experiencing a 63% higher rate of cardiovascular events than those in the lowest quintile (P<0.001). However, this association was also attenuated (P=0.044) after adjustment for HDL-C and apoB/apoA1 (Table 1). Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C, and this may explain why this association is weakened after adjustment for these parameters.\n\nElevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs, have also been shown to be associated with CVD. Using data from 73,513 subjects, Varbo et al found that every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk, independent of low HDL-C.\n\nAvailable treatment options to reduce TG levels and their potential impact on cardiovascular outcomes\n\nAlthough the clinical definition of the severity of hypertriglyceridemia differs among guidelines, the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis. Guidelines also acknowledge that a TG level of <150 mg/dL (<1.7 mmol/L) is desirable, and if elevated TG or non-HDL-C levels remain following lifestyle intervention and statin therapy, a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids (Table 2).\n\nFibrates\n\nFibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%. Of note, however, fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia. To date, cardiovascular outcome studies of fibrates have produced varied results, with some studies suggesting a small benefit, particularly in patients with other factors besides hypertriglyceridemia, such as low HDL-C or metabolic syndrome, and others showing no benefit. A meta-analysis including data from 45,058 participants from 18 clinical trials showed that fibrate therapy was associated with a significant decrease in major cardiovascular events (relative risk [RR] reduction 10%; P=0.048), although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92). In another meta-analysis of 7,389 patients with high TG levels (>200 mg/dL [2.3 mmol/L]), fibrate therapy was associated with a 25% decrease in vascular events, and in 5,068 patients with both high TG and low HDL-C levels (<40 mg/dL [1 mmol/L]), a 29% decrease in vascular events was observed.\n\nFibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis, especially when used in combination with other lipid-lowering therapies. Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects. However, fenofibrate appears to be better tolerated than other fibrates, with no cases of rhabdomyolysis observed with fenofibrate\u2013statin combination therapy in two large-scale clinical trials. Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:fenofibrate\",\"type\":\"Drug\",\"name\":\"Fenofibrate\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:creatinine\",\"type\":\"Biomarker\",\"name\":\"Creatinine\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:recurrent_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Recurrent coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:severe_hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Severe hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:vascular_events\",\"type\":\"Condition\",\"name\":\"Vascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:rhabdomyolysis\",\"type\":\"Condition\",\"name\":\"Rhabdomyolysis\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\"},\"target\":{\"id\":\"condition:recurrent_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Recurrent coronary heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\"},\"target\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\"},\"target\":{\"id\":\"condition:severe_hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Severe hypertriglyceridemia\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\"},\"target\":{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"Fibrates decrease TG levels by \u223c36%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.7,\"evidence\":\"fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"fibrate therapy was associated with a significant decrease in major cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:vascular_events\",\"type\":\"Condition\",\"name\":\"Vascular events\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"fibrate therapy was associated with a 25% decrease in vascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:creatinine\",\"type\":\"Biomarker\",\"name\":\"Creatinine\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:rhabdomyolysis\",\"type\":\"Condition\",\"name\":\"Rhabdomyolysis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INTERACTS_WITH\",\"source\":{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\"},\"target\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}}],\"rejected_candidates\":[{\"text\":\"the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90)\",\"reason\":\"Negative/non-significant adjusted finding; no ASSOCIATED_WITH relationship was extracted from this span.\"},{\"text\":\"although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92)\",\"reason\":\"No demonstrated mortality benefit; PREVENTS relationship for all-cause mortality is unsupported.\"},{\"text\":\"no cases of rhabdomyolysis observed with fenofibrate\u2013statin combination therapy in two large-scale clinical trials\",\"reason\":\"Negative adverse-effect evidence; do not extract HAS_ADVERSE_EFFECT for fenofibrate-statin combination.\"},{\"text\":\"severe hypertriglyceridemia ... reduce the risk of pancreatitis\",\"reason\":\"Text supports TG-lowering therapy reducing pancreatitis risk, but does not directly state that hypertriglyceridemia CAUSES pancreatitis in this chunk.\"},{\"text\":\"Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C\",\"reason\":\"Sentence is truncated and does not provide a complete supported ontology relationship.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4866746",
+      "title": "Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "drug:tg_lowering_therapy",
+        "type": "Drug",
+        "name": "TG-lowering therapy",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:fibrates",
+        "type": "Drug",
+        "name": "Fibrates",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:niacin",
+        "type": "Drug",
+        "name": "Niacin",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:omega_3_fatty_acids",
+        "type": "Drug",
+        "name": "Omega-3 fatty acids",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:gemfibrozil",
+        "type": "Drug",
+        "name": "Gemfibrozil",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "Statins",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "drug:fenofibrate",
+        "type": "Drug",
+        "name": "Fenofibrate",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:fasting_triglycerides",
+        "type": "Biomarker",
+        "name": "Fasting triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:nonfasting_triglycerides",
+        "type": "Biomarker",
+        "name": "Nonfasting triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:non_hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "Non-HDL cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:apolipoprotein_b",
+        "type": "Biomarker",
+        "name": "Apolipoprotein B",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:remnant_cholesterol",
+        "type": "Biomarker",
+        "name": "Remnant cholesterol",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:triglyceride_rich_lipoproteins",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoproteins",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "biomarker:creatinine",
+        "type": "Biomarker",
+        "name": "Creatinine",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:recurrent_coronary_heart_disease",
+        "type": "Condition",
+        "name": "Recurrent coronary heart disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_events",
+        "type": "Condition",
+        "name": "Cardiovascular events",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:ischemic_stroke",
+        "type": "Condition",
+        "name": "Ischemic stroke",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:myocardial_infarction",
+        "type": "Condition",
+        "name": "Myocardial infarction",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:ischemic_heart_disease",
+        "type": "Condition",
+        "name": "Ischemic heart disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:severe_hypertriglyceridemia",
+        "type": "Condition",
+        "name": "Severe hypertriglyceridemia",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:hypertriglyceridemia",
+        "type": "Condition",
+        "name": "Hypertriglyceridemia",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:pancreatitis",
+        "type": "Condition",
+        "name": "Pancreatitis",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:vascular_events",
+        "type": "Condition",
+        "name": "Vascular events",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:myopathy",
+        "type": "Condition",
+        "name": "Myopathy",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:rhabdomyolysis",
+        "type": "Condition",
+        "name": "Rhabdomyolysis",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "id": "condition:metabolic_syndrome",
+        "type": "Condition",
+        "name": "Metabolic syndrome",
+        "properties": {
+          "source": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:fasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Fasting triglycerides"
+        },
+        "target": {
+          "id": "condition:recurrent_coronary_heart_disease",
+          "type": "Condition",
+          "name": "Recurrent coronary heart disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:fasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Fasting triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.86,
+          "evidence": "both fasting and nonfasting TG levels are significant predictors of cardiovascular events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:nonfasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Nonfasting triglycerides"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:nonfasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Nonfasting triglycerides"
+        },
+        "target": {
+          "id": "condition:ischemic_stroke",
+          "type": "Condition",
+          "name": "Ischemic stroke"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:nonfasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Nonfasting triglycerides"
+        },
+        "target": {
+          "id": "condition:myocardial_infarction",
+          "type": "Condition",
+          "name": "Myocardial infarction"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:nonfasting_triglycerides",
+          "type": "Biomarker",
+          "name": "Nonfasting triglycerides"
+        },
+        "target": {
+          "id": "condition:ischemic_heart_disease",
+          "type": "Condition",
+          "name": "Ischemic heart disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:non_hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-HDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:apolipoprotein_b",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "target": {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant cholesterol"
+        },
+        "target": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:remnant_cholesterol",
+          "type": "Biomarker",
+          "name": "Remnant cholesterol"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "TREATS",
+        "source": {
+          "id": "drug:tg_lowering_therapy",
+          "type": "Drug",
+          "name": "TG-lowering therapy"
+        },
+        "target": {
+          "id": "condition:severe_hypertriglyceridemia",
+          "type": "Condition",
+          "name": "Severe hypertriglyceridemia"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:tg_lowering_therapy",
+          "type": "Drug",
+          "name": "TG-lowering therapy"
+        },
+        "target": {
+          "id": "condition:pancreatitis",
+          "type": "Condition",
+          "name": "Pancreatitis"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.98,
+          "evidence": "Fibrates decrease TG levels by \u223c36%",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:non_hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "Non-HDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.96,
+          "evidence": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.98,
+          "evidence": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol"
+        },
+        "properties": {
+          "confidence": 0.7,
+          "evidence": "fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:niacin",
+          "type": "Drug",
+          "name": "Niacin"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "REDUCES",
+        "source": {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids"
+        },
+        "target": {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides"
+        },
+        "properties": {
+          "confidence": 0.85,
+          "evidence": "a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "condition:cardiovascular_events",
+          "type": "Condition",
+          "name": "Cardiovascular events"
+        },
+        "properties": {
+          "confidence": 0.82,
+          "evidence": "fibrate therapy was associated with a significant decrease in major cardiovascular events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "PREVENTS",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "condition:vascular_events",
+          "type": "Condition",
+          "name": "Vascular events"
+        },
+        "properties": {
+          "confidence": 0.84,
+          "evidence": "fibrate therapy was associated with a 25% decrease in vascular events",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "INCREASES",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "biomarker:creatinine",
+          "type": "Biomarker",
+          "name": "Creatinine"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "condition:myopathy",
+          "type": "Condition",
+          "name": "Myopathy"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "HAS_ADVERSE_EFFECT",
+        "source": {
+          "id": "drug:fibrates",
+          "type": "Drug",
+          "name": "Fibrates"
+        },
+        "target": {
+          "id": "condition:rhabdomyolysis",
+          "type": "Condition",
+          "name": "Rhabdomyolysis"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      },
+      {
+        "type": "INTERACTS_WITH",
+        "source": {
+          "id": "drug:gemfibrozil",
+          "type": "Drug",
+          "name": "Gemfibrozil"
+        },
+        "target": {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "Statins"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0004",
+          "extractor": "MedGraphRAG_v1.1",
+          "model": "ChatGPT",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30T00:00:00Z"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90)",
+        "reason": "Negative/non-significant adjusted finding; no ASSOCIATED_WITH relationship was extracted from this span."
+      },
+      {
+        "text": "although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92)",
+        "reason": "No demonstrated mortality benefit; PREVENTS relationship for all-cause mortality is unsupported."
+      },
+      {
+        "text": "no cases of rhabdomyolysis observed with fenofibrate\u2013statin combination therapy in two large-scale clinical trials",
+        "reason": "Negative adverse-effect evidence; do not extract HAS_ADVERSE_EFFECT for fenofibrate-statin combination."
+      },
+      {
+        "text": "severe hypertriglyceridemia ... reduce the risk of pancreatitis",
+        "reason": "Text supports TG-lowering therapy reducing pancreatitis risk, but does not directly state that hypertriglyceridemia CAUSES pancreatitis in this chunk."
+      },
+      {
+        "text": "Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C",
+        "reason": "Sentence is truncated and does not provide a complete supported ontology relationship."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_03fa9742a6348bc1006a4408522c30819cab71b18649d89164",
+    "created_at": 1782843474.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_03fa9742a6348bc1006a44085355dc819cb4b8965c24ef307a",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_03fa9742a6348bc1006a4409009940819c8d52be1005ae133a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"drug:fenofibrate\",\"type\":\"Drug\",\"name\":\"Fenofibrate\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"biomarker:creatinine\",\"type\":\"Biomarker\",\"name\":\"Creatinine\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:recurrent_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Recurrent coronary heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:severe_hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Severe hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Hypertriglyceridemia\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:vascular_events\",\"type\":\"Condition\",\"name\":\"Vascular events\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:rhabdomyolysis\",\"type\":\"Condition\",\"name\":\"Rhabdomyolysis\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"id\":\"condition:metabolic_syndrome\",\"type\":\"Condition\",\"name\":\"Metabolic syndrome\",\"properties\":{\"source\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"created_at\":\"2026-06-30T00:00:00Z\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\"},\"target\":{\"id\":\"condition:recurrent_coronary_heart_disease\",\"type\":\"Condition\",\"name\":\"Recurrent coronary heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:fasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Fasting triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.86,\"evidence\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:ischemic_stroke\",\"type\":\"Condition\",\"name\":\"Ischemic stroke\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:myocardial_infarction\",\"type\":\"Condition\",\"name\":\"Myocardial infarction\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:nonfasting_triglycerides\",\"type\":\"Biomarker\",\"name\":\"Nonfasting triglycerides\"},\"target\":{\"id\":\"condition:ischemic_heart_disease\",\"type\":\"Condition\",\"name\":\"Ischemic heart disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:apolipoprotein_b\",\"type\":\"Biomarker\",\"name\":\"Apolipoprotein B\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\"},\"target\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:remnant_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Remnant cholesterol\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular disease\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"TREATS\",\"source\":{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\"},\"target\":{\"id\":\"condition:severe_hypertriglyceridemia\",\"type\":\"Condition\",\"name\":\"Severe hypertriglyceridemia\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:tg_lowering_therapy\",\"type\":\"Drug\",\"name\":\"TG-lowering therapy\"},\"target\":{\"id\":\"condition:pancreatitis\",\"type\":\"Condition\",\"name\":\"Pancreatitis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"Fibrates decrease TG levels by \u223c36%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:non_hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"Non-HDL cholesterol\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.96,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:hdl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"HDL cholesterol\"},\"properties\":{\"confidence\":0.98,\"evidence\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:ldl_cholesterol\",\"type\":\"Biomarker\",\"name\":\"LDL cholesterol\"},\"properties\":{\"confidence\":0.7,\"evidence\":\"fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:niacin\",\"type\":\"Drug\",\"name\":\"Niacin\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"REDUCES\",\"source\":{\"id\":\"drug:omega_3_fatty_acids\",\"type\":\"Drug\",\"name\":\"Omega-3 fatty acids\"},\"target\":{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\"},\"properties\":{\"confidence\":0.85,\"evidence\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:cardiovascular_events\",\"type\":\"Condition\",\"name\":\"Cardiovascular events\"},\"properties\":{\"confidence\":0.82,\"evidence\":\"fibrate therapy was associated with a significant decrease in major cardiovascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"PREVENTS\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:vascular_events\",\"type\":\"Condition\",\"name\":\"Vascular events\"},\"properties\":{\"confidence\":0.84,\"evidence\":\"fibrate therapy was associated with a 25% decrease in vascular events\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INCREASES\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"biomarker:creatinine\",\"type\":\"Biomarker\",\"name\":\"Creatinine\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:myopathy\",\"type\":\"Condition\",\"name\":\"Myopathy\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"HAS_ADVERSE_EFFECT\",\"source\":{\"id\":\"drug:fibrates\",\"type\":\"Drug\",\"name\":\"Fibrates\"},\"target\":{\"id\":\"condition:rhabdomyolysis\",\"type\":\"Condition\",\"name\":\"Rhabdomyolysis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}},{\"type\":\"INTERACTS_WITH\",\"source\":{\"id\":\"drug:gemfibrozil\",\"type\":\"Drug\",\"name\":\"Gemfibrozil\"},\"target\":{\"id\":\"drug:statins\",\"type\":\"Drug\",\"name\":\"Statins\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0004\",\"extractor\":\"MedGraphRAG_v1.1\",\"model\":\"ChatGPT\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30T00:00:00Z\"}}],\"rejected_candidates\":[{\"text\":\"the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90)\",\"reason\":\"Negative/non-significant adjusted finding; no ASSOCIATED_WITH relationship was extracted from this span.\"},{\"text\":\"although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92)\",\"reason\":\"No demonstrated mortality benefit; PREVENTS relationship for all-cause mortality is unsupported.\"},{\"text\":\"no cases of rhabdomyolysis observed with fenofibrate\u2013statin combination therapy in two large-scale clinical trials\",\"reason\":\"Negative adverse-effect evidence; do not extract HAS_ADVERSE_EFFECT for fenofibrate-statin combination.\"},{\"text\":\"severe hypertriglyceridemia ... reduce the risk of pancreatitis\",\"reason\":\"Text supports TG-lowering therapy reducing pancreatitis risk, but does not directly state that hypertriglyceridemia CAUSES pancreatitis in this chunk.\"},{\"text\":\"Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C\",\"reason\":\"Sentence is truncated and does not provide a complete supported ontology relationship.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782843711.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3573,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 17239,
+      "output_tokens_details": {
+        "reasoning_tokens": 10358
+      },
+      "total_tokens": 20812
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T18:17:54.105012+00:00",
+  "finished_at": "2026-06-30T18:21:52.335691+00:00",
+  "duration_ms": 238230.684,
+  "status": "ok",
+  "error": ""
+}

@@ -1,0 +1,1559 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "001_initial_prompt",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "# MedGraphRAG v1.1 Biomedical Extraction Prompt\n\nYou are a biomedical information extraction system for MedGraphRAG.\n\nYour task is to extract structured biomedical knowledge from scientific literature and return ONLY valid JSON matching the ontology specification below.\n\nYou must:\n\n* extract entities\n* extract relationships\n* normalize biomedical terminology\n* attach evidence spans\n* assign confidence scores\n* avoid hallucinations\n* avoid unsupported inferences\n\nYou must NOT:\n\n* invent entities\n* invent relationships\n* use outside medical knowledge\n* infer causal relationships without evidence\n* create ontology types not defined below\n\nIf no valid entities or relationships are present, return empty arrays.\n\n---\n\n# ONTOLOGY VERSION\n\nMedGraphRAG Ontology v1.1\n\n---\n\n# ENTITY TYPES\n\n## Drug\n\nRepresents a pharmaceutical substance, medication, biologic, or therapeutic agent.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* mechanism_of_action\n* drugbank_id\n* aliases\n* description\n\nExamples:\n\n* Statin\n* Fenofibrate\n* Omega-3 fatty acids\n* Fish oil\n* Aspirin\n\n---\n\n## Condition\n\nRepresents a disease, disorder, diagnosis, or clinical condition.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* mesh_id\n* icd10\n* aliases\n* description\n\nExamples:\n\n* Hypertriglyceridemia\n* Myocardial infarction\n* Cardiovascular disease\n* Acute pancreatitis\n\n---\n\n## Symptom\n\nRepresents a patient-reported symptom or clinical finding.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* description\n* aliases\n\nExamples:\n\n* Abdominal pain\n* Chest pain\n* Nausea\n\n---\n\n## RiskFactor\n\nRepresents an exposure, behavior, demographic factor, or condition that increases disease risk.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* description\n\nExamples:\n\n* Smoking\n* Obesity\n* Sedentary lifestyle\n\n---\n\n## Biomarker\n\nRepresents a measurable laboratory value or biological indicator.\n\nRequired:\n\n* id\n* name\n\nOptional:\n\n* category\n* unit\n* aliases\n* normal_range\n* description\n\nExamples:\n\n* LDL cholesterol\n* HDL cholesterol\n* Triglycerides\n* ApoB\n* C-reactive protein\n\n---\n\n## Paper\n\nRepresents a scientific publication.\n\nRequired:\n\n* pmcid\n* title\n\nOptional:\n\n* pmid\n* year\n* journal\n* doi\n* authors\n* abstract\n\n---\n\n# RELATIONSHIP TYPES\n\n## TREATS\n\nPattern:\n(Drug)-[:TREATS]->(Condition)\n\nMeaning:\nA drug is used therapeutically to treat a condition.\n\nExample:\nFenofibrate TREATS Hypertriglyceridemia\n\n---\n\n## PREVENTS\n\nPattern:\n(Drug)-[:PREVENTS]->(Condition)\n\nMeaning:\nA drug reduces the likelihood of a disease or clinical event.\n\nExample:\nStatins PREVENT Myocardial Infarction\n\n---\n\n## REDUCES\n\nPattern:\n(Drug)-[:REDUCES]->(Biomarker)\n\nMeaning:\nA drug lowers the level or activity of a biomarker.\n\nExamples:\nStatins REDUCE LDL Cholesterol\nFish Oil REDUCES Triglycerides\n\n---\n\n## INCREASES\n\nPattern:\n(Drug)-[:INCREASES]->(Biomarker)\n\nMeaning:\nA drug increases the level or activity of a biomarker.\n\nExample:\nNiacin INCREASES HDL Cholesterol\n\n---\n\n## ASSOCIATED_WITH\n\nPattern:\n(Entity)-[:ASSOCIATED_WITH]->(Entity)\n\nMeaning:\nTwo entities demonstrate a clinically or statistically significant association.\n\nExamples:\nElevated Triglycerides ASSOCIATED_WITH Cardiovascular Disease\nLow HDL Cholesterol ASSOCIATED_WITH Heart Disease\n\n---\n\n## HAS_ADVERSE_EFFECT\n\nPattern:\n(Drug)-[:HAS_ADVERSE_EFFECT]->(Condition)\n\nMeaning:\nA drug may cause an adverse clinical effect.\n\nExample:\nStatins HAS_ADVERSE_EFFECT Myopathy\n\n---\n\n## CAUSES\n\nPattern:\n(Condition)-[:CAUSES]->(Condition)\n\nMeaning:\nOne condition causes or contributes to another condition.\n\nExample:\nHypertriglyceridemia CAUSES Acute Pancreatitis\n\n---\n\n## HAS_SYMPTOM\n\nPattern:\n(Condition)-[:HAS_SYMPTOM]->(Symptom)\n\nMeaning:\nA condition is associated with a symptom.\n\nExample:\nAcute Pancreatitis HAS_SYMPTOM Abdominal Pain\n\n---\n\n## INCREASES_RISK_OF\n\nPattern:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nMeaning:\nA risk factor increases likelihood of disease.\n\nExample:\nSmoking INCREASES_RISK_OF Pancreatitis\n\n---\n\n## INTERACTS_WITH\n\nPattern:\n(Drug)-[:INTERACTS_WITH]->(Drug)\n\nMeaning:\nTwo drugs have a clinically relevant interaction.\n\nExample:\nWarfarin INTERACTS_WITH Aspirin\n\n---\n\n## CONTRAINDICATED_FOR\n\nPattern:\n(Drug)-[:CONTRAINDICATED_FOR]->(Condition)\n\nMeaning:\nA drug should not be used in a condition.\n\nExample:\nDrug X CONTRAINDICATED_FOR Pregnancy\n\n---\n\n## MENTIONS\n\nPattern:\n(Paper)-[:MENTIONS]->(Entity)\n\nMeaning:\nA paper references an entity.\n\n---\n\n# EXTRACTION RULES\n\n## Evidence Rules\n\nEvery extracted relationship MUST include:\n\n* confidence\n* evidence\n* source_pmid\n* source_pmcid\n* chunk_id\n* extractor\n* model\n* prompt_version\n* created_at\n\nEvidence MUST:\n\n* be copied directly from the text\n* be concise\n* support the relationship explicitly\n\n---\n\n## Confidence Rules\n\nUse confidence scoring:\n\n* 0.90 - 1.00\n  Explicit statement with direct evidence.\n\n* 0.75 - 0.89\n  Strong implication with minor ambiguity.\n\n* 0.50 - 0.74\n  Weak association or indirect wording.\n\n* below 0.50\n  Only use if relationship is speculative.\n\n---\n\n## Normalization Rules\n\nNormalize biomedical terminology when obvious.\n\nExamples:\n\n* MI \u2192 Myocardial Infarction\n* CVD \u2192 Cardiovascular Disease\n* TG \u2192 Triglycerides\n\nPreserve aliases when available.\n\n---\n\n## Negative Extraction Rules\n\nDO NOT:\n\n* infer mechanisms not stated\n* infer causality from correlation\n* convert statistical association into treatment\n* create unsupported PREVENTS relationships\n* create unsupported CAUSES relationships\n\nExample:\nIf text says:\n\"Triglycerides were associated with cardiovascular risk\"\n\nAllowed:\n\n* ASSOCIATED_WITH\n\nNot Allowed:\n\n* CAUSES\n\n---\n\n## Directionality Rules\n\nDirection matters.\n\nCorrect:\n(Drug)-[:REDUCES]->(Biomarker)\n\nIncorrect:\n(Biomarker)-[:REDUCES]->(Drug)\n\nCorrect:\n(RiskFactor)-[:INCREASES_RISK_OF]->(Condition)\n\nIncorrect:\n(Condition)-[:INCREASES_RISK_OF]->(RiskFactor)\n\n---\n\n## Chunk Context Rules\n\nThe provided text may be only a chunk of a larger paper.\n\nDo not assume missing context.\n\nExtract only what is directly supported in the chunk.\n\n---\n\n# ID RULES\n\nGenerate deterministic normalized ids.\n\nFormats:\n\nDrug:\ndrug:<normalized_name>\n\nCondition:\ncondition:<normalized_name>\n\nSymptom:\nsymptom:<normalized_name>\n\nRiskFactor:\nriskfactor:<normalized_name>\n\nBiomarker:\nbiomarker:<normalized_name>\n\nRules:\n\n* lowercase\n* replace spaces with underscores\n* remove punctuation where possible\n\nExamples:\ndrug:fenofibrate\ncondition:myocardial_infarction\nbiomarker:ldl_cholesterol\n\n---\n\n# OUTPUT FORMAT\n\nReturn ONLY valid JSON.\n\nSchema:\n\n```json\n{\n  \"paper\": {\n    \"pmid\": \"\",\n    \"pmcid\": \"\",\n    \"title\": \"\",\n    \"year\": \"\",\n    \"journal\": \"\",\n    \"doi\": \"\",\n    \"authors\": [],\n    \"abstract\": \"\"\n  },\n  \"entities\": [],\n  \"relationships\": [],\n  \"rejected_candidates\": []\n}\n```\n\n---\n\n# ENTITY FORMAT\n\n```json\n{\n  \"id\": \"\",\n  \"type\": \"\",\n  \"name\": \"\",\n  \"properties\": {\n    \"source\": \"\",\n    \"extractor\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# RELATIONSHIP FORMAT\n\n```json\n{\n  \"type\": \"\",\n  \"source\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"target\": {\n    \"id\": \"\",\n    \"type\": \"\",\n    \"name\": \"\"\n  },\n  \"properties\": {\n    \"confidence\": 0.0,\n    \"evidence\": \"\",\n    \"source_pmid\": \"\",\n    \"source_pmcid\": \"\",\n    \"chunk_id\": \"\",\n    \"extractor\": \"\",\n    \"model\": \"\",\n    \"prompt_version\": \"\",\n    \"created_at\": \"\"\n  }\n}\n```\n\n---\n\n# REJECTED CANDIDATES FORMAT\n\n```json\n{\n  \"text\": \"\",\n  \"reason\": \"\"\n}\n```\n\n---\n\n# PAPER METADATA\n\nPMID: \nPMCID: PMC4866746\nTitle: Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\nYear: \nJournal: \nDOI: \nAuthors: []\n\n---\n\n# CHUNK METADATA\n\nChunk ID: PMC4866746-chunk-0002\nChunk Section: INTRO\n\n---\n\n# TEXT TO EXTRACT\n\n```text\nare combined into lipoprotein particles in association with proteins that allow them to be transported in the plasma. Cholesterol is transported by all lipoproteins and is particularly concentrated in HDL and LDL particles. In general, TGs are transported in the plasma in VLDL, chylomicrons, and their remnants created during metabolism. These TRLs are the largest lipoprotein particles. In addition to size, lipoproteins may also be characterized by the apos they contain, with apoB100 (also known as apoB) being associated with VLDL and LDL and apoA-I associated with HDL. There are several other apos involved in lipoprotein metabolism, many of which are thought to potentially contribute to a number of diseases, such as CVD, multiple sclerosis, and Alzheimer\u2019s disease.\n\nTRLs are highly heterogeneous, differing in size, density, composition, and associated cardiovascular risk. They are composed of a neutral core of TG and cholesterol esters and a surface monolayer comprising phospholipids, free cholesterol, and apos, which participate in the regulation of transport and metabolism of the TRL. The metabolism of TRLs occurs via two principal pathways, an exogenous pathway that originates in the small intestine and an endogenous pathway regulated by the liver (Figure 1). During the exogenous pathway, TGs from dietary fat are absorbed by enterocytes following the ingestion of a meal. Here, they are incorporated into chylomicrons, which are large apoB48-containing lipoproteins with a large TG core (80%\u201395%). Newly synthesized chylomicrons are then exported via perimesenteric lymphatics before entering the circulation, where they acquire apoC-II, apoC-III, and apoE. Once in circulation, chylomicrons are quickly hydrolyzed by lipoprotein lipase (LPL) along the luminal surface of the capillaries. LPL is synthesized by myocytes and adipocytes before being transported to the lumen of the capillaries via GPIHBPI, a small glycosylphosphatidylinositol-anchored protein synthesized by the capillary endothelial cells. LPL requires activation via apoC-II, and its activity is highly regulated by various proteins, including apoC-III, apoA5, and angiopoietin-like proteins 3 and 4. The hydrolysis of chylomicrons via LPL results in the production of free fatty acids and chylomicron remnants. The free fatty acids liberated by lipolysis are oxidized by a variety of cell types, such as skeletal and myocardial myocytes, or stored in adipose tissue. The chylomicron remnants, which are rich in cholesterol esters and apoE, are removed from circulation by the liver via binding to the LDL receptor or the LDL receptor-related protein.\n\nDuring the endogenous pathway, TGs are synthesized in hepatocytes from free fatty acids and glycerol and then incorporated into the core of apoB-containing VLDL particles. ApoC-I, apoC-II, apoC-III, and apoE are added to the surface of VLDL particles during secretion. Following secretion, VLDLs undergo LPL-mediated hydrolysis in the plasma, generating in succession progressively smaller VLDLs and then intermediate-density lipoproteins (IDLs). Some IDL particles are taken up by the liver, and some undergo further catabolism by LPL and hepatic TG lipase to produce LDL particles.\n\nImportantly, polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk.\n\nProposed pathophysiology of TRLs in the progression of atherosclerosis\n\nEvidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly. These proposed pathophysiological mechanisms are summarized in Figure 2.\n\nIt has been suggested that it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis, rather than the TGs themselves. Like LDL, cholesterol-enriched, TG-depleted TRL remnants are able to penetrate the arterial intima, where they become selectively bound to the connective tissue matrix. Once entrapped in the subendothelial space, TRLs can be scavenged by resident macrophages, thereby contributing to macrophage foam cell formation as well as plaque formation and progression. TRLs are thought to be equally or more atherogenic than LDL. In contrast to LDL, TRL remnants can be taken up directly by arterial macrophages without oxidative modification and, due to their larger size, carry more cholesterol per particle than LDL. TRL remnants have also been shown to promote endothelial dysfunction, which potentiates atherogenesis.\n\nLPL-mediated TRL hydrolysis results in a high concentration of lipolytic products, such as oxidized free fatty acids, along the vascular endothelium or within the arterial intima. These lipolytic products, along with TRLs themselves, are also known to activate a number of proinflammatory, procoagulant, and proapoptotic signaling pathways that play a fundamental role in the pathogenesis of atherosclerosis. Oxidized free fatty acids are known to increase the expression of inflammatory interleukins and cytokines, leading to endothelial inflammation, while TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1. These proatherogenic adhesion molecules facilitate the transendothelial migration of leukocytes to sites of inflammation. Consequently, their TRL remnant-mediated activation leads to endothelial monocyte adhesion and an enhanced inflammatory response. TRL remnants have also been shown to induce early monocyte and neutrophil activation.\n\nAdditionally, TRL remnants are known to increase the production of reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death. TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the\n```\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_extraction",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_extraction",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "paper": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pmid": {
+              "type": "string"
+            },
+            "pmcid": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "year": {
+              "type": "string"
+            },
+            "journal": {
+              "type": "string"
+            },
+            "doi": {
+              "type": "string"
+            },
+            "authors": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "abstract": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pmid",
+            "pmcid",
+            "title",
+            "year",
+            "journal",
+            "doi",
+            "authors",
+            "abstract"
+          ]
+        },
+        "entities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "source",
+                  "extractor",
+                  "model",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "name",
+              "properties"
+            ]
+          }
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "target": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "confidence": {
+                    "type": "number"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  },
+                  "source_pmid": {
+                    "type": "string"
+                  },
+                  "source_pmcid": {
+                    "type": "string"
+                  },
+                  "chunk_id": {
+                    "type": "string"
+                  },
+                  "extractor": {
+                    "type": "string"
+                  },
+                  "model": {
+                    "type": "string"
+                  },
+                  "prompt_version": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "confidence",
+                  "evidence",
+                  "source_pmid",
+                  "source_pmcid",
+                  "chunk_id",
+                  "extractor",
+                  "model",
+                  "prompt_version",
+                  "created_at"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "source",
+              "target",
+              "properties"
+            ]
+          }
+        },
+        "rejected_candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "text": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "text",
+              "reason"
+            ]
+          }
+        }
+      },
+      "required": [
+        "paper",
+        "entities",
+        "relationships",
+        "rejected_candidates"
+      ]
+    }
+  },
+  "response_text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apoa_i\",\"type\":\"Biomarker\",\"name\":\"ApoA-I\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl\",\"type\":\"Biomarker\",\"name\":\"LDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl\",\"type\":\"Biomarker\",\"name\":\"HDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:oxidized_free_fatty_acids\",\"type\":\"Biomarker\",\"name\":\"Oxidized free fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:intercellular_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Intercellular adhesion molecule-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vascular_cell_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Vascular cell adhesion molecule-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:endothelial_inflammation\",\"type\":\"Condition\",\"name\":\"Endothelial inflammation\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cellular_injury_and_death\",\"type\":\"Condition\",\"name\":\"Cellular injury and death\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:multiple_sclerosis\",\"type\":\"Condition\",\"name\":\"Multiple sclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:alzheimers_disease\",\"type\":\"Condition\",\"name\":\"Alzheimer's disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways\",\"type\":\"RiskFactor\",\"name\":\"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\"},\"target\":{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoB100 (also known as apoB) being associated with VLDL and LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\"},\"target\":{\"id\":\"biomarker:ldl\",\"type\":\"Biomarker\",\"name\":\"LDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoB100 (also known as apoB) being associated with VLDL and LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoa_i\",\"type\":\"Biomarker\",\"name\":\"ApoA-I\"},\"target\":{\"id\":\"biomarker:hdl\",\"type\":\"Biomarker\",\"name\":\"HDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoA-I associated with HDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways\",\"type\":\"RiskFactor\",\"name\":\"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"TRL remnants have also been shown to promote endothelial dysfunction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"TRL remnants have also been shown to promote endothelial dysfunction, which potentiates atherogenesis.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:oxidized_free_fatty_acids\",\"type\":\"Biomarker\",\"name\":\"Oxidized free fatty acids\"},\"target\":{\"id\":\"condition:endothelial_inflammation\",\"type\":\"Condition\",\"name\":\"Endothelial inflammation\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Oxidized free fatty acids are known to increase the expression of inflammatory interleukins and cytokines, leading to endothelial inflammation\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:intercellular_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Intercellular adhesion molecule-1\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:vascular_cell_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Vascular cell adhesion molecule-1\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"TRL remnants are known to increase the production of reactive oxygen species\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"target\":{\"id\":\"condition:cellular_injury_and_death\",\"type\":\"Condition\",\"name\":\"Cellular injury and death\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"many of which are thought to potentially contribute to a number of diseases, such as CVD, multiple sclerosis, and Alzheimer\u2019s disease\",\"reason\":\"Not extracted as disease relationships because the statement is speculative and nonspecific about which apolipoproteins contribute to which diseases.\"},{\"text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk\",\"reason\":\"Not extracted as INCREASES_RISK_OF because the text states association with risk but does not explicitly state increased risk or direction of effect.\"},{\"text\":\"it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis\",\"reason\":\"Not extracted as CAUSES because the source concept is a biomarker-related lipoprotein remnant, while CAUSES is restricted to Condition-to-Condition relationships in the ontology.\"},{\"text\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1\",\"reason\":\"Not extracted as INCREASES because INCREASES is restricted to Drug-to-Biomarker relationships; represented as ASSOCIATED_WITH instead.\"},{\"text\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"reason\":\"Not extracted as CAUSES because reactive oxygen species is a Biomarker, not a Condition; represented as ASSOCIATED_WITH instead.\"},{\"text\":\"LPL requires activation via apoC-II, and its activity is highly regulated by various proteins, including apoC-III, apoA5, and angiopoietin-like proteins 3 and 4\",\"reason\":\"Not extracted as a regulatory mechanism because the ontology does not define protein activation or regulation relationship types.\"}]}",
+  "parsed_json": {
+    "paper": {
+      "pmid": "",
+      "pmcid": "PMC4866746",
+      "title": "Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease",
+      "year": "",
+      "journal": "",
+      "doi": "",
+      "authors": [],
+      "abstract": ""
+    },
+    "entities": [
+      {
+        "id": "biomarker:triglyceride_rich_lipoproteins",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoproteins",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+        "type": "Biomarker",
+        "name": "Triglyceride-rich lipoprotein remnants",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:lipoprotein_lipase",
+        "type": "Biomarker",
+        "name": "Lipoprotein lipase",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apoc_iii",
+        "type": "Biomarker",
+        "name": "ApoC-III",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apob",
+        "type": "Biomarker",
+        "name": "ApoB",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:apoa_i",
+        "type": "Biomarker",
+        "name": "ApoA-I",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:vldl",
+        "type": "Biomarker",
+        "name": "VLDL",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:ldl",
+        "type": "Biomarker",
+        "name": "LDL",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:hdl",
+        "type": "Biomarker",
+        "name": "HDL",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:oxidized_free_fatty_acids",
+        "type": "Biomarker",
+        "name": "Oxidized free fatty acids",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:intercellular_adhesion_molecule_1",
+        "type": "Biomarker",
+        "name": "Intercellular adhesion molecule-1",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:vascular_cell_adhesion_molecule_1",
+        "type": "Biomarker",
+        "name": "Vascular cell adhesion molecule-1",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "biomarker:reactive_oxygen_species",
+        "type": "Biomarker",
+        "name": "Reactive oxygen species",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cardiovascular_disease",
+        "type": "Condition",
+        "name": "Cardiovascular Disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:atherosclerosis",
+        "type": "Condition",
+        "name": "Atherosclerosis",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:endothelial_dysfunction",
+        "type": "Condition",
+        "name": "Endothelial dysfunction",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:endothelial_inflammation",
+        "type": "Condition",
+        "name": "Endothelial inflammation",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:cellular_injury_and_death",
+        "type": "Condition",
+        "name": "Cellular injury and death",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:multiple_sclerosis",
+        "type": "Condition",
+        "name": "Multiple sclerosis",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "condition:alzheimers_disease",
+        "type": "Condition",
+        "name": "Alzheimer's disease",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "id": "riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways",
+        "type": "RiskFactor",
+        "name": "Polymorphisms in genes encoding key components of the TRL biosynthetic pathways",
+        "properties": {
+          "source": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apob",
+          "type": "Biomarker",
+          "name": "ApoB"
+        },
+        "target": {
+          "id": "biomarker:vldl",
+          "type": "Biomarker",
+          "name": "VLDL"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "apoB100 (also known as apoB) being associated with VLDL and LDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apob",
+          "type": "Biomarker",
+          "name": "ApoB"
+        },
+        "target": {
+          "id": "biomarker:ldl",
+          "type": "Biomarker",
+          "name": "LDL"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "apoB100 (also known as apoB) being associated with VLDL and LDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apoa_i",
+          "type": "Biomarker",
+          "name": "ApoA-I"
+        },
+        "target": {
+          "id": "biomarker:hdl",
+          "type": "Biomarker",
+          "name": "HDL"
+        },
+        "properties": {
+          "confidence": 0.97,
+          "evidence": "apoA-I associated with HDL",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways",
+          "type": "RiskFactor",
+          "name": "Polymorphisms in genes encoding key components of the TRL biosynthetic pathways"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoproteins",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoproteins"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:lipoprotein_lipase",
+          "type": "Biomarker",
+          "name": "Lipoprotein lipase"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:lipoprotein_lipase",
+          "type": "Biomarker",
+          "name": "Lipoprotein lipase"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apoc_iii",
+          "type": "Biomarker",
+          "name": "ApoC-III"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:apoc_iii",
+          "type": "Biomarker",
+          "name": "ApoC-III"
+        },
+        "target": {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular Disease"
+        },
+        "properties": {
+          "confidence": 0.88,
+          "evidence": "specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "condition:endothelial_dysfunction",
+          "type": "Condition",
+          "name": "Endothelial dysfunction"
+        },
+        "properties": {
+          "confidence": 0.95,
+          "evidence": "TRL remnants have also been shown to promote endothelial dysfunction",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "condition:endothelial_dysfunction",
+          "type": "Condition",
+          "name": "Endothelial dysfunction"
+        },
+        "target": {
+          "id": "condition:atherosclerosis",
+          "type": "Condition",
+          "name": "Atherosclerosis"
+        },
+        "properties": {
+          "confidence": 0.75,
+          "evidence": "TRL remnants have also been shown to promote endothelial dysfunction, which potentiates atherogenesis.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:oxidized_free_fatty_acids",
+          "type": "Biomarker",
+          "name": "Oxidized free fatty acids"
+        },
+        "target": {
+          "id": "condition:endothelial_inflammation",
+          "type": "Condition",
+          "name": "Endothelial inflammation"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "Oxidized free fatty acids are known to increase the expression of inflammatory interleukins and cytokines, leading to endothelial inflammation",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:intercellular_adhesion_molecule_1",
+          "type": "Biomarker",
+          "name": "Intercellular adhesion molecule-1"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:vascular_cell_adhesion_molecule_1",
+          "type": "Biomarker",
+          "name": "Vascular cell adhesion molecule-1"
+        },
+        "properties": {
+          "confidence": 0.9,
+          "evidence": "TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:triglyceride_rich_lipoprotein_remnants",
+          "type": "Biomarker",
+          "name": "Triglyceride-rich lipoprotein remnants"
+        },
+        "target": {
+          "id": "biomarker:reactive_oxygen_species",
+          "type": "Biomarker",
+          "name": "Reactive oxygen species"
+        },
+        "properties": {
+          "confidence": 0.92,
+          "evidence": "TRL remnants are known to increase the production of reactive oxygen species",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      },
+      {
+        "type": "ASSOCIATED_WITH",
+        "source": {
+          "id": "biomarker:reactive_oxygen_species",
+          "type": "Biomarker",
+          "name": "Reactive oxygen species"
+        },
+        "target": {
+          "id": "condition:cellular_injury_and_death",
+          "type": "Condition",
+          "name": "Cellular injury and death"
+        },
+        "properties": {
+          "confidence": 0.78,
+          "evidence": "reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death",
+          "source_pmid": "",
+          "source_pmcid": "PMC4866746",
+          "chunk_id": "PMC4866746-chunk-0002",
+          "extractor": "medgraphrag-v1.1",
+          "model": "chatgpt",
+          "prompt_version": "MedGraphRAG Ontology v1.1",
+          "created_at": "2026-06-30"
+        }
+      }
+    ],
+    "rejected_candidates": [
+      {
+        "text": "many of which are thought to potentially contribute to a number of diseases, such as CVD, multiple sclerosis, and Alzheimer\u2019s disease",
+        "reason": "Not extracted as disease relationships because the statement is speculative and nonspecific about which apolipoproteins contribute to which diseases."
+      },
+      {
+        "text": "polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk",
+        "reason": "Not extracted as INCREASES_RISK_OF because the text states association with risk but does not explicitly state increased risk or direction of effect."
+      },
+      {
+        "text": "it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis",
+        "reason": "Not extracted as CAUSES because the source concept is a biomarker-related lipoprotein remnant, while CAUSES is restricted to Condition-to-Condition relationships in the ontology."
+      },
+      {
+        "text": "TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1",
+        "reason": "Not extracted as INCREASES because INCREASES is restricted to Drug-to-Biomarker relationships; represented as ASSOCIATED_WITH instead."
+      },
+      {
+        "text": "reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death",
+        "reason": "Not extracted as CAUSES because reactive oxygen species is a Biomarker, not a Condition; represented as ASSOCIATED_WITH instead."
+      },
+      {
+        "text": "LPL requires activation via apoC-II, and its activity is highly regulated by various proteins, including apoC-III, apoA5, and angiopoietin-like proteins 3 and 4",
+        "reason": "Not extracted as a regulatory mechanism because the ontology does not define protein activation or regulation relationship types."
+      }
+    ]
+  },
+  "raw_response": {
+    "id": "resp_0cecfaeefc208ab4006a44069fa37c81a0ade9e8acf322db56",
+    "created_at": 1782843039.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0cecfaeefc208ab4006a4406a0758881a08fdf7c5d7104be92",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0cecfaeefc208ab4006a44072a6a5881a08bf91b6ce79e23fd",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"paper\":{\"pmid\":\"\",\"pmcid\":\"PMC4866746\",\"title\":\"Triglyceride-rich lipoproteins as a causal factor for cardiovascular disease\",\"year\":\"\",\"journal\":\"\",\"doi\":\"\",\"authors\":[],\"abstract\":\"\"},\"entities\":[{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:triglycerides\",\"type\":\"Biomarker\",\"name\":\"Triglycerides\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:apoa_i\",\"type\":\"Biomarker\",\"name\":\"ApoA-I\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:ldl\",\"type\":\"Biomarker\",\"name\":\"LDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:hdl\",\"type\":\"Biomarker\",\"name\":\"HDL\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:oxidized_free_fatty_acids\",\"type\":\"Biomarker\",\"name\":\"Oxidized free fatty acids\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:intercellular_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Intercellular adhesion molecule-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:vascular_cell_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Vascular cell adhesion molecule-1\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:endothelial_inflammation\",\"type\":\"Condition\",\"name\":\"Endothelial inflammation\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:cellular_injury_and_death\",\"type\":\"Condition\",\"name\":\"Cellular injury and death\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:multiple_sclerosis\",\"type\":\"Condition\",\"name\":\"Multiple sclerosis\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"condition:alzheimers_disease\",\"type\":\"Condition\",\"name\":\"Alzheimer's disease\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}},{\"id\":\"riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways\",\"type\":\"RiskFactor\",\"name\":\"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"properties\":{\"source\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"created_at\":\"2026-06-30\"}}],\"relationships\":[{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\"},\"target\":{\"id\":\"biomarker:vldl\",\"type\":\"Biomarker\",\"name\":\"VLDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoB100 (also known as apoB) being associated with VLDL and LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apob\",\"type\":\"Biomarker\",\"name\":\"ApoB\"},\"target\":{\"id\":\"biomarker:ldl\",\"type\":\"Biomarker\",\"name\":\"LDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoB100 (also known as apoB) being associated with VLDL and LDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoa_i\",\"type\":\"Biomarker\",\"name\":\"ApoA-I\"},\"target\":{\"id\":\"biomarker:hdl\",\"type\":\"Biomarker\",\"name\":\"HDL\"},\"properties\":{\"confidence\":0.97,\"evidence\":\"apoA-I associated with HDL\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways\",\"type\":\"RiskFactor\",\"name\":\"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoproteins\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoproteins\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Evidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:lipoprotein_lipase\",\"type\":\"Biomarker\",\"name\":\"Lipoprotein lipase\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:apoc_iii\",\"type\":\"Biomarker\",\"name\":\"ApoC-III\"},\"target\":{\"id\":\"condition:cardiovascular_disease\",\"type\":\"Condition\",\"name\":\"Cardiovascular Disease\"},\"properties\":{\"confidence\":0.88,\"evidence\":\"specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\"},\"properties\":{\"confidence\":0.95,\"evidence\":\"TRL remnants have also been shown to promote endothelial dysfunction\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"condition:endothelial_dysfunction\",\"type\":\"Condition\",\"name\":\"Endothelial dysfunction\"},\"target\":{\"id\":\"condition:atherosclerosis\",\"type\":\"Condition\",\"name\":\"Atherosclerosis\"},\"properties\":{\"confidence\":0.75,\"evidence\":\"TRL remnants have also been shown to promote endothelial dysfunction, which potentiates atherogenesis.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:oxidized_free_fatty_acids\",\"type\":\"Biomarker\",\"name\":\"Oxidized free fatty acids\"},\"target\":{\"id\":\"condition:endothelial_inflammation\",\"type\":\"Condition\",\"name\":\"Endothelial inflammation\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"Oxidized free fatty acids are known to increase the expression of inflammatory interleukins and cytokines, leading to endothelial inflammation\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:intercellular_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Intercellular adhesion molecule-1\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:vascular_cell_adhesion_molecule_1\",\"type\":\"Biomarker\",\"name\":\"Vascular cell adhesion molecule-1\"},\"properties\":{\"confidence\":0.9,\"evidence\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1.\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:triglyceride_rich_lipoprotein_remnants\",\"type\":\"Biomarker\",\"name\":\"Triglyceride-rich lipoprotein remnants\"},\"target\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"properties\":{\"confidence\":0.92,\"evidence\":\"TRL remnants are known to increase the production of reactive oxygen species\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}},{\"type\":\"ASSOCIATED_WITH\",\"source\":{\"id\":\"biomarker:reactive_oxygen_species\",\"type\":\"Biomarker\",\"name\":\"Reactive oxygen species\"},\"target\":{\"id\":\"condition:cellular_injury_and_death\",\"type\":\"Condition\",\"name\":\"Cellular injury and death\"},\"properties\":{\"confidence\":0.78,\"evidence\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"source_pmid\":\"\",\"source_pmcid\":\"PMC4866746\",\"chunk_id\":\"PMC4866746-chunk-0002\",\"extractor\":\"medgraphrag-v1.1\",\"model\":\"chatgpt\",\"prompt_version\":\"MedGraphRAG Ontology v1.1\",\"created_at\":\"2026-06-30\"}}],\"rejected_candidates\":[{\"text\":\"many of which are thought to potentially contribute to a number of diseases, such as CVD, multiple sclerosis, and Alzheimer\u2019s disease\",\"reason\":\"Not extracted as disease relationships because the statement is speculative and nonspecific about which apolipoproteins contribute to which diseases.\"},{\"text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk\",\"reason\":\"Not extracted as INCREASES_RISK_OF because the text states association with risk but does not explicitly state increased risk or direction of effect.\"},{\"text\":\"it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis\",\"reason\":\"Not extracted as CAUSES because the source concept is a biomarker-related lipoprotein remnant, while CAUSES is restricted to Condition-to-Condition relationships in the ontology.\"},{\"text\":\"TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1\",\"reason\":\"Not extracted as INCREASES because INCREASES is restricted to Drug-to-Biomarker relationships; represented as ASSOCIATED_WITH instead.\"},{\"text\":\"reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death\",\"reason\":\"Not extracted as CAUSES because reactive oxygen species is a Biomarker, not a Condition; represented as ASSOCIATED_WITH instead.\"},{\"text\":\"LPL requires activation via apoC-II, and its activity is highly regulated by various proteins, including apoC-III, apoA5, and angiopoietin-like proteins 3 and 4\",\"reason\":\"Not extracted as a regulatory mechanism because the ontology does not define protein activation or regulation relationship types.\"}]}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1782843221.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "context": "current_turn",
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_extraction",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "paper": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "pmid": {
+                  "type": "string"
+                },
+                "pmcid": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                },
+                "journal": {
+                  "type": "string"
+                },
+                "doi": {
+                  "type": "string"
+                },
+                "authors": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "abstract": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "pmid",
+                "pmcid",
+                "title",
+                "year",
+                "journal",
+                "doi",
+                "authors",
+                "abstract"
+              ]
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "source": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "source",
+                      "extractor",
+                      "model",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "type",
+                  "name",
+                  "properties"
+                ]
+              }
+            },
+            "relationships": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "name"
+                    ]
+                  },
+                  "properties": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "confidence": {
+                        "type": "number"
+                      },
+                      "evidence": {
+                        "type": "string"
+                      },
+                      "source_pmid": {
+                        "type": "string"
+                      },
+                      "source_pmcid": {
+                        "type": "string"
+                      },
+                      "chunk_id": {
+                        "type": "string"
+                      },
+                      "extractor": {
+                        "type": "string"
+                      },
+                      "model": {
+                        "type": "string"
+                      },
+                      "prompt_version": {
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "confidence",
+                      "evidence",
+                      "source_pmid",
+                      "source_pmcid",
+                      "chunk_id",
+                      "extractor",
+                      "model",
+                      "prompt_version",
+                      "created_at"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "source",
+                  "target",
+                  "properties"
+                ]
+              }
+            },
+            "rejected_candidates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "text": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "text",
+                  "reason"
+                ]
+              }
+            }
+          },
+          "required": [
+            "paper",
+            "entities",
+            "relationships",
+            "rejected_candidates"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 3526,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 14556,
+      "output_tokens_details": {
+        "reasoning_tokens": 9322
+      },
+      "total_tokens": 18082
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-06-30T18:10:39.821882+00:00",
+  "finished_at": "2026-06-30T18:13:42.335959+00:00",
+  "duration_ms": 182514.085,
+  "status": "ok",
+  "error": ""
+}
