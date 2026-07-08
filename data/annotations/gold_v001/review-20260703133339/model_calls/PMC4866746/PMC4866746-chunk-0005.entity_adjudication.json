@@ -1,0 +1,1103 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0005\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"METHODS\",\n    \"start_char\": \"21986\",\n    \"end_char\": \"27985\",\n    \"text\": \"mfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects. However, fenofibrate appears to be better tolerated than other fibrates, with no cases of rhabdomyolysis observed with fenofibrate\\u2013statin combination therapy in two large-scale clinical trials. Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C lowering. Studies have so far failed to demonstrate any significant reduction in cardiovascular risk with fenofibrate\\u2013simvastatin combination therapy, compared with simvastatin monotherapy. However, in a subgroup of patients with a TG level in the upper third (\\u2265204 mg/dL [\\u22652.30 mmol/L]) and an HDL-C level in the lower third (\\u226434 mg/dL [\\u22640.88 mmol/L]), there was a nonsignificant trend (P=0.06) for reduction in cardiovascular risk.\\n\\nNiacin\\n\\nPrescription strength niacin is indicated to reduce elevated total cholesterol, LDL-C, apoB, and TG levels and to increase HDL-C in patients with primary hyperlipidemia, severe hypertriglyceridemia, and mixed dyslipidemia. Niacin has been shown to decrease TG levels by 20%, LDL-C levels by 12%, and non-HDL-C levels by 7%\\u201339% and to increase HDL-C levels by an average of 16%. Despite improve ments in coronary atherosclerosis and carotid intima-media thickness, niacin does not appear to impact risk for cardiovascular events when added to statin therapy. That being said, one post hoc analysis showed that among patients with TG >200 mg/dL (>2.3 mmol/L) and HDL-C <32 mg/dL (<0.8 mmol/L), niacin may reduce cardiovascular events by 37% (P<0.05).\\n\\nThe use of niacin is often limited due to the high incidence of associated adverse effects. The most common adverse effect, cutaneous vasodilatation or \\u201cflushing\\u201d, reportedly occurs in up to 70% of patients receiving niacin therapy and often leads to treatment discontinuation. Although attempts have been made to reduce the incidence of niacin-induced flushing using laropiprant, a specific antagonist of the prostaglandin D2 receptor, this combination therapy does not significantly reduce the risk of major cardio vascular events and has been shown to actually increase the incidence of adverse effects. Additional adverse effects, including hyperglycemia, insulin resistance, hyperuricemia, myopathy, pruritus, and elevations in liver enzymes, are also associated with niacin monotherapy or statin\\u2013niacin combination therapy.\\n\\nOmega-3 fatty acids\\n\\nThree prescription omega-3 fatty acid formulations are currently approved in the US, including formulations comprising omega-3 carboxylic acids, a mixture of long-chain omega-3 fatty acids in free fatty acid form, primarily eicosapentaenoic acid (EPA), docosahexaenoic acid (DHA), and docosapentaenoic acid (Epanova\\u00ae); omega-3 fatty acid ethyl esters, a mixture of long-chain omega-3 fatty acid ethyl esters, primarily EPA and DHA (Lovaza\\u00ae, Omtryg\\u00ae, and some generics); and icosapent ethyl (EPA ethyl esters) (Vascepa\\u00ae). These prescription omega-3 fatty acids have been shown to reduce plasma TG levels by 25%\\u201345%, VLDL-C levels by 20%\\u201342%, and non-HDL-C levels by 8%\\u201314% in patients with severe hypertriglyceridemia. Increases in HDL-C levels of 5%\\u20139% have also been observed with DHA-containing formulations. Higher doses of each formulation and higher baseline TG levels are associated with greater TG reductions. Of note, DHA-containing formulations are thought to increase LPL expression, leading to increased TG removal from circulating VLDL and chylomicron particles. This results in the increased production of IDL particles, some of which undergo further catabolism by LPL to produce LDL particles. Consequently, DHA-containing formulations have been shown to significantly increase LDL-C levels in patients with severe hypertriglyceridemia by up to 45%. However, these increases are accompanied by reductions in non-HDL-C. This may be of particular importance, as non-HDL-C levels are more strongly associated with the risk of cardiovascular events than LDL-C, particularly in patients with hypertriglyceridemia.\\n\\nLike fibrates, cardiovascular outcome studies of omega-3 fatty acids have also produced inconsistent results. A meta-analysis including data from 63,030 individuals from 20 clinical trials demonstrated that omega-3 fatty acid therapy did not have an impact on a composite cardiovascular end point or total mortality (P=0.24 and P=0.28, respectively) but was associated with a significantly decreased rate of vascular death (RR 0.86; 95% confidence interval, 0.75\\u20130.99; P=0.03). In subgroup analysis, protection against the composite cardiovascular end point with omega-3 fatty acid use was observed in those trials that enrolled patients with high baseline TG levels (\\u2265150 mg/dL [\\u22651.7 mmol/L]; RR 0.82; 95% confidence interval 0.74\\u20130.91) versus those with lower baseline TG levels (P=0.006). Notably, many of the clinical trials included in the meta-analysis did not use recommended prescription doses of omega-3 fatty acids. The Gruppo Italiano per lo Studio della Sopravvivenza nell\\u2019Infarto Miocardio (GISSI)-Prevenzione Trial showed that in post-MI patients, EPA and DHA significantly reduced the risk of reinfarction and death over a 3-year follow-up period. Additionally, in the Japan EPA Lipid Intervention Study (JELIS), the addition of 1.8 mg EPA provided an incremental 18% reduction in major coronary events. In patients with TG >200 mg/dL (>2.3 mmol/L) and HDL-C <40 mg/dL (<1.0 mmol/L), risk reduction was 53% compared with statin monotherapy.\\n\\nHeterogeneity in results observed in cardiovascular outcome studies of TG-lowering agents may be due, in part, to the inclusion of subjects with normal baseline TG levels (<150 mg/dL [<1.7 mmol/L]). Therefore, additional large-scale cardiovascular outcome studies in patients with clinically defined hypertriglyceridemia may be beneficial. In this regard, the Reduction of\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:83154c737fcef116\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apolipoprotein_b\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein B\",\n      \"normalized_name\": \"Apolipoprotein B\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein B\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5c98744144cd89b9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:724c16f038b34dfd\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL cholesterol\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d3d2aba20565a2d4\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:lipoprotein_lipase_expression\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein lipase expression\",\n      \"normalized_name\": \"Lipoprotein lipase expression\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Lipoprotein lipase expression\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d7187513b94aa430\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:liver_enzymes\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Liver enzymes\",\n      \"normalized_name\": \"Liver enzymes\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"liver enzymes\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24413,\n      \"evidence_end_char\": 24426,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dffc9d6bd4bbe075\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Non-HDL cholesterol\",\n      \"normalized_name\": \"Non-HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Non-HDL cholesterol\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5ba512cce00c3e91\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:total_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Total cholesterol\",\n      \"normalized_name\": \"Total cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"total cholesterol\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22991,\n      \"evidence_end_char\": 23008,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:996b66bc29b0a95d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglycerides\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1a8af6abeff23224\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:vldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"VLDL cholesterol\",\n      \"normalized_name\": \"VLDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"VLDL cholesterol\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ba6bd8f9d17f7a01\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23436,\n      \"evidence_end_char\": 23457,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:70b028d021b2047c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:composite_cardiovascular_endpoint\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Composite cardiovascular endpoint\",\n      \"normalized_name\": \"Composite cardiovascular endpoint\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Composite cardiovascular endpoint\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:eb3aa0948bd7e6e6\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:death\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Death\",\n      \"normalized_name\": \"Death\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"death\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 26573,\n      \"evidence_end_char\": 26578,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5e79dc24c77e2c84\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:flushing\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Flushing\",\n      \"normalized_name\": \"Flushing\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"flushing\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23833,\n      \"evidence_end_char\": 23841,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:23395887af09a682\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hyperglycemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hyperglycemia\",\n      \"normalized_name\": \"Hyperglycemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hyperglycemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24325,\n      \"evidence_end_char\": 24338,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0b4b08ce5e132b85\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23107,\n      \"evidence_end_char\": 23127,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8a7d2009f1e80b54\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hyperuricemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hyperuricemia\",\n      \"normalized_name\": \"Hyperuricemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hyperuricemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24360,\n      \"evidence_end_char\": 24373,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:159e27bfcbb95ddf\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:insulin_resistance\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Insulin resistance\",\n      \"normalized_name\": \"Insulin resistance\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"insulin resistance\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24340,\n      \"evidence_end_char\": 24358,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d8b688fa1a36fa2e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:major_coronary_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Major coronary events\",\n      \"normalized_name\": \"Major coronary events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"major coronary events\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 27452,\n      \"evidence_end_char\": 27473,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:10315c41bf9b26c7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:mixed_dyslipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Mixed dyslipidemia\",\n      \"normalized_name\": \"Mixed dyslipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"mixed dyslipidemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23133,\n      \"evidence_end_char\": 23151,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:181de5dbd10e1c16\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Myocardial infarction\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e73a430d985a9691\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myopathy\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myopathy\",\n      \"normalized_name\": \"Myopathy\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myopathy\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24375,\n      \"evidence_end_char\": 24383,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:88ef39b507aa62f1\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:primary_hyperlipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Primary hyperlipidemia\",\n      \"normalized_name\": \"Primary hyperlipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"primary hyperlipidemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23076,\n      \"evidence_end_char\": 23098,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:98ada0d759b05945\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:pruritus\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Pruritus\",\n      \"normalized_name\": \"Pruritus\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pruritus\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24385,\n      \"evidence_end_char\": 24393,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8a6f1b4733c49bce\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:reinfarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Reinfarction\",\n      \"normalized_name\": \"Reinfarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"reinfarction\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 27264,\n      \"evidence_end_char\": 27276,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7bb9001c4a1bc8fd\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:rhabdomyolysis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Rhabdomyolysis\",\n      \"normalized_name\": \"Rhabdomyolysis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"rhabdomyolysis\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22264,\n      \"evidence_end_char\": 22278,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:489b0569811a2680\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Severe hypertriglyceridemia\",\n      \"normalized_name\": \"Severe hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"severe hypertriglyceridemia\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 23100,\n      \"evidence_end_char\": 23127,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:69d6ec29754bbf24\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:vascular_death\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Vascular death\",\n      \"normalized_name\": \"Vascular death\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular death\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 26564,\n      \"evidence_end_char\": 26578,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5f73350d4c572d5e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:dha_containing_omega_3_fatty_acid_formulations\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"DHA-containing omega-3 fatty acid formulations\",\n      \"normalized_name\": \"DHA-containing omega-3 fatty acid formulations\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"DHA-containing omega-3 fatty acid formulations\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:079ce9c1eb868387\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:docosahexaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Docosahexaenoic acid\",\n      \"normalized_name\": \"Docosahexaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"docosahexaenoic acid\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24785,\n      \"evidence_end_char\": 24805,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c20864da53964fad\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:docosapentaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Docosapentaenoic acid\",\n      \"normalized_name\": \"Docosapentaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"docosapentaenoic acid\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24817,\n      \"evidence_end_char\": 24838,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d24f28e4a20f40fa\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:eicosapentaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Eicosapentaenoic acid\",\n      \"normalized_name\": \"Eicosapentaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"eicosapentaenoic acid\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24756,\n      \"evidence_end_char\": 24777,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ac6efe9daaf7c645\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:eicosapentaenoic_acid_and_docosahexaenoic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Eicosapentaenoic acid and docosahexaenoic acid\",\n      \"normalized_name\": \"Eicosapentaenoic acid and docosahexaenoic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Eicosapentaenoic acid and docosahexaenoic acid\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6fccd8090d657ed3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fenofibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fenofibrate\",\n      \"normalized_name\": \"Fenofibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fenofibrate\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22183,\n      \"evidence_end_char\": 22194,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:4e08bf142eb4fe21\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Gemfibrozil\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:68b61747ae28a1f8\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:icosapent_ethyl\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Icosapent ethyl\",\n      \"normalized_name\": \"Icosapent ethyl\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"icosapent ethyl\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 25006,\n      \"evidence_end_char\": 25021,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2ad165d890795924\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:laropiprant\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Laropiprant\",\n      \"normalized_name\": \"Laropiprant\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"laropiprant\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24048,\n      \"evidence_end_char\": 24059,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a86ed73a8b429523\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Niacin\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22922,\n      \"evidence_end_char\": 22928,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:49516dfcf34a547e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_carboxylic_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 carboxylic acids\",\n      \"normalized_name\": \"Omega-3 carboxylic acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 carboxylic acids\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24651,\n      \"evidence_end_char\": 24675,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d0f8ce42372152d3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acid_ethyl_esters\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acid ethyl esters\",\n      \"normalized_name\": \"Omega-3 fatty acid ethyl esters\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 fatty acid ethyl esters\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24851,\n      \"evidence_end_char\": 24882,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3043ac61722b6216\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega-3 fatty acids\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 24511,\n      \"evidence_end_char\": 24530,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8dd2069be853eae7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:simvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Simvastatin\",\n      \"normalized_name\": \"Simvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"simvastatin\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22605,\n      \"evidence_end_char\": 22616,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:eaa57d0457578f29\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"METHODS\",\n      \"evidence_start_char\": 22085,\n      \"evidence_end_char\": 22092,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0005.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:83154c737fcef116\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apoB\",\"revised_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"23017\",\"evidence_end_char\":\"23021\",\"reason\":\"The chunk explicitly lists apoB as a lipid-related measurement; normalized to Apolipoprotein B.\"},{\"entity_gold_id\":\"silver_entity:5c98744144cd89b9\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"23053\",\"evidence_end_char\":\"23058\",\"reason\":\"The chunk uses the abbreviation HDL-C, which supports the normalized biomarker HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:724c16f038b34dfd\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"23010\",\"evidence_end_char\":\"23015\",\"reason\":\"The chunk uses the abbreviation LDL-C, which supports the normalized biomarker LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:d3d2aba20565a2d4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LPL expression\",\"revised_normalized_name\":\"Lipoprotein lipase expression\",\"evidence_text\":\"LPL expression\",\"evidence_start_char\":\"25404\",\"evidence_end_char\":\"25418\",\"reason\":\"The chunk explicitly mentions LPL expression; LPL is the abbreviation for lipoprotein lipase in this context.\"},{\"entity_gold_id\":\"silver_entity:d7187513b94aa430\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"liver enzymes\",\"evidence_start_char\":\"24413\",\"evidence_end_char\":\"24426\",\"reason\":\"Liver enzymes are explicitly mentioned as laboratory biomarkers affected by niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:dffc9d6bd4bbe075\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"non-HDL-C\",\"revised_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"non-HDL-C\",\"evidence_start_char\":\"23230\",\"evidence_end_char\":\"23239\",\"reason\":\"The chunk uses the abbreviation non-HDL-C, which supports the normalized biomarker non-HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:5ba512cce00c3e91\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"total cholesterol\",\"evidence_start_char\":\"22991\",\"evidence_end_char\":\"23008\",\"reason\":\"Total cholesterol is explicitly listed as a lipid measurement reduced by niacin.\"},{\"entity_gold_id\":\"silver_entity:996b66bc29b0a95d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TG\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TG\",\"evidence_start_char\":\"23027\",\"evidence_end_char\":\"23029\",\"reason\":\"The chunk repeatedly uses TG as the triglyceride biomarker abbreviation.\"},{\"entity_gold_id\":\"silver_entity:1a8af6abeff23224\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL-C\",\"revised_normalized_name\":\"VLDL cholesterol\",\"evidence_text\":\"VLDL-C\",\"evidence_start_char\":\"25147\",\"evidence_end_char\":\"25153\",\"reason\":\"The chunk uses the abbreviation VLDL-C, which supports the normalized biomarker VLDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:ba6bd8f9d17f7a01\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"23436\",\"evidence_end_char\":\"23457\",\"reason\":\"Cardiovascular events are explicitly discussed as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:70b028d021b2047c\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"composite cardiovascular end point\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The phrase is a trial endpoint/outcome construct rather than a standalone biomedical condition in the allowed ontology.\"},{\"entity_gold_id\":\"silver_entity:eb3aa0948bd7e6e6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"death\",\"evidence_start_char\":\"27281\",\"evidence_end_char\":\"27286\",\"reason\":\"Death is explicitly listed as a clinical outcome reduced in post-MI patients.\"},{\"entity_gold_id\":\"silver_entity:5e79dc24c77e2c84\",\"decision\":\"revised\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"flushing\",\"revised_normalized_name\":\"Flushing\",\"evidence_text\":\"flushing\",\"evidence_start_char\":\"23833\",\"evidence_end_char\":\"23841\",\"reason\":\"Flushing is explicitly mentioned as an adverse effect; it is better typed as a Symptom rather than a Condition.\"},{\"entity_gold_id\":\"silver_entity:23395887af09a682\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hyperglycemia\",\"evidence_start_char\":\"24325\",\"evidence_end_char\":\"24338\",\"reason\":\"Hyperglycemia is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:0b4b08ce5e132b85\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"23107\",\"evidence_end_char\":\"23127\",\"reason\":\"Hypertriglyceridemia is explicitly present in the chunk as a treated clinical condition.\"},{\"entity_gold_id\":\"silver_entity:8a7d2009f1e80b54\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hyperuricemia\",\"evidence_start_char\":\"24360\",\"evidence_end_char\":\"24373\",\"reason\":\"Hyperuricemia is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:159e27bfcbb95ddf\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"24340\",\"evidence_end_char\":\"24358\",\"reason\":\"Insulin resistance is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:d8b688fa1a36fa2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"major coronary events\",\"evidence_start_char\":\"27452\",\"evidence_end_char\":\"27473\",\"reason\":\"Major coronary events are explicitly discussed as a cardiovascular outcome.\"},{\"entity_gold_id\":\"silver_entity:10315c41bf9b26c7\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"mixed dyslipidemia\",\"evidence_start_char\":\"23133\",\"evidence_end_char\":\"23151\",\"reason\":\"Mixed dyslipidemia is explicitly listed as an indication for prescription niacin.\"},{\"entity_gold_id\":\"silver_entity:181de5dbd10e1c16\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"MI\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"MI\",\"evidence_start_char\":\"27205\",\"evidence_end_char\":\"27207\",\"reason\":\"The chunk refers to post-MI patients; MI is the standard abbreviation for myocardial infarction.\"},{\"entity_gold_id\":\"silver_entity:e73a430d985a9691\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myopathy\",\"evidence_start_char\":\"24375\",\"evidence_end_char\":\"24383\",\"reason\":\"Myopathy is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:88ef39b507aa62f1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"primary hyperlipidemia\",\"evidence_start_char\":\"23076\",\"evidence_end_char\":\"23098\",\"reason\":\"Primary hyperlipidemia is explicitly listed as an indication for prescription niacin.\"},{\"entity_gold_id\":\"silver_entity:98ada0d759b05945\",\"decision\":\"revised\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"pruritus\",\"revised_normalized_name\":\"Pruritus\",\"evidence_text\":\"pruritus\",\"evidence_start_char\":\"24385\",\"evidence_end_char\":\"24393\",\"reason\":\"Pruritus is explicitly listed as an adverse effect; it is better typed as a Symptom rather than a Condition.\"},{\"entity_gold_id\":\"silver_entity:8a6f1b4733c49bce\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reinfarction\",\"evidence_start_char\":\"27264\",\"evidence_end_char\":\"27276\",\"reason\":\"Reinfarction is explicitly mentioned as a clinical outcome.\"},{\"entity_gold_id\":\"silver_entity:7bb9001c4a1bc8fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"rhabdomyolysis\",\"evidence_start_char\":\"22264\",\"evidence_end_char\":\"22278\",\"reason\":\"Rhabdomyolysis is explicitly mentioned as an adverse clinical condition.\"},{\"entity_gold_id\":\"silver_entity:489b0569811a2680\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"23100\",\"evidence_end_char\":\"23127\",\"reason\":\"Severe hypertriglyceridemia is explicitly listed as an indication and patient condition.\"},{\"entity_gold_id\":\"silver_entity:69d6ec29754bbf24\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular death\",\"evidence_start_char\":\"26564\",\"evidence_end_char\":\"26578\",\"reason\":\"Vascular death is explicitly discussed as a clinical outcome.\"},{\"entity_gold_id\":\"silver_entity:5f73350d4c572d5e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"DHA-containing formulations\",\"revised_normalized_name\":\"DHA-containing omega-3 fatty acid formulations\",\"evidence_text\":\"DHA-containing formulations\",\"evidence_start_char\":\"25314\",\"evidence_end_char\":\"25341\",\"reason\":\"The chunk explicitly discusses DHA-containing formulations in the omega-3 fatty acid formulation context.\"},{\"entity_gold_id\":\"silver_entity:079ce9c1eb868387\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"docosahexaenoic acid\",\"evidence_start_char\":\"24785\",\"evidence_end_char\":\"24805\",\"reason\":\"Docosahexaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:c20864da53964fad\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"docosapentaenoic acid\",\"evidence_start_char\":\"24817\",\"evidence_end_char\":\"24838\",\"reason\":\"Docosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:d24f28e4a20f40fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"eicosapentaenoic acid\",\"evidence_start_char\":\"24756\",\"evidence_end_char\":\"24777\",\"reason\":\"Eicosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:ac6efe9daaf7c645\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"EPA and DHA\",\"revised_normalized_name\":\"Eicosapentaenoic acid and docosahexaenoic acid\",\"evidence_text\":\"EPA and DHA\",\"evidence_start_char\":\"27218\",\"evidence_end_char\":\"27229\",\"reason\":\"The chunk explicitly mentions EPA and DHA together as the omega-3 treatment used in the trial.\"},{\"entity_gold_id\":\"silver_entity:6fccd8090d657ed3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"fenofibrate\",\"evidence_start_char\":\"22183\",\"evidence_end_char\":\"22194\",\"reason\":\"Fenofibrate is explicitly mentioned as a fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:4e08bf142eb4fe21\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"mfibrozil\",\"evidence_start_char\":\"21986\",\"evidence_end_char\":\"21995\",\"reason\":\"Only the truncated string 'mfibrozil' appears at the chunk boundary; the standalone drug name Gemfibrozil is not explicitly supported by the chunk text.\"},{\"entity_gold_id\":\"silver_entity:68b61747ae28a1f8\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"icosapent ethyl\",\"evidence_start_char\":\"25006\",\"evidence_end_char\":\"25021\",\"reason\":\"Icosapent ethyl is explicitly named as an approved prescription omega-3 fatty acid formulation.\"},{\"entity_gold_id\":\"silver_entity:2ad165d890795924\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"laropiprant\",\"evidence_start_char\":\"24048\",\"evidence_end_char\":\"24059\",\"reason\":\"Laropiprant is explicitly mentioned as an antagonist used to reduce niacin-induced flushing.\"},{\"entity_gold_id\":\"silver_entity:a86ed73a8b429523\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"22922\",\"evidence_end_char\":\"22928\",\"reason\":\"Niacin is explicitly named as a therapy discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:49516dfcf34a547e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 carboxylic acids\",\"evidence_start_char\":\"24651\",\"evidence_end_char\":\"24675\",\"reason\":\"Omega-3 carboxylic acids are explicitly named as an approved formulation type.\"},{\"entity_gold_id\":\"silver_entity:d0f8ce42372152d3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 fatty acid ethyl esters\",\"evidence_start_char\":\"24851\",\"evidence_end_char\":\"24882\",\"reason\":\"Omega-3 fatty acid ethyl esters are explicitly named as an approved formulation type.\"},{\"entity_gold_id\":\"silver_entity:3043ac61722b6216\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Omega-3 fatty acids\",\"evidence_start_char\":\"24511\",\"evidence_end_char\":\"24530\",\"reason\":\"Omega-3 fatty acids are explicitly named as a therapeutic class discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8dd2069be853eae7\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"simvastatin\",\"evidence_start_char\":\"22605\",\"evidence_end_char\":\"22616\",\"reason\":\"Simvastatin is explicitly mentioned as monotherapy and as part of fenofibrate-simvastatin combination therapy.\"},{\"entity_gold_id\":\"silver_entity:eaa57d0457578f29\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22085\",\"evidence_end_char\":\"22092\",\"reason\":\"Statins are explicitly mentioned as a drug class in the chunk.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_fibrates\",\"entity_type\":\"Drug\",\"entity_text\":\"fibrates\",\"normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"22237\",\"evidence_end_char\":\"22245\",\"reason\":\"The fibrate drug class is explicitly mentioned and is central to the comparison with fenofibrate.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_coronary_atherosclerosis\",\"entity_type\":\"Condition\",\"entity_text\":\"coronary atherosclerosis\",\"normalized_name\":\"Coronary atherosclerosis\",\"evidence_text\":\"coronary atherosclerosis\",\"evidence_start_char\":\"23333\",\"evidence_end_char\":\"23357\",\"reason\":\"The chunk explicitly mentions improvements in coronary atherosclerosis with niacin.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_carotid_intima_media_thickness\",\"entity_type\":\"Biomarker\",\"entity_text\":\"carotid intima-media thickness\",\"normalized_name\":\"Carotid intima-media thickness\",\"evidence_text\":\"carotid intima-media thickness\",\"evidence_start_char\":\"23362\",\"evidence_end_char\":\"23392\",\"reason\":\"The chunk explicitly mentions carotid intima-media thickness as a measured vascular marker.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_prostaglandin_d2_receptor\",\"entity_type\":\"Biomarker\",\"entity_text\":\"prostaglandin D2 receptor\",\"normalized_name\":\"Prostaglandin D2 receptor\",\"evidence_text\":\"prostaglandin D2 receptor\",\"evidence_start_char\":\"24090\",\"evidence_end_char\":\"24115\",\"reason\":\"The chunk explicitly identifies the prostaglandin D2 receptor as laropiprant's target.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_epanova\",\"entity_type\":\"Drug\",\"entity_text\":\"Epanova\u00ae\",\"normalized_name\":\"Epanova\",\"evidence_text\":\"Epanova\u00ae\",\"evidence_start_char\":\"24840\",\"evidence_end_char\":\"24848\",\"reason\":\"Epanova is explicitly named as a prescription omega-3 fatty acid formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_lovaza\",\"entity_type\":\"Drug\",\"entity_text\":\"Lovaza\u00ae\",\"normalized_name\":\"Lovaza\",\"evidence_text\":\"Lovaza\u00ae\",\"evidence_start_char\":\"24964\",\"evidence_end_char\":\"24971\",\"reason\":\"Lovaza is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_omtryg\",\"entity_type\":\"Drug\",\"entity_text\":\"Omtryg\u00ae\",\"normalized_name\":\"Omtryg\",\"evidence_text\":\"Omtryg\u00ae\",\"evidence_start_char\":\"24973\",\"evidence_end_char\":\"24980\",\"reason\":\"Omtryg is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_vascepa\",\"entity_type\":\"Drug\",\"entity_text\":\"Vascepa\u00ae\",\"normalized_name\":\"Vascepa\",\"evidence_text\":\"Vascepa\u00ae\",\"evidence_start_char\":\"25042\",\"evidence_end_char\":\"25050\",\"reason\":\"Vascepa is explicitly named as the product associated with icosapent ethyl.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_gissi_prevenzione_trial\",\"entity_type\":\"Paper\",\"entity_text\":\"Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial\",\"normalized_name\":\"GISSI-Prevenzione Trial\",\"evidence_text\":\"Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial\",\"evidence_start_char\":\"27085\",\"evidence_end_char\":\"27184\",\"reason\":\"The chunk explicitly names the GISSI-Prevenzione Trial as a cardiovascular outcome study.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_jelis\",\"entity_type\":\"Paper\",\"entity_text\":\"Japan EPA Lipid Intervention Study (JELIS)\",\"normalized_name\":\"Japan EPA Lipid Intervention Study\",\"evidence_text\":\"Japan EPA Lipid Intervention Study (JELIS)\",\"evidence_start_char\":\"27340\",\"evidence_end_char\":\"27382\",\"reason\":\"The chunk explicitly names the Japan EPA Lipid Intervention Study (JELIS) as a cardiovascular outcome study.\"}],\"review_notes\":\"Accepted abbreviations such as apoB, HDL-C, LDL-C, TG, VLDL-C, LPL, EPA, DHA, and MI when the chunk provided clear context. Rejected Gemfibrozil because only a truncated boundary fragment appears in the chunk. Revised flushing and pruritus to Symptom.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:83154c737fcef116",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "apoB",
+        "revised_normalized_name": "Apolipoprotein B",
+        "evidence_text": "apoB",
+        "evidence_start_char": "23017",
+        "evidence_end_char": "23021",
+        "reason": "The chunk explicitly lists apoB as a lipid-related measurement; normalized to Apolipoprotein B."
+      },
+      {
+        "entity_gold_id": "silver_entity:5c98744144cd89b9",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "HDL-C",
+        "revised_normalized_name": "HDL cholesterol",
+        "evidence_text": "HDL-C",
+        "evidence_start_char": "23053",
+        "evidence_end_char": "23058",
+        "reason": "The chunk uses the abbreviation HDL-C, which supports the normalized biomarker HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:724c16f038b34dfd",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LDL-C",
+        "revised_normalized_name": "LDL cholesterol",
+        "evidence_text": "LDL-C",
+        "evidence_start_char": "23010",
+        "evidence_end_char": "23015",
+        "reason": "The chunk uses the abbreviation LDL-C, which supports the normalized biomarker LDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:d3d2aba20565a2d4",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LPL expression",
+        "revised_normalized_name": "Lipoprotein lipase expression",
+        "evidence_text": "LPL expression",
+        "evidence_start_char": "25404",
+        "evidence_end_char": "25418",
+        "reason": "The chunk explicitly mentions LPL expression; LPL is the abbreviation for lipoprotein lipase in this context."
+      },
+      {
+        "entity_gold_id": "silver_entity:d7187513b94aa430",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "liver enzymes",
+        "evidence_start_char": "24413",
+        "evidence_end_char": "24426",
+        "reason": "Liver enzymes are explicitly mentioned as laboratory biomarkers affected by niacin therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:dffc9d6bd4bbe075",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "non-HDL-C",
+        "revised_normalized_name": "Non-HDL cholesterol",
+        "evidence_text": "non-HDL-C",
+        "evidence_start_char": "23230",
+        "evidence_end_char": "23239",
+        "reason": "The chunk uses the abbreviation non-HDL-C, which supports the normalized biomarker non-HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:5ba512cce00c3e91",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "total cholesterol",
+        "evidence_start_char": "22991",
+        "evidence_end_char": "23008",
+        "reason": "Total cholesterol is explicitly listed as a lipid measurement reduced by niacin."
+      },
+      {
+        "entity_gold_id": "silver_entity:996b66bc29b0a95d",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TG",
+        "revised_normalized_name": "Triglycerides",
+        "evidence_text": "TG",
+        "evidence_start_char": "23027",
+        "evidence_end_char": "23029",
+        "reason": "The chunk repeatedly uses TG as the triglyceride biomarker abbreviation."
+      },
+      {
+        "entity_gold_id": "silver_entity:1a8af6abeff23224",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "VLDL-C",
+        "revised_normalized_name": "VLDL cholesterol",
+        "evidence_text": "VLDL-C",
+        "evidence_start_char": "25147",
+        "evidence_end_char": "25153",
+        "reason": "The chunk uses the abbreviation VLDL-C, which supports the normalized biomarker VLDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:ba6bd8f9d17f7a01",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular events",
+        "evidence_start_char": "23436",
+        "evidence_end_char": "23457",
+        "reason": "Cardiovascular events are explicitly discussed as clinical outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:70b028d021b2047c",
+        "decision": "rejected",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "composite cardiovascular end point",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "The phrase is a trial endpoint/outcome construct rather than a standalone biomedical condition in the allowed ontology."
+      },
+      {
+        "entity_gold_id": "silver_entity:eb3aa0948bd7e6e6",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "death",
+        "evidence_start_char": "27281",
+        "evidence_end_char": "27286",
+        "reason": "Death is explicitly listed as a clinical outcome reduced in post-MI patients."
+      },
+      {
+        "entity_gold_id": "silver_entity:5e79dc24c77e2c84",
+        "decision": "revised",
+        "revised_entity_type": "Symptom",
+        "revised_entity_text": "flushing",
+        "revised_normalized_name": "Flushing",
+        "evidence_text": "flushing",
+        "evidence_start_char": "23833",
+        "evidence_end_char": "23841",
+        "reason": "Flushing is explicitly mentioned as an adverse effect; it is better typed as a Symptom rather than a Condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:23395887af09a682",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hyperglycemia",
+        "evidence_start_char": "24325",
+        "evidence_end_char": "24338",
+        "reason": "Hyperglycemia is explicitly listed as an adverse effect associated with niacin therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:0b4b08ce5e132b85",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hypertriglyceridemia",
+        "evidence_start_char": "23107",
+        "evidence_end_char": "23127",
+        "reason": "Hypertriglyceridemia is explicitly present in the chunk as a treated clinical condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:8a7d2009f1e80b54",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hyperuricemia",
+        "evidence_start_char": "24360",
+        "evidence_end_char": "24373",
+        "reason": "Hyperuricemia is explicitly listed as an adverse effect associated with niacin therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:159e27bfcbb95ddf",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "insulin resistance",
+        "evidence_start_char": "24340",
+        "evidence_end_char": "24358",
+        "reason": "Insulin resistance is explicitly listed as an adverse effect associated with niacin therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:d8b688fa1a36fa2e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "major coronary events",
+        "evidence_start_char": "27452",
+        "evidence_end_char": "27473",
+        "reason": "Major coronary events are explicitly discussed as a cardiovascular outcome."
+      },
+      {
+        "entity_gold_id": "silver_entity:10315c41bf9b26c7",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "mixed dyslipidemia",
+        "evidence_start_char": "23133",
+        "evidence_end_char": "23151",
+        "reason": "Mixed dyslipidemia is explicitly listed as an indication for prescription niacin."
+      },
+      {
+        "entity_gold_id": "silver_entity:181de5dbd10e1c16",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "MI",
+        "revised_normalized_name": "Myocardial infarction",
+        "evidence_text": "MI",
+        "evidence_start_char": "27205",
+        "evidence_end_char": "27207",
+        "reason": "The chunk refers to post-MI patients; MI is the standard abbreviation for myocardial infarction."
+      },
+      {
+        "entity_gold_id": "silver_entity:e73a430d985a9691",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "myopathy",
+        "evidence_start_char": "24375",
+        "evidence_end_char": "24383",
+        "reason": "Myopathy is explicitly listed as an adverse effect associated with niacin therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:88ef39b507aa62f1",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "primary hyperlipidemia",
+        "evidence_start_char": "23076",
+        "evidence_end_char": "23098",
+        "reason": "Primary hyperlipidemia is explicitly listed as an indication for prescription niacin."
+      },
+      {
+        "entity_gold_id": "silver_entity:98ada0d759b05945",
+        "decision": "revised",
+        "revised_entity_type": "Symptom",
+        "revised_entity_text": "pruritus",
+        "revised_normalized_name": "Pruritus",
+        "evidence_text": "pruritus",
+        "evidence_start_char": "24385",
+        "evidence_end_char": "24393",
+        "reason": "Pruritus is explicitly listed as an adverse effect; it is better typed as a Symptom rather than a Condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:8a6f1b4733c49bce",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "reinfarction",
+        "evidence_start_char": "27264",
+        "evidence_end_char": "27276",
+        "reason": "Reinfarction is explicitly mentioned as a clinical outcome."
+      },
+      {
+        "entity_gold_id": "silver_entity:7bb9001c4a1bc8fd",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "rhabdomyolysis",
+        "evidence_start_char": "22264",
+        "evidence_end_char": "22278",
+        "reason": "Rhabdomyolysis is explicitly mentioned as an adverse clinical condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:489b0569811a2680",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "severe hypertriglyceridemia",
+        "evidence_start_char": "23100",
+        "evidence_end_char": "23127",
+        "reason": "Severe hypertriglyceridemia is explicitly listed as an indication and patient condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:69d6ec29754bbf24",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "vascular death",
+        "evidence_start_char": "26564",
+        "evidence_end_char": "26578",
+        "reason": "Vascular death is explicitly discussed as a clinical outcome."
+      },
+      {
+        "entity_gold_id": "silver_entity:5f73350d4c572d5e",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "DHA-containing formulations",
+        "revised_normalized_name": "DHA-containing omega-3 fatty acid formulations",
+        "evidence_text": "DHA-containing formulations",
+        "evidence_start_char": "25314",
+        "evidence_end_char": "25341",
+        "reason": "The chunk explicitly discusses DHA-containing formulations in the omega-3 fatty acid formulation context."
+      },
+      {
+        "entity_gold_id": "silver_entity:079ce9c1eb868387",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "docosahexaenoic acid",
+        "evidence_start_char": "24785",
+        "evidence_end_char": "24805",
+        "reason": "Docosahexaenoic acid is explicitly named as a component of omega-3 fatty acid formulations."
+      },
+      {
+        "entity_gold_id": "silver_entity:c20864da53964fad",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "docosapentaenoic acid",
+        "evidence_start_char": "24817",
+        "evidence_end_char": "24838",
+        "reason": "Docosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations."
+      },
+      {
+        "entity_gold_id": "silver_entity:d24f28e4a20f40fa",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "eicosapentaenoic acid",
+        "evidence_start_char": "24756",
+        "evidence_end_char": "24777",
+        "reason": "Eicosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations."
+      },
+      {
+        "entity_gold_id": "silver_entity:ac6efe9daaf7c645",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "EPA and DHA",
+        "revised_normalized_name": "Eicosapentaenoic acid and docosahexaenoic acid",
+        "evidence_text": "EPA and DHA",
+        "evidence_start_char": "27218",
+        "evidence_end_char": "27229",
+        "reason": "The chunk explicitly mentions EPA and DHA together as the omega-3 treatment used in the trial."
+      },
+      {
+        "entity_gold_id": "silver_entity:6fccd8090d657ed3",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "fenofibrate",
+        "evidence_start_char": "22183",
+        "evidence_end_char": "22194",
+        "reason": "Fenofibrate is explicitly mentioned as a fibrate therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:4e08bf142eb4fe21",
+        "decision": "rejected",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "mfibrozil",
+        "evidence_start_char": "21986",
+        "evidence_end_char": "21995",
+        "reason": "Only the truncated string 'mfibrozil' appears at the chunk boundary; the standalone drug name Gemfibrozil is not explicitly supported by the chunk text."
+      },
+      {
+        "entity_gold_id": "silver_entity:68b61747ae28a1f8",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "icosapent ethyl",
+        "evidence_start_char": "25006",
+        "evidence_end_char": "25021",
+        "reason": "Icosapent ethyl is explicitly named as an approved prescription omega-3 fatty acid formulation."
+      },
+      {
+        "entity_gold_id": "silver_entity:2ad165d890795924",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "laropiprant",
+        "evidence_start_char": "24048",
+        "evidence_end_char": "24059",
+        "reason": "Laropiprant is explicitly mentioned as an antagonist used to reduce niacin-induced flushing."
+      },
+      {
+        "entity_gold_id": "silver_entity:a86ed73a8b429523",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Niacin",
+        "evidence_start_char": "22922",
+        "evidence_end_char": "22928",
+        "reason": "Niacin is explicitly named as a therapy discussed in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:49516dfcf34a547e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "omega-3 carboxylic acids",
+        "evidence_start_char": "24651",
+        "evidence_end_char": "24675",
+        "reason": "Omega-3 carboxylic acids are explicitly named as an approved formulation type."
+      },
+      {
+        "entity_gold_id": "silver_entity:d0f8ce42372152d3",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "omega-3 fatty acid ethyl esters",
+        "evidence_start_char": "24851",
+        "evidence_end_char": "24882",
+        "reason": "Omega-3 fatty acid ethyl esters are explicitly named as an approved formulation type."
+      },
+      {
+        "entity_gold_id": "silver_entity:3043ac61722b6216",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Omega-3 fatty acids",
+        "evidence_start_char": "24511",
+        "evidence_end_char": "24530",
+        "reason": "Omega-3 fatty acids are explicitly named as a therapeutic class discussed in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:8dd2069be853eae7",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "simvastatin",
+        "evidence_start_char": "22605",
+        "evidence_end_char": "22616",
+        "reason": "Simvastatin is explicitly mentioned as monotherapy and as part of fenofibrate-simvastatin combination therapy."
+      },
+      {
+        "entity_gold_id": "silver_entity:eaa57d0457578f29",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "statins",
+        "evidence_start_char": "22085",
+        "evidence_end_char": "22092",
+        "reason": "Statins are explicitly mentioned as a drug class in the chunk."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_fibrates",
+        "entity_type": "Drug",
+        "entity_text": "fibrates",
+        "normalized_name": "Fibrates",
+        "evidence_text": "fibrates",
+        "evidence_start_char": "22237",
+        "evidence_end_char": "22245",
+        "reason": "The fibrate drug class is explicitly mentioned and is central to the comparison with fenofibrate."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_coronary_atherosclerosis",
+        "entity_type": "Condition",
+        "entity_text": "coronary atherosclerosis",
+        "normalized_name": "Coronary atherosclerosis",
+        "evidence_text": "coronary atherosclerosis",
+        "evidence_start_char": "23333",
+        "evidence_end_char": "23357",
+        "reason": "The chunk explicitly mentions improvements in coronary atherosclerosis with niacin."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_carotid_intima_media_thickness",
+        "entity_type": "Biomarker",
+        "entity_text": "carotid intima-media thickness",
+        "normalized_name": "Carotid intima-media thickness",
+        "evidence_text": "carotid intima-media thickness",
+        "evidence_start_char": "23362",
+        "evidence_end_char": "23392",
+        "reason": "The chunk explicitly mentions carotid intima-media thickness as a measured vascular marker."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_prostaglandin_d2_receptor",
+        "entity_type": "Biomarker",
+        "entity_text": "prostaglandin D2 receptor",
+        "normalized_name": "Prostaglandin D2 receptor",
+        "evidence_text": "prostaglandin D2 receptor",
+        "evidence_start_char": "24090",
+        "evidence_end_char": "24115",
+        "reason": "The chunk explicitly identifies the prostaglandin D2 receptor as laropiprant's target."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_epanova",
+        "entity_type": "Drug",
+        "entity_text": "Epanova\u00ae",
+        "normalized_name": "Epanova",
+        "evidence_text": "Epanova\u00ae",
+        "evidence_start_char": "24840",
+        "evidence_end_char": "24848",
+        "reason": "Epanova is explicitly named as a prescription omega-3 fatty acid formulation."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_lovaza",
+        "entity_type": "Drug",
+        "entity_text": "Lovaza\u00ae",
+        "normalized_name": "Lovaza",
+        "evidence_text": "Lovaza\u00ae",
+        "evidence_start_char": "24964",
+        "evidence_end_char": "24971",
+        "reason": "Lovaza is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_omtryg",
+        "entity_type": "Drug",
+        "entity_text": "Omtryg\u00ae",
+        "normalized_name": "Omtryg",
+        "evidence_text": "Omtryg\u00ae",
+        "evidence_start_char": "24973",
+        "evidence_end_char": "24980",
+        "reason": "Omtryg is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_vascepa",
+        "entity_type": "Drug",
+        "entity_text": "Vascepa\u00ae",
+        "normalized_name": "Vascepa",
+        "evidence_text": "Vascepa\u00ae",
+        "evidence_start_char": "25042",
+        "evidence_end_char": "25050",
+        "reason": "Vascepa is explicitly named as the product associated with icosapent ethyl."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_gissi_prevenzione_trial",
+        "entity_type": "Paper",
+        "entity_text": "Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial",
+        "normalized_name": "GISSI-Prevenzione Trial",
+        "evidence_text": "Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial",
+        "evidence_start_char": "27085",
+        "evidence_end_char": "27184",
+        "reason": "The chunk explicitly names the GISSI-Prevenzione Trial as a cardiovascular outcome study."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC4866746_chunk0005_jelis",
+        "entity_type": "Paper",
+        "entity_text": "Japan EPA Lipid Intervention Study (JELIS)",
+        "normalized_name": "Japan EPA Lipid Intervention Study",
+        "evidence_text": "Japan EPA Lipid Intervention Study (JELIS)",
+        "evidence_start_char": "27340",
+        "evidence_end_char": "27382",
+        "reason": "The chunk explicitly names the Japan EPA Lipid Intervention Study (JELIS) as a cardiovascular outcome study."
+      }
+    ],
+    "review_notes": "Accepted abbreviations such as apoB, HDL-C, LDL-C, TG, VLDL-C, LPL, EPA, DHA, and MI when the chunk provided clear context. Rejected Gemfibrozil because only a truncated boundary fragment appears in the chunk. Revised flushing and pruritus to Symptom."
+  },
+  "raw_response": {
+    "id": "resp_0a4485f9b620c739006a47e922d21881a2b3b69a6a2727f5e0",
+    "created_at": 1783097634.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0a4485f9b620c739006a47e923ebe881a298afbd99a3b8fd34",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0a4485f9b620c739006a47e9e9083481a280fed45d5233718b",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:83154c737fcef116\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apoB\",\"revised_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"23017\",\"evidence_end_char\":\"23021\",\"reason\":\"The chunk explicitly lists apoB as a lipid-related measurement; normalized to Apolipoprotein B.\"},{\"entity_gold_id\":\"silver_entity:5c98744144cd89b9\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"23053\",\"evidence_end_char\":\"23058\",\"reason\":\"The chunk uses the abbreviation HDL-C, which supports the normalized biomarker HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:724c16f038b34dfd\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"23010\",\"evidence_end_char\":\"23015\",\"reason\":\"The chunk uses the abbreviation LDL-C, which supports the normalized biomarker LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:d3d2aba20565a2d4\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LPL expression\",\"revised_normalized_name\":\"Lipoprotein lipase expression\",\"evidence_text\":\"LPL expression\",\"evidence_start_char\":\"25404\",\"evidence_end_char\":\"25418\",\"reason\":\"The chunk explicitly mentions LPL expression; LPL is the abbreviation for lipoprotein lipase in this context.\"},{\"entity_gold_id\":\"silver_entity:d7187513b94aa430\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"liver enzymes\",\"evidence_start_char\":\"24413\",\"evidence_end_char\":\"24426\",\"reason\":\"Liver enzymes are explicitly mentioned as laboratory biomarkers affected by niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:dffc9d6bd4bbe075\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"non-HDL-C\",\"revised_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"non-HDL-C\",\"evidence_start_char\":\"23230\",\"evidence_end_char\":\"23239\",\"reason\":\"The chunk uses the abbreviation non-HDL-C, which supports the normalized biomarker non-HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:5ba512cce00c3e91\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"total cholesterol\",\"evidence_start_char\":\"22991\",\"evidence_end_char\":\"23008\",\"reason\":\"Total cholesterol is explicitly listed as a lipid measurement reduced by niacin.\"},{\"entity_gold_id\":\"silver_entity:996b66bc29b0a95d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TG\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TG\",\"evidence_start_char\":\"23027\",\"evidence_end_char\":\"23029\",\"reason\":\"The chunk repeatedly uses TG as the triglyceride biomarker abbreviation.\"},{\"entity_gold_id\":\"silver_entity:1a8af6abeff23224\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL-C\",\"revised_normalized_name\":\"VLDL cholesterol\",\"evidence_text\":\"VLDL-C\",\"evidence_start_char\":\"25147\",\"evidence_end_char\":\"25153\",\"reason\":\"The chunk uses the abbreviation VLDL-C, which supports the normalized biomarker VLDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:ba6bd8f9d17f7a01\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"23436\",\"evidence_end_char\":\"23457\",\"reason\":\"Cardiovascular events are explicitly discussed as clinical outcomes.\"},{\"entity_gold_id\":\"silver_entity:70b028d021b2047c\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"composite cardiovascular end point\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"The phrase is a trial endpoint/outcome construct rather than a standalone biomedical condition in the allowed ontology.\"},{\"entity_gold_id\":\"silver_entity:eb3aa0948bd7e6e6\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"death\",\"evidence_start_char\":\"27281\",\"evidence_end_char\":\"27286\",\"reason\":\"Death is explicitly listed as a clinical outcome reduced in post-MI patients.\"},{\"entity_gold_id\":\"silver_entity:5e79dc24c77e2c84\",\"decision\":\"revised\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"flushing\",\"revised_normalized_name\":\"Flushing\",\"evidence_text\":\"flushing\",\"evidence_start_char\":\"23833\",\"evidence_end_char\":\"23841\",\"reason\":\"Flushing is explicitly mentioned as an adverse effect; it is better typed as a Symptom rather than a Condition.\"},{\"entity_gold_id\":\"silver_entity:23395887af09a682\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hyperglycemia\",\"evidence_start_char\":\"24325\",\"evidence_end_char\":\"24338\",\"reason\":\"Hyperglycemia is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:0b4b08ce5e132b85\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"23107\",\"evidence_end_char\":\"23127\",\"reason\":\"Hypertriglyceridemia is explicitly present in the chunk as a treated clinical condition.\"},{\"entity_gold_id\":\"silver_entity:8a7d2009f1e80b54\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hyperuricemia\",\"evidence_start_char\":\"24360\",\"evidence_end_char\":\"24373\",\"reason\":\"Hyperuricemia is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:159e27bfcbb95ddf\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"24340\",\"evidence_end_char\":\"24358\",\"reason\":\"Insulin resistance is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:d8b688fa1a36fa2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"major coronary events\",\"evidence_start_char\":\"27452\",\"evidence_end_char\":\"27473\",\"reason\":\"Major coronary events are explicitly discussed as a cardiovascular outcome.\"},{\"entity_gold_id\":\"silver_entity:10315c41bf9b26c7\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"mixed dyslipidemia\",\"evidence_start_char\":\"23133\",\"evidence_end_char\":\"23151\",\"reason\":\"Mixed dyslipidemia is explicitly listed as an indication for prescription niacin.\"},{\"entity_gold_id\":\"silver_entity:181de5dbd10e1c16\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"MI\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"MI\",\"evidence_start_char\":\"27205\",\"evidence_end_char\":\"27207\",\"reason\":\"The chunk refers to post-MI patients; MI is the standard abbreviation for myocardial infarction.\"},{\"entity_gold_id\":\"silver_entity:e73a430d985a9691\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myopathy\",\"evidence_start_char\":\"24375\",\"evidence_end_char\":\"24383\",\"reason\":\"Myopathy is explicitly listed as an adverse effect associated with niacin therapy.\"},{\"entity_gold_id\":\"silver_entity:88ef39b507aa62f1\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"primary hyperlipidemia\",\"evidence_start_char\":\"23076\",\"evidence_end_char\":\"23098\",\"reason\":\"Primary hyperlipidemia is explicitly listed as an indication for prescription niacin.\"},{\"entity_gold_id\":\"silver_entity:98ada0d759b05945\",\"decision\":\"revised\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"pruritus\",\"revised_normalized_name\":\"Pruritus\",\"evidence_text\":\"pruritus\",\"evidence_start_char\":\"24385\",\"evidence_end_char\":\"24393\",\"reason\":\"Pruritus is explicitly listed as an adverse effect; it is better typed as a Symptom rather than a Condition.\"},{\"entity_gold_id\":\"silver_entity:8a6f1b4733c49bce\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reinfarction\",\"evidence_start_char\":\"27264\",\"evidence_end_char\":\"27276\",\"reason\":\"Reinfarction is explicitly mentioned as a clinical outcome.\"},{\"entity_gold_id\":\"silver_entity:7bb9001c4a1bc8fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"rhabdomyolysis\",\"evidence_start_char\":\"22264\",\"evidence_end_char\":\"22278\",\"reason\":\"Rhabdomyolysis is explicitly mentioned as an adverse clinical condition.\"},{\"entity_gold_id\":\"silver_entity:489b0569811a2680\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"23100\",\"evidence_end_char\":\"23127\",\"reason\":\"Severe hypertriglyceridemia is explicitly listed as an indication and patient condition.\"},{\"entity_gold_id\":\"silver_entity:69d6ec29754bbf24\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular death\",\"evidence_start_char\":\"26564\",\"evidence_end_char\":\"26578\",\"reason\":\"Vascular death is explicitly discussed as a clinical outcome.\"},{\"entity_gold_id\":\"silver_entity:5f73350d4c572d5e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"DHA-containing formulations\",\"revised_normalized_name\":\"DHA-containing omega-3 fatty acid formulations\",\"evidence_text\":\"DHA-containing formulations\",\"evidence_start_char\":\"25314\",\"evidence_end_char\":\"25341\",\"reason\":\"The chunk explicitly discusses DHA-containing formulations in the omega-3 fatty acid formulation context.\"},{\"entity_gold_id\":\"silver_entity:079ce9c1eb868387\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"docosahexaenoic acid\",\"evidence_start_char\":\"24785\",\"evidence_end_char\":\"24805\",\"reason\":\"Docosahexaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:c20864da53964fad\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"docosapentaenoic acid\",\"evidence_start_char\":\"24817\",\"evidence_end_char\":\"24838\",\"reason\":\"Docosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:d24f28e4a20f40fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"eicosapentaenoic acid\",\"evidence_start_char\":\"24756\",\"evidence_end_char\":\"24777\",\"reason\":\"Eicosapentaenoic acid is explicitly named as a component of omega-3 fatty acid formulations.\"},{\"entity_gold_id\":\"silver_entity:ac6efe9daaf7c645\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"EPA and DHA\",\"revised_normalized_name\":\"Eicosapentaenoic acid and docosahexaenoic acid\",\"evidence_text\":\"EPA and DHA\",\"evidence_start_char\":\"27218\",\"evidence_end_char\":\"27229\",\"reason\":\"The chunk explicitly mentions EPA and DHA together as the omega-3 treatment used in the trial.\"},{\"entity_gold_id\":\"silver_entity:6fccd8090d657ed3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"fenofibrate\",\"evidence_start_char\":\"22183\",\"evidence_end_char\":\"22194\",\"reason\":\"Fenofibrate is explicitly mentioned as a fibrate therapy.\"},{\"entity_gold_id\":\"silver_entity:4e08bf142eb4fe21\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"mfibrozil\",\"evidence_start_char\":\"21986\",\"evidence_end_char\":\"21995\",\"reason\":\"Only the truncated string 'mfibrozil' appears at the chunk boundary; the standalone drug name Gemfibrozil is not explicitly supported by the chunk text.\"},{\"entity_gold_id\":\"silver_entity:68b61747ae28a1f8\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"icosapent ethyl\",\"evidence_start_char\":\"25006\",\"evidence_end_char\":\"25021\",\"reason\":\"Icosapent ethyl is explicitly named as an approved prescription omega-3 fatty acid formulation.\"},{\"entity_gold_id\":\"silver_entity:2ad165d890795924\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"laropiprant\",\"evidence_start_char\":\"24048\",\"evidence_end_char\":\"24059\",\"reason\":\"Laropiprant is explicitly mentioned as an antagonist used to reduce niacin-induced flushing.\"},{\"entity_gold_id\":\"silver_entity:a86ed73a8b429523\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"22922\",\"evidence_end_char\":\"22928\",\"reason\":\"Niacin is explicitly named as a therapy discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:49516dfcf34a547e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 carboxylic acids\",\"evidence_start_char\":\"24651\",\"evidence_end_char\":\"24675\",\"reason\":\"Omega-3 carboxylic acids are explicitly named as an approved formulation type.\"},{\"entity_gold_id\":\"silver_entity:d0f8ce42372152d3\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 fatty acid ethyl esters\",\"evidence_start_char\":\"24851\",\"evidence_end_char\":\"24882\",\"reason\":\"Omega-3 fatty acid ethyl esters are explicitly named as an approved formulation type.\"},{\"entity_gold_id\":\"silver_entity:3043ac61722b6216\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Omega-3 fatty acids\",\"evidence_start_char\":\"24511\",\"evidence_end_char\":\"24530\",\"reason\":\"Omega-3 fatty acids are explicitly named as a therapeutic class discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8dd2069be853eae7\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"simvastatin\",\"evidence_start_char\":\"22605\",\"evidence_end_char\":\"22616\",\"reason\":\"Simvastatin is explicitly mentioned as monotherapy and as part of fenofibrate-simvastatin combination therapy.\"},{\"entity_gold_id\":\"silver_entity:eaa57d0457578f29\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22085\",\"evidence_end_char\":\"22092\",\"reason\":\"Statins are explicitly mentioned as a drug class in the chunk.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_fibrates\",\"entity_type\":\"Drug\",\"entity_text\":\"fibrates\",\"normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"22237\",\"evidence_end_char\":\"22245\",\"reason\":\"The fibrate drug class is explicitly mentioned and is central to the comparison with fenofibrate.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_coronary_atherosclerosis\",\"entity_type\":\"Condition\",\"entity_text\":\"coronary atherosclerosis\",\"normalized_name\":\"Coronary atherosclerosis\",\"evidence_text\":\"coronary atherosclerosis\",\"evidence_start_char\":\"23333\",\"evidence_end_char\":\"23357\",\"reason\":\"The chunk explicitly mentions improvements in coronary atherosclerosis with niacin.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_carotid_intima_media_thickness\",\"entity_type\":\"Biomarker\",\"entity_text\":\"carotid intima-media thickness\",\"normalized_name\":\"Carotid intima-media thickness\",\"evidence_text\":\"carotid intima-media thickness\",\"evidence_start_char\":\"23362\",\"evidence_end_char\":\"23392\",\"reason\":\"The chunk explicitly mentions carotid intima-media thickness as a measured vascular marker.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_prostaglandin_d2_receptor\",\"entity_type\":\"Biomarker\",\"entity_text\":\"prostaglandin D2 receptor\",\"normalized_name\":\"Prostaglandin D2 receptor\",\"evidence_text\":\"prostaglandin D2 receptor\",\"evidence_start_char\":\"24090\",\"evidence_end_char\":\"24115\",\"reason\":\"The chunk explicitly identifies the prostaglandin D2 receptor as laropiprant's target.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_epanova\",\"entity_type\":\"Drug\",\"entity_text\":\"Epanova\u00ae\",\"normalized_name\":\"Epanova\",\"evidence_text\":\"Epanova\u00ae\",\"evidence_start_char\":\"24840\",\"evidence_end_char\":\"24848\",\"reason\":\"Epanova is explicitly named as a prescription omega-3 fatty acid formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_lovaza\",\"entity_type\":\"Drug\",\"entity_text\":\"Lovaza\u00ae\",\"normalized_name\":\"Lovaza\",\"evidence_text\":\"Lovaza\u00ae\",\"evidence_start_char\":\"24964\",\"evidence_end_char\":\"24971\",\"reason\":\"Lovaza is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_omtryg\",\"entity_type\":\"Drug\",\"entity_text\":\"Omtryg\u00ae\",\"normalized_name\":\"Omtryg\",\"evidence_text\":\"Omtryg\u00ae\",\"evidence_start_char\":\"24973\",\"evidence_end_char\":\"24980\",\"reason\":\"Omtryg is explicitly named as a prescription omega-3 fatty acid ethyl ester formulation.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_vascepa\",\"entity_type\":\"Drug\",\"entity_text\":\"Vascepa\u00ae\",\"normalized_name\":\"Vascepa\",\"evidence_text\":\"Vascepa\u00ae\",\"evidence_start_char\":\"25042\",\"evidence_end_char\":\"25050\",\"reason\":\"Vascepa is explicitly named as the product associated with icosapent ethyl.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_gissi_prevenzione_trial\",\"entity_type\":\"Paper\",\"entity_text\":\"Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial\",\"normalized_name\":\"GISSI-Prevenzione Trial\",\"evidence_text\":\"Gruppo Italiano per lo Studio della Sopravvivenza nell\u2019Infarto Miocardio (GISSI)-Prevenzione Trial\",\"evidence_start_char\":\"27085\",\"evidence_end_char\":\"27184\",\"reason\":\"The chunk explicitly names the GISSI-Prevenzione Trial as a cardiovascular outcome study.\"},{\"entity_gold_id\":\"gold_addition:PMC4866746_chunk0005_jelis\",\"entity_type\":\"Paper\",\"entity_text\":\"Japan EPA Lipid Intervention Study (JELIS)\",\"normalized_name\":\"Japan EPA Lipid Intervention Study\",\"evidence_text\":\"Japan EPA Lipid Intervention Study (JELIS)\",\"evidence_start_char\":\"27340\",\"evidence_end_char\":\"27382\",\"reason\":\"The chunk explicitly names the Japan EPA Lipid Intervention Study (JELIS) as a cardiovascular outcome study.\"}],\"review_notes\":\"Accepted abbreviations such as apoB, HDL-C, LDL-C, TG, VLDL-C, LPL, EPA, DHA, and MI when the chunk provided clear context. Rejected Gemfibrozil because only a truncated boundary fragment appears in the chunk. Revised flushing and pruritus to Symptom.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783097867.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 14027,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 18709,
+      "output_tokens_details": {
+        "reasoning_tokens": 13984
+      },
+      "total_tokens": 32736
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T16:53:55.514828+00:00",
+  "finished_at": "2026-07-03T16:57:49.101812+00:00",
+  "duration_ms": 244133.328,
+  "status": "ok",
+  "error": ""
+}

@@ -1,0 +1,887 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4287928-chunk-0006\",\n    \"document_id\": \"paper:PMC4287928\",\n    \"pmcid\": \"PMC4287928\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"27472\",\n    \"end_char\": \"33466\",\n    \"text\": \"ol efflux from peripheral tissues. Subpopulations of HDL interact with different membrane bound transporters such as ATP binding cassette A1 (ABCA1), ATP binding cassette G1 (ABCG1), and scavenger receptor-BI (SR-BI) to assist in cholesterol efflux (Actonet al,; Vaughan & Oram,). Cholesterol is transferred to HDL particles, esterified by lecithin/cholesterol acyltransferase (LCAT), and then transported to the liver for excretion.\\n\\nYet, agents that substantially raised HDL-C failed to demonstrate corresponding clinical benefit (Bodenet al,; Schwartzet al,). In epidemiologic analyses, cardiovascular risk is mainly evident at the lowest levels of HDL-C and does not necessarily support risk reductions by raising HDL-C to very high levels. Moreover, the protein cargo of HDL may be altered in patients with vascular disease and less protective (Besleret al,; Riwantoet al,). Despite these caveats, numerous approaches to modify HDL concentration and/or function continue to be evaluated.\\n\\nNiacin\\n\\nOf currently available drugs, niacin is the most effective at raising HDL-C, increasing levels by as much as 33% (Illingworthet al,). The lipid-modifying effects of niacin are thought to be mediated by activation of G protein-coupled receptors in adipose tissue and liver leading to reduced lipolysis and hepatic VLDL synthesis, respectively (Kamanna & Kashyap,). While early data demonstrated cardiovascular benefit (Canneret al,), more recent clinical trials have failed to demonstrate a clinical benefit of niacin in statin-treated patients (Bodenet al,). These data suggest that alternative HDL-targeted therapies are required if this approach is to achieve reductions in cardiovascular risk.\\n\\nCholesteryl ester transfer protein inhibitors\\n\\nCholesteryl ester transfer protein (CETP) promotes the movement of esterified cholesterol from HDL to VLDL and LDL particles, in exchange for triglyceride. Lower CETP activity has been associated with higher HDL-C levels and lower cardiovascular event rates in some, but not all analyses (Thompsonet al,; Ritschet al,). Clinical development of torcetrapib was halted prematurely due to increased cardiovascular morbidity and mortality (Barteret al,). This was potentially attributed to off-target effects including upregulation of cortisol and aldosterone synthesis and elevated blood pressure (Forrestet al,).\\n\\nDalcetrapib is a CETP inhibitor without effects on neurohormones and with minimal if any effect on blood pressure. However, despite increasing HDL-C by approximately 30%, dalcetrapib had no effect on vascular endothelial function (Luscheret al,), carotid atherosclerosis (Fayadet al,), or cardiovascular events (Schwartzet al,) (Fig3). Notably, dalcetrapib has minimal effects on LDL-C. Anacetrapib and evacetrapib are CETP inhibitors with pronounced LDL-lowering as well as HDL-raising effects (Nichollset al,; Gottoet al,) that are undergoing evaluation in Phase 3 cardiovascular outcome trials.\\n\\nRegulators of apolipoprotein A-I synthesis\\n\\nHepatic production of apoA-I results in generation of nascent, lipid-deplete HDL particles, which enter the systemic circulation and carry out their biological activities. The bromodomain and extra-terminal (BET) domain inhibitor, RVX-208, induces hepatic apoA-I synthesis. RVX-208 administration increased cholesterol efflux capacity in non-human primates (Baileyet al,). In statin-treated patients with coronary disease, RVX-208 produced modest dose related increases in apoA-I and HDL-C. This was driven predominantly by increases in large HDL particles, suggesting that cholesterol mobilization to functional HDL particles was occurring (Nichollset al,). In a subsequent study in patients with low HDL-C levels, modest coronary plaque regression was demonstrated on serial intravascular ultrasound, but changes with RVX-208 did not differ significantly from placebo (Nichollset al,). Increases in hepatic transaminase levels were more frequent with RVX-208 than placebo. The effect of RVX-208 on cardiovascular outcomes remains unknown.\\n\\nHDL infusion therapy\\n\\nInfusing HDL or apoA-1 presents a conceptually simple, but challenging approach. Infusion of lipid-deplete forms of HDL has favorable effects on atherosclerotic plaque, endothelial function, and surrogate markers of reverse cholesterol transport (Spiekeret al,; Tardyet al,). Intravenous infusions of complexes containing the apoA-I variant, apoA-I Milano and phospholipid (ETC-216) resulted in regression of coronary atherosclerosis measured by serial intravascular ultrasound in patients with a recent acute coronary syndrome (Nissenet al,). Another approach has been infusion of complexes of wild-type apoA-I and phospholipid (CSL-111). This agent produced a trend toward regression of coronary atherosclerotic plaque on serial intravascular ultrasound imaging, but liver transaminase elevations required cessation of testing of the highest dose (Tardifet al,). Challenges in producing large quantities of infusible HDL-mimetic complexes appear to have been overcome, and development of several agents is proceeding.\\n\\nDelipidated HDL\\n\\nA unique approach to HDL therapeutics involves the selective delipidation of a patient's HDL, which is subsequently reinfused. Potentially, the lipid-poor HDL has greater capacity for cholesterol efflux. A small imaging study demonstrated coronary plaque regression with this approach (Waksmanet al,).\\n\\nMimetic peptides\\n\\nSynthetic production of apoA-I presents a considerable challenge. In contrast, an alternative approach is in preparing short peptide sequences that lack genetic homology to apoA-I, but similarly form an amphipathic helix and associate effectively with lipids. Preclinical studies using these peptides have demonstrated favorable effects on cholesterol efflux, LCAT activation, inflammatory and oxidative pathways, and ultimately atherosclerotic plaque (Dattaet al, ; Bielickiet al,). CER-001, an HDL-mimetic made up of apoA-I and phospholipids, has been associated with\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:17f36204cb3fa4f9\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:aldosterone\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Aldosterone\",\n      \"normalized_name\": \"Aldosterone\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"aldosterone\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29763,\n      \"evidence_end_char\": 29774,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a6cae5cc16136cba\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:apolipoprotein_a_i\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein A-I\",\n      \"normalized_name\": \"Apolipoprotein A-I\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apolipoprotein A-I\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30444,\n      \"evidence_end_char\": 30462,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d5bea9a27416dfe0\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:blood_pressure\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Blood pressure\",\n      \"normalized_name\": \"Blood pressure\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"blood pressure\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29798,\n      \"evidence_end_char\": 29812,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:63ee68fb0613d542\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:cetp_activity\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"CETP activity\",\n      \"normalized_name\": \"CETP activity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CETP activity\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29381,\n      \"evidence_end_char\": 29394,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d2fde466d49c7cfd\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:cholesterol_efflux_capacity\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Cholesterol efflux capacity\",\n      \"normalized_name\": \"Cholesterol efflux capacity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cholesterol efflux capacity\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30781,\n      \"evidence_end_char\": 30808,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:79aa941d33425381\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:cortisol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Cortisol\",\n      \"normalized_name\": \"Cortisol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cortisol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29750,\n      \"evidence_end_char\": 29758,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a5658a77157e9da8\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8ffa17cd4bc8f5c7\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:hepatic_transaminase_levels\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Hepatic transaminase levels\",\n      \"normalized_name\": \"Hepatic transaminase levels\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hepatic transaminase levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 31375,\n      \"evidence_end_char\": 31402,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:549fcae188d84b6d\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:lcat_activity\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LCAT activity\",\n      \"normalized_name\": \"LCAT activity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LCAT activity\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f12411e8b9678426\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL cholesterol\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:246d3583b11b76b1\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:large_hdl_particles\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Large HDL particles\",\n      \"normalized_name\": \"Large HDL particles\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"large HDL particles\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 31011,\n      \"evidence_end_char\": 31030,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:daf05699f93e3450\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30120,\n      \"evidence_end_char\": 30141,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:583f2c54d86bd3b3\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_morbidity_and_mortality\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular morbidity and mortality\",\n      \"normalized_name\": \"Cardiovascular morbidity and mortality\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular morbidity and mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29615,\n      \"evidence_end_char\": 29653,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8b7896d436bbf0a5\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:coronary_atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary atherosclerosis\",\n      \"normalized_name\": \"Coronary atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary atherosclerosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 31947,\n      \"evidence_end_char\": 31971,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ab37901bf0a43b3d\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:coronary_plaque\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary plaque\",\n      \"normalized_name\": \"Coronary plaque\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary plaque\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 31197,\n      \"evidence_end_char\": 31212,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:12edafc1ba7430c9\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:anacetrapib\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Anacetrapib\",\n      \"normalized_name\": \"Anacetrapib\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Anacetrapib\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30218,\n      \"evidence_end_char\": 30229,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fdb8a453cee1a819\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:cer_001\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"CER-001\",\n      \"normalized_name\": \"CER-001\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CER-001\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 33381,\n      \"evidence_end_char\": 33388,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:10a1d905e9e805c4\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:csl_111\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"CSL-111\",\n      \"normalized_name\": \"CSL-111\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CSL-111\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 32168,\n      \"evidence_end_char\": 32175,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:475956acf012e8a2\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:dalcetrapib\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Dalcetrapib\",\n      \"normalized_name\": \"Dalcetrapib\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Dalcetrapib\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29831,\n      \"evidence_end_char\": 29842,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9a2ecc69f38878ad\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:delipidated_hdl\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Delipidated HDL\",\n      \"normalized_name\": \"Delipidated HDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Delipidated HDL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 32559,\n      \"evidence_end_char\": 32574,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a6701d49fce24d00\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:etc_216\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"ETC-216\",\n      \"normalized_name\": \"ETC-216\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ETC-216\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 31912,\n      \"evidence_end_char\": 31919,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:06d945abf5d050fc\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:evacetrapib\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Evacetrapib\",\n      \"normalized_name\": \"Evacetrapib\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"evacetrapib\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30234,\n      \"evidence_end_char\": 30245,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dcc0c84636f55cf7\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:mimetic_peptides\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Mimetic peptides\",\n      \"normalized_name\": \"Mimetic peptides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Mimetic peptides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 32879,\n      \"evidence_end_char\": 32895,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:24f964bcf16a2f24\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Niacin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 28466,\n      \"evidence_end_char\": 28472,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3d68bb6ab178e3fe\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:rvx_208\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"RVX-208\",\n      \"normalized_name\": \"RVX-208\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"RVX-208\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 30705,\n      \"evidence_end_char\": 30712,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d0e8d130ffd5a65a\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0006\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:torcetrapib\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Torcetrapib\",\n      \"normalized_name\": \"Torcetrapib\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"torcetrapib\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 29563,\n      \"evidence_end_char\": 29574,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0006.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:17f36204cb3fa4f9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Aldosterone\",\"revised_normalized_name\":\"Aldosterone\",\"evidence_text\":\"aldosterone\",\"evidence_start_char\":\"29763\",\"evidence_end_char\":\"29774\",\"reason\":\"Supported as a hormone whose synthesis was affected off-target by torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:a6cae5cc16136cba\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Apolipoprotein A-I\",\"revised_normalized_name\":\"Apolipoprotein A-I\",\"evidence_text\":\"apolipoprotein A-I\",\"evidence_start_char\":\"30444\",\"evidence_end_char\":\"30462\",\"reason\":\"Supported as a standalone apolipoprotein/protein biomarker discussed in HDL particle synthesis.\"},{\"entity_gold_id\":\"silver_entity:d5bea9a27416dfe0\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Blood pressure\",\"revised_normalized_name\":\"Blood pressure\",\"evidence_text\":\"blood pressure\",\"evidence_start_char\":\"29798\",\"evidence_end_char\":\"29812\",\"reason\":\"Supported as a physiologic measurement affected by CETP inhibitors.\"},{\"entity_gold_id\":\"silver_entity:63ee68fb0613d542\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"CETP activity\",\"revised_normalized_name\":\"CETP activity\",\"evidence_text\":\"CETP activity\",\"evidence_start_char\":\"29381\",\"evidence_end_char\":\"29394\",\"reason\":\"Supported as a measurable activity associated with HDL-C levels and cardiovascular event rates.\"},{\"entity_gold_id\":\"silver_entity:d2fde466d49c7cfd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Cholesterol efflux capacity\",\"revised_normalized_name\":\"Cholesterol efflux capacity\",\"evidence_text\":\"cholesterol efflux capacity\",\"evidence_start_char\":\"30781\",\"evidence_end_char\":\"30808\",\"reason\":\"Supported as a functional biomarker increased after RVX-208 administration.\"},{\"entity_gold_id\":\"silver_entity:79aa941d33425381\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Cortisol\",\"revised_normalized_name\":\"Cortisol\",\"evidence_text\":\"cortisol\",\"evidence_start_char\":\"29750\",\"evidence_end_char\":\"29758\",\"reason\":\"Supported as a hormone whose synthesis was affected off-target by torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:a5658a77157e9da8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"28544\",\"evidence_end_char\":\"28549\",\"reason\":\"The chunk supports the concept using the standard abbreviation HDL-C rather than the expanded candidate text.\"},{\"entity_gold_id\":\"silver_entity:8ffa17cd4bc8f5c7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Hepatic transaminase levels\",\"revised_normalized_name\":\"Hepatic transaminase levels\",\"evidence_text\":\"hepatic transaminase levels\",\"evidence_start_char\":\"31375\",\"evidence_end_char\":\"31402\",\"reason\":\"Supported as a measured liver enzyme-related safety biomarker elevated more frequently with RVX-208.\"},{\"entity_gold_id\":\"silver_entity:549fcae188d84b6d\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LCAT activation\",\"revised_normalized_name\":\"LCAT activation\",\"evidence_text\":\"LCAT activation\",\"evidence_start_char\":\"33257\",\"evidence_end_char\":\"33272\",\"reason\":\"The chunk explicitly mentions LCAT activation, not LCAT activity; revised to the evidence-supported biomarker/process.\"},{\"entity_gold_id\":\"silver_entity:f12411e8b9678426\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"30211\",\"evidence_end_char\":\"30216\",\"reason\":\"The chunk supports the concept using the standard abbreviation LDL-C rather than the expanded candidate text.\"},{\"entity_gold_id\":\"silver_entity:246d3583b11b76b1\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Large HDL particles\",\"revised_normalized_name\":\"Large HDL particles\",\"evidence_text\":\"large HDL particles\",\"evidence_start_char\":\"31011\",\"evidence_end_char\":\"31030\",\"reason\":\"Supported as an HDL particle subclass whose levels increased with RVX-208.\"},{\"entity_gold_id\":\"silver_entity:daf05699f93e3450\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular events\",\"revised_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"30120\",\"evidence_end_char\":\"30141\",\"reason\":\"Supported as a clinical cardiovascular outcome in dalcetrapib evaluation.\"},{\"entity_gold_id\":\"silver_entity:583f2c54d86bd3b3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular morbidity and mortality\",\"revised_normalized_name\":\"Cardiovascular morbidity and mortality\",\"evidence_text\":\"cardiovascular morbidity and mortality\",\"evidence_start_char\":\"29615\",\"evidence_end_char\":\"29653\",\"reason\":\"Supported as an adverse cardiovascular clinical outcome associated with torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:8b7896d436bbf0a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary atherosclerosis\",\"revised_normalized_name\":\"Coronary atherosclerosis\",\"evidence_text\":\"coronary atherosclerosis\",\"evidence_start_char\":\"31947\",\"evidence_end_char\":\"31971\",\"reason\":\"Supported as a coronary disease condition measured by serial intravascular ultrasound.\"},{\"entity_gold_id\":\"silver_entity:ab37901bf0a43b3d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary plaque\",\"revised_normalized_name\":\"Coronary plaque\",\"evidence_text\":\"coronary plaque\",\"evidence_start_char\":\"31197\",\"evidence_end_char\":\"31212\",\"reason\":\"Supported as a pathological coronary plaque endpoint showing regression in an imaging study.\"},{\"entity_gold_id\":\"silver_entity:12edafc1ba7430c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Anacetrapib\",\"revised_normalized_name\":\"Anacetrapib\",\"evidence_text\":\"Anacetrapib\",\"evidence_start_char\":\"30218\",\"evidence_end_char\":\"30229\",\"reason\":\"Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation.\"},{\"entity_gold_id\":\"silver_entity:fdb8a453cee1a819\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"CER-001\",\"revised_normalized_name\":\"CER-001\",\"evidence_text\":\"CER-001\",\"evidence_start_char\":\"33381\",\"evidence_end_char\":\"33388\",\"reason\":\"Supported as a named HDL-mimetic therapeutic agent made up of apoA-I and phospholipids.\"},{\"entity_gold_id\":\"silver_entity:10a1d905e9e805c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"CSL-111\",\"revised_normalized_name\":\"CSL-111\",\"evidence_text\":\"CSL-111\",\"evidence_start_char\":\"32168\",\"evidence_end_char\":\"32175\",\"reason\":\"Supported as a named apoA-I/phospholipid complex therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:475956acf012e8a2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Dalcetrapib\",\"revised_normalized_name\":\"Dalcetrapib\",\"evidence_text\":\"Dalcetrapib\",\"evidence_start_char\":\"29831\",\"evidence_end_char\":\"29842\",\"reason\":\"Supported as a named CETP inhibitor drug.\"},{\"entity_gold_id\":\"silver_entity:9a2ecc69f38878ad\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Delipidated HDL\",\"revised_normalized_name\":\"Delipidated HDL\",\"evidence_text\":\"Delipidated HDL\",\"evidence_start_char\":\"32559\",\"evidence_end_char\":\"32574\",\"reason\":\"Supported as an HDL-based therapeutic approach described in the chunk.\"},{\"entity_gold_id\":\"silver_entity:a6701d49fce24d00\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"ETC-216\",\"revised_normalized_name\":\"ETC-216\",\"evidence_text\":\"ETC-216\",\"evidence_start_char\":\"31912\",\"evidence_end_char\":\"31919\",\"reason\":\"Supported as a named apoA-I Milano/phospholipid complex therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:06d945abf5d050fc\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Evacetrapib\",\"revised_normalized_name\":\"Evacetrapib\",\"evidence_text\":\"evacetrapib\",\"evidence_start_char\":\"30234\",\"evidence_end_char\":\"30245\",\"reason\":\"Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation.\"},{\"entity_gold_id\":\"silver_entity:dcc0c84636f55cf7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Mimetic peptides\",\"revised_normalized_name\":\"Mimetic peptides\",\"evidence_text\":\"Mimetic peptides\",\"evidence_start_char\":\"32879\",\"evidence_end_char\":\"32895\",\"reason\":\"Supported as a therapeutic peptide class discussed as an HDL/apoA-I mimetic approach.\"},{\"entity_gold_id\":\"silver_entity:24f964bcf16a2f24\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Niacin\",\"revised_normalized_name\":\"Niacin\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"28466\",\"evidence_end_char\":\"28472\",\"reason\":\"Supported as a currently available drug that raises HDL-C.\"},{\"entity_gold_id\":\"silver_entity:3d68bb6ab178e3fe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"RVX-208\",\"revised_normalized_name\":\"RVX-208\",\"evidence_text\":\"RVX-208\",\"evidence_start_char\":\"30705\",\"evidence_end_char\":\"30712\",\"reason\":\"Supported as a named BET domain inhibitor drug that induces apoA-I synthesis.\"},{\"entity_gold_id\":\"silver_entity:d0e8d130ffd5a65a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Torcetrapib\",\"revised_normalized_name\":\"Torcetrapib\",\"evidence_text\":\"torcetrapib\",\"evidence_start_char\":\"29563\",\"evidence_end_char\":\"29574\",\"reason\":\"Supported as a named CETP inhibitor whose clinical development was halted.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_added:cholesteryl_ester_transfer_protein_inhibitors\",\"entity_type\":\"Drug\",\"entity_text\":\"Cholesteryl ester transfer protein inhibitors\",\"normalized_name\":\"Cholesteryl ester transfer protein inhibitors\",\"evidence_text\":\"Cholesteryl ester transfer protein inhibitors\",\"evidence_start_char\":\"29170\",\"evidence_end_char\":\"29216\",\"reason\":\"Important missing therapeutic drug class explicitly used as a section heading and discussed through several named agents.\"},{\"entity_gold_id\":\"gold_added:cholesteryl_ester_transfer_protein\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Cholesteryl ester transfer protein (CETP)\",\"normalized_name\":\"Cholesteryl ester transfer protein\",\"evidence_text\":\"Cholesteryl ester transfer protein (CETP)\",\"evidence_start_char\":\"29218\",\"evidence_end_char\":\"29260\",\"reason\":\"Important missing protein/therapeutic target central to the CETP inhibitor section.\"},{\"entity_gold_id\":\"gold_added:vascular_endothelial_function\",\"entity_type\":\"Biomarker\",\"entity_text\":\"vascular endothelial function\",\"normalized_name\":\"Vascular endothelial function\",\"evidence_text\":\"vascular endothelial function\",\"evidence_start_char\":\"30033\",\"evidence_end_char\":\"30062\",\"reason\":\"Important missing functional cardiovascular endpoint explicitly evaluated for dalcetrapib.\"},{\"entity_gold_id\":\"gold_added:carotid_atherosclerosis\",\"entity_type\":\"Condition\",\"entity_text\":\"carotid atherosclerosis\",\"normalized_name\":\"Carotid atherosclerosis\",\"evidence_text\":\"carotid atherosclerosis\",\"evidence_start_char\":\"30078\",\"evidence_end_char\":\"30101\",\"reason\":\"Important missing vascular disease condition explicitly evaluated as an endpoint for dalcetrapib.\"},{\"entity_gold_id\":\"gold_added:apoa_i_milano\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoA-I Milano\",\"normalized_name\":\"Apolipoprotein A-I Milano\",\"evidence_text\":\"apoA-I Milano\",\"evidence_start_char\":\"31880\",\"evidence_end_char\":\"31893\",\"reason\":\"Important missing apolipoprotein variant explicitly present as a component of ETC-216.\"},{\"entity_gold_id\":\"gold_added:acute_coronary_syndrome\",\"entity_type\":\"Condition\",\"entity_text\":\"acute coronary syndrome\",\"normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"acute coronary syndrome\",\"evidence_start_char\":\"32042\",\"evidence_end_char\":\"32065\",\"reason\":\"Important missing clinical condition describing the patient population receiving ETC-216.\"}],\"review_notes\":\"Reviewed all candidate rows. Abbreviation-based lipid biomarkers were normalized to HDL-C and LDL-C, and unsupported wording for LCAT activity was revised to the evidence-supported LCAT activation. Added central missing drug class, protein target, functional endpoint, condition endpoints, and apoA-I variant explicitly present in the chunk.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:17f36204cb3fa4f9",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Aldosterone",
+        "revised_normalized_name": "Aldosterone",
+        "evidence_text": "aldosterone",
+        "evidence_start_char": "29763",
+        "evidence_end_char": "29774",
+        "reason": "Supported as a hormone whose synthesis was affected off-target by torcetrapib."
+      },
+      {
+        "entity_gold_id": "silver_entity:a6cae5cc16136cba",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Apolipoprotein A-I",
+        "revised_normalized_name": "Apolipoprotein A-I",
+        "evidence_text": "apolipoprotein A-I",
+        "evidence_start_char": "30444",
+        "evidence_end_char": "30462",
+        "reason": "Supported as a standalone apolipoprotein/protein biomarker discussed in HDL particle synthesis."
+      },
+      {
+        "entity_gold_id": "silver_entity:d5bea9a27416dfe0",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Blood pressure",
+        "revised_normalized_name": "Blood pressure",
+        "evidence_text": "blood pressure",
+        "evidence_start_char": "29798",
+        "evidence_end_char": "29812",
+        "reason": "Supported as a physiologic measurement affected by CETP inhibitors."
+      },
+      {
+        "entity_gold_id": "silver_entity:63ee68fb0613d542",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "CETP activity",
+        "revised_normalized_name": "CETP activity",
+        "evidence_text": "CETP activity",
+        "evidence_start_char": "29381",
+        "evidence_end_char": "29394",
+        "reason": "Supported as a measurable activity associated with HDL-C levels and cardiovascular event rates."
+      },
+      {
+        "entity_gold_id": "silver_entity:d2fde466d49c7cfd",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Cholesterol efflux capacity",
+        "revised_normalized_name": "Cholesterol efflux capacity",
+        "evidence_text": "cholesterol efflux capacity",
+        "evidence_start_char": "30781",
+        "evidence_end_char": "30808",
+        "reason": "Supported as a functional biomarker increased after RVX-208 administration."
+      },
+      {
+        "entity_gold_id": "silver_entity:79aa941d33425381",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Cortisol",
+        "revised_normalized_name": "Cortisol",
+        "evidence_text": "cortisol",
+        "evidence_start_char": "29750",
+        "evidence_end_char": "29758",
+        "reason": "Supported as a hormone whose synthesis was affected off-target by torcetrapib."
+      },
+      {
+        "entity_gold_id": "silver_entity:a5658a77157e9da8",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "HDL-C",
+        "revised_normalized_name": "HDL cholesterol",
+        "evidence_text": "HDL-C",
+        "evidence_start_char": "28544",
+        "evidence_end_char": "28549",
+        "reason": "The chunk supports the concept using the standard abbreviation HDL-C rather than the expanded candidate text."
+      },
+      {
+        "entity_gold_id": "silver_entity:8ffa17cd4bc8f5c7",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Hepatic transaminase levels",
+        "revised_normalized_name": "Hepatic transaminase levels",
+        "evidence_text": "hepatic transaminase levels",
+        "evidence_start_char": "31375",
+        "evidence_end_char": "31402",
+        "reason": "Supported as a measured liver enzyme-related safety biomarker elevated more frequently with RVX-208."
+      },
+      {
+        "entity_gold_id": "silver_entity:549fcae188d84b6d",
+        "decision": "revised",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LCAT activation",
+        "revised_normalized_name": "LCAT activation",
+        "evidence_text": "LCAT activation",
+        "evidence_start_char": "33257",
+        "evidence_end_char": "33272",
+        "reason": "The chunk explicitly mentions LCAT activation, not LCAT activity; revised to the evidence-supported biomarker/process."
+      },
+      {
+        "entity_gold_id": "silver_entity:f12411e8b9678426",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LDL-C",
+        "revised_normalized_name": "LDL cholesterol",
+        "evidence_text": "LDL-C",
+        "evidence_start_char": "30211",
+        "evidence_end_char": "30216",
+        "reason": "The chunk supports the concept using the standard abbreviation LDL-C rather than the expanded candidate text."
+      },
+      {
+        "entity_gold_id": "silver_entity:246d3583b11b76b1",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Large HDL particles",
+        "revised_normalized_name": "Large HDL particles",
+        "evidence_text": "large HDL particles",
+        "evidence_start_char": "31011",
+        "evidence_end_char": "31030",
+        "reason": "Supported as an HDL particle subclass whose levels increased with RVX-208."
+      },
+      {
+        "entity_gold_id": "silver_entity:daf05699f93e3450",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Cardiovascular events",
+        "revised_normalized_name": "Cardiovascular events",
+        "evidence_text": "cardiovascular events",
+        "evidence_start_char": "30120",
+        "evidence_end_char": "30141",
+        "reason": "Supported as a clinical cardiovascular outcome in dalcetrapib evaluation."
+      },
+      {
+        "entity_gold_id": "silver_entity:583f2c54d86bd3b3",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Cardiovascular morbidity and mortality",
+        "revised_normalized_name": "Cardiovascular morbidity and mortality",
+        "evidence_text": "cardiovascular morbidity and mortality",
+        "evidence_start_char": "29615",
+        "evidence_end_char": "29653",
+        "reason": "Supported as an adverse cardiovascular clinical outcome associated with torcetrapib."
+      },
+      {
+        "entity_gold_id": "silver_entity:8b7896d436bbf0a5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Coronary atherosclerosis",
+        "revised_normalized_name": "Coronary atherosclerosis",
+        "evidence_text": "coronary atherosclerosis",
+        "evidence_start_char": "31947",
+        "evidence_end_char": "31971",
+        "reason": "Supported as a coronary disease condition measured by serial intravascular ultrasound."
+      },
+      {
+        "entity_gold_id": "silver_entity:ab37901bf0a43b3d",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Coronary plaque",
+        "revised_normalized_name": "Coronary plaque",
+        "evidence_text": "coronary plaque",
+        "evidence_start_char": "31197",
+        "evidence_end_char": "31212",
+        "reason": "Supported as a pathological coronary plaque endpoint showing regression in an imaging study."
+      },
+      {
+        "entity_gold_id": "silver_entity:12edafc1ba7430c9",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Anacetrapib",
+        "revised_normalized_name": "Anacetrapib",
+        "evidence_text": "Anacetrapib",
+        "evidence_start_char": "30218",
+        "evidence_end_char": "30229",
+        "reason": "Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation."
+      },
+      {
+        "entity_gold_id": "silver_entity:fdb8a453cee1a819",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "CER-001",
+        "revised_normalized_name": "CER-001",
+        "evidence_text": "CER-001",
+        "evidence_start_char": "33381",
+        "evidence_end_char": "33388",
+        "reason": "Supported as a named HDL-mimetic therapeutic agent made up of apoA-I and phospholipids."
+      },
+      {
+        "entity_gold_id": "silver_entity:10a1d905e9e805c4",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "CSL-111",
+        "revised_normalized_name": "CSL-111",
+        "evidence_text": "CSL-111",
+        "evidence_start_char": "32168",
+        "evidence_end_char": "32175",
+        "reason": "Supported as a named apoA-I/phospholipid complex therapeutic agent."
+      },
+      {
+        "entity_gold_id": "silver_entity:475956acf012e8a2",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Dalcetrapib",
+        "revised_normalized_name": "Dalcetrapib",
+        "evidence_text": "Dalcetrapib",
+        "evidence_start_char": "29831",
+        "evidence_end_char": "29842",
+        "reason": "Supported as a named CETP inhibitor drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:9a2ecc69f38878ad",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Delipidated HDL",
+        "revised_normalized_name": "Delipidated HDL",
+        "evidence_text": "Delipidated HDL",
+        "evidence_start_char": "32559",
+        "evidence_end_char": "32574",
+        "reason": "Supported as an HDL-based therapeutic approach described in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:a6701d49fce24d00",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "ETC-216",
+        "revised_normalized_name": "ETC-216",
+        "evidence_text": "ETC-216",
+        "evidence_start_char": "31912",
+        "evidence_end_char": "31919",
+        "reason": "Supported as a named apoA-I Milano/phospholipid complex therapeutic agent."
+      },
+      {
+        "entity_gold_id": "silver_entity:06d945abf5d050fc",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Evacetrapib",
+        "revised_normalized_name": "Evacetrapib",
+        "evidence_text": "evacetrapib",
+        "evidence_start_char": "30234",
+        "evidence_end_char": "30245",
+        "reason": "Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation."
+      },
+      {
+        "entity_gold_id": "silver_entity:dcc0c84636f55cf7",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Mimetic peptides",
+        "revised_normalized_name": "Mimetic peptides",
+        "evidence_text": "Mimetic peptides",
+        "evidence_start_char": "32879",
+        "evidence_end_char": "32895",
+        "reason": "Supported as a therapeutic peptide class discussed as an HDL/apoA-I mimetic approach."
+      },
+      {
+        "entity_gold_id": "silver_entity:24f964bcf16a2f24",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Niacin",
+        "revised_normalized_name": "Niacin",
+        "evidence_text": "Niacin",
+        "evidence_start_char": "28466",
+        "evidence_end_char": "28472",
+        "reason": "Supported as a currently available drug that raises HDL-C."
+      },
+      {
+        "entity_gold_id": "silver_entity:3d68bb6ab178e3fe",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "RVX-208",
+        "revised_normalized_name": "RVX-208",
+        "evidence_text": "RVX-208",
+        "evidence_start_char": "30705",
+        "evidence_end_char": "30712",
+        "reason": "Supported as a named BET domain inhibitor drug that induces apoA-I synthesis."
+      },
+      {
+        "entity_gold_id": "silver_entity:d0e8d130ffd5a65a",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Torcetrapib",
+        "revised_normalized_name": "Torcetrapib",
+        "evidence_text": "torcetrapib",
+        "evidence_start_char": "29563",
+        "evidence_end_char": "29574",
+        "reason": "Supported as a named CETP inhibitor whose clinical development was halted."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_added:cholesteryl_ester_transfer_protein_inhibitors",
+        "entity_type": "Drug",
+        "entity_text": "Cholesteryl ester transfer protein inhibitors",
+        "normalized_name": "Cholesteryl ester transfer protein inhibitors",
+        "evidence_text": "Cholesteryl ester transfer protein inhibitors",
+        "evidence_start_char": "29170",
+        "evidence_end_char": "29216",
+        "reason": "Important missing therapeutic drug class explicitly used as a section heading and discussed through several named agents."
+      },
+      {
+        "entity_gold_id": "gold_added:cholesteryl_ester_transfer_protein",
+        "entity_type": "Biomarker",
+        "entity_text": "Cholesteryl ester transfer protein (CETP)",
+        "normalized_name": "Cholesteryl ester transfer protein",
+        "evidence_text": "Cholesteryl ester transfer protein (CETP)",
+        "evidence_start_char": "29218",
+        "evidence_end_char": "29260",
+        "reason": "Important missing protein/therapeutic target central to the CETP inhibitor section."
+      },
+      {
+        "entity_gold_id": "gold_added:vascular_endothelial_function",
+        "entity_type": "Biomarker",
+        "entity_text": "vascular endothelial function",
+        "normalized_name": "Vascular endothelial function",
+        "evidence_text": "vascular endothelial function",
+        "evidence_start_char": "30033",
+        "evidence_end_char": "30062",
+        "reason": "Important missing functional cardiovascular endpoint explicitly evaluated for dalcetrapib."
+      },
+      {
+        "entity_gold_id": "gold_added:carotid_atherosclerosis",
+        "entity_type": "Condition",
+        "entity_text": "carotid atherosclerosis",
+        "normalized_name": "Carotid atherosclerosis",
+        "evidence_text": "carotid atherosclerosis",
+        "evidence_start_char": "30078",
+        "evidence_end_char": "30101",
+        "reason": "Important missing vascular disease condition explicitly evaluated as an endpoint for dalcetrapib."
+      },
+      {
+        "entity_gold_id": "gold_added:apoa_i_milano",
+        "entity_type": "Biomarker",
+        "entity_text": "apoA-I Milano",
+        "normalized_name": "Apolipoprotein A-I Milano",
+        "evidence_text": "apoA-I Milano",
+        "evidence_start_char": "31880",
+        "evidence_end_char": "31893",
+        "reason": "Important missing apolipoprotein variant explicitly present as a component of ETC-216."
+      },
+      {
+        "entity_gold_id": "gold_added:acute_coronary_syndrome",
+        "entity_type": "Condition",
+        "entity_text": "acute coronary syndrome",
+        "normalized_name": "Acute coronary syndrome",
+        "evidence_text": "acute coronary syndrome",
+        "evidence_start_char": "32042",
+        "evidence_end_char": "32065",
+        "reason": "Important missing clinical condition describing the patient population receiving ETC-216."
+      }
+    ],
+    "review_notes": "Reviewed all candidate rows. Abbreviation-based lipid biomarkers were normalized to HDL-C and LDL-C, and unsupported wording for LCAT activity was revised to the evidence-supported LCAT activation. Added central missing drug class, protein target, functional endpoint, condition endpoints, and apoA-I variant explicitly present in the chunk."
+  },
+  "raw_response": {
+    "id": "resp_06dfe3be5e9472e5006a47d915b6408192b17c4396c7ef1922",
+    "created_at": 1783093525.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_06dfe3be5e9472e5006a47d91684a48192ac327e200c309d0f",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_06dfe3be5e9472e5006a47d9c170248192880f822fd2f15403",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:17f36204cb3fa4f9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Aldosterone\",\"revised_normalized_name\":\"Aldosterone\",\"evidence_text\":\"aldosterone\",\"evidence_start_char\":\"29763\",\"evidence_end_char\":\"29774\",\"reason\":\"Supported as a hormone whose synthesis was affected off-target by torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:a6cae5cc16136cba\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Apolipoprotein A-I\",\"revised_normalized_name\":\"Apolipoprotein A-I\",\"evidence_text\":\"apolipoprotein A-I\",\"evidence_start_char\":\"30444\",\"evidence_end_char\":\"30462\",\"reason\":\"Supported as a standalone apolipoprotein/protein biomarker discussed in HDL particle synthesis.\"},{\"entity_gold_id\":\"silver_entity:d5bea9a27416dfe0\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Blood pressure\",\"revised_normalized_name\":\"Blood pressure\",\"evidence_text\":\"blood pressure\",\"evidence_start_char\":\"29798\",\"evidence_end_char\":\"29812\",\"reason\":\"Supported as a physiologic measurement affected by CETP inhibitors.\"},{\"entity_gold_id\":\"silver_entity:63ee68fb0613d542\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"CETP activity\",\"revised_normalized_name\":\"CETP activity\",\"evidence_text\":\"CETP activity\",\"evidence_start_char\":\"29381\",\"evidence_end_char\":\"29394\",\"reason\":\"Supported as a measurable activity associated with HDL-C levels and cardiovascular event rates.\"},{\"entity_gold_id\":\"silver_entity:d2fde466d49c7cfd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Cholesterol efflux capacity\",\"revised_normalized_name\":\"Cholesterol efflux capacity\",\"evidence_text\":\"cholesterol efflux capacity\",\"evidence_start_char\":\"30781\",\"evidence_end_char\":\"30808\",\"reason\":\"Supported as a functional biomarker increased after RVX-208 administration.\"},{\"entity_gold_id\":\"silver_entity:79aa941d33425381\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Cortisol\",\"revised_normalized_name\":\"Cortisol\",\"evidence_text\":\"cortisol\",\"evidence_start_char\":\"29750\",\"evidence_end_char\":\"29758\",\"reason\":\"Supported as a hormone whose synthesis was affected off-target by torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:a5658a77157e9da8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"28544\",\"evidence_end_char\":\"28549\",\"reason\":\"The chunk supports the concept using the standard abbreviation HDL-C rather than the expanded candidate text.\"},{\"entity_gold_id\":\"silver_entity:8ffa17cd4bc8f5c7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Hepatic transaminase levels\",\"revised_normalized_name\":\"Hepatic transaminase levels\",\"evidence_text\":\"hepatic transaminase levels\",\"evidence_start_char\":\"31375\",\"evidence_end_char\":\"31402\",\"reason\":\"Supported as a measured liver enzyme-related safety biomarker elevated more frequently with RVX-208.\"},{\"entity_gold_id\":\"silver_entity:549fcae188d84b6d\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LCAT activation\",\"revised_normalized_name\":\"LCAT activation\",\"evidence_text\":\"LCAT activation\",\"evidence_start_char\":\"33257\",\"evidence_end_char\":\"33272\",\"reason\":\"The chunk explicitly mentions LCAT activation, not LCAT activity; revised to the evidence-supported biomarker/process.\"},{\"entity_gold_id\":\"silver_entity:f12411e8b9678426\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"30211\",\"evidence_end_char\":\"30216\",\"reason\":\"The chunk supports the concept using the standard abbreviation LDL-C rather than the expanded candidate text.\"},{\"entity_gold_id\":\"silver_entity:246d3583b11b76b1\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Large HDL particles\",\"revised_normalized_name\":\"Large HDL particles\",\"evidence_text\":\"large HDL particles\",\"evidence_start_char\":\"31011\",\"evidence_end_char\":\"31030\",\"reason\":\"Supported as an HDL particle subclass whose levels increased with RVX-208.\"},{\"entity_gold_id\":\"silver_entity:daf05699f93e3450\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular events\",\"revised_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"30120\",\"evidence_end_char\":\"30141\",\"reason\":\"Supported as a clinical cardiovascular outcome in dalcetrapib evaluation.\"},{\"entity_gold_id\":\"silver_entity:583f2c54d86bd3b3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular morbidity and mortality\",\"revised_normalized_name\":\"Cardiovascular morbidity and mortality\",\"evidence_text\":\"cardiovascular morbidity and mortality\",\"evidence_start_char\":\"29615\",\"evidence_end_char\":\"29653\",\"reason\":\"Supported as an adverse cardiovascular clinical outcome associated with torcetrapib.\"},{\"entity_gold_id\":\"silver_entity:8b7896d436bbf0a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary atherosclerosis\",\"revised_normalized_name\":\"Coronary atherosclerosis\",\"evidence_text\":\"coronary atherosclerosis\",\"evidence_start_char\":\"31947\",\"evidence_end_char\":\"31971\",\"reason\":\"Supported as a coronary disease condition measured by serial intravascular ultrasound.\"},{\"entity_gold_id\":\"silver_entity:ab37901bf0a43b3d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary plaque\",\"revised_normalized_name\":\"Coronary plaque\",\"evidence_text\":\"coronary plaque\",\"evidence_start_char\":\"31197\",\"evidence_end_char\":\"31212\",\"reason\":\"Supported as a pathological coronary plaque endpoint showing regression in an imaging study.\"},{\"entity_gold_id\":\"silver_entity:12edafc1ba7430c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Anacetrapib\",\"revised_normalized_name\":\"Anacetrapib\",\"evidence_text\":\"Anacetrapib\",\"evidence_start_char\":\"30218\",\"evidence_end_char\":\"30229\",\"reason\":\"Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation.\"},{\"entity_gold_id\":\"silver_entity:fdb8a453cee1a819\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"CER-001\",\"revised_normalized_name\":\"CER-001\",\"evidence_text\":\"CER-001\",\"evidence_start_char\":\"33381\",\"evidence_end_char\":\"33388\",\"reason\":\"Supported as a named HDL-mimetic therapeutic agent made up of apoA-I and phospholipids.\"},{\"entity_gold_id\":\"silver_entity:10a1d905e9e805c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"CSL-111\",\"revised_normalized_name\":\"CSL-111\",\"evidence_text\":\"CSL-111\",\"evidence_start_char\":\"32168\",\"evidence_end_char\":\"32175\",\"reason\":\"Supported as a named apoA-I/phospholipid complex therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:475956acf012e8a2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Dalcetrapib\",\"revised_normalized_name\":\"Dalcetrapib\",\"evidence_text\":\"Dalcetrapib\",\"evidence_start_char\":\"29831\",\"evidence_end_char\":\"29842\",\"reason\":\"Supported as a named CETP inhibitor drug.\"},{\"entity_gold_id\":\"silver_entity:9a2ecc69f38878ad\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Delipidated HDL\",\"revised_normalized_name\":\"Delipidated HDL\",\"evidence_text\":\"Delipidated HDL\",\"evidence_start_char\":\"32559\",\"evidence_end_char\":\"32574\",\"reason\":\"Supported as an HDL-based therapeutic approach described in the chunk.\"},{\"entity_gold_id\":\"silver_entity:a6701d49fce24d00\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"ETC-216\",\"revised_normalized_name\":\"ETC-216\",\"evidence_text\":\"ETC-216\",\"evidence_start_char\":\"31912\",\"evidence_end_char\":\"31919\",\"reason\":\"Supported as a named apoA-I Milano/phospholipid complex therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:06d945abf5d050fc\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Evacetrapib\",\"revised_normalized_name\":\"Evacetrapib\",\"evidence_text\":\"evacetrapib\",\"evidence_start_char\":\"30234\",\"evidence_end_char\":\"30245\",\"reason\":\"Supported as a named CETP inhibitor drug under cardiovascular outcome evaluation.\"},{\"entity_gold_id\":\"silver_entity:dcc0c84636f55cf7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Mimetic peptides\",\"revised_normalized_name\":\"Mimetic peptides\",\"evidence_text\":\"Mimetic peptides\",\"evidence_start_char\":\"32879\",\"evidence_end_char\":\"32895\",\"reason\":\"Supported as a therapeutic peptide class discussed as an HDL/apoA-I mimetic approach.\"},{\"entity_gold_id\":\"silver_entity:24f964bcf16a2f24\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Niacin\",\"revised_normalized_name\":\"Niacin\",\"evidence_text\":\"Niacin\",\"evidence_start_char\":\"28466\",\"evidence_end_char\":\"28472\",\"reason\":\"Supported as a currently available drug that raises HDL-C.\"},{\"entity_gold_id\":\"silver_entity:3d68bb6ab178e3fe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"RVX-208\",\"revised_normalized_name\":\"RVX-208\",\"evidence_text\":\"RVX-208\",\"evidence_start_char\":\"30705\",\"evidence_end_char\":\"30712\",\"reason\":\"Supported as a named BET domain inhibitor drug that induces apoA-I synthesis.\"},{\"entity_gold_id\":\"silver_entity:d0e8d130ffd5a65a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Torcetrapib\",\"revised_normalized_name\":\"Torcetrapib\",\"evidence_text\":\"torcetrapib\",\"evidence_start_char\":\"29563\",\"evidence_end_char\":\"29574\",\"reason\":\"Supported as a named CETP inhibitor whose clinical development was halted.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_added:cholesteryl_ester_transfer_protein_inhibitors\",\"entity_type\":\"Drug\",\"entity_text\":\"Cholesteryl ester transfer protein inhibitors\",\"normalized_name\":\"Cholesteryl ester transfer protein inhibitors\",\"evidence_text\":\"Cholesteryl ester transfer protein inhibitors\",\"evidence_start_char\":\"29170\",\"evidence_end_char\":\"29216\",\"reason\":\"Important missing therapeutic drug class explicitly used as a section heading and discussed through several named agents.\"},{\"entity_gold_id\":\"gold_added:cholesteryl_ester_transfer_protein\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Cholesteryl ester transfer protein (CETP)\",\"normalized_name\":\"Cholesteryl ester transfer protein\",\"evidence_text\":\"Cholesteryl ester transfer protein (CETP)\",\"evidence_start_char\":\"29218\",\"evidence_end_char\":\"29260\",\"reason\":\"Important missing protein/therapeutic target central to the CETP inhibitor section.\"},{\"entity_gold_id\":\"gold_added:vascular_endothelial_function\",\"entity_type\":\"Biomarker\",\"entity_text\":\"vascular endothelial function\",\"normalized_name\":\"Vascular endothelial function\",\"evidence_text\":\"vascular endothelial function\",\"evidence_start_char\":\"30033\",\"evidence_end_char\":\"30062\",\"reason\":\"Important missing functional cardiovascular endpoint explicitly evaluated for dalcetrapib.\"},{\"entity_gold_id\":\"gold_added:carotid_atherosclerosis\",\"entity_type\":\"Condition\",\"entity_text\":\"carotid atherosclerosis\",\"normalized_name\":\"Carotid atherosclerosis\",\"evidence_text\":\"carotid atherosclerosis\",\"evidence_start_char\":\"30078\",\"evidence_end_char\":\"30101\",\"reason\":\"Important missing vascular disease condition explicitly evaluated as an endpoint for dalcetrapib.\"},{\"entity_gold_id\":\"gold_added:apoa_i_milano\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoA-I Milano\",\"normalized_name\":\"Apolipoprotein A-I Milano\",\"evidence_text\":\"apoA-I Milano\",\"evidence_start_char\":\"31880\",\"evidence_end_char\":\"31893\",\"reason\":\"Important missing apolipoprotein variant explicitly present as a component of ETC-216.\"},{\"entity_gold_id\":\"gold_added:acute_coronary_syndrome\",\"entity_type\":\"Condition\",\"entity_text\":\"acute coronary syndrome\",\"normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"acute coronary syndrome\",\"evidence_start_char\":\"32042\",\"evidence_end_char\":\"32065\",\"reason\":\"Important missing clinical condition describing the patient population receiving ETC-216.\"}],\"review_notes\":\"Reviewed all candidate rows. Abbreviation-based lipid biomarkers were normalized to HDL-C and LDL-C, and unsupported wording for LCAT activity was revised to the evidence-supported LCAT activation. Added central missing drug class, protein target, functional endpoint, condition endpoints, and apoA-I variant explicitly present in the chunk.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783093720.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 9231,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 14719,
+      "output_tokens_details": {
+        "reasoning_tokens": 11660
+      },
+      "total_tokens": 23950
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T15:45:26.677275+00:00",
+  "finished_at": "2026-07-03T15:48:41.512902+00:00",
+  "duration_ms": 202800.261,
+  "status": "ok",
+  "error": ""
+}

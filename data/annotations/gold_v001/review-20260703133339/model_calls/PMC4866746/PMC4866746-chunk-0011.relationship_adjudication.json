@@ -1,0 +1,1140 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0011\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"TABLE\",\n    \"start_char\": \"54948\",\n    \"end_char\": \"55838\",\n    \"text\": \"-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212 Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\\n\\nAbbreviations: apo, apolipoprotein; CETP, cholesteryl ester transfer protein; DGAT-2, diacylglycerol acyltransferase 2; DHA, docosahexaenoic acid; EPA, eicosapentaenoic acid; HDL, high-density lipoprotein; HDL-C, high-density lipoprotein cholesterol; IDL, intermediate-density lipoprotein; LDL, low-density lipoprotein; LDL-C, low-density lipoprotein cholesterol; LPL, lipoprotein lipase; Lp-PLA2, lipoprotein-associated phospholipase A2; non-HDL-C, non-high-density lipoprotein cholesterol; PPAR\\u03b1, peroxisome proliferator-activated receptor alpha; TG, triglyceride; VLDL, very low-density lipoprotein.\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:a36e429444a6aeb1\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"apoC-III\",\n      \"normalized_name\": \"Apolipoprotein C-III\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apoC-III\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55203\",\n      \"evidence_end_char\": \"55211\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk supports the biomarker via the abbreviation mention; the candidate full-name evidence text is not present verbatim.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0271d77ee6d3a4f2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:diacylglycerol_acyltransferase_2\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Diacylglycerol acyltransferase 2\",\n      \"normalized_name\": \"Diacylglycerol acyltransferase 2\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"diacylglycerol acyltransferase 2\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55322\",\n      \"evidence_end_char\": \"55354\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone enzyme/biomarker explicitly defined in the abbreviations and referenced as DGAT-2 in the table row.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3660f17164b66345\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:lipoprotein_lipase\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein lipase\",\n      \"normalized_name\": \"Lipoprotein lipase\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lipoprotein lipase\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55605\",\n      \"evidence_end_char\": \"55623\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone enzyme/biomarker explicitly defined in the abbreviations and referenced as LPL in the table row.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7fbde38015a1a228\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:lipoprotein_associated_phospholipase_a2\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein-associated phospholipase A2\",\n      \"normalized_name\": \"Lipoprotein-associated phospholipase A2\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lipoprotein-associated phospholipase A2\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55634\",\n      \"evidence_end_char\": \"55673\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone enzyme/biomarker explicitly defined in the abbreviations and referenced as Lp-PLA2 in the table row.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1dd299605c77d9b4\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TG\",\n      \"normalized_name\": \"Triglyceride\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TG, triglyceride\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55785\",\n      \"evidence_end_char\": \"55801\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk uses TG and defines it as triglyceride; the candidate plural evidence text is not present verbatim.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6f5e75b380ea1193\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega-3 fatty acids\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55032\",\n      \"evidence_end_char\": \"55051\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Therapeutic agent class explicitly present in the table row.\"\n    },\n    {\n      \"entity_gold_id\": \"added_entity:docosahexaenoic_acid\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"DHA\",\n      \"normalized_name\": \"Docosahexaenoic acid\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"DHA, docosahexaenoic acid\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55356\",\n      \"evidence_end_char\": \"55381\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=DHA is explicitly listed as a component of omega-3 fatty acids and defined in the abbreviations.\"\n    },\n    {\n      \"entity_gold_id\": \"added_entity:eicosapentaenoic_acid\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"EPA\",\n      \"normalized_name\": \"Eicosapentaenoic acid\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"EPA, eicosapentaenoic acid\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": \"55383\",\n      \"evidence_end_char\": \"55409\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=EPA is explicitly listed as a component of omega-3 fatty acids and defined in the abbreviations.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:f5e737f837862dc4\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:diacylglycerol_acyltransferase_2\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Diacylglycerol acyltransferase 2\",\n      \"target_normalized_name\": \"Diacylglycerol acyltransferase 2\",\n      \"evidence_text\": \"Inhibit DGAT-2\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 55087,\n      \"evidence_end_char\": 55101,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0011.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:a98807ca67142fb8\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Apolipoprotein C-III\",\n      \"target_normalized_name\": \"Apolipoprotein C-III\",\n      \"evidence_text\": \"Decrease apoC-III\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 55194,\n      \"evidence_end_char\": 55211,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0011.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:26bf02d1f954a1fa\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Omega-3 fatty acids (EPA and DHA) Decrease TG synthesis\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 55032,\n      \"evidence_end_char\": 55087,\n      \"confidence_gold\": 0.78,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0011.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:fa6bc76250fd9f1b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:lipoprotein_lipase\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Lipoprotein lipase\",\n      \"target_normalized_name\": \"Lipoprotein lipase\",\n      \"evidence_text\": \"Increase LPL activity\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 55101,\n      \"evidence_end_char\": 55122,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0011.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:eb663cd648da532d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0011\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:lipoprotein_associated_phospholipase_a2\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Lipoprotein-associated phospholipase A2\",\n      \"target_normalized_name\": \"Lipoprotein-associated phospholipase A2\",\n      \"evidence_text\": \"Decrease Lp-PLA2\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 55178,\n      \"evidence_end_char\": 55194,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0011.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:f5e737f837862dc4\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:diacylglycerol_acyltransferase_2\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Diacylglycerol acyltransferase 2\",\"target_normalized_name\":\"Diacylglycerol acyltransferase 2\",\"evidence_text\":\"Inhibit DGAT-2\",\"evidence_start_char\":\"55087\",\"evidence_end_char\":\"55101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids table row explicitly lists 'Inhibit DGAT-2'; DGAT-2 is an accepted abbreviation for diacylglycerol acyltransferase 2, so inhibition supports a REDUCES relationship.\"},{\"relationship_gold_id\":\"silver_relationship:a98807ca67142fb8\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:apolipoprotein_c_iii\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"apoC-III\",\"target_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"Decrease apoC-III\",\"evidence_start_char\":\"55194\",\"evidence_end_char\":\"55211\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly states 'Decrease apoC-III', and apoC-III is an accepted biomarker entity normalized to apolipoprotein C-III.\"},{\"relationship_gold_id\":\"silver_relationship:26bf02d1f954a1fa\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"TG\",\"target_normalized_name\":\"Triglyceride\",\"evidence_text\":\"Omega-3 fatty acids (EPA and DHA) Decrease TG synthesis\",\"evidence_start_char\":\"55032\",\"evidence_end_char\":\"55087\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The row identifies omega-3 fatty acids and states 'Decrease TG synthesis'; TG is accepted and defined as triglyceride. The relation is retained as REDUCES but revised to the accepted TG/triglyceride endpoint and marked as a strong implication because the evidence directly concerns TG synthesis rather than TG level alone.\"},{\"relationship_gold_id\":\"silver_relationship:fa6bc76250fd9f1b\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:lipoprotein_lipase\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Lipoprotein lipase\",\"target_normalized_name\":\"Lipoprotein lipase\",\"evidence_text\":\"Increase LPL activity\",\"evidence_start_char\":\"55101\",\"evidence_end_char\":\"55122\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly lists 'Increase LPL activity'; LPL is an accepted abbreviation for lipoprotein lipase, supporting an INCREASES relationship.\"},{\"relationship_gold_id\":\"silver_relationship:eb663cd648da532d\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:lipoprotein_associated_phospholipase_a2\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Lipoprotein-associated phospholipase A2\",\"target_normalized_name\":\"Lipoprotein-associated phospholipase A2\",\"evidence_text\":\"Decrease Lp-PLA2\",\"evidence_start_char\":\"55178\",\"evidence_end_char\":\"55194\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly states 'Decrease Lp-PLA2'; Lp-PLA2 is an accepted abbreviation for lipoprotein-associated phospholipase A2, supporting a REDUCES relationship.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate relationships have accepted endpoints and are supported by the omega-3 fatty acids table row. The TG relationship was revised to align with the accepted TG/triglyceride entity and to reflect that the evidence is specifically reduced TG synthesis.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:f5e737f837862dc4",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:diacylglycerol_acyltransferase_2",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Diacylglycerol acyltransferase 2",
+        "target_normalized_name": "Diacylglycerol acyltransferase 2",
+        "evidence_text": "Inhibit DGAT-2",
+        "evidence_start_char": "55087",
+        "evidence_end_char": "55101",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids table row explicitly lists 'Inhibit DGAT-2'; DGAT-2 is an accepted abbreviation for diacylglycerol acyltransferase 2, so inhibition supports a REDUCES relationship."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:a98807ca67142fb8",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:apolipoprotein_c_iii",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "apoC-III",
+        "target_normalized_name": "Apolipoprotein C-III",
+        "evidence_text": "Decrease apoC-III",
+        "evidence_start_char": "55194",
+        "evidence_end_char": "55211",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row explicitly states 'Decrease apoC-III', and apoC-III is an accepted biomarker entity normalized to apolipoprotein C-III."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:26bf02d1f954a1fa",
+        "decision": "revised",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "TG",
+        "target_normalized_name": "Triglyceride",
+        "evidence_text": "Omega-3 fatty acids (EPA and DHA) Decrease TG synthesis",
+        "evidence_start_char": "55032",
+        "evidence_end_char": "55087",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The row identifies omega-3 fatty acids and states 'Decrease TG synthesis'; TG is accepted and defined as triglyceride. The relation is retained as REDUCES but revised to the accepted TG/triglyceride endpoint and marked as a strong implication because the evidence directly concerns TG synthesis rather than TG level alone."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:fa6bc76250fd9f1b",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:lipoprotein_lipase",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Lipoprotein lipase",
+        "target_normalized_name": "Lipoprotein lipase",
+        "evidence_text": "Increase LPL activity",
+        "evidence_start_char": "55101",
+        "evidence_end_char": "55122",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row explicitly lists 'Increase LPL activity'; LPL is an accepted abbreviation for lipoprotein lipase, supporting an INCREASES relationship."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:eb663cd648da532d",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:lipoprotein_associated_phospholipase_a2",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Lipoprotein-associated phospholipase A2",
+        "target_normalized_name": "Lipoprotein-associated phospholipase A2",
+        "evidence_text": "Decrease Lp-PLA2",
+        "evidence_start_char": "55178",
+        "evidence_end_char": "55194",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row explicitly states 'Decrease Lp-PLA2'; Lp-PLA2 is an accepted abbreviation for lipoprotein-associated phospholipase A2, supporting a REDUCES relationship."
+      }
+    ],
+    "relationship_additions": [],
+    "review_notes": "All candidate relationships have accepted endpoints and are supported by the omega-3 fatty acids table row. The TG relationship was revised to align with the accepted TG/triglyceride entity and to reflect that the evidence is specifically reduced TG synthesis."
+  },
+  "raw_response": {
+    "id": "resp_028e55edf56e443e006a47f06af62881a1941ccba95ede493f",
+    "created_at": 1783099498.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_028e55edf56e443e006a47f06bb95c81a1ac3fedd7595b3e52",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_028e55edf56e443e006a47f0a8ed1c81a185990f4dae177103",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:f5e737f837862dc4\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:diacylglycerol_acyltransferase_2\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Diacylglycerol acyltransferase 2\",\"target_normalized_name\":\"Diacylglycerol acyltransferase 2\",\"evidence_text\":\"Inhibit DGAT-2\",\"evidence_start_char\":\"55087\",\"evidence_end_char\":\"55101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids table row explicitly lists 'Inhibit DGAT-2'; DGAT-2 is an accepted abbreviation for diacylglycerol acyltransferase 2, so inhibition supports a REDUCES relationship.\"},{\"relationship_gold_id\":\"silver_relationship:a98807ca67142fb8\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:apolipoprotein_c_iii\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"apoC-III\",\"target_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"Decrease apoC-III\",\"evidence_start_char\":\"55194\",\"evidence_end_char\":\"55211\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly states 'Decrease apoC-III', and apoC-III is an accepted biomarker entity normalized to apolipoprotein C-III.\"},{\"relationship_gold_id\":\"silver_relationship:26bf02d1f954a1fa\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"TG\",\"target_normalized_name\":\"Triglyceride\",\"evidence_text\":\"Omega-3 fatty acids (EPA and DHA) Decrease TG synthesis\",\"evidence_start_char\":\"55032\",\"evidence_end_char\":\"55087\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The row identifies omega-3 fatty acids and states 'Decrease TG synthesis'; TG is accepted and defined as triglyceride. The relation is retained as REDUCES but revised to the accepted TG/triglyceride endpoint and marked as a strong implication because the evidence directly concerns TG synthesis rather than TG level alone.\"},{\"relationship_gold_id\":\"silver_relationship:fa6bc76250fd9f1b\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:lipoprotein_lipase\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Lipoprotein lipase\",\"target_normalized_name\":\"Lipoprotein lipase\",\"evidence_text\":\"Increase LPL activity\",\"evidence_start_char\":\"55101\",\"evidence_end_char\":\"55122\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly lists 'Increase LPL activity'; LPL is an accepted abbreviation for lipoprotein lipase, supporting an INCREASES relationship.\"},{\"relationship_gold_id\":\"silver_relationship:eb663cd648da532d\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:lipoprotein_associated_phospholipase_a2\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Lipoprotein-associated phospholipase A2\",\"target_normalized_name\":\"Lipoprotein-associated phospholipase A2\",\"evidence_text\":\"Decrease Lp-PLA2\",\"evidence_start_char\":\"55178\",\"evidence_end_char\":\"55194\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row explicitly states 'Decrease Lp-PLA2'; Lp-PLA2 is an accepted abbreviation for lipoprotein-associated phospholipase A2, supporting a REDUCES relationship.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate relationships have accepted endpoints and are supported by the omega-3 fatty acids table row. The TG relationship was revised to align with the accepted TG/triglyceride entity and to reflect that the evidence is specifically reduced TG synthesis.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783099569.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 5450,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 4797,
+      "output_tokens_details": {
+        "reasoning_tokens": 3618
+      },
+      "total_tokens": 10247
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:24:59.853804+00:00",
+  "finished_at": "2026-07-03T17:26:09.820343+00:00",
+  "duration_ms": 74233.056,
+  "status": "ok",
+  "error": ""
+}

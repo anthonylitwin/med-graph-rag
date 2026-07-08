@@ -1,0 +1,754 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4287928-chunk-0007\",\n    \"document_id\": \"paper:PMC4287928\",\n    \"pmcid\": \"PMC4287928\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"32966\",\n    \"end_char\": \"38964\",\n    \"text\": \"contrast, an alternative approach is in preparing short peptide sequences that lack genetic homology to apoA-I, but similarly form an amphipathic helix and associate effectively with lipids. Preclinical studies using these peptides have demonstrated favorable effects on cholesterol efflux, LCAT activation, inflammatory and oxidative pathways, and ultimately atherosclerotic plaque (Dattaet al, ; Bielickiet al,). CER-001, an HDL-mimetic made up of apoA-I and phospholipids, has been associated with reduction of vascular inflammation and atherosclerotic regression after short-term administration in mice (Tardyet al,) as well as cholesterol mobilization in humans. In a Phase 2 trial, the primary endpoint of reducing atheroma volume compared with placebo was not reached (Tardifet al,). However, the safety profile has thus far been acceptable, and the drug may be effective in reverse lipid transport. Thus, further study in clinical trials may be warranted.\\n\\nReverse cholesterol transport targets\\n\\nIncreasing expression of ABCA-1 provides a potential opportunity to target a major factor implicated in cholesterol efflux, as opposed to simply increasing carrier (apoA-1 or HDL) capacity. However, work in this field has not advanced clinically.\\n\\nSimilarly, development of chemical inhibitors of microRNA elements implicated in the regulation of lipid metabolism may be beneficial. MicroRNA (miR)-33 is an intronic microRNA that suppresses ABCA-1 expression and reduces HDL-C levels (Rayneret al,). Early preclinical experience with miR-33 inhibitors demonstrates variable effects on atherosclerosis in animal models (Marquartet al,; Rotllanet al,). Given the central role of LCAT in reverse cholesterol transport by HDL, LCAT agonists have been developed and are undergoing preclinical evaluation (Chenet al,).\\n\\nHDL functional modification\\n\\nGiven disappointing results of HDL-C raising therapies in recent clinical trials (Barteret al,; Bodenet al,), there is increasing interest in qualitative features of HDL function. HDL particles circulate as a heterogeneous population of lipoproteins, differing in size, shape, protein, and lipid composition (Rosensonet al,). Furthermore, mass spectrometry has demonstrated more than 100 individual proteins that can be carried on HDL particles, many with activities beyond lipid metabolism, and many that are altered in patients with vascular disease compared with healthy control (Riwantoet al,). Data indicating that cholesterol efflux capacity is a better predictor of atherosclerotic burden than HDL-C concentration suggest that HDL quality may be a better indicator of the efficacy of novel HDL-targeted therapies (Hafianeet al,).\\n\\nOther approaches affecting lipoprotein metabolism\\n\\nNuclear receptors\\n\\nNuclear receptors including liver X receptors (LXRs), peroxisome proliferator-activated receptors (PPARs), and farnesoid X receptors (FXR) play a central role in lipid metabolism. The reader is referred to other reviews for discussion of bile acid receptors, including FXRs (Porezet al,).\\n\\nLiver X receptor\\n\\nLXRs are thought to serve as cholesterol sensors that when activated, increase biliary cholesterol excretion, reduce intestinal cholesterol absorption, and promote reverse cholesterol transport. LXR agonists have been demonstrated to attenuate atherosclerosis in animal models (van der Hoornet al,). However, a potentially limiting factor in clinical treatment with LXR agonists is the stimulation of hepatic lipogenesis (Fievet & Staels,). LXR agonists have been demonstrated to attenuate atherosclerosis in animal models (Kappuset al,). Some LXR agonists have been evaluated in early stage clinical trials (Katzet al, ; NCT00796575, NCT00836602, NCT01651273, NCT01651273), but their development for cardiovascular disease appears to have been halted. It remains uncertain whether agents can be developed to exploit the potential benefits of LXR activation while avoiding hypertriglyceridemia and hepatic steatosis.\\n\\nPeroxisome proliferator-activated receptors (PPARs)\\n\\nPPARs (\\u03b1, \\u03b3, or \\u03b4) play important roles in the regulation of fatty acid and lipoprotein metabolism. Among their principal actions, PPAR\\u03b1 promotes fatty acid oxidation in liver and muscle, lowers circulating triglycerides and apoC-III, and raises HDL-C, PPAR\\u03b3 promotes fatty acid uptake by adipocytes and lowers circulating fatty acids, and PPAR\\u03b4 promotes fatty acid oxidation in muscle and adipose tissue. Fibrate and thiazolidinedione drugs are ligands of PPAR\\u03b1 and PPAR\\u03b3, respectively. Early studies showed that gemfibrozil, a fibrate, reduced cardiovascular morbidity and mortality (Fricket al,; Robinset al,). However, subsequent studies evaluating the addition of fibrates to statins have not demonstrated clinical benefit (ACCORD Study Group,). Yet, meta-analysis indicates that fibrates may confer clinical benefit in patients with triglyceride levels at least 200 mg/dl, even with statin co-treatment (Bruckertet al,). In this regard, it may be premature to conclude that fibrates are ineffective in reducing residual cardiovascular risk. Composite evidence suggests cardiovascular efficacy of pioglitazone, a thiazolidinedione (Lincoffet al,). Yet, a dual PPAR-\\u03b1/\\u03b3 activator has failed to demonstrate clinical efficacy (Lincoffet al,). Selective PPAR-\\u03b4 (Choiet al,) and dual PPAR-\\u03b1/\\u03b4 activators (Cariouet al,) have been evaluated in early phase clinical trials, but their cardiovascular efficacy remains untested.\\n\\nPhospholipase inhibitors\\n\\nThe phospholipase A2 family of enzymes hydrolyzes the sn-2 ester bond of phospholipids in cell membranes and circulating lipoproteins, generating metabolites that may influence vascular function and inflammation. Secretory phospholipase A2 (sPLA2) activity results in the generation of smaller, more atherogenic LDL particles and the generation of pro-inflammatory and oxidative metabolites within the artery wall (Hurt-Camejoet al,). However, a Phase 3 study evaluating the sPLA2 inhibitor varespladib in patients\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:8081bf5da5da45fc\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:cholesterol_efflux_capacity\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Cholesterol efflux capacity\",\n      \"normalized_name\": \"Cholesterol efflux capacity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cholesterol efflux capacity\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 35433,\n      \"evidence_end_char\": 35460,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:835375dc92ff2257\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerosis\",\n      \"normalized_name\": \"Atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherosclerosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 34555,\n      \"evidence_end_char\": 34570,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1d47258e04f4de81\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:atherosclerotic_burden\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerotic burden\",\n      \"normalized_name\": \"Atherosclerotic burden\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherosclerotic burden\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 35486,\n      \"evidence_end_char\": 35508,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c038aa9d896b2838\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 36730,\n      \"evidence_end_char\": 36752,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f2b212d0b5d418a6\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_morbidity_and_mortality\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular morbidity and mortality\",\n      \"normalized_name\": \"Cardiovascular morbidity and mortality\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular morbidity and mortality\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 37546,\n      \"evidence_end_char\": 37584,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c569f72b04e4db48\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:hepatic_steatosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hepatic steatosis\",\n      \"normalized_name\": \"Hepatic steatosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hepatic steatosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 36927,\n      \"evidence_end_char\": 36944,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f46bd6af61226f70\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 36902,\n      \"evidence_end_char\": 36922,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:41904413a8b97dee\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:vascular_inflammation\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Vascular inflammation\",\n      \"normalized_name\": \"Vascular inflammation\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular inflammation\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 33480,\n      \"evidence_end_char\": 33501,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:083d452f4ff95f1d\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:cer_001\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"CER-001\",\n      \"normalized_name\": \"CER-001\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CER-001\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 33381,\n      \"evidence_end_char\": 33388,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:125eec5d111119a2\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gemfibrozil\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 37514,\n      \"evidence_end_char\": 37525,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6d700ad99f62f631\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:lxr_agonists\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"LXR agonists\",\n      \"normalized_name\": \"LXR agonists\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LXR agonists\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 36224,\n      \"evidence_end_char\": 36236,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7cf1132477643a50\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:pioglitazone\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pioglitazone\",\n      \"normalized_name\": \"Pioglitazone\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pioglitazone\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 38102,\n      \"evidence_end_char\": 38114,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ca3c553c8782070f\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:mir_33_inhibitors\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"miR-33 inhibitors\",\n      \"normalized_name\": \"miR-33 inhibitors\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"miR-33 inhibitors\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 34504,\n      \"evidence_end_char\": 34521,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0007.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:8081bf5da5da45fc\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cholesterol efflux capacity\",\"evidence_start_char\":\"35433\",\"evidence_end_char\":\"35460\",\"reason\":\"Explicitly stated as a predictor and is a standalone functional biomarker concept.\"},{\"entity_gold_id\":\"silver_entity:835375dc92ff2257\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"34555\",\"evidence_end_char\":\"34570\",\"reason\":\"Explicitly mentioned disease condition.\"},{\"entity_gold_id\":\"silver_entity:1d47258e04f4de81\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerotic burden\",\"evidence_start_char\":\"35486\",\"evidence_end_char\":\"35508\",\"reason\":\"Explicit phrase denotes burden/severity of atherosclerotic disease and is a standalone biomedical condition concept.\"},{\"entity_gold_id\":\"silver_entity:c038aa9d896b2838\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"36730\",\"evidence_end_char\":\"36752\",\"reason\":\"Explicitly mentioned condition category.\"},{\"entity_gold_id\":\"silver_entity:f2b212d0b5d418a6\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular morbidity and mortality\",\"evidence_start_char\":\"37546\",\"evidence_end_char\":\"37584\",\"reason\":\"This is a composite clinical outcome phrase rather than a standalone Condition entity.\"},{\"entity_gold_id\":\"silver_entity:c569f72b04e4db48\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"36927\",\"evidence_end_char\":\"36944\",\"reason\":\"Explicitly mentioned pathological condition.\"},{\"entity_gold_id\":\"silver_entity:f46bd6af61226f70\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"36902\",\"evidence_end_char\":\"36922\",\"reason\":\"Explicitly mentioned metabolic condition.\"},{\"entity_gold_id\":\"silver_entity:41904413a8b97dee\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular inflammation\",\"evidence_start_char\":\"33480\",\"evidence_end_char\":\"33501\",\"reason\":\"Explicitly mentioned inflammatory vascular condition.\"},{\"entity_gold_id\":\"silver_entity:083d452f4ff95f1d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"CER-001\",\"evidence_start_char\":\"33381\",\"evidence_end_char\":\"33388\",\"reason\":\"Explicitly named HDL-mimetic therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:125eec5d111119a2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gemfibrozil\",\"evidence_start_char\":\"37514\",\"evidence_end_char\":\"37525\",\"reason\":\"Explicitly named drug.\"},{\"entity_gold_id\":\"silver_entity:6d700ad99f62f631\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LXR agonists\",\"evidence_start_char\":\"36224\",\"evidence_end_char\":\"36236\",\"reason\":\"Explicitly mentioned therapeutic drug class.\"},{\"entity_gold_id\":\"silver_entity:7cf1132477643a50\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"pioglitazone\",\"evidence_start_char\":\"38102\",\"evidence_end_char\":\"38114\",\"reason\":\"Explicitly named drug.\"},{\"entity_gold_id\":\"silver_entity:ca3c553c8782070f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"miR-33 inhibitors\",\"evidence_start_char\":\"34504\",\"evidence_end_char\":\"34521\",\"reason\":\"Explicitly mentioned therapeutic inhibitor class.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:abca1_expression\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ABCA-1 expression\",\"normalized_name\":\"ABCA-1 expression\",\"evidence_text\":\"ABCA-1 expression\",\"evidence_start_char\":\"34411\",\"evidence_end_char\":\"34428\",\"reason\":\"Important missing biomarker/target explicitly discussed in reverse cholesterol transport.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:hdl_c_levels\",\"entity_type\":\"Biomarker\",\"entity_text\":\"HDL-C levels\",\"normalized_name\":\"HDL-C\",\"evidence_text\":\"HDL-C levels\",\"evidence_start_char\":\"34441\",\"evidence_end_char\":\"34453\",\"reason\":\"Important lipid biomarker explicitly mentioned.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:lcat_agonists\",\"entity_type\":\"Drug\",\"entity_text\":\"LCAT agonists\",\"normalized_name\":\"LCAT agonists\",\"evidence_text\":\"LCAT agonists\",\"evidence_start_char\":\"34693\",\"evidence_end_char\":\"34706\",\"reason\":\"Important missing therapeutic class explicitly stated as developed and under preclinical evaluation.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:fibrates\",\"entity_type\":\"Drug\",\"entity_text\":\"fibrates\",\"normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"37669\",\"evidence_end_char\":\"37677\",\"reason\":\"Important drug class explicitly discussed in relation to statin add-on studies and cardiovascular risk.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:statins\",\"entity_type\":\"Drug\",\"entity_text\":\"statins\",\"normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"37681\",\"evidence_end_char\":\"37688\",\"reason\":\"Important drug class explicitly mentioned as co-treatment with fibrates.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:thiazolidinedione_drugs\",\"entity_type\":\"Drug\",\"entity_text\":\"thiazolidinedione drugs\",\"normalized_name\":\"Thiazolidinediones\",\"evidence_text\":\"thiazolidinedione drugs\",\"evidence_start_char\":\"37418\",\"evidence_end_char\":\"37441\",\"reason\":\"Important drug class explicitly identified as PPAR\u03b3 ligands.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:varespladib\",\"entity_type\":\"Drug\",\"entity_text\":\"varespladib\",\"normalized_name\":\"Varespladib\",\"evidence_text\":\"varespladib\",\"evidence_start_char\":\"38941\",\"evidence_end_char\":\"38952\",\"reason\":\"Explicitly named sPLA2 inhibitor drug missing from candidates.\"}],\"review_notes\":\"Accepted supported standalone biomedical concepts; rejected the composite outcome phrase cardiovascular morbidity and mortality. Added salient missing biomarkers and therapeutic classes/drugs explicitly present in the chunk.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:8081bf5da5da45fc",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cholesterol efflux capacity",
+        "evidence_start_char": "35433",
+        "evidence_end_char": "35460",
+        "reason": "Explicitly stated as a predictor and is a standalone functional biomarker concept."
+      },
+      {
+        "entity_gold_id": "silver_entity:835375dc92ff2257",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atherosclerosis",
+        "evidence_start_char": "34555",
+        "evidence_end_char": "34570",
+        "reason": "Explicitly mentioned disease condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:1d47258e04f4de81",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atherosclerotic burden",
+        "evidence_start_char": "35486",
+        "evidence_end_char": "35508",
+        "reason": "Explicit phrase denotes burden/severity of atherosclerotic disease and is a standalone biomedical condition concept."
+      },
+      {
+        "entity_gold_id": "silver_entity:c038aa9d896b2838",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular disease",
+        "evidence_start_char": "36730",
+        "evidence_end_char": "36752",
+        "reason": "Explicitly mentioned condition category."
+      },
+      {
+        "entity_gold_id": "silver_entity:f2b212d0b5d418a6",
+        "decision": "rejected",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular morbidity and mortality",
+        "evidence_start_char": "37546",
+        "evidence_end_char": "37584",
+        "reason": "This is a composite clinical outcome phrase rather than a standalone Condition entity."
+      },
+      {
+        "entity_gold_id": "silver_entity:c569f72b04e4db48",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hepatic steatosis",
+        "evidence_start_char": "36927",
+        "evidence_end_char": "36944",
+        "reason": "Explicitly mentioned pathological condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:f46bd6af61226f70",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hypertriglyceridemia",
+        "evidence_start_char": "36902",
+        "evidence_end_char": "36922",
+        "reason": "Explicitly mentioned metabolic condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:41904413a8b97dee",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "vascular inflammation",
+        "evidence_start_char": "33480",
+        "evidence_end_char": "33501",
+        "reason": "Explicitly mentioned inflammatory vascular condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:083d452f4ff95f1d",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "CER-001",
+        "evidence_start_char": "33381",
+        "evidence_end_char": "33388",
+        "reason": "Explicitly named HDL-mimetic therapeutic agent."
+      },
+      {
+        "entity_gold_id": "silver_entity:125eec5d111119a2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "gemfibrozil",
+        "evidence_start_char": "37514",
+        "evidence_end_char": "37525",
+        "reason": "Explicitly named drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:6d700ad99f62f631",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "LXR agonists",
+        "evidence_start_char": "36224",
+        "evidence_end_char": "36236",
+        "reason": "Explicitly mentioned therapeutic drug class."
+      },
+      {
+        "entity_gold_id": "silver_entity:7cf1132477643a50",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "pioglitazone",
+        "evidence_start_char": "38102",
+        "evidence_end_char": "38114",
+        "reason": "Explicitly named drug."
+      },
+      {
+        "entity_gold_id": "silver_entity:ca3c553c8782070f",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "miR-33 inhibitors",
+        "evidence_start_char": "34504",
+        "evidence_end_char": "34521",
+        "reason": "Explicitly mentioned therapeutic inhibitor class."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:abca1_expression",
+        "entity_type": "Biomarker",
+        "entity_text": "ABCA-1 expression",
+        "normalized_name": "ABCA-1 expression",
+        "evidence_text": "ABCA-1 expression",
+        "evidence_start_char": "34411",
+        "evidence_end_char": "34428",
+        "reason": "Important missing biomarker/target explicitly discussed in reverse cholesterol transport."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:hdl_c_levels",
+        "entity_type": "Biomarker",
+        "entity_text": "HDL-C levels",
+        "normalized_name": "HDL-C",
+        "evidence_text": "HDL-C levels",
+        "evidence_start_char": "34441",
+        "evidence_end_char": "34453",
+        "reason": "Important lipid biomarker explicitly mentioned."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:lcat_agonists",
+        "entity_type": "Drug",
+        "entity_text": "LCAT agonists",
+        "normalized_name": "LCAT agonists",
+        "evidence_text": "LCAT agonists",
+        "evidence_start_char": "34693",
+        "evidence_end_char": "34706",
+        "reason": "Important missing therapeutic class explicitly stated as developed and under preclinical evaluation."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:fibrates",
+        "entity_type": "Drug",
+        "entity_text": "fibrates",
+        "normalized_name": "Fibrates",
+        "evidence_text": "fibrates",
+        "evidence_start_char": "37669",
+        "evidence_end_char": "37677",
+        "reason": "Important drug class explicitly discussed in relation to statin add-on studies and cardiovascular risk."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:statins",
+        "entity_type": "Drug",
+        "entity_text": "statins",
+        "normalized_name": "Statins",
+        "evidence_text": "statins",
+        "evidence_start_char": "37681",
+        "evidence_end_char": "37688",
+        "reason": "Important drug class explicitly mentioned as co-treatment with fibrates."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:thiazolidinedione_drugs",
+        "entity_type": "Drug",
+        "entity_text": "thiazolidinedione drugs",
+        "normalized_name": "Thiazolidinediones",
+        "evidence_text": "thiazolidinedione drugs",
+        "evidence_start_char": "37418",
+        "evidence_end_char": "37441",
+        "reason": "Important drug class explicitly identified as PPAR\u03b3 ligands."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4287928-chunk-0007:varespladib",
+        "entity_type": "Drug",
+        "entity_text": "varespladib",
+        "normalized_name": "Varespladib",
+        "evidence_text": "varespladib",
+        "evidence_start_char": "38941",
+        "evidence_end_char": "38952",
+        "reason": "Explicitly named sPLA2 inhibitor drug missing from candidates."
+      }
+    ],
+    "review_notes": "Accepted supported standalone biomedical concepts; rejected the composite outcome phrase cardiovascular morbidity and mortality. Added salient missing biomarkers and therapeutic classes/drugs explicitly present in the chunk."
+  },
+  "raw_response": {
+    "id": "resp_07e065dc80ff38ac006a47da97f25881a0beeaccbfadd64899",
+    "created_at": 1783093911.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_07e065dc80ff38ac006a47da9957e081a097321723af325796",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_07e065dc80ff38ac006a47db5aaf0481a0a9ef83e63aafb1ae",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:8081bf5da5da45fc\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cholesterol efflux capacity\",\"evidence_start_char\":\"35433\",\"evidence_end_char\":\"35460\",\"reason\":\"Explicitly stated as a predictor and is a standalone functional biomarker concept.\"},{\"entity_gold_id\":\"silver_entity:835375dc92ff2257\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"34555\",\"evidence_end_char\":\"34570\",\"reason\":\"Explicitly mentioned disease condition.\"},{\"entity_gold_id\":\"silver_entity:1d47258e04f4de81\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerotic burden\",\"evidence_start_char\":\"35486\",\"evidence_end_char\":\"35508\",\"reason\":\"Explicit phrase denotes burden/severity of atherosclerotic disease and is a standalone biomedical condition concept.\"},{\"entity_gold_id\":\"silver_entity:c038aa9d896b2838\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"36730\",\"evidence_end_char\":\"36752\",\"reason\":\"Explicitly mentioned condition category.\"},{\"entity_gold_id\":\"silver_entity:f2b212d0b5d418a6\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular morbidity and mortality\",\"evidence_start_char\":\"37546\",\"evidence_end_char\":\"37584\",\"reason\":\"This is a composite clinical outcome phrase rather than a standalone Condition entity.\"},{\"entity_gold_id\":\"silver_entity:c569f72b04e4db48\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"36927\",\"evidence_end_char\":\"36944\",\"reason\":\"Explicitly mentioned pathological condition.\"},{\"entity_gold_id\":\"silver_entity:f46bd6af61226f70\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"36902\",\"evidence_end_char\":\"36922\",\"reason\":\"Explicitly mentioned metabolic condition.\"},{\"entity_gold_id\":\"silver_entity:41904413a8b97dee\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular inflammation\",\"evidence_start_char\":\"33480\",\"evidence_end_char\":\"33501\",\"reason\":\"Explicitly mentioned inflammatory vascular condition.\"},{\"entity_gold_id\":\"silver_entity:083d452f4ff95f1d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"CER-001\",\"evidence_start_char\":\"33381\",\"evidence_end_char\":\"33388\",\"reason\":\"Explicitly named HDL-mimetic therapeutic agent.\"},{\"entity_gold_id\":\"silver_entity:125eec5d111119a2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gemfibrozil\",\"evidence_start_char\":\"37514\",\"evidence_end_char\":\"37525\",\"reason\":\"Explicitly named drug.\"},{\"entity_gold_id\":\"silver_entity:6d700ad99f62f631\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LXR agonists\",\"evidence_start_char\":\"36224\",\"evidence_end_char\":\"36236\",\"reason\":\"Explicitly mentioned therapeutic drug class.\"},{\"entity_gold_id\":\"silver_entity:7cf1132477643a50\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"pioglitazone\",\"evidence_start_char\":\"38102\",\"evidence_end_char\":\"38114\",\"reason\":\"Explicitly named drug.\"},{\"entity_gold_id\":\"silver_entity:ca3c553c8782070f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"miR-33 inhibitors\",\"evidence_start_char\":\"34504\",\"evidence_end_char\":\"34521\",\"reason\":\"Explicitly mentioned therapeutic inhibitor class.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:abca1_expression\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ABCA-1 expression\",\"normalized_name\":\"ABCA-1 expression\",\"evidence_text\":\"ABCA-1 expression\",\"evidence_start_char\":\"34411\",\"evidence_end_char\":\"34428\",\"reason\":\"Important missing biomarker/target explicitly discussed in reverse cholesterol transport.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:hdl_c_levels\",\"entity_type\":\"Biomarker\",\"entity_text\":\"HDL-C levels\",\"normalized_name\":\"HDL-C\",\"evidence_text\":\"HDL-C levels\",\"evidence_start_char\":\"34441\",\"evidence_end_char\":\"34453\",\"reason\":\"Important lipid biomarker explicitly mentioned.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:lcat_agonists\",\"entity_type\":\"Drug\",\"entity_text\":\"LCAT agonists\",\"normalized_name\":\"LCAT agonists\",\"evidence_text\":\"LCAT agonists\",\"evidence_start_char\":\"34693\",\"evidence_end_char\":\"34706\",\"reason\":\"Important missing therapeutic class explicitly stated as developed and under preclinical evaluation.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:fibrates\",\"entity_type\":\"Drug\",\"entity_text\":\"fibrates\",\"normalized_name\":\"Fibrates\",\"evidence_text\":\"fibrates\",\"evidence_start_char\":\"37669\",\"evidence_end_char\":\"37677\",\"reason\":\"Important drug class explicitly discussed in relation to statin add-on studies and cardiovascular risk.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:statins\",\"entity_type\":\"Drug\",\"entity_text\":\"statins\",\"normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"37681\",\"evidence_end_char\":\"37688\",\"reason\":\"Important drug class explicitly mentioned as co-treatment with fibrates.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:thiazolidinedione_drugs\",\"entity_type\":\"Drug\",\"entity_text\":\"thiazolidinedione drugs\",\"normalized_name\":\"Thiazolidinediones\",\"evidence_text\":\"thiazolidinedione drugs\",\"evidence_start_char\":\"37418\",\"evidence_end_char\":\"37441\",\"reason\":\"Important drug class explicitly identified as PPAR\u03b3 ligands.\"},{\"entity_gold_id\":\"added_entity:PMC4287928-chunk-0007:varespladib\",\"entity_type\":\"Drug\",\"entity_text\":\"varespladib\",\"normalized_name\":\"Varespladib\",\"evidence_text\":\"varespladib\",\"evidence_start_char\":\"38941\",\"evidence_end_char\":\"38952\",\"reason\":\"Explicitly named sPLA2 inhibitor drug missing from candidates.\"}],\"review_notes\":\"Accepted supported standalone biomedical concepts; rejected the composite outcome phrase cardiovascular morbidity and mortality. Added salient missing biomarkers and therapeutic classes/drugs explicitly present in the chunk.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783094119.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 5589,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 15081,
+      "output_tokens_details": {
+        "reasoning_tokens": 13466
+      },
+      "total_tokens": 20670
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T15:51:52.235709+00:00",
+  "finished_at": "2026-07-03T15:55:20.402111+00:00",
+  "duration_ms": 216219.579,
+  "status": "ok",
+  "error": ""
+}

@@ -1,0 +1,824 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC3234107-chunk-0001\",\n    \"document_id\": \"paper:PMC3234107\",\n    \"pmcid\": \"PMC3234107\",\n    \"section\": \"TITLE\",\n    \"start_char\": \"0\",\n    \"end_char\": \"5996\",\n    \"text\": \"The Role of Triglycerides in Atherosclerosis\\n\\nHypertriglyceridemia is a prevalent risk factor for cardiovascular disease (CVD) and increasingly important in the setting of current obesity and insulin resistance epidemics. High triglyceride (TG) levels are markers for several types of atherogenic lipoproteins. Patients who have hypertriglyceridemia may be at significant risk for CVD even if low-density lipoprotein cholesterol levels are at goal, and therefore warrant treatment that optimizes diet, reduces overweight, and promotes regular exercise. High-risk patients with hypertriglyceridemia, such as those with diabetes, CVD, or metabolic syndrome, may benefit from additional drug treatment aside from a statin to address other lipid abnormalities. In this discussion, we review the role of hypertriglyceridemia and its associated atherogenic lipoproteins in the pathogenesis of atherosclerosis, the relevance of a high TG level as a predictor of CVD, the cardiovascular outcomes from TG-lowering intervention trials, and the current guidelines for treating hypertriglyceridemia.\\n\\nIntroduction\\n\\nWith a growing epidemic of childhood and adult obesity, insulin resistance, and type 2 diabetes, atherosclerotic cardiovascular disease (CVD) remains the leading cause of death and disability in the Western world, affecting over 13.2 million Americans. Among risk factors for CVD, it is estimated by the NHANES 1999 to 2008 that the overall prevalence of hypertriglyceridemia in the adult population in the United States is 31%. More so, the prevalence of triglyceride (TG) levels above 150 mg/dL is nearly twice as high in subjects with metabolic syndrome. For this reason, comprehensive evaluation and management of CVD must address hypertriglyceridemia and the dyslipidemic states associated with it.\\n\\nAlthough elevated low-density lipoprotein cholesterol (LDL-C) is well established as a major predictor of coronary heart disease (CHD) risk and has been the primary target for lipid-lowering strategies by the US NCEP, evidence suggests that an elevated TG level is also an independent risk factor. Large-scale, randomized, prospective trials involving patients with CHD have shown that treatment with statins reduces the relative risk of cardiovascular deaths, nonfatal myocardial infarction, and stroke. However, in many cases the continuing risk despite optimal LDL-C reduction on statin monotherapy remains high and may result in part from residual atherogenic dyslipidemia. This means that in addition to the critical role that LDL-C plays in atherosclerosis, there is significant contribution from hypertriglyceridemia and its associated conditions.\\n\\nHigh TG levels are markers for atherogenic lipoproteins, particularly important in patients with insulin resistant syndromes such as type 2 diabetes mellitus and metabolic syndrome who commonly present with combined dyslipidemia characterized by fasting and postprandial hypertriglyceridemia, low high-density lipoprotein cholesterol (HDL-C) levels, small LDL and HDL particles, and accumulation of partially metabolized chylomicrons (CMs) and very low density lipoproteins (VLDLs), the so-called remnant particles rich in apolipoprotein (apo) C-III and cholesterol. These patients are at significant risk for CVD even if LDL-C levels are at goal, and therefore warrant treatment that goes beyond the use of statins to address other lipid abnormalities.\\n\\nIn this discussion, we review the role of TG in the pathogenesis of atherosclerosis, the relevance of a high TG level as a predictor of CHD, the cardiovascular outcomes from TG-lowering intervention trials, and the current guidelines for treating hypertriglyceridemia.\\n\\nTriglycerides and Atherogenesis\\n\\nTGs, as far as is currently known, are not directly atherogenic but represent an important biomarker of CVD risk because of their association with atherogenic remnant particles and apo C-III, a proinflammatory, proatherogenic protein found on all classes of the plasma lipoproteins. Several species of triglyceride-rich lipoproteins (TRLs) including VLDL and VLDL remnants, as well as CM remnants appear to promote atherogenesis independently of LDL. Remnant species result from partial hydrolysis by lipoprotein lipase (LPL) of TRLs of hepatic and intestinal origin that have picked up cholesterol esters from HDL through the action of cholesterol ester transfer protein. Similar to oxidized LDL, these cholesterol-enriched, TG-poor species are subject to endothelial accumulation and uptake by macrophages to form foam cells. Foam cells promote fatty streak formation, the precursor of atherosclerotic plaque.\\n\\nTo avoid the atherogenic inflammatory cascade, TRL remnants must be cleared from plasma and metabolized by the liver before endothelial accumulation occurs. However, hypertriglyceridemic states are associated with increased VLDL production and delayed VLDL clearance from circulation. High liver secretion of large TG-rich VLDL that contains apo C-III is a common finding in hypertriglyceridemia and in some cases has been associated with insulin resistance. In addition, delayed clearance of all apo B lipoproteins, including VLDL, has been attributed to different mechanisms such as apo C-III\\u2013mediated inhibition of apo E and apo B-100 binding to hepatic receptors and proteoglycan; reduced activity of LPL, hepatic TG lipase, or novel receptors such as GPI-anchored HDL-binding protein 1 (GPIHBP1) or proteoglycan; and finally, reduced apo E and apo E to C-III ratio reflecting reduced ability of the lipoproteins to be taken up by the liver. Similarly, CMs are taken up by the liver via LDL receptors or LDL receptor\\u2013related proteins and unless their TG core is removed they are not considered atherogenic due to their very large size, which slows entry into the arterial intima. It is the resulting CM remnants that are atherogenic, presumably because they are sufficiently small to pass through the endothelial cell barrier to the arterial intima. Hepatic\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:69b1051e8257c1da\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein C-III\",\n      \"normalized_name\": \"Apolipoprotein C-III\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein C-III\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ad048938120b30cb\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:atherogenic_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Atherogenic lipoproteins\",\n      \"normalized_name\": \"Atherogenic lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherogenic lipoproteins\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 285,\n      \"evidence_end_char\": 309,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5adb89b7ab1b1491\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:atherogenic_remnant_particles\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Atherogenic remnant particles\",\n      \"normalized_name\": \"Atherogenic remnant particles\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherogenic remnant particles\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 3869,\n      \"evidence_end_char\": 3898,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:30054a854c010537\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:chylomicron_remnants\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Chylomicron remnants\",\n      \"normalized_name\": \"Chylomicron remnants\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Chylomicron remnants\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5aca972be2468b5a\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:elevated_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Elevated triglycerides\",\n      \"normalized_name\": \"Elevated triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Elevated triglycerides\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:999195a5a158ead8\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:low_high_density_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Low high-density lipoprotein cholesterol\",\n      \"normalized_name\": \"Low high-density lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"low high-density lipoprotein cholesterol\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2957,\n      \"evidence_end_char\": 2997,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:53ddb5eb2bf826d5\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:low_density_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Low-density lipoprotein cholesterol\",\n      \"normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"low-density lipoprotein cholesterol\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 393,\n      \"evidence_end_char\": 428,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c18439cdcab13ae3\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglyceride-rich lipoproteins\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 4024,\n      \"evidence_end_char\": 4054,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3d6c9f044dbf6c08\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglycerides\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 12,\n      \"evidence_end_char\": 25,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d0d3dd114af83763\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:very_low_density_lipoprotein_remnants\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Very low density lipoprotein remnants\",\n      \"normalized_name\": \"Very low density lipoprotein remnants\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Very low density lipoprotein remnants\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7303253b74cb1f99\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"biomarker:very_low_density_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Very low density lipoproteins\",\n      \"normalized_name\": \"Very low density lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"very low density lipoproteins\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 3108,\n      \"evidence_end_char\": 3137,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:98b87404369ca84d\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerosis\",\n      \"normalized_name\": \"Atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Atherosclerosis\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 29,\n      \"evidence_end_char\": 44,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:03ffd3a849c6c89f\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:cardiovascular_death\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular death\",\n      \"normalized_name\": \"Cardiovascular death\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular death\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2246,\n      \"evidence_end_char\": 2266,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5bd0597eb3bcfe28\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 98,\n      \"evidence_end_char\": 120,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:93dfe88aca39ede5\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:combined_dyslipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Combined dyslipidemia\",\n      \"normalized_name\": \"Combined dyslipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"combined dyslipidemia\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2871,\n      \"evidence_end_char\": 2892,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:cb7f6d98ba3e8bd7\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary heart disease\",\n      \"normalized_name\": \"Coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary heart disease\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 1914,\n      \"evidence_end_char\": 1936,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b539f4ae0ac1cd74\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hypertriglyceridemia\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 46,\n      \"evidence_end_char\": 66,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fc51eda73217c1d4\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:insulin_resistance\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Insulin resistance\",\n      \"normalized_name\": \"Insulin resistance\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"insulin resistance\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 192,\n      \"evidence_end_char\": 210,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:95d358495b4c4d2b\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic syndrome\",\n      \"normalized_name\": \"Metabolic syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 636,\n      \"evidence_end_char\": 654,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:412f1de088f0a10c\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myocardial infarction\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2278,\n      \"evidence_end_char\": 2299,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:85212111eb7db7c2\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Stroke\",\n      \"normalized_name\": \"Stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"stroke\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2305,\n      \"evidence_end_char\": 2311,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:22f59e80faba72a5\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"condition:type_2_diabetes_mellitus\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Type 2 diabetes mellitus\",\n      \"normalized_name\": \"Type 2 diabetes mellitus\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"type 2 diabetes mellitus\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2797,\n      \"evidence_end_char\": 2821,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8d646635a2c751fa\",\n      \"document_id\": \"paper:PMC3234107\",\n      \"chunk_id\": \"PMC3234107-chunk-0001\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3234107\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"TITLE\",\n      \"evidence_start_char\": 2209,\n      \"evidence_end_char\": 2216,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3234107/PMC3234107-chunk-0001.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:69b1051e8257c1da\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apolipoprotein (apo) C-III\",\"revised_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"apolipoprotein (apo) C-III\",\"evidence_start_char\":\"3187\",\"evidence_end_char\":\"3213\",\"reason\":\"The chunk explicitly mentions apolipoprotein/apo C-III; normalization removes the parenthetical abbreviation.\"},{\"entity_gold_id\":\"silver_entity:ad048938120b30cb\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Atherogenic lipoproteins\",\"revised_normalized_name\":\"Atherogenic lipoproteins\",\"evidence_text\":\"atherogenic lipoproteins\",\"evidence_start_char\":\"285\",\"evidence_end_char\":\"309\",\"reason\":\"Standalone lipoprotein class explicitly mentioned as marked by high triglyceride levels.\"},{\"entity_gold_id\":\"silver_entity:5adb89b7ab1b1491\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Atherogenic remnant particles\",\"revised_normalized_name\":\"Atherogenic remnant particles\",\"evidence_text\":\"atherogenic remnant particles\",\"evidence_start_char\":\"3869\",\"evidence_end_char\":\"3898\",\"reason\":\"The chunk explicitly discusses atherogenic remnant particles as associated with CVD risk.\"},{\"entity_gold_id\":\"silver_entity:30054a854c010537\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"CM remnants\",\"revised_normalized_name\":\"Chylomicron remnants\",\"evidence_text\":\"CM remnants\",\"evidence_start_char\":\"4107\",\"evidence_end_char\":\"4118\",\"reason\":\"The chunk uses the defined abbreviation CM for chylomicrons; CM remnants supports the normalized concept chylomicron remnants.\"},{\"entity_gold_id\":\"silver_entity:5aca972be2468b5a\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"High triglyceride (TG) levels\",\"revised_normalized_name\":\"Elevated triglyceride levels\",\"evidence_text\":\"High triglyceride (TG) levels\",\"evidence_start_char\":\"222\",\"evidence_end_char\":\"251\",\"reason\":\"The chunk explicitly refers to high TG/triglyceride levels, supporting the elevated triglyceride biomarker abnormality.\"},{\"entity_gold_id\":\"silver_entity:999195a5a158ead8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Low high-density lipoprotein cholesterol\",\"revised_normalized_name\":\"Low high-density lipoprotein cholesterol\",\"evidence_text\":\"low high-density lipoprotein cholesterol\",\"evidence_start_char\":\"2957\",\"evidence_end_char\":\"2997\",\"reason\":\"Explicit abnormal HDL-C-related biomarker state in the chunk.\"},{\"entity_gold_id\":\"silver_entity:53ddb5eb2bf826d5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Low-density lipoprotein cholesterol\",\"revised_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"low-density lipoprotein cholesterol\",\"evidence_start_char\":\"393\",\"evidence_end_char\":\"428\",\"reason\":\"Explicitly mentioned lipid biomarker.\"},{\"entity_gold_id\":\"silver_entity:c18439cdcab13ae3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Triglyceride-rich lipoproteins\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"triglyceride-rich lipoproteins\",\"evidence_start_char\":\"4024\",\"evidence_end_char\":\"4054\",\"reason\":\"Explicitly mentioned class of lipoprotein biomarkers.\"},{\"entity_gold_id\":\"silver_entity:3d6c9f044dbf6c08\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Triglycerides\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Triglycerides\",\"evidence_start_char\":\"12\",\"evidence_end_char\":\"25\",\"reason\":\"Triglycerides are explicitly named in the title and discussed throughout the chunk.\"},{\"entity_gold_id\":\"silver_entity:d0d3dd114af83763\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL remnants\",\"revised_normalized_name\":\"Very low density lipoprotein remnants\",\"evidence_text\":\"VLDL remnants\",\"evidence_start_char\":\"4081\",\"evidence_end_char\":\"4094\",\"reason\":\"The chunk explicitly mentions VLDL remnants; VLDL is the abbreviation for very low density lipoprotein.\"},{\"entity_gold_id\":\"silver_entity:7303253b74cb1f99\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Very low density lipoproteins\",\"revised_normalized_name\":\"Very low density lipoproteins\",\"evidence_text\":\"very low density lipoproteins\",\"evidence_start_char\":\"3108\",\"evidence_end_char\":\"3137\",\"reason\":\"Explicitly mentioned lipoprotein biomarker class.\"},{\"entity_gold_id\":\"silver_entity:98b87404369ca84d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Atherosclerosis\",\"revised_normalized_name\":\"Atherosclerosis\",\"evidence_text\":\"Atherosclerosis\",\"evidence_start_char\":\"29\",\"evidence_end_char\":\"44\",\"reason\":\"Atherosclerosis is explicitly named as the disease process in the title and text.\"},{\"entity_gold_id\":\"silver_entity:03ffd3a849c6c89f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"cardiovascular deaths\",\"revised_normalized_name\":\"Cardiovascular death\",\"evidence_text\":\"cardiovascular deaths\",\"evidence_start_char\":\"2246\",\"evidence_end_char\":\"2267\",\"reason\":\"The chunk explicitly mentions cardiovascular deaths as a clinical outcome; normalized to singular concept.\"},{\"entity_gold_id\":\"silver_entity:5bd0597eb3bcfe28\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular disease\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"98\",\"evidence_end_char\":\"120\",\"reason\":\"Explicitly mentioned disease category.\"},{\"entity_gold_id\":\"silver_entity:93dfe88aca39ede5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Combined dyslipidemia\",\"revised_normalized_name\":\"Combined dyslipidemia\",\"evidence_text\":\"combined dyslipidemia\",\"evidence_start_char\":\"2871\",\"evidence_end_char\":\"2892\",\"reason\":\"Explicitly mentioned dyslipidemic condition.\"},{\"entity_gold_id\":\"silver_entity:cb7f6d98ba3e8bd7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary heart disease\",\"revised_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"1914\",\"evidence_end_char\":\"1936\",\"reason\":\"Explicitly mentioned cardiovascular condition.\"},{\"entity_gold_id\":\"silver_entity:b539f4ae0ac1cd74\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Hypertriglyceridemia\",\"evidence_start_char\":\"46\",\"evidence_end_char\":\"66\",\"reason\":\"Explicitly mentioned condition and central topic of the chunk.\"},{\"entity_gold_id\":\"silver_entity:fc51eda73217c1d4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Insulin resistance\",\"revised_normalized_name\":\"Insulin resistance\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"192\",\"evidence_end_char\":\"210\",\"reason\":\"Explicitly mentioned metabolic condition.\"},{\"entity_gold_id\":\"silver_entity:95d358495b4c4d2b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"636\",\"evidence_end_char\":\"654\",\"reason\":\"Explicitly mentioned condition associated with triglyceride levels and CVD risk.\"},{\"entity_gold_id\":\"silver_entity:412f1de088f0a10c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myocardial infarction\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"2278\",\"evidence_end_char\":\"2299\",\"reason\":\"Explicitly mentioned cardiovascular event.\"},{\"entity_gold_id\":\"silver_entity:85212111eb7db7c2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Stroke\",\"revised_normalized_name\":\"Stroke\",\"evidence_text\":\"stroke\",\"evidence_start_char\":\"2305\",\"evidence_end_char\":\"2311\",\"reason\":\"Explicitly mentioned cerebrovascular condition/event.\"},{\"entity_gold_id\":\"silver_entity:22f59e80faba72a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Type 2 diabetes mellitus\",\"revised_normalized_name\":\"Type 2 diabetes mellitus\",\"evidence_text\":\"type 2 diabetes mellitus\",\"evidence_start_char\":\"2797\",\"evidence_end_char\":\"2821\",\"reason\":\"Explicitly mentioned condition in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8d646635a2c751fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Statins\",\"revised_normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"2209\",\"evidence_end_char\":\"2216\",\"reason\":\"Explicitly mentioned drug class used in lipid-lowering treatment.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:obesity\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"obesity\",\"normalized_name\":\"Obesity\",\"evidence_text\":\"obesity\",\"evidence_start_char\":\"180\",\"evidence_end_char\":\"187\",\"reason\":\"Important CVD-related risk factor explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:atherogenic_dyslipidemia\",\"entity_type\":\"Condition\",\"entity_text\":\"atherogenic dyslipidemia\",\"normalized_name\":\"Atherogenic dyslipidemia\",\"evidence_text\":\"atherogenic dyslipidemia\",\"evidence_start_char\":\"2460\",\"evidence_end_char\":\"2484\",\"reason\":\"Explicit residual lipid disorder discussed as contributing to continuing cardiovascular risk.\"},{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"3085\",\"evidence_end_char\":\"3097\",\"reason\":\"Explicitly mentioned lipoprotein particle class relevant to remnant-particle atherogenesis.\"}],\"review_notes\":\"All candidate entities are supported by the chunk; abbreviation, plural, or non-contiguous expansion cases were accepted with normalization. Added a small number of central missing concepts explicitly present in the text.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:69b1051e8257c1da",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "apolipoprotein (apo) C-III",
+        "revised_normalized_name": "Apolipoprotein C-III",
+        "evidence_text": "apolipoprotein (apo) C-III",
+        "evidence_start_char": "3187",
+        "evidence_end_char": "3213",
+        "reason": "The chunk explicitly mentions apolipoprotein/apo C-III; normalization removes the parenthetical abbreviation."
+      },
+      {
+        "entity_gold_id": "silver_entity:ad048938120b30cb",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Atherogenic lipoproteins",
+        "revised_normalized_name": "Atherogenic lipoproteins",
+        "evidence_text": "atherogenic lipoproteins",
+        "evidence_start_char": "285",
+        "evidence_end_char": "309",
+        "reason": "Standalone lipoprotein class explicitly mentioned as marked by high triglyceride levels."
+      },
+      {
+        "entity_gold_id": "silver_entity:5adb89b7ab1b1491",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Atherogenic remnant particles",
+        "revised_normalized_name": "Atherogenic remnant particles",
+        "evidence_text": "atherogenic remnant particles",
+        "evidence_start_char": "3869",
+        "evidence_end_char": "3898",
+        "reason": "The chunk explicitly discusses atherogenic remnant particles as associated with CVD risk."
+      },
+      {
+        "entity_gold_id": "silver_entity:30054a854c010537",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "CM remnants",
+        "revised_normalized_name": "Chylomicron remnants",
+        "evidence_text": "CM remnants",
+        "evidence_start_char": "4107",
+        "evidence_end_char": "4118",
+        "reason": "The chunk uses the defined abbreviation CM for chylomicrons; CM remnants supports the normalized concept chylomicron remnants."
+      },
+      {
+        "entity_gold_id": "silver_entity:5aca972be2468b5a",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "High triglyceride (TG) levels",
+        "revised_normalized_name": "Elevated triglyceride levels",
+        "evidence_text": "High triglyceride (TG) levels",
+        "evidence_start_char": "222",
+        "evidence_end_char": "251",
+        "reason": "The chunk explicitly refers to high TG/triglyceride levels, supporting the elevated triglyceride biomarker abnormality."
+      },
+      {
+        "entity_gold_id": "silver_entity:999195a5a158ead8",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Low high-density lipoprotein cholesterol",
+        "revised_normalized_name": "Low high-density lipoprotein cholesterol",
+        "evidence_text": "low high-density lipoprotein cholesterol",
+        "evidence_start_char": "2957",
+        "evidence_end_char": "2997",
+        "reason": "Explicit abnormal HDL-C-related biomarker state in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:53ddb5eb2bf826d5",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Low-density lipoprotein cholesterol",
+        "revised_normalized_name": "Low-density lipoprotein cholesterol",
+        "evidence_text": "low-density lipoprotein cholesterol",
+        "evidence_start_char": "393",
+        "evidence_end_char": "428",
+        "reason": "Explicitly mentioned lipid biomarker."
+      },
+      {
+        "entity_gold_id": "silver_entity:c18439cdcab13ae3",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Triglyceride-rich lipoproteins",
+        "revised_normalized_name": "Triglyceride-rich lipoproteins",
+        "evidence_text": "triglyceride-rich lipoproteins",
+        "evidence_start_char": "4024",
+        "evidence_end_char": "4054",
+        "reason": "Explicitly mentioned class of lipoprotein biomarkers."
+      },
+      {
+        "entity_gold_id": "silver_entity:3d6c9f044dbf6c08",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Triglycerides",
+        "revised_normalized_name": "Triglycerides",
+        "evidence_text": "Triglycerides",
+        "evidence_start_char": "12",
+        "evidence_end_char": "25",
+        "reason": "Triglycerides are explicitly named in the title and discussed throughout the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:d0d3dd114af83763",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "VLDL remnants",
+        "revised_normalized_name": "Very low density lipoprotein remnants",
+        "evidence_text": "VLDL remnants",
+        "evidence_start_char": "4081",
+        "evidence_end_char": "4094",
+        "reason": "The chunk explicitly mentions VLDL remnants; VLDL is the abbreviation for very low density lipoprotein."
+      },
+      {
+        "entity_gold_id": "silver_entity:7303253b74cb1f99",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Very low density lipoproteins",
+        "revised_normalized_name": "Very low density lipoproteins",
+        "evidence_text": "very low density lipoproteins",
+        "evidence_start_char": "3108",
+        "evidence_end_char": "3137",
+        "reason": "Explicitly mentioned lipoprotein biomarker class."
+      },
+      {
+        "entity_gold_id": "silver_entity:98b87404369ca84d",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Atherosclerosis",
+        "revised_normalized_name": "Atherosclerosis",
+        "evidence_text": "Atherosclerosis",
+        "evidence_start_char": "29",
+        "evidence_end_char": "44",
+        "reason": "Atherosclerosis is explicitly named as the disease process in the title and text."
+      },
+      {
+        "entity_gold_id": "silver_entity:03ffd3a849c6c89f",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "cardiovascular deaths",
+        "revised_normalized_name": "Cardiovascular death",
+        "evidence_text": "cardiovascular deaths",
+        "evidence_start_char": "2246",
+        "evidence_end_char": "2267",
+        "reason": "The chunk explicitly mentions cardiovascular deaths as a clinical outcome; normalized to singular concept."
+      },
+      {
+        "entity_gold_id": "silver_entity:5bd0597eb3bcfe28",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Cardiovascular disease",
+        "revised_normalized_name": "Cardiovascular disease",
+        "evidence_text": "cardiovascular disease",
+        "evidence_start_char": "98",
+        "evidence_end_char": "120",
+        "reason": "Explicitly mentioned disease category."
+      },
+      {
+        "entity_gold_id": "silver_entity:93dfe88aca39ede5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Combined dyslipidemia",
+        "revised_normalized_name": "Combined dyslipidemia",
+        "evidence_text": "combined dyslipidemia",
+        "evidence_start_char": "2871",
+        "evidence_end_char": "2892",
+        "reason": "Explicitly mentioned dyslipidemic condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:cb7f6d98ba3e8bd7",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Coronary heart disease",
+        "revised_normalized_name": "Coronary heart disease",
+        "evidence_text": "coronary heart disease",
+        "evidence_start_char": "1914",
+        "evidence_end_char": "1936",
+        "reason": "Explicitly mentioned cardiovascular condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:b539f4ae0ac1cd74",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hypertriglyceridemia",
+        "revised_normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "Hypertriglyceridemia",
+        "evidence_start_char": "46",
+        "evidence_end_char": "66",
+        "reason": "Explicitly mentioned condition and central topic of the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:fc51eda73217c1d4",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Insulin resistance",
+        "revised_normalized_name": "Insulin resistance",
+        "evidence_text": "insulin resistance",
+        "evidence_start_char": "192",
+        "evidence_end_char": "210",
+        "reason": "Explicitly mentioned metabolic condition."
+      },
+      {
+        "entity_gold_id": "silver_entity:95d358495b4c4d2b",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Metabolic syndrome",
+        "revised_normalized_name": "Metabolic syndrome",
+        "evidence_text": "metabolic syndrome",
+        "evidence_start_char": "636",
+        "evidence_end_char": "654",
+        "reason": "Explicitly mentioned condition associated with triglyceride levels and CVD risk."
+      },
+      {
+        "entity_gold_id": "silver_entity:412f1de088f0a10c",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Myocardial infarction",
+        "revised_normalized_name": "Myocardial infarction",
+        "evidence_text": "myocardial infarction",
+        "evidence_start_char": "2278",
+        "evidence_end_char": "2299",
+        "reason": "Explicitly mentioned cardiovascular event."
+      },
+      {
+        "entity_gold_id": "silver_entity:85212111eb7db7c2",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Stroke",
+        "revised_normalized_name": "Stroke",
+        "evidence_text": "stroke",
+        "evidence_start_char": "2305",
+        "evidence_end_char": "2311",
+        "reason": "Explicitly mentioned cerebrovascular condition/event."
+      },
+      {
+        "entity_gold_id": "silver_entity:22f59e80faba72a5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Type 2 diabetes mellitus",
+        "revised_normalized_name": "Type 2 diabetes mellitus",
+        "evidence_text": "type 2 diabetes mellitus",
+        "evidence_start_char": "2797",
+        "evidence_end_char": "2821",
+        "reason": "Explicitly mentioned condition in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:8d646635a2c751fa",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Statins",
+        "revised_normalized_name": "Statins",
+        "evidence_text": "statins",
+        "evidence_start_char": "2209",
+        "evidence_end_char": "2216",
+        "reason": "Explicitly mentioned drug class used in lipid-lowering treatment."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:PMC3234107-chunk-0001:obesity",
+        "entity_type": "RiskFactor",
+        "entity_text": "obesity",
+        "normalized_name": "Obesity",
+        "evidence_text": "obesity",
+        "evidence_start_char": "180",
+        "evidence_end_char": "187",
+        "reason": "Important CVD-related risk factor explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC3234107-chunk-0001:atherogenic_dyslipidemia",
+        "entity_type": "Condition",
+        "entity_text": "atherogenic dyslipidemia",
+        "normalized_name": "Atherogenic dyslipidemia",
+        "evidence_text": "atherogenic dyslipidemia",
+        "evidence_start_char": "2460",
+        "evidence_end_char": "2484",
+        "reason": "Explicit residual lipid disorder discussed as contributing to continuing cardiovascular risk."
+      },
+      {
+        "entity_gold_id": "gold_addition:PMC3234107-chunk-0001:chylomicrons",
+        "entity_type": "Biomarker",
+        "entity_text": "chylomicrons",
+        "normalized_name": "Chylomicrons",
+        "evidence_text": "chylomicrons",
+        "evidence_start_char": "3085",
+        "evidence_end_char": "3097",
+        "reason": "Explicitly mentioned lipoprotein particle class relevant to remnant-particle atherogenesis."
+      }
+    ],
+    "review_notes": "All candidate entities are supported by the chunk; abbreviation, plural, or non-contiguous expansion cases were accepted with normalization. Added a small number of central missing concepts explicitly present in the text."
+  },
+  "raw_response": {
+    "id": "resp_0bbfa737875f5ff9006a47ba88770881a2ad4407c710341d1e",
+    "created_at": 1783085704.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0bbfa737875f5ff9006a47ba8985ec81a28c48515e57f00481",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0bbfa737875f5ff9006a47bb211ee881a28d2321915c87266a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:69b1051e8257c1da\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"apolipoprotein (apo) C-III\",\"revised_normalized_name\":\"Apolipoprotein C-III\",\"evidence_text\":\"apolipoprotein (apo) C-III\",\"evidence_start_char\":\"3187\",\"evidence_end_char\":\"3213\",\"reason\":\"The chunk explicitly mentions apolipoprotein/apo C-III; normalization removes the parenthetical abbreviation.\"},{\"entity_gold_id\":\"silver_entity:ad048938120b30cb\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Atherogenic lipoproteins\",\"revised_normalized_name\":\"Atherogenic lipoproteins\",\"evidence_text\":\"atherogenic lipoproteins\",\"evidence_start_char\":\"285\",\"evidence_end_char\":\"309\",\"reason\":\"Standalone lipoprotein class explicitly mentioned as marked by high triglyceride levels.\"},{\"entity_gold_id\":\"silver_entity:5adb89b7ab1b1491\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Atherogenic remnant particles\",\"revised_normalized_name\":\"Atherogenic remnant particles\",\"evidence_text\":\"atherogenic remnant particles\",\"evidence_start_char\":\"3869\",\"evidence_end_char\":\"3898\",\"reason\":\"The chunk explicitly discusses atherogenic remnant particles as associated with CVD risk.\"},{\"entity_gold_id\":\"silver_entity:30054a854c010537\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"CM remnants\",\"revised_normalized_name\":\"Chylomicron remnants\",\"evidence_text\":\"CM remnants\",\"evidence_start_char\":\"4107\",\"evidence_end_char\":\"4118\",\"reason\":\"The chunk uses the defined abbreviation CM for chylomicrons; CM remnants supports the normalized concept chylomicron remnants.\"},{\"entity_gold_id\":\"silver_entity:5aca972be2468b5a\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"High triglyceride (TG) levels\",\"revised_normalized_name\":\"Elevated triglyceride levels\",\"evidence_text\":\"High triglyceride (TG) levels\",\"evidence_start_char\":\"222\",\"evidence_end_char\":\"251\",\"reason\":\"The chunk explicitly refers to high TG/triglyceride levels, supporting the elevated triglyceride biomarker abnormality.\"},{\"entity_gold_id\":\"silver_entity:999195a5a158ead8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Low high-density lipoprotein cholesterol\",\"revised_normalized_name\":\"Low high-density lipoprotein cholesterol\",\"evidence_text\":\"low high-density lipoprotein cholesterol\",\"evidence_start_char\":\"2957\",\"evidence_end_char\":\"2997\",\"reason\":\"Explicit abnormal HDL-C-related biomarker state in the chunk.\"},{\"entity_gold_id\":\"silver_entity:53ddb5eb2bf826d5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Low-density lipoprotein cholesterol\",\"revised_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"low-density lipoprotein cholesterol\",\"evidence_start_char\":\"393\",\"evidence_end_char\":\"428\",\"reason\":\"Explicitly mentioned lipid biomarker.\"},{\"entity_gold_id\":\"silver_entity:c18439cdcab13ae3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Triglyceride-rich lipoproteins\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"triglyceride-rich lipoproteins\",\"evidence_start_char\":\"4024\",\"evidence_end_char\":\"4054\",\"reason\":\"Explicitly mentioned class of lipoprotein biomarkers.\"},{\"entity_gold_id\":\"silver_entity:3d6c9f044dbf6c08\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Triglycerides\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Triglycerides\",\"evidence_start_char\":\"12\",\"evidence_end_char\":\"25\",\"reason\":\"Triglycerides are explicitly named in the title and discussed throughout the chunk.\"},{\"entity_gold_id\":\"silver_entity:d0d3dd114af83763\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL remnants\",\"revised_normalized_name\":\"Very low density lipoprotein remnants\",\"evidence_text\":\"VLDL remnants\",\"evidence_start_char\":\"4081\",\"evidence_end_char\":\"4094\",\"reason\":\"The chunk explicitly mentions VLDL remnants; VLDL is the abbreviation for very low density lipoprotein.\"},{\"entity_gold_id\":\"silver_entity:7303253b74cb1f99\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Very low density lipoproteins\",\"revised_normalized_name\":\"Very low density lipoproteins\",\"evidence_text\":\"very low density lipoproteins\",\"evidence_start_char\":\"3108\",\"evidence_end_char\":\"3137\",\"reason\":\"Explicitly mentioned lipoprotein biomarker class.\"},{\"entity_gold_id\":\"silver_entity:98b87404369ca84d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Atherosclerosis\",\"revised_normalized_name\":\"Atherosclerosis\",\"evidence_text\":\"Atherosclerosis\",\"evidence_start_char\":\"29\",\"evidence_end_char\":\"44\",\"reason\":\"Atherosclerosis is explicitly named as the disease process in the title and text.\"},{\"entity_gold_id\":\"silver_entity:03ffd3a849c6c89f\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"cardiovascular deaths\",\"revised_normalized_name\":\"Cardiovascular death\",\"evidence_text\":\"cardiovascular deaths\",\"evidence_start_char\":\"2246\",\"evidence_end_char\":\"2267\",\"reason\":\"The chunk explicitly mentions cardiovascular deaths as a clinical outcome; normalized to singular concept.\"},{\"entity_gold_id\":\"silver_entity:5bd0597eb3bcfe28\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cardiovascular disease\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"98\",\"evidence_end_char\":\"120\",\"reason\":\"Explicitly mentioned disease category.\"},{\"entity_gold_id\":\"silver_entity:93dfe88aca39ede5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Combined dyslipidemia\",\"revised_normalized_name\":\"Combined dyslipidemia\",\"evidence_text\":\"combined dyslipidemia\",\"evidence_start_char\":\"2871\",\"evidence_end_char\":\"2892\",\"reason\":\"Explicitly mentioned dyslipidemic condition.\"},{\"entity_gold_id\":\"silver_entity:cb7f6d98ba3e8bd7\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Coronary heart disease\",\"revised_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"1914\",\"evidence_end_char\":\"1936\",\"reason\":\"Explicitly mentioned cardiovascular condition.\"},{\"entity_gold_id\":\"silver_entity:b539f4ae0ac1cd74\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"Hypertriglyceridemia\",\"evidence_start_char\":\"46\",\"evidence_end_char\":\"66\",\"reason\":\"Explicitly mentioned condition and central topic of the chunk.\"},{\"entity_gold_id\":\"silver_entity:fc51eda73217c1d4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Insulin resistance\",\"revised_normalized_name\":\"Insulin resistance\",\"evidence_text\":\"insulin resistance\",\"evidence_start_char\":\"192\",\"evidence_end_char\":\"210\",\"reason\":\"Explicitly mentioned metabolic condition.\"},{\"entity_gold_id\":\"silver_entity:95d358495b4c4d2b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"636\",\"evidence_end_char\":\"654\",\"reason\":\"Explicitly mentioned condition associated with triglyceride levels and CVD risk.\"},{\"entity_gold_id\":\"silver_entity:412f1de088f0a10c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myocardial infarction\",\"revised_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"2278\",\"evidence_end_char\":\"2299\",\"reason\":\"Explicitly mentioned cardiovascular event.\"},{\"entity_gold_id\":\"silver_entity:85212111eb7db7c2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Stroke\",\"revised_normalized_name\":\"Stroke\",\"evidence_text\":\"stroke\",\"evidence_start_char\":\"2305\",\"evidence_end_char\":\"2311\",\"reason\":\"Explicitly mentioned cerebrovascular condition/event.\"},{\"entity_gold_id\":\"silver_entity:22f59e80faba72a5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Type 2 diabetes mellitus\",\"revised_normalized_name\":\"Type 2 diabetes mellitus\",\"evidence_text\":\"type 2 diabetes mellitus\",\"evidence_start_char\":\"2797\",\"evidence_end_char\":\"2821\",\"reason\":\"Explicitly mentioned condition in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8d646635a2c751fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Statins\",\"revised_normalized_name\":\"Statins\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"2209\",\"evidence_end_char\":\"2216\",\"reason\":\"Explicitly mentioned drug class used in lipid-lowering treatment.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:obesity\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"obesity\",\"normalized_name\":\"Obesity\",\"evidence_text\":\"obesity\",\"evidence_start_char\":\"180\",\"evidence_end_char\":\"187\",\"reason\":\"Important CVD-related risk factor explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:atherogenic_dyslipidemia\",\"entity_type\":\"Condition\",\"entity_text\":\"atherogenic dyslipidemia\",\"normalized_name\":\"Atherogenic dyslipidemia\",\"evidence_text\":\"atherogenic dyslipidemia\",\"evidence_start_char\":\"2460\",\"evidence_end_char\":\"2484\",\"reason\":\"Explicit residual lipid disorder discussed as contributing to continuing cardiovascular risk.\"},{\"entity_gold_id\":\"gold_addition:PMC3234107-chunk-0001:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"3085\",\"evidence_end_char\":\"3097\",\"reason\":\"Explicitly mentioned lipoprotein particle class relevant to remnant-particle atherogenesis.\"}],\"review_notes\":\"All candidate entities are supported by the chunk; abbreviation, plural, or non-contiguous expansion cases were accepted with normalization. Added a small number of central missing concepts explicitly present in the text.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783085877.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 8426,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 12315,
+      "output_tokens_details": {
+        "reasoning_tokens": 9836
+      },
+      "total_tokens": 20741
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T13:34:30.784212+00:00",
+  "finished_at": "2026-07-03T13:37:58.842693+00:00",
+  "duration_ms": 210304.602,
+  "status": "ok",
+  "error": ""
+}

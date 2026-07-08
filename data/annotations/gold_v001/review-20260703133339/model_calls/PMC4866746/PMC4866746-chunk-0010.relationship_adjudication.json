@@ -1,0 +1,1455 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0010\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"FIG\",\n    \"start_char\": \"49461\",\n    \"end_char\": \"55448\",\n    \"text\": \"pted by permission from Macmillan Publishers Ltd: [Nature Reviews Cardiology] Watts GF, Ooi EM, Chan DC. Demystifying the management of hypertriglyceridaemia. Nat Rev Cardiol. 2013;10(11):648\\u2013661, Copyright \\u00a9 2013.\\n\\nAbbreviations: LPL, lipoprotein lipase; TRL, triglyceride-rich lipoproteins; TRL-R, triglyceride-rich lipoprotein remnants.\\n\\nKey studies investigating the association between triglycerides and cardiovascular disease\\n\\nStudy Population (sample size) Key findings ERFC: individual record analysis of 68 long-term prospective studies No prior CHD (n=302,430) After adjustment for nonlipid risk factors, TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\\u20131.42).The association was no longer significant after adjustment for HDL-C and non-HDL-C (HR 0.99, 95% CI 0.94\\u20131.05). Post hoc analysis of two statin trials: IDEAL and TNT CHD and ACS, on potent statin therapy (n=15,779) Risk of CVE occurring after the first year of the trials increased as a function of increasing on-treatment TG, with patients in the 5th quintile of TG having a 63% increase in events versus patients in the first quintile after adjusting for age and sex (P<0.001).After adjustment for HDL-C and apoB/apoAI, the association was attenuated (P=0.044). PROVE IT-TIMI 22 Hospitalized for ACS, on potent statin therapy (n=4,162) On-treatment fasting TG <150 mg/dL was associated with a reduction in CHD risk versus high TG (HR 0.73, 95% CI 0.62\\u20130.87; P<0.001). For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively. Prospective Copenhagen City Heart Study: ischemic stroke General population of Denmark (n=13,956) The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001). For men, age-adjusted HRs ranged from 1.4 (95% CI 0.9\\u20132.1) in those with baseline TG of 89\\u2013176 mg/dL to 3.2 (95% CI 1.7\\u20136.2) in those with TG \\u2265443 mg/dL versus men with TG <89 mg/dL. For women, HRs ranged from 1.3 (95% CI 1.0\\u20131.8) in those with baseline TG of 89\\u2013176 mg/dL to 5.1 (95% CI 1.7\\u201314.8) in those with TG \\u2265443 mg/dL versus women with TG <89 mg/dL. Women\\u2019s Health Study Healthy US women (n=26,509) Baseline fasting and nonfasting TG were both strongly associated with CVE. Fasting TG was not significantly associated with CVE after adjustment for TC and HDL-C and measures of insulin resistance.However, nonfasting TG remained significantly associated with CVE after adjustment for TC and HDL-C (P=0.006). Prospective Copenhagen City Heart Study: MI, IHD, and all-cause mortality General population of Copenhagen, Denmark (n=13,981) Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG. The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001). For men, HRs for MI increased from 1.6 (95% CI 1.1\\u20132.3) for TG of 88.5\\u2013176.1 mg/dL to 4.6 (95% CI 2.7\\u20138.0) for TG \\u2265442.5 mg/dL versus those with TG <88.5 mg/dL. For women, HRs for MI increased from 2.2 (95% CI 1.6\\u20133.2) for TG of 88.5\\u2013176.1 mg/dL to 16.8 (95% CI 6.8\\u201341.6) for TG \\u2265442.5 mg/dL versus those with TG <88.5 mg/dL. Post hoc analysis of the Framingham Heart Study Participants of the Framingham Heart Study without CVD at baseline (n=3,501) High plasma TG levels (>150 mg/dL), in the absence of high LDL-C (>130 mg/dL) or low HDL-C (<40 mg/dL) levels, were not significantly associated with an increased risk of CVD events (P=0.13). ARIC study Participants of the ARIC Study without CVD at baseline (n=12,339) In women, TG was significantly associated with CHD risk after adjustment for age, race, LDL-C, apoB, apoA-1, and HDL-C subfractions (RR 1.29, P<0.01). However, TG was not significantly associated with CHD risk in men. PROCAM study Men and women aged 16\\u201365 years (n=19,698) In a logistic function analysis, log-transformed TG levels showed a significant association with CHD incidence (P<0.01). However, after adjustment for HDL-C, this association was no longer significant.\\n\\nAbbreviations: ACS, acute coronary syndrome; apo, apolipoprotein; ARIC, The Atherosclerosis Risk in Communities; CHD, coronary heart disease; CI, confidence interval; CVD, cardiovascular disease; CVE, cardiovascular events; ERFC, Emerging Risk Factors Collaboration; HDL-C, high-density lipoprotein cholesterol; HR, hazard ratio; IDEAL, Incremental Decrease in End Points through Aggressive Lipid Lowering; IHD, ischemic heart disease; LDL-C, low-density lipoprotein cholesterol; MI, myocardial infarction; non-HDL-C, non-high-density lipoprotein cholesterol; PROCAM, Prospective Cardiovascular Munster; PROVE IT-TIMI 22, Pravastatin or Atorvastatin Evaluation and Infection Therapy-Thrombolysis In Myocardial Infarction 22; RR, relative risk; TC, total cholesterol; TG, triglyceride; TNT, Treating to New Targets.\\n\\nSummary of available triglyceride-lowering therapies\\n\\nTG-lowering agent Proposed mechanisms of action Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \\u221236 \\u22126 to \\u221216 10 \\u22128 Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212 Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\\n\\nAbbreviations: apo, apolipoprotein; CETP, cholesteryl ester transfer protein; DGAT-2, diacylglycerol acyltransferase 2; DHA, docosahexaenoic acid; EPA, eicosapentaenoic acid; HDL, high-density lipoprotein; HDL-C,\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:d2fed9eea7af205c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:high_density_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"High-density lipoprotein cholesterol\",\n      \"normalized_name\": \"High-density lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"high-density lipoprotein cholesterol\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"53870\",\n      \"evidence_end_char\": \"53906\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker explicitly listed in the abbreviations as HDL-C.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1b5b42632d0aa810\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:low_density_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Low-density lipoprotein cholesterol\",\n      \"normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"low-density lipoprotein cholesterol\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54039\",\n      \"evidence_end_char\": \"54074\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker explicitly listed in the abbreviations as LDL-C.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:cf4015acfa9de4dc\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:non_high_density_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Non-high-density lipoprotein cholesterol\",\n      \"normalized_name\": \"Non-high-density lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"non-high-density lipoprotein cholesterol\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54114\",\n      \"evidence_end_char\": \"54154\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker explicitly listed in the abbreviations as non-HDL-C.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2a85baa45ff2728a\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:remnant_lipoprotein_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Remnant lipoprotein cholesterol\",\n      \"normalized_name\": \"Remnant lipoprotein cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"remnant lipoprotein cholesterol\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"52214\",\n      \"evidence_end_char\": \"52245\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker explicitly described as increasing with non-fasting triglycerides.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7d42b0ed29c7d507\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"49852\",\n      \"evidence_end_char\": \"49865\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone lipid biomarker central to the table and explicitly present in the heading.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:adceb3dad1eb574b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:acute_coronary_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Acute coronary syndrome\",\n      \"normalized_name\": \"Acute coronary syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"acute coronary syndrome\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"53616\",\n      \"evidence_end_char\": \"53639\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone cardiovascular condition explicitly listed in the abbreviations as ACS.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:34c20c650f8979df\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"49870\",\n      \"evidence_end_char\": \"49892\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone disease category explicitly present in the heading and abbreviations.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2425cb16a3436421\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"53797\",\n      \"evidence_end_char\": \"53818\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone clinical outcome/event category explicitly listed in the abbreviations and used in study findings.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:426adc731a9b7587\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary heart disease\",\n      \"normalized_name\": \"Coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary heart disease\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"53714\",\n      \"evidence_end_char\": \"53736\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone cardiovascular condition explicitly listed in the abbreviations as CHD and discussed in study findings.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c72ce53d0475b1ee\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic heart disease\",\n      \"normalized_name\": \"Ischemic heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic heart disease\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54008\",\n      \"evidence_end_char\": \"54030\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone cardiovascular condition explicitly listed in the abbreviations as IHD.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dddc2f48d70601d1\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic stroke\",\n      \"normalized_name\": \"Ischemic stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic stroke\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"51177\",\n      \"evidence_end_char\": \"51192\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone cerebrovascular condition explicitly present in the study title and findings.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b92ce4cc0d41196e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myocardial infarction\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54080\",\n      \"evidence_end_char\": \"54101\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone cardiovascular condition explicitly listed in the abbreviations as MI and discussed in outcomes.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f46751cbaf3a928b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Fibrates\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54567\",\n      \"evidence_end_char\": \"54575\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug class explicitly listed as a triglyceride-lowering agent.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e4ad9b0e727ebf46\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Niacin\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54766\",\n      \"evidence_end_char\": \"54772\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone drug explicitly listed as a triglyceride-lowering agent.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5d823bb168a14f68\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega-3 fatty acids\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"55032\",\n      \"evidence_end_char\": \"55051\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Standalone therapeutic drug/supplement class explicitly listed as a triglyceride-lowering agent.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:PMC4866746-chunk-0010:hypertriglyceridaemia\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"hypertriglyceridaemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"hypertriglyceridaemia\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"49600\",\n      \"evidence_end_char\": \"49619\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important lipid disorder explicitly present in the cited review title and central to the chunk topic.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:PMC4866746-chunk-0010:total_cholesterol\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"total cholesterol\",\n      \"normalized_name\": \"Total cholesterol\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"total cholesterol\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"54186\",\n      \"evidence_end_char\": \"54203\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Standalone lipid biomarker explicitly listed in the abbreviations as TC and used in adjustment for triglyceride associations.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:PMC4866746-chunk-0010:eicosapentaenoic_acid\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"EPA, eicosapentaenoic acid\",\n      \"normalized_name\": \"Eicosapentaenoic acid\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"EPA, eicosapentaenoic acid\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"55199\",\n      \"evidence_end_char\": \"55225\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important omega-3 fatty acid therapeutic component explicitly named in the abbreviations.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:PMC4866746-chunk-0010:docosahexaenoic_acid\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"DHA, docosahexaenoic acid\",\n      \"normalized_name\": \"Docosahexaenoic acid\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"DHA, docosahexaenoic acid\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": \"55168\",\n      \"evidence_end_char\": \"55194\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Important omega-3 fatty acid therapeutic component explicitly named in the abbreviations.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:8445f898a22a445d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:niacin\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Niacin\",\n      \"source_normalized_name\": \"Niacin\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.94,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:fc2680d224fb9580\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:low_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Low-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \\u221236 \\u22126 to \\u221216 10 \\u22128\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 54514,\n      \"evidence_end_char\": 54765,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:3a9a589ae2f4c8f9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:ischemic_heart_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Ischemic heart disease\",\n      \"target_normalized_name\": \"Ischemic heart disease\",\n      \"evidence_text\": \"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 52288,\n      \"evidence_end_char\": 52399,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:3b1e23439105174e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"biomarker:remnant_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Remnant lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Remnant lipoprotein cholesterol\",\n      \"evidence_text\": \"Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 52204,\n      \"evidence_end_char\": 52287,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:d42a096a8cce67e8\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:niacin\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Niacin\",\n      \"source_normalized_name\": \"Niacin\",\n      \"target_entity_id\": \"biomarker:high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"High-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"High-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:518b29c58b850d81\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:ischemic_stroke\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Ischemic stroke\",\n      \"target_normalized_name\": \"Ischemic stroke\",\n      \"evidence_text\": \"The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 51234,\n      \"evidence_end_char\": 51361,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c1631b5bc40de435\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"High-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"High-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:e4ea292246f8067d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:acute_coronary_syndrome\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Acute coronary syndrome\",\n      \"target_normalized_name\": \"Acute coronary syndrome\",\n      \"evidence_text\": \"For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 50940,\n      \"evidence_end_char\": 51135,\n      \"confidence_gold\": 0.85,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:01566053d4993eaa\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular events\",\n      \"target_normalized_name\": \"Cardiovascular events\",\n      \"evidence_text\": \"Baseline fasting and nonfasting TG were both strongly associated with CVE.\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 51769,\n      \"evidence_end_char\": 51843,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:958b768d56fbd906\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:coronary_heart_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Coronary heart disease\",\n      \"target_normalized_name\": \"Coronary heart disease\",\n      \"evidence_text\": \"TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\\u20131.42).\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 50076,\n      \"evidence_end_char\": 50170,\n      \"confidence_gold\": 0.84,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:2ae4afa34c745ac9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"High-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"High-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \\u221236 \\u22126 to \\u221216 10 \\u22128\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 54514,\n      \"evidence_end_char\": 54765,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:33998e7b574379ad\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular disease\",\n      \"target_normalized_name\": \"Cardiovascular disease\",\n      \"evidence_text\": \"Key studies investigating the association between triglycerides and cardiovascular disease\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 49802,\n      \"evidence_end_char\": 49892,\n      \"confidence_gold\": 0.82,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:0de00092cd872daf\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"condition:myocardial_infarction\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Myocardial infarction\",\n      \"target_normalized_name\": \"Myocardial infarction\",\n      \"evidence_text\": \"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 52288,\n      \"evidence_end_char\": 52399,\n      \"confidence_gold\": 0.94,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:f33d2b1330f4a62f\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:niacin\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Niacin\",\n      \"source_normalized_name\": \"Niacin\",\n      \"target_entity_id\": \"biomarker:low_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Low-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c0710287cb868e24\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:non_high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Non-high-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Non-high-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \\u221236 \\u22126 to \\u221216 10 \\u22128\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 54514,\n      \"evidence_end_char\": 54765,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:da5bca63f17e93b2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:niacin\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Niacin\",\n      \"source_normalized_name\": \"Niacin\",\n      \"target_entity_id\": \"biomarker:non_high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Non-high-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Non-high-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \\u221220 \\u22127 to \\u221239 16 \\u221212\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:9bf9a428e8316676\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.94,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:1437ba1c6cb22a3e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:low_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Low-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Low-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:d419db525c2eb5af\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \\u221236 \\u22126 to \\u221216 10 \\u22128\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": 54514,\n      \"evidence_end_char\": 54765,\n      \"confidence_gold\": 0.94,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:c2abd67e0888353a\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0010\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:non_high_density_lipoprotein_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Non-high-density lipoprotein cholesterol\",\n      \"target_normalized_name\": \"Non-high-density lipoprotein cholesterol\",\n      \"evidence_text\": \"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \\u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \\u221225 to \\u221234 \\u22128 1\\u20133 5\\u201311\",\n      \"evidence_section\": \"FIG\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"confidence_gold\": 0.93,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0010.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:8445f898a22a445d\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The table explicitly lists niacin as a triglyceride-lowering agent, includes a mechanism decreasing TG synthesis, and reports a \u221220% TG effect.\"},{\"relationship_gold_id\":\"silver_relationship:fc2680d224fb9580\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative LDL-C lipid-modifying effect (\u22128), supporting reduction of low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:3a9a589ae2f4c8f9\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic heart disease\",\"target_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"evidence_start_char\":\"52288\",\"evidence_end_char\":\"52399\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that ischemic heart disease incidence increased with increasing nonfasting triglycerides, supporting an association.\"},{\"relationship_gold_id\":\"silver_relationship:3b1e23439105174e\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Remnant lipoprotein cholesterol\",\"target_normalized_name\":\"Remnant lipoprotein cholesterol\",\"evidence_text\":\"Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.\",\"evidence_start_char\":\"52204\",\"evidence_end_char\":\"52287\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links increasing nonfasting triglycerides with increasing remnant lipoprotein cholesterol levels.\"},{\"relationship_gold_id\":\"silver_relationship:d42a096a8cce67e8\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a positive HDL-C effect (16), supporting that niacin increases high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:518b29c58b850d81\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_stroke\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic stroke\",\"target_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).\",\"evidence_start_char\":\"51234\",\"evidence_end_char\":\"51361\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports increasing ischemic stroke incidence with increasing baseline nonfasting triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c1631b5bc40de435\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a positive HDL-C effect (1\u20133), supporting an increase in high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:e4ea292246f8067d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:acute_coronary_syndrome\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Acute coronary syndrome\",\"target_normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.\",\"evidence_start_char\":\"50940\",\"evidence_end_char\":\"51135\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly relates triglyceride decrement to lower incidence of recurrent ACS, supporting an association between triglycerides and acute coronary syndrome outcomes.\"},{\"relationship_gold_id\":\"silver_relationship:01566053d4993eaa\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"Baseline fasting and nonfasting TG were both strongly associated with CVE.\",\"evidence_start_char\":\"51769\",\"evidence_end_char\":\"51843\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The sentence explicitly states that fasting and nonfasting triglycerides were strongly associated with cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:958b768d56fbd906\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Coronary heart disease\",\"target_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).\",\"evidence_start_char\":\"50076\",\"evidence_end_char\":\"50170\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports a significant association between triglyceride levels and incidence of coronary heart disease in the stated analysis.\"},{\"relationship_gold_id\":\"silver_relationship:2ae4afa34c745ac9\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a positive HDL-C effect (10), supporting that fibrates increase high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:33998e7b574379ad\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular disease\",\"target_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"evidence_start_char\":\"49802\",\"evidence_end_char\":\"49892\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The table heading explicitly frames the studies as investigating the association between triglycerides and cardiovascular disease.\"},{\"relationship_gold_id\":\"silver_relationship:0de00092cd872daf\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:myocardial_infarction\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myocardial infarction\",\"target_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"evidence_start_char\":\"52288\",\"evidence_end_char\":\"52399\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports that myocardial infarction incidence increased with increasing nonfasting triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:f33d2b1330f4a62f\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a negative LDL-C effect (\u221212), supporting reduction of low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:c0710287cb868e24\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative non-HDL-C effect (\u22126 to \u221216), supporting reduction of non-high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:da5bca63f17e93b2\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a negative non-HDL-C effect (\u22127 to \u221239), supporting reduction of non-high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:9bf9a428e8316676\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row lists mechanisms decreasing triglyceride synthesis and reports a negative TG effect (\u221225 to \u221234), supporting triglyceride reduction.\"},{\"relationship_gold_id\":\"silver_relationship:1437ba1c6cb22a3e\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a positive LDL-C effect (5\u201311), supporting an increase in low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:d419db525c2eb5af\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative TG effect (\u221236), supporting reduction of triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c2abd67e0888353a\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a negative non-HDL-C effect (\u22128), supporting reduction of non-high-density lipoprotein cholesterol.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate relationships have accepted endpoints and are supported by explicit, non-negated, non-speculative evidence in the chunk. No additional relationships were added.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:8445f898a22a445d",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The table explicitly lists niacin as a triglyceride-lowering agent, includes a mechanism decreasing TG synthesis, and reports a \u221220% TG effect."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:fc2680d224fb9580",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:low_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Low-density lipoprotein cholesterol",
+        "target_normalized_name": "Low-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+        "evidence_start_char": "54514",
+        "evidence_end_char": "54765",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The fibrates row reports a negative LDL-C lipid-modifying effect (\u22128), supporting reduction of low-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:3a9a589ae2f4c8f9",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:ischemic_heart_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Ischemic heart disease",
+        "target_normalized_name": "Ischemic heart disease",
+        "evidence_text": "The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).",
+        "evidence_start_char": "52288",
+        "evidence_end_char": "52399",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The text explicitly states that ischemic heart disease incidence increased with increasing nonfasting triglycerides, supporting an association."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:3b1e23439105174e",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "biomarker:remnant_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Remnant lipoprotein cholesterol",
+        "target_normalized_name": "Remnant lipoprotein cholesterol",
+        "evidence_text": "Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.",
+        "evidence_start_char": "52204",
+        "evidence_end_char": "52287",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly links increasing nonfasting triglycerides with increasing remnant lipoprotein cholesterol levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:d42a096a8cce67e8",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "biomarker:high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "High-density lipoprotein cholesterol",
+        "target_normalized_name": "High-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The niacin row reports a positive HDL-C effect (16), supporting that niacin increases high-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:518b29c58b850d81",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:ischemic_stroke",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Ischemic stroke",
+        "target_normalized_name": "Ischemic stroke",
+        "evidence_text": "The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).",
+        "evidence_start_char": "51234",
+        "evidence_end_char": "51361",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly reports increasing ischemic stroke incidence with increasing baseline nonfasting triglycerides."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c1631b5bc40de435",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "High-density lipoprotein cholesterol",
+        "target_normalized_name": "High-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row reports a positive HDL-C effect (1\u20133), supporting an increase in high-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:e4ea292246f8067d",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:acute_coronary_syndrome",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Acute coronary syndrome",
+        "target_normalized_name": "Acute coronary syndrome",
+        "evidence_text": "For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.",
+        "evidence_start_char": "50940",
+        "evidence_end_char": "51135",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly relates triglyceride decrement to lower incidence of recurrent ACS, supporting an association between triglycerides and acute coronary syndrome outcomes."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:01566053d4993eaa",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:cardiovascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular events",
+        "target_normalized_name": "Cardiovascular events",
+        "evidence_text": "Baseline fasting and nonfasting TG were both strongly associated with CVE.",
+        "evidence_start_char": "51769",
+        "evidence_end_char": "51843",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The sentence explicitly states that fasting and nonfasting triglycerides were strongly associated with cardiovascular events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:958b768d56fbd906",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:coronary_heart_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Coronary heart disease",
+        "target_normalized_name": "Coronary heart disease",
+        "evidence_text": "TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).",
+        "evidence_start_char": "50076",
+        "evidence_end_char": "50170",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly reports a significant association between triglyceride levels and incidence of coronary heart disease in the stated analysis."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:2ae4afa34c745ac9",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "High-density lipoprotein cholesterol",
+        "target_normalized_name": "High-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+        "evidence_start_char": "54514",
+        "evidence_end_char": "54765",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The fibrates row reports a positive HDL-C effect (10), supporting that fibrates increase high-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:33998e7b574379ad",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular disease",
+        "target_normalized_name": "Cardiovascular disease",
+        "evidence_text": "Key studies investigating the association between triglycerides and cardiovascular disease",
+        "evidence_start_char": "49802",
+        "evidence_end_char": "49892",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The table heading explicitly frames the studies as investigating the association between triglycerides and cardiovascular disease."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:0de00092cd872daf",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "condition:myocardial_infarction",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Myocardial infarction",
+        "target_normalized_name": "Myocardial infarction",
+        "evidence_text": "The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).",
+        "evidence_start_char": "52288",
+        "evidence_end_char": "52399",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly reports that myocardial infarction incidence increased with increasing nonfasting triglycerides."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:f33d2b1330f4a62f",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "biomarker:low_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Low-density lipoprotein cholesterol",
+        "target_normalized_name": "Low-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The niacin row reports a negative LDL-C effect (\u221212), supporting reduction of low-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c0710287cb868e24",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:non_high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Non-high-density lipoprotein cholesterol",
+        "target_normalized_name": "Non-high-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+        "evidence_start_char": "54514",
+        "evidence_end_char": "54765",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The fibrates row reports a negative non-HDL-C effect (\u22126 to \u221216), supporting reduction of non-high-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:da5bca63f17e93b2",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "biomarker:non_high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Non-high-density lipoprotein cholesterol",
+        "target_normalized_name": "Non-high-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The niacin row reports a negative non-HDL-C effect (\u22127 to \u221239), supporting reduction of non-high-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:9bf9a428e8316676",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row lists mechanisms decreasing triglyceride synthesis and reports a negative TG effect (\u221225 to \u221234), supporting triglyceride reduction."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:1437ba1c6cb22a3e",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:low_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Low-density lipoprotein cholesterol",
+        "target_normalized_name": "Low-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row reports a positive LDL-C effect (5\u201311), supporting an increase in low-density lipoprotein cholesterol."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:d419db525c2eb5af",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128",
+        "evidence_start_char": "54514",
+        "evidence_end_char": "54765",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The fibrates row reports a negative TG effect (\u221236), supporting reduction of triglycerides."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:c2abd67e0888353a",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:non_high_density_lipoprotein_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Non-high-density lipoprotein cholesterol",
+        "target_normalized_name": "Non-high-density lipoprotein cholesterol",
+        "evidence_text": "Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The omega-3 fatty acids row reports a negative non-HDL-C effect (\u22128), supporting reduction of non-high-density lipoprotein cholesterol."
+      }
+    ],
+    "relationship_additions": [],
+    "review_notes": "All candidate relationships have accepted endpoints and are supported by explicit, non-negated, non-speculative evidence in the chunk. No additional relationships were added."
+  },
+  "raw_response": {
+    "id": "resp_0a55580b8cd58982006a47ef1dcf6c81a2a5b5518ce642ddc6",
+    "created_at": 1783099165.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0a55580b8cd58982006a47ef1eb8cc81a2a46a17e45068e3c3",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0a55580b8cd58982006a47efa3690481a2aa0ece4c518204e9",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:8445f898a22a445d\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The table explicitly lists niacin as a triglyceride-lowering agent, includes a mechanism decreasing TG synthesis, and reports a \u221220% TG effect.\"},{\"relationship_gold_id\":\"silver_relationship:fc2680d224fb9580\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative LDL-C lipid-modifying effect (\u22128), supporting reduction of low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:3a9a589ae2f4c8f9\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic heart disease\",\"target_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"evidence_start_char\":\"52288\",\"evidence_end_char\":\"52399\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The text explicitly states that ischemic heart disease incidence increased with increasing nonfasting triglycerides, supporting an association.\"},{\"relationship_gold_id\":\"silver_relationship:3b1e23439105174e\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:remnant_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Remnant lipoprotein cholesterol\",\"target_normalized_name\":\"Remnant lipoprotein cholesterol\",\"evidence_text\":\"Levels of remnant lipoprotein cholesterol increased with increasing non-fasting TG.\",\"evidence_start_char\":\"52204\",\"evidence_end_char\":\"52287\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly links increasing nonfasting triglycerides with increasing remnant lipoprotein cholesterol levels.\"},{\"relationship_gold_id\":\"silver_relationship:d42a096a8cce67e8\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a positive HDL-C effect (16), supporting that niacin increases high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:518b29c58b850d81\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:ischemic_stroke\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic stroke\",\"target_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"The cumulative incidence of ischemic stroke increased with increasing levels of baseline nonfasting TG in both sexes (P<0.001).\",\"evidence_start_char\":\"51234\",\"evidence_end_char\":\"51361\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports increasing ischemic stroke incidence with increasing baseline nonfasting triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c1631b5bc40de435\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a positive HDL-C effect (1\u20133), supporting an increase in high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:e4ea292246f8067d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:acute_coronary_syndrome\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Acute coronary syndrome\",\"target_normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"For each on-treatment 10-mg/dL decrement in TG, the incidence of death, MI, and recurrent ACS was lowered by 1.6% or 1.4% after adjustment for LDL-C (P<0.001) or non-HDL-C (P=0.01), respectively.\",\"evidence_start_char\":\"50940\",\"evidence_end_char\":\"51135\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly relates triglyceride decrement to lower incidence of recurrent ACS, supporting an association between triglycerides and acute coronary syndrome outcomes.\"},{\"relationship_gold_id\":\"silver_relationship:01566053d4993eaa\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"Baseline fasting and nonfasting TG were both strongly associated with CVE.\",\"evidence_start_char\":\"51769\",\"evidence_end_char\":\"51843\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The sentence explicitly states that fasting and nonfasting triglycerides were strongly associated with cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:958b768d56fbd906\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Coronary heart disease\",\"target_normalized_name\":\"Coronary heart disease\",\"evidence_text\":\"TG levels were significantly associated with the incidence of CHD (HR 1.37, 95% CI 1.31\u20131.42).\",\"evidence_start_char\":\"50076\",\"evidence_end_char\":\"50170\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports a significant association between triglyceride levels and incidence of coronary heart disease in the stated analysis.\"},{\"relationship_gold_id\":\"silver_relationship:2ae4afa34c745ac9\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"High-density lipoprotein cholesterol\",\"target_normalized_name\":\"High-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a positive HDL-C effect (10), supporting that fibrates increase high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:33998e7b574379ad\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular disease\",\"target_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"Key studies investigating the association between triglycerides and cardiovascular disease\",\"evidence_start_char\":\"49802\",\"evidence_end_char\":\"49892\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The table heading explicitly frames the studies as investigating the association between triglycerides and cardiovascular disease.\"},{\"relationship_gold_id\":\"silver_relationship:0de00092cd872daf\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"condition:myocardial_infarction\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myocardial infarction\",\"target_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"The cumulative incidence of MI, IHD, and all-cause mortality increased with increasing nonfasting TG (P<0.001).\",\"evidence_start_char\":\"52288\",\"evidence_end_char\":\"52399\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly reports that myocardial infarction incidence increased with increasing nonfasting triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:f33d2b1330f4a62f\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a negative LDL-C effect (\u221212), supporting reduction of low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:c0710287cb868e24\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative non-HDL-C effect (\u22126 to \u221216), supporting reduction of non-high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:da5bca63f17e93b2\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Niacin Decrease TG synthesisInhibit hepatic DGAT-2Accelerate hepatic apoB degradationDecrease hepatic secretion of VLDL and LDLDecrease hepatic apoAI catabolismInhibit removal of HDL-apoAIInhibit oxidative stress and vascular inflammatory genes \u221220 \u22127 to \u221239 16 \u221212\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The niacin row reports a negative non-HDL-C effect (\u22127 to \u221239), supporting reduction of non-high-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:9bf9a428e8316676\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row lists mechanisms decreasing triglyceride synthesis and reports a negative TG effect (\u221225 to \u221234), supporting triglyceride reduction.\"},{\"relationship_gold_id\":\"silver_relationship:1437ba1c6cb22a3e\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:low_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Low-density lipoprotein cholesterol\",\"target_normalized_name\":\"Low-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a positive LDL-C effect (5\u201311), supporting an increase in low-density lipoprotein cholesterol.\"},{\"relationship_gold_id\":\"silver_relationship:d419db525c2eb5af\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Fibrates Weak agonists of PPAR-\u03b1Decrease production of apoC-IIIIncrease LPL expressionIncrease VLDL, IDL, and LDL apoB100 catabolismDecrease CETP activityIncrease HDL2a and HDL3a \u221236 \u22126 to \u221216 10 \u22128\",\"evidence_start_char\":\"54514\",\"evidence_end_char\":\"54765\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The fibrates row reports a negative TG effect (\u221236), supporting reduction of triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:c2abd67e0888353a\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:non_high_density_lipoprotein_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-high-density lipoprotein cholesterol\",\"target_normalized_name\":\"Non-high-density lipoprotein cholesterol\",\"evidence_text\":\"Lipid-modifying effects (%) TG Non-HDL-C HDL-C LDL-C Omega-3 fatty acids (EPA and DHA) Decrease TG synthesisInhibit DGAT-2Increase LPL activityDecrease hepatic lipogenesisIncrease hepatic \u03b2-oxidationDecrease Lp-PLA2Decrease apoC-III \u221225 to \u221234 \u22128 1\u20133 5\u201311\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The omega-3 fatty acids row reports a negative non-HDL-C effect (\u22128), supporting reduction of non-high-density lipoprotein cholesterol.\"}],\"relationship_additions\":[],\"review_notes\":\"All candidate relationships have accepted endpoints and are supported by explicit, non-negated, non-speculative evidence in the chunk. No additional relationships were added.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783099332.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 16248,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 13043,
+      "output_tokens_details": {
+        "reasoning_tokens": 8326
+      },
+      "total_tokens": 29291
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T17:19:25.744452+00:00",
+  "finished_at": "2026-07-03T17:22:13.775970+00:00",
+  "duration_ms": 175024.954,
+  "status": "ok",
+  "error": ""
+}

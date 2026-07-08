@@ -1,0 +1,1581 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical relationships for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"RELATIONSHIP_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Review relationships only against accepted entity rows.\",\n    \"Return one relationship_reviews item for every candidate relationship row.\",\n    \"Reject relationships with rejected or unsupported endpoints.\",\n    \"Accepted relationships must have direction_verified=yes, negated=no, and speculative=no.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ],\n    \"relationship_types\": [\n      \"TREATS\",\n      \"PREVENTS\",\n      \"REDUCES\",\n      \"INCREASES\",\n      \"ASSOCIATED_WITH\",\n      \"HAS_ADVERSE_EFFECT\",\n      \"CAUSES\",\n      \"HAS_SYMPTOM\",\n      \"INCREASES_RISK_OF\",\n      \"INTERACTS_WITH\",\n      \"CONTRAINDICATED_FOR\",\n      \"MENTIONS\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0004\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"16489\",\n    \"end_char\": \"22486\",\n    \"text\": \"ollowing acute coronary syndrome, an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels (Table 1), even after adjustment for HDL-C and LDL-C levels (hazard ratio 0.8; P=0.025). A wealth of epidemiological evidence exists, demonstrating that both fasting and nonfasting TG levels are significant predictors of cardiovascular events, even in individuals who have already achieved guideline-recommended LDL-C levels with lipid-lowering therapy.\\n\\nHowever, nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels. The Women\\u2019s Health Study (n=26,509) showed that both fasting and nonfasting TG levels were strongly associated with an increased risk of cardiovascular events, independent of baseline cardiovascular risk factors (age, blood pressure, smoking, and use of hormone therapy). However, after adjustment for TC and HDL-C levels and indicators of insulin resistance, the association between fasting TG levels and the risk of cardiovascular events was no longer significant (P=0.90). In contrast, the association between nonfasting TG levels and cardiovascular risk remained strong even after adjustment for other lipid levels and markers of insulin resistance (P=0.006). Likewise, two prospective cohort studies using data from the Copenhagen City Heart Study found that the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels (all P<0.001) (Table 1). That being said, these associations were not adjusted for other lipid parameters.\\n\\nA number of studies have found that the association between plasma TG levels (both fasting and nonfasting) and cardiovascular risk is often attenuated once adjusted for other lipid parameters, including HDL-C and non-HDL-C. An analysis conducted by the Emerging Risk Factors Collaboration, which included data from 302,430 individuals from 68 long-term prospective studies, demonstrated that there was a significant and stepwise association between fasting and nonfasting TG levels and CVD risk. However, this association was no longer significant after adjustment for HDL-C and non-HDL-C (Table 1). Likewise, in a combined analysis of the Incremental Decrease in End Points through Aggressive Lipid Lowering (IDEAL) and Treating to New Targets (TNT) trials in patients achieving low LDL-C (<70 mg/dL [1.8 mmol/L]), CVD risk increased incrementally with increasing on-treatment fasting TG level, with patients in the highest quintile experiencing a 63% higher rate of cardiovascular events than those in the lowest quintile (P<0.001). However, this association was also attenuated (P=0.044) after adjustment for HDL-C and apoB/apoA1 (Table 1). Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C, and this may explain why this association is weakened after adjustment for these parameters.\\n\\nElevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs, have also been shown to be associated with CVD. Using data from 73,513 subjects, Varbo et al found that every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk, independent of low HDL-C.\\n\\nAvailable treatment options to reduce TG levels and their potential impact on cardiovascular outcomes\\n\\nAlthough the clinical definition of the severity of hypertriglyceridemia differs among guidelines, the majority of guidelines define severe hypertriglyceridemia as a TG level of \\u2265500 mg/dL (\\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis. Guidelines also acknowledge that a TG level of <150 mg/dL (<1.7 mmol/L) is desirable, and if elevated TG or non-HDL-C levels remain following lifestyle intervention and statin therapy, a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids (Table 2).\\n\\nFibrates\\n\\nFibrates decrease TG levels by \\u223c36%, non-HDL-C levels by \\u223c6%\\u201316%, and LDL-C levels by \\u223c8% and increase HDL C levels by \\u223c10%. Of note, however, fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia. To date, cardiovascular outcome studies of fibrates have produced varied results, with some studies suggesting a small benefit, particularly in patients with other factors besides hypertriglyceridemia, such as low HDL-C or metabolic syndrome, and others showing no benefit. A meta-analysis including data from 45,058 participants from 18 clinical trials showed that fibrate therapy was associated with a significant decrease in major cardiovascular events (relative risk [RR] reduction 10%; P=0.048), although this did not translate into a benefit for all-cause mortality (RR reduction 0%; P=0.92). In another meta-analysis of 7,389 patients with high TG levels (>200 mg/dL [2.3 mmol/L]), fibrate therapy was associated with a 25% decrease in vascular events, and in 5,068 patients with both high TG and low HDL-C levels (<40 mg/dL [1 mmol/L]), a 29% decrease in vascular events was observed.\\n\\nFibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis, especially when used in combination with other lipid-lowering therapies. Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects. However, fenofibrate appears to be better tolerated than other fibrates, with no cases of rhabdomyolysis observed with fenofibrate\\u2013statin combination therapy in two large-scale clinical trials. Fenofibrate is often recommended for use in combination with statin therapy in patients requiring additional non-HDL-C\"\n  },\n  \"accepted_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:6bdd11a551d922c2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apolipoprotein_b\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"apoB\",\n      \"normalized_name\": \"Apolipoprotein B\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apoB\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions apoB as a lipid/apolipoprotein biomarker; normalization to Apolipoprotein B is appropriate.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f432c4c72df04786\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:creatinine\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Creatinine\",\n      \"normalized_name\": \"Creatinine\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"creatinine\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21846\",\n      \"evidence_end_char\": \"21856\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Creatinine is explicitly mentioned as a measured laboratory biomarker affected by fibrate therapy.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:067b188487cbdd6d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:fasting_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"fasting TG level\",\n      \"normalized_name\": \"Fasting triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fasting TG level\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16539\",\n      \"evidence_end_char\": \"16555\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk uses TG as the abbreviation for triglycerides and discusses fasting TG levels as a biomarker.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:518b65da5b0e39bd\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL-C\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16715\",\n      \"evidence_end_char\": \"16720\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=HDL-C is explicitly mentioned and is the standard abbreviation for HDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dd3277642ce94e65\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL-C\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16725\",\n      \"evidence_end_char\": \"16730\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=LDL-C is explicitly mentioned and is the standard abbreviation for LDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:68e6880c6ea0d38e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"non-HDL-C\",\n      \"normalized_name\": \"Non-HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"non-HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly discusses non-HDL-C levels, corresponding to non-HDL cholesterol.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:784f4a35207a3797\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"nonfasting TG levels\",\n      \"normalized_name\": \"Nonfasting triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"nonfasting TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16848\",\n      \"evidence_end_char\": \"16868\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly discusses nonfasting TG levels, where TG denotes triglycerides.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6537b1b360ecc8eb\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:remnant_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Remnant cholesterol\",\n      \"normalized_name\": \"Remnant cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"remnant cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"19565\",\n      \"evidence_end_char\": \"19584\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Remnant cholesterol is explicitly mentioned as a lipid biomarker associated with CVD.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fcbb8b2694b11e15\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TRLs\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TRLs\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk explicitly mentions TRLs in relation to remnant cholesterol; normalization to triglyceride-rich lipoproteins is appropriate.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2c89930b7b385238\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TG levels\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16668\",\n      \"evidence_end_char\": \"16677\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=TG levels are repeatedly discussed as a biomarker; TG is normalized to triglycerides.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:17cae4f8466ada1b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"CVD\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"CVD\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The abbreviation CVD is explicitly used in the chunk and corresponds to cardiovascular disease.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:eaa0225bfe9b5bc3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16899\",\n      \"evidence_end_char\": \"16920\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Cardiovascular events are explicitly discussed as clinical outcomes.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:87426317724f7579\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20047\",\n      \"evidence_end_char\": \"20067\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Hypertriglyceridemia is explicitly mentioned as a clinical condition.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6c48044c9e376963\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic heart disease\",\n      \"normalized_name\": \"Ischemic heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"17992\",\n      \"evidence_end_char\": \"18014\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Ischemic heart disease is explicitly listed among cardiovascular events.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e96044811b605337\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:ischemic_stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Ischemic stroke\",\n      \"normalized_name\": \"Ischemic stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ischemic stroke\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"17971\",\n      \"evidence_end_char\": \"17986\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Ischemic stroke is explicitly listed among cardiovascular events.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bf5cd74fdb2c7ab2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic syndrome\",\n      \"normalized_name\": \"Metabolic syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21088\",\n      \"evidence_end_char\": \"21106\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Metabolic syndrome is explicitly mentioned as a patient factor relevant to fibrate benefit.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ab3e76989774cda3\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"MI\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"MI\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted_with_normalization; reason=The chunk lists MI among cardiovascular events; normalization to myocardial infarction is appropriate.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b357a3816434ae5\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:myopathy\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myopathy\",\n      \"normalized_name\": \"Myopathy\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myopathy\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21865\",\n      \"evidence_end_char\": \"21873\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Myopathy is explicitly mentioned as an adverse effect of fibrate therapy.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:49cb7a99ef92b9fe\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:pancreatitis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Pancreatitis\",\n      \"normalized_name\": \"Pancreatitis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pancreatitis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20295\",\n      \"evidence_end_char\": \"20307\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Pancreatitis is explicitly mentioned as a risk reduced by TG-lowering therapy in severe hypertriglyceridemia.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f18784be91a88b7c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:recurrent_coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Recurrent coronary heart disease\",\n      \"normalized_name\": \"Recurrent coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"recurrent coronary heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16616\",\n      \"evidence_end_char\": \"16648\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Recurrent coronary heart disease is explicitly mentioned as a clinical outcome/risk.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:76ca06d7868cb2f5\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:rhabdomyolysis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Rhabdomyolysis\",\n      \"normalized_name\": \"Rhabdomyolysis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"rhabdomyolysis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21895\",\n      \"evidence_end_char\": \"21909\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Rhabdomyolysis is explicitly mentioned as a rare adverse effect.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8cbd0873022479c9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Severe hypertriglyceridemia\",\n      \"normalized_name\": \"Severe hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"severe hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20128\",\n      \"evidence_end_char\": \"20155\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Severe hypertriglyceridemia is explicitly defined as a clinically meaningful severity category.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c414cace86416141\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:vascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Vascular events\",\n      \"normalized_name\": \"Vascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21608\",\n      \"evidence_end_char\": \"21623\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Vascular events are explicitly mentioned later in the chunk as clinical outcomes.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:df94a5ca9fdb0489\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fenofibrate\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fenofibrate\",\n      \"normalized_name\": \"Fenofibrate\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fenofibrate\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"22183\",\n      \"evidence_end_char\": \"22194\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Fenofibrate is explicitly mentioned as a fibrate drug.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3a843525d9c31b75\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:fibrates\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibrates\",\n      \"normalized_name\": \"Fibrates\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"fibrates\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20568\",\n      \"evidence_end_char\": \"20576\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Fibrates are explicitly mentioned as TG-lowering agents and discussed as a drug class.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:14ea600b276a4853\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:gemfibrozil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Gemfibrozil\",\n      \"normalized_name\": \"Gemfibrozil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Gemfibrozil\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"21984\",\n      \"evidence_end_char\": \"21995\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Gemfibrozil is explicitly mentioned as a fibrate drug with statin interaction concerns.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:10a58fe42b4b886c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:niacin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Niacin\",\n      \"normalized_name\": \"Niacin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"niacin\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20578\",\n      \"evidence_end_char\": \"20584\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Niacin is explicitly listed as a TG-lowering agent.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6b82a6ff1838db1b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"20589\",\n      \"evidence_end_char\": \"20608\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Omega-3 fatty acids are explicitly listed as TG-lowering agents.\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:cb22764d4d496ac2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"22085\",\n      \"evidence_end_char\": \"22092\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=accepted; reason=Statins are explicitly mentioned in the context of renal clearance and combination therapy.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:acute_coronary_syndrome\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"acute coronary syndrome\",\n      \"normalized_name\": \"Acute coronary syndrome\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"acute coronary syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"16498\",\n      \"evidence_end_char\": \"16521\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Explicitly present at the start of the chunk and clinically important context for recurrent coronary disease risk.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:insulin_resistance\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"insulin resistance\",\n      \"normalized_name\": \"Insulin resistance\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"insulin resistance\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Explicitly mentioned as an adjustment factor/marker relevant to cardiovascular risk associations.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:total_cholesterol\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"TC\",\n      \"normalized_name\": \"Total cholesterol\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"TC\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=TC levels are explicitly mentioned as lipid parameters used in adjustment.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:apob_apoa1_ratio\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"apoB/apoA1\",\n      \"normalized_name\": \"Apolipoprotein B/Apolipoprotein A1 ratio\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"apoB/apoA1\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=The apoB/apoA1 ratio is explicitly mentioned as an adjustment biomarker and is distinct from apoB alone.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:smoking\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"smoking\",\n      \"normalized_name\": \"Smoking\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"smoking\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Smoking is explicitly listed among baseline cardiovascular risk factors.\"\n    },\n    {\n      \"entity_gold_id\": \"gold_addition:blood_pressure\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": \"\",\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"blood pressure\",\n      \"normalized_name\": \"Blood pressure\",\n      \"aliases\": \"\",\n      \"category\": \"\",\n      \"mesh_id\": \"\",\n      \"icd10\": \"\",\n      \"drugbank_id\": \"\",\n      \"unit\": \"\",\n      \"normal_range\": \"\",\n      \"description\": \"\",\n      \"evidence_text\": \"blood pressure\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": \"\",\n      \"evidence_end_char\": \"\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"accepted\",\n      \"notes\": \"llm_adjudication=added; reason=Blood pressure is explicitly listed among baseline cardiovascular risk factors.\"\n    }\n  ],\n  \"candidate_relationships\": [\n    {\n      \"relationship_gold_id\": \"silver_relationship:9b001018c094f7b9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:remnant_cholesterol\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Remnant cholesterol\",\n      \"source_normalized_name\": \"Remnant cholesterol\",\n      \"target_entity_id\": \"condition:cardiovascular_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular disease\",\n      \"target_normalized_name\": \"Cardiovascular disease\",\n      \"evidence_text\": \"every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19752,\n      \"evidence_end_char\": 19863,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:3263e5ae1cfc087d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:remnant_cholesterol\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Remnant cholesterol\",\n      \"source_normalized_name\": \"Remnant cholesterol\",\n      \"target_entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"target_normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"evidence_text\": \"Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19556,\n      \"evidence_end_char\": 19646,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:da561a2690258800\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Nonfasting triglycerides\",\n      \"source_normalized_name\": \"Nonfasting triglycerides\",\n      \"target_entity_id\": \"condition:myocardial_infarction\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Myocardial infarction\",\n      \"target_normalized_name\": \"Myocardial infarction\",\n      \"evidence_text\": \"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17920,\n      \"evidence_end_char\": 18101,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:b0ce90abec01e13e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:niacin\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Niacin\",\n      \"source_normalized_name\": \"Niacin\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20494,\n      \"evidence_end_char\": 20608,\n      \"confidence_gold\": 0.85,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:9988e1b8ea3aa73c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"TREATS\",\n      \"source_entity_id\": \"drug:tg_lowering_therapy\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"TG-lowering therapy\",\n      \"source_normalized_name\": \"TG-lowering therapy\",\n      \"target_entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Severe hypertriglyceridemia\",\n      \"target_normalized_name\": \"Severe hypertriglyceridemia\",\n      \"evidence_text\": \"the majority of guidelines define severe hypertriglyceridemia as a TG level of \\u2265500 mg/dL (\\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20094,\n      \"evidence_end_char\": 20272,\n      \"confidence_gold\": 0.88,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:89d6e39406e90eac\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"HAS_ADVERSE_EFFECT\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:myopathy\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Myopathy\",\n      \"target_normalized_name\": \"Myopathy\",\n      \"evidence_text\": \"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21759,\n      \"evidence_end_char\": 21909,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:d63bdc94597fa27f\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:ldl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"LDL cholesterol\",\n      \"target_normalized_name\": \"LDL cholesterol\",\n      \"evidence_text\": \"fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20774,\n      \"evidence_end_char\": 20863,\n      \"confidence_gold\": 0.7,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:b3cb9e5a0e0fa726\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:hdl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"HDL cholesterol\",\n      \"target_normalized_name\": \"HDL cholesterol\",\n      \"evidence_text\": \"Fibrates decrease TG levels by \\u223c36%, non-HDL-C levels by \\u223c6%\\u201316%, and LDL-C levels by \\u223c8% and increase HDL C levels by \\u223c10%\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20631,\n      \"evidence_end_char\": 20754,\n      \"confidence_gold\": 0.98,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:94a7aa78914245cc\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:cardiovascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular events\",\n      \"target_normalized_name\": \"Cardiovascular events\",\n      \"evidence_text\": \"fibrate therapy was associated with a significant decrease in major cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21231,\n      \"evidence_end_char\": 21320,\n      \"confidence_gold\": 0.82,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:6aa7629c98eebc52\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"biomarker:apolipoprotein_b\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Apolipoprotein B\",\n      \"target_normalized_name\": \"Apolipoprotein B\",\n      \"evidence_text\": \"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19354,\n      \"evidence_end_char\": 19460,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:bdcba7962cf5592f\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Nonfasting triglycerides\",\n      \"source_normalized_name\": \"Nonfasting triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular events\",\n      \"target_normalized_name\": \"Cardiovascular events\",\n      \"evidence_text\": \"nonfasting TG levels are thought to be a much stronger predictor of cardiovascular events than fasting TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17042,\n      \"evidence_end_char\": 17154,\n      \"confidence_gold\": 0.92,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:b52a83c43c1deb05\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:fasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Fasting triglycerides\",\n      \"source_normalized_name\": \"Fasting triglycerides\",\n      \"target_entity_id\": \"condition:cardiovascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Cardiovascular events\",\n      \"target_normalized_name\": \"Cardiovascular events\",\n      \"evidence_text\": \"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16831,\n      \"evidence_end_char\": 16920,\n      \"confidence_gold\": 0.86,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:ab105d1f050a1e83\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:tg_lowering_therapy\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"TG-lowering therapy\",\n      \"source_normalized_name\": \"TG-lowering therapy\",\n      \"target_entity_id\": \"condition:pancreatitis\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Pancreatitis\",\n      \"target_normalized_name\": \"Pancreatitis\",\n      \"evidence_text\": \"guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20214,\n      \"evidence_end_char\": 20307,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:7f2bb9350ba9ba50\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"biomarker:hdl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"HDL cholesterol\",\n      \"target_normalized_name\": \"HDL cholesterol\",\n      \"evidence_text\": \"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19354,\n      \"evidence_end_char\": 19460,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:8a5c6cc7dd48cfd1\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:ldl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"LDL cholesterol\",\n      \"target_normalized_name\": \"LDL cholesterol\",\n      \"evidence_text\": \"Fibrates decrease TG levels by \\u223c36%, non-HDL-C levels by \\u223c6%\\u201316%, and LDL-C levels by \\u223c8%\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20631,\n      \"evidence_end_char\": 20720,\n      \"confidence_gold\": 0.96,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:2821eac8ae4dfa47\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:fasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Fasting triglycerides\",\n      \"source_normalized_name\": \"Fasting triglycerides\",\n      \"target_entity_id\": \"condition:recurrent_coronary_heart_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Recurrent coronary heart disease\",\n      \"target_normalized_name\": \"Recurrent coronary heart disease\",\n      \"evidence_text\": \"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 16523,\n      \"evidence_end_char\": 16677,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:1586da1bd7ef7386\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"HAS_ADVERSE_EFFECT\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:rhabdomyolysis\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Rhabdomyolysis\",\n      \"target_normalized_name\": \"Rhabdomyolysis\",\n      \"evidence_text\": \"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21759,\n      \"evidence_end_char\": 21909,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:cc74057b0204782a\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"PREVENTS\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"condition:vascular_events\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Vascular events\",\n      \"target_normalized_name\": \"Vascular events\",\n      \"evidence_text\": \"fibrate therapy was associated with a 25% decrease in vascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21554,\n      \"evidence_end_char\": 21623,\n      \"confidence_gold\": 0.84,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:4082b0d53eb8ca27\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Nonfasting triglycerides\",\n      \"source_normalized_name\": \"Nonfasting triglycerides\",\n      \"target_entity_id\": \"condition:ischemic_heart_disease\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Ischemic heart disease\",\n      \"target_normalized_name\": \"Ischemic heart disease\",\n      \"evidence_text\": \"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17920,\n      \"evidence_end_char\": 18101,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:ead42386011f7f16\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Triglycerides\",\n      \"source_normalized_name\": \"Triglycerides\",\n      \"target_entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Non-HDL cholesterol\",\n      \"target_normalized_name\": \"Non-HDL cholesterol\",\n      \"evidence_text\": \"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 19354,\n      \"evidence_end_char\": 19460,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:859495a951e905fc\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"ASSOCIATED_WITH\",\n      \"source_entity_id\": \"biomarker:nonfasting_triglycerides\",\n      \"source_entity_type\": \"Biomarker\",\n      \"source_entity_text\": \"Nonfasting triglycerides\",\n      \"source_normalized_name\": \"Nonfasting triglycerides\",\n      \"target_entity_id\": \"condition:ischemic_stroke\",\n      \"target_entity_type\": \"Condition\",\n      \"target_entity_text\": \"Ischemic stroke\",\n      \"target_normalized_name\": \"Ischemic stroke\",\n      \"evidence_text\": \"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 17920,\n      \"evidence_end_char\": 18101,\n      \"confidence_gold\": 0.9,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:2a641624c72fe5ba\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"Fibrates decrease TG levels by \\u223c36%\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20631,\n      \"evidence_end_char\": 20666,\n      \"confidence_gold\": 0.98,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:249d71ba8d76700b\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INTERACTS_WITH\",\n      \"source_entity_id\": \"drug:gemfibrozil\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Gemfibrozil\",\n      \"source_normalized_name\": \"Gemfibrozil\",\n      \"target_entity_id\": \"drug:statins\",\n      \"target_entity_type\": \"Drug\",\n      \"target_entity_text\": \"Statins\",\n      \"target_normalized_name\": \"Statins\",\n      \"evidence_text\": \"Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21984,\n      \"evidence_end_char\": 22172,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:8e7d813cac541ff9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"INCREASES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:creatinine\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Creatinine\",\n      \"target_normalized_name\": \"Creatinine\",\n      \"evidence_text\": \"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 21759,\n      \"evidence_end_char\": 21863,\n      \"confidence_gold\": 0.95,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:0788ad3d2986d986\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:fibrates\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Fibrates\",\n      \"source_normalized_name\": \"Fibrates\",\n      \"target_entity_id\": \"biomarker:non_hdl_cholesterol\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Non-HDL cholesterol\",\n      \"target_normalized_name\": \"Non-HDL cholesterol\",\n      \"evidence_text\": \"Fibrates decrease TG levels by \\u223c36%, non-HDL-C levels by \\u223c6%\\u201316%\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20631,\n      \"evidence_end_char\": 20695,\n      \"confidence_gold\": 0.97,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    },\n    {\n      \"relationship_gold_id\": \"silver_relationship:0aecda6fb31d6701\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0004\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"relationship_type\": \"REDUCES\",\n      \"source_entity_id\": \"drug:omega_3_fatty_acids\",\n      \"source_entity_type\": \"Drug\",\n      \"source_entity_text\": \"Omega-3 fatty acids\",\n      \"source_normalized_name\": \"Omega-3 fatty acids\",\n      \"target_entity_id\": \"biomarker:triglycerides\",\n      \"target_entity_type\": \"Biomarker\",\n      \"target_entity_text\": \"Triglycerides\",\n      \"target_normalized_name\": \"Triglycerides\",\n      \"evidence_text\": \"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 20494,\n      \"evidence_end_char\": 20608,\n      \"confidence_gold\": 0.85,\n      \"direction_verified\": \"needs_review\",\n      \"explicit_or_implied\": \"explicit\",\n      \"negated\": \"unclear\",\n      \"speculative\": \"unclear\",\n      \"annotation_decision\": \"needs_review\",\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0004.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_relationship_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_relationship_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relationship_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "added",
+                  "rejected",
+                  "replaced",
+                  "revised"
+                ]
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "decision",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "relationship_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "relationship_gold_id": {
+                "type": "string"
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "TREATS",
+                  "PREVENTS",
+                  "REDUCES",
+                  "INCREASES",
+                  "ASSOCIATED_WITH",
+                  "HAS_ADVERSE_EFFECT",
+                  "CAUSES",
+                  "HAS_SYMPTOM",
+                  "INCREASES_RISK_OF",
+                  "INTERACTS_WITH",
+                  "CONTRAINDICATED_FOR",
+                  "MENTIONS"
+                ]
+              },
+              "source_entity_id": {
+                "type": "string"
+              },
+              "source_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "source_entity_text": {
+                "type": "string"
+              },
+              "source_normalized_name": {
+                "type": "string"
+              },
+              "target_entity_id": {
+                "type": "string"
+              },
+              "target_entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "target_entity_text": {
+                "type": "string"
+              },
+              "target_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "direction_verified": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "needs_review"
+                ]
+              },
+              "explicit_or_implied": {
+                "type": "string",
+                "enum": [
+                  "explicit",
+                  "strong_implication",
+                  "weak_implication"
+                ]
+              },
+              "negated": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "speculative": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no",
+                  "unclear"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_gold_id",
+              "relationship_type",
+              "source_entity_id",
+              "source_entity_type",
+              "source_entity_text",
+              "source_normalized_name",
+              "target_entity_id",
+              "target_entity_type",
+              "target_entity_text",
+              "target_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "direction_verified",
+              "explicit_or_implied",
+              "negated",
+              "speculative",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_reviews",
+        "relationship_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:9b001018c094f7b9\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant cholesterol\",\"source_normalized_name\":\"Remnant cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular disease\",\"target_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk\",\"evidence_start_char\":\"19752\",\"evidence_end_char\":\"19863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Both endpoints are accepted, and the evidence explicitly states that increased remnant cholesterol was associated with increased CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:3263e5ae1cfc087d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant cholesterol\",\"source_normalized_name\":\"Remnant cholesterol\",\"target_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglyceride-rich lipoproteins\",\"target_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs\",\"evidence_start_char\":\"19556\",\"evidence_end_char\":\"19646\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Both accepted biomarker endpoints are explicitly linked by direct correlation in the evidence.\"},{\"relationship_gold_id\":\"silver_relationship:da561a2690258800\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:myocardial_infarction\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myocardial infarction\",\"target_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and MI is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:b0ce90abec01e13e\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"evidence_start_char\":\"20494\",\"evidence_end_char\":\"20608\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Niacin is explicitly listed as a TG-lowering agent, supporting a reduction in triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:9988e1b8ea3aa73c\",\"decision\":\"rejected\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:tg_lowering_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"TG-lowering therapy\",\"source_normalized_name\":\"TG-lowering therapy\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe hypertriglyceridemia\",\"target_normalized_name\":\"Severe hypertriglyceridemia\",\"evidence_text\":\"the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy\",\"evidence_start_char\":\"20094\",\"evidence_end_char\":\"20272\",\"direction_verified\":\"no\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The source endpoint TG-lowering therapy is not among the accepted entity rows, so the relationship must be rejected.\"},{\"relationship_gold_id\":\"silver_relationship:89d6e39406e90eac\",\"decision\":\"accepted\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:myopathy\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myopathy\",\"target_normalized_name\":\"Myopathy\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Myopathy is explicitly listed among adverse effects associated with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:d63bdc94597fa27f\",\"decision\":\"rejected\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:ldl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"LDL cholesterol\",\"target_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia\",\"evidence_start_char\":\"20774\",\"evidence_end_char\":\"20863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"The evidence is caveated with 'may occur' and is condition-specific, so it should not be accepted as a definitive general fibrates-increase-LDL relationship.\"},{\"relationship_gold_id\":\"silver_relationship:b3cb9e5a0e0fa726\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20754\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates increase HDL-C levels by approximately 10%.\"},{\"relationship_gold_id\":\"silver_relationship:94a7aa78914245cc\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"fibrate therapy was associated with a significant decrease in major cardiovascular events\",\"evidence_start_char\":\"21231\",\"evidence_end_char\":\"21320\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence supports a reduction/decrease in cardiovascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES.\"},{\"relationship_gold_id\":\"silver_relationship:6aa7629c98eebc52\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:apolipoprotein_b\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Apolipoprotein B\",\"target_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with higher apoB levels.\"},{\"relationship_gold_id\":\"silver_relationship:bdcba7962cf5592f\",\"decision\":\"revised\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"evidence_start_char\":\"16831\",\"evidence_end_char\":\"16920\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The original evidence used the speculative phrase 'are thought to be'; revised to a non-speculative sentence that explicitly supports the association.\"},{\"relationship_gold_id\":\"silver_relationship:b52a83c43c1deb05\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:fasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Fasting triglycerides\",\"source_normalized_name\":\"Fasting triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"evidence_start_char\":\"16831\",\"evidence_end_char\":\"16920\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fasting TG levels are significant predictors of cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:ab105d1f050a1e83\",\"decision\":\"rejected\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:tg_lowering_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"TG-lowering therapy\",\"source_normalized_name\":\"TG-lowering therapy\",\"target_entity_id\":\"condition:pancreatitis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Pancreatitis\",\"target_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis\",\"evidence_start_char\":\"20214\",\"evidence_end_char\":\"20307\",\"direction_verified\":\"no\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The source endpoint TG-lowering therapy is not an accepted entity row, so the relationship must be rejected despite supportive evidence.\"},{\"relationship_gold_id\":\"silver_relationship:7f2bb9350ba9ba50\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with low HDL-C levels.\"},{\"relationship_gold_id\":\"silver_relationship:8a5c6cc7dd48cfd1\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:ldl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"LDL cholesterol\",\"target_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20720\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease LDL-C levels by approximately 8%.\"},{\"relationship_gold_id\":\"silver_relationship:2821eac8ae4dfa47\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:fasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Fasting triglycerides\",\"source_normalized_name\":\"Fasting triglycerides\",\"target_entity_id\":\"condition:recurrent_coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Recurrent coronary heart disease\",\"target_normalized_name\":\"Recurrent coronary heart disease\",\"evidence_text\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"evidence_start_char\":\"16523\",\"evidence_end_char\":\"16677\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates on-treatment fasting TG level with recurrent coronary heart disease risk.\"},{\"relationship_gold_id\":\"silver_relationship:1586da1bd7ef7386\",\"decision\":\"accepted\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:rhabdomyolysis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Rhabdomyolysis\",\"target_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rhabdomyolysis is explicitly listed as a rare adverse effect associated with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:cc74057b0204782a\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:vascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Vascular events\",\"target_normalized_name\":\"Vascular events\",\"evidence_text\":\"fibrate therapy was associated with a 25% decrease in vascular events\",\"evidence_start_char\":\"21554\",\"evidence_end_char\":\"21623\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence supports a decrease in vascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES.\"},{\"relationship_gold_id\":\"silver_relationship:4082b0d53eb8ca27\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:ischemic_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic heart disease\",\"target_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic heart disease is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:ead42386011f7f16\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:non_hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-HDL cholesterol\",\"target_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with higher non-HDL-C levels.\"},{\"relationship_gold_id\":\"silver_relationship:859495a951e905fc\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:ischemic_stroke\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic stroke\",\"target_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic stroke is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:2a641624c72fe5ba\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20666\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease TG levels by approximately 36%.\"},{\"relationship_gold_id\":\"silver_relationship:249d71ba8d76700b\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:statins\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"Statins\",\"target_normalized_name\":\"Statins\",\"evidence_text\":\"Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects\",\"evidence_start_char\":\"21984\",\"evidence_end_char\":\"22172\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly describes gemfibrozil altering statin exposure and clearance, supporting a drug-drug interaction.\"},{\"relationship_gold_id\":\"silver_relationship:8e7d813cac541ff9\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:creatinine\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Creatinine\",\"target_normalized_name\":\"Creatinine\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrate therapy is associated with increases in creatinine levels.\"},{\"relationship_gold_id\":\"silver_relationship:0788ad3d2986d986\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:non_hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-HDL cholesterol\",\"target_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20695\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease non-HDL-C levels by approximately 6%\u201316%.\"},{\"relationship_gold_id\":\"silver_relationship:0aecda6fb31d6701\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"evidence_start_char\":\"20494\",\"evidence_end_char\":\"20608\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Omega-3 fatty acids are explicitly listed as TG-lowering agents, supporting a reduction in triglycerides.\"}],\"relationship_additions\":[],\"review_notes\":\"Reviewed all candidate relationships against accepted entity rows only. Rejected relationships using unsupported TG-lowering therapy endpoint and the caveated fibrates-increase-LDL relationship. Revised PREVENTS to REDUCES where the evidence stated decreased events rather than complete prevention.\"}",
+  "parsed_json": {
+    "relationship_reviews": [
+      {
+        "relationship_gold_id": "silver_relationship:9b001018c094f7b9",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:remnant_cholesterol",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Remnant cholesterol",
+        "source_normalized_name": "Remnant cholesterol",
+        "target_entity_id": "condition:cardiovascular_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular disease",
+        "target_normalized_name": "Cardiovascular disease",
+        "evidence_text": "every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk",
+        "evidence_start_char": "19752",
+        "evidence_end_char": "19863",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Both endpoints are accepted, and the evidence explicitly states that increased remnant cholesterol was associated with increased CVD risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:3263e5ae1cfc087d",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:remnant_cholesterol",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Remnant cholesterol",
+        "source_normalized_name": "Remnant cholesterol",
+        "target_entity_id": "biomarker:triglyceride_rich_lipoproteins",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglyceride-rich lipoproteins",
+        "target_normalized_name": "Triglyceride-rich lipoproteins",
+        "evidence_text": "Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs",
+        "evidence_start_char": "19556",
+        "evidence_end_char": "19646",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Both accepted biomarker endpoints are explicitly linked by direct correlation in the evidence."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:da561a2690258800",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:nonfasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Nonfasting triglycerides",
+        "source_normalized_name": "Nonfasting triglycerides",
+        "target_entity_id": "condition:myocardial_infarction",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Myocardial infarction",
+        "target_normalized_name": "Myocardial infarction",
+        "evidence_text": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+        "evidence_start_char": "17920",
+        "evidence_end_char": "18101",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and MI is listed as a component of those events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:b0ce90abec01e13e",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:niacin",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Niacin",
+        "source_normalized_name": "Niacin",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids",
+        "evidence_start_char": "20494",
+        "evidence_end_char": "20608",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Niacin is explicitly listed as a TG-lowering agent, supporting a reduction in triglycerides."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:9988e1b8ea3aa73c",
+        "decision": "rejected",
+        "relationship_type": "TREATS",
+        "source_entity_id": "drug:tg_lowering_therapy",
+        "source_entity_type": "Drug",
+        "source_entity_text": "TG-lowering therapy",
+        "source_normalized_name": "TG-lowering therapy",
+        "target_entity_id": "condition:severe_hypertriglyceridemia",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Severe hypertriglyceridemia",
+        "target_normalized_name": "Severe hypertriglyceridemia",
+        "evidence_text": "the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy",
+        "evidence_start_char": "20094",
+        "evidence_end_char": "20272",
+        "direction_verified": "no",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The source endpoint TG-lowering therapy is not among the accepted entity rows, so the relationship must be rejected."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:89d6e39406e90eac",
+        "decision": "accepted",
+        "relationship_type": "HAS_ADVERSE_EFFECT",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:myopathy",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Myopathy",
+        "target_normalized_name": "Myopathy",
+        "evidence_text": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis",
+        "evidence_start_char": "21759",
+        "evidence_end_char": "21909",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Myopathy is explicitly listed among adverse effects associated with fibrate therapy."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:d63bdc94597fa27f",
+        "decision": "rejected",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:ldl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "LDL cholesterol",
+        "target_normalized_name": "LDL cholesterol",
+        "evidence_text": "fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia",
+        "evidence_start_char": "20774",
+        "evidence_end_char": "20863",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "yes",
+        "reason": "The evidence is caveated with 'may occur' and is condition-specific, so it should not be accepted as a definitive general fibrates-increase-LDL relationship."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:b3cb9e5a0e0fa726",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:hdl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "HDL cholesterol",
+        "target_normalized_name": "HDL cholesterol",
+        "evidence_text": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%",
+        "evidence_start_char": "20631",
+        "evidence_end_char": "20754",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fibrates increase HDL-C levels by approximately 10%."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:94a7aa78914245cc",
+        "decision": "revised",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:cardiovascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular events",
+        "target_normalized_name": "Cardiovascular events",
+        "evidence_text": "fibrate therapy was associated with a significant decrease in major cardiovascular events",
+        "evidence_start_char": "21231",
+        "evidence_end_char": "21320",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence supports a reduction/decrease in cardiovascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:6aa7629c98eebc52",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "biomarker:apolipoprotein_b",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Apolipoprotein B",
+        "target_normalized_name": "Apolipoprotein B",
+        "evidence_text": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+        "evidence_start_char": "19354",
+        "evidence_end_char": "19460",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that elevated TG levels are closely associated with higher apoB levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:bdcba7962cf5592f",
+        "decision": "revised",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:nonfasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Nonfasting triglycerides",
+        "source_normalized_name": "Nonfasting triglycerides",
+        "target_entity_id": "condition:cardiovascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular events",
+        "target_normalized_name": "Cardiovascular events",
+        "evidence_text": "both fasting and nonfasting TG levels are significant predictors of cardiovascular events",
+        "evidence_start_char": "16831",
+        "evidence_end_char": "16920",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The original evidence used the speculative phrase 'are thought to be'; revised to a non-speculative sentence that explicitly supports the association."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:b52a83c43c1deb05",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:fasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Fasting triglycerides",
+        "source_normalized_name": "Fasting triglycerides",
+        "target_entity_id": "condition:cardiovascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Cardiovascular events",
+        "target_normalized_name": "Cardiovascular events",
+        "evidence_text": "both fasting and nonfasting TG levels are significant predictors of cardiovascular events",
+        "evidence_start_char": "16831",
+        "evidence_end_char": "16920",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fasting TG levels are significant predictors of cardiovascular events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:ab105d1f050a1e83",
+        "decision": "rejected",
+        "relationship_type": "PREVENTS",
+        "source_entity_id": "drug:tg_lowering_therapy",
+        "source_entity_type": "Drug",
+        "source_entity_text": "TG-lowering therapy",
+        "source_normalized_name": "TG-lowering therapy",
+        "target_entity_id": "condition:pancreatitis",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Pancreatitis",
+        "target_normalized_name": "Pancreatitis",
+        "evidence_text": "guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis",
+        "evidence_start_char": "20214",
+        "evidence_end_char": "20307",
+        "direction_verified": "no",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The source endpoint TG-lowering therapy is not an accepted entity row, so the relationship must be rejected despite supportive evidence."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:7f2bb9350ba9ba50",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "biomarker:hdl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "HDL cholesterol",
+        "target_normalized_name": "HDL cholesterol",
+        "evidence_text": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+        "evidence_start_char": "19354",
+        "evidence_end_char": "19460",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that elevated TG levels are closely associated with low HDL-C levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:8a5c6cc7dd48cfd1",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:ldl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "LDL cholesterol",
+        "target_normalized_name": "LDL cholesterol",
+        "evidence_text": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%",
+        "evidence_start_char": "20631",
+        "evidence_end_char": "20720",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fibrates decrease LDL-C levels by approximately 8%."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:2821eac8ae4dfa47",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:fasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Fasting triglycerides",
+        "source_normalized_name": "Fasting triglycerides",
+        "target_entity_id": "condition:recurrent_coronary_heart_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Recurrent coronary heart disease",
+        "target_normalized_name": "Recurrent coronary heart disease",
+        "evidence_text": "an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels",
+        "evidence_start_char": "16523",
+        "evidence_end_char": "16677",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly associates on-treatment fasting TG level with recurrent coronary heart disease risk."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:1586da1bd7ef7386",
+        "decision": "accepted",
+        "relationship_type": "HAS_ADVERSE_EFFECT",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:rhabdomyolysis",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Rhabdomyolysis",
+        "target_normalized_name": "Rhabdomyolysis",
+        "evidence_text": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis",
+        "evidence_start_char": "21759",
+        "evidence_end_char": "21909",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Rhabdomyolysis is explicitly listed as a rare adverse effect associated with fibrate therapy."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:cc74057b0204782a",
+        "decision": "revised",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "condition:vascular_events",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Vascular events",
+        "target_normalized_name": "Vascular events",
+        "evidence_text": "fibrate therapy was associated with a 25% decrease in vascular events",
+        "evidence_start_char": "21554",
+        "evidence_end_char": "21623",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence supports a decrease in vascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:4082b0d53eb8ca27",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:nonfasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Nonfasting triglycerides",
+        "source_normalized_name": "Nonfasting triglycerides",
+        "target_entity_id": "condition:ischemic_heart_disease",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Ischemic heart disease",
+        "target_normalized_name": "Ischemic heart disease",
+        "evidence_text": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+        "evidence_start_char": "17920",
+        "evidence_end_char": "18101",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic heart disease is listed as a component of those events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:ead42386011f7f16",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Triglycerides",
+        "source_normalized_name": "Triglycerides",
+        "target_entity_id": "biomarker:non_hdl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Non-HDL cholesterol",
+        "target_normalized_name": "Non-HDL cholesterol",
+        "evidence_text": "Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C",
+        "evidence_start_char": "19354",
+        "evidence_end_char": "19460",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that elevated TG levels are closely associated with higher non-HDL-C levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:859495a951e905fc",
+        "decision": "accepted",
+        "relationship_type": "ASSOCIATED_WITH",
+        "source_entity_id": "biomarker:nonfasting_triglycerides",
+        "source_entity_type": "Biomarker",
+        "source_entity_text": "Nonfasting triglycerides",
+        "source_normalized_name": "Nonfasting triglycerides",
+        "target_entity_id": "condition:ischemic_stroke",
+        "target_entity_type": "Condition",
+        "target_entity_text": "Ischemic stroke",
+        "target_normalized_name": "Ischemic stroke",
+        "evidence_text": "the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels",
+        "evidence_start_char": "17920",
+        "evidence_end_char": "18101",
+        "direction_verified": "yes",
+        "explicit_or_implied": "strong_implication",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic stroke is listed as a component of those events."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:2a641624c72fe5ba",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "Fibrates decrease TG levels by \u223c36%",
+        "evidence_start_char": "20631",
+        "evidence_end_char": "20666",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fibrates decrease TG levels by approximately 36%."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:249d71ba8d76700b",
+        "decision": "accepted",
+        "relationship_type": "INTERACTS_WITH",
+        "source_entity_id": "drug:gemfibrozil",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Gemfibrozil",
+        "source_normalized_name": "Gemfibrozil",
+        "target_entity_id": "drug:statins",
+        "target_entity_type": "Drug",
+        "target_entity_text": "Statins",
+        "target_normalized_name": "Statins",
+        "evidence_text": "Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects",
+        "evidence_start_char": "21984",
+        "evidence_end_char": "22172",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly describes gemfibrozil altering statin exposure and clearance, supporting a drug-drug interaction."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:8e7d813cac541ff9",
+        "decision": "accepted",
+        "relationship_type": "INCREASES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:creatinine",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Creatinine",
+        "target_normalized_name": "Creatinine",
+        "evidence_text": "Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels",
+        "evidence_start_char": "21759",
+        "evidence_end_char": "21863",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fibrate therapy is associated with increases in creatinine levels."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:0788ad3d2986d986",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:fibrates",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Fibrates",
+        "source_normalized_name": "Fibrates",
+        "target_entity_id": "biomarker:non_hdl_cholesterol",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Non-HDL cholesterol",
+        "target_normalized_name": "Non-HDL cholesterol",
+        "evidence_text": "Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%",
+        "evidence_start_char": "20631",
+        "evidence_end_char": "20695",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "The evidence explicitly states that fibrates decrease non-HDL-C levels by approximately 6%\u201316%."
+      },
+      {
+        "relationship_gold_id": "silver_relationship:0aecda6fb31d6701",
+        "decision": "accepted",
+        "relationship_type": "REDUCES",
+        "source_entity_id": "drug:omega_3_fatty_acids",
+        "source_entity_type": "Drug",
+        "source_entity_text": "Omega-3 fatty acids",
+        "source_normalized_name": "Omega-3 fatty acids",
+        "target_entity_id": "biomarker:triglycerides",
+        "target_entity_type": "Biomarker",
+        "target_entity_text": "Triglycerides",
+        "target_normalized_name": "Triglycerides",
+        "evidence_text": "a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids",
+        "evidence_start_char": "20494",
+        "evidence_end_char": "20608",
+        "direction_verified": "yes",
+        "explicit_or_implied": "explicit",
+        "negated": "no",
+        "speculative": "no",
+        "reason": "Omega-3 fatty acids are explicitly listed as TG-lowering agents, supporting a reduction in triglycerides."
+      }
+    ],
+    "relationship_additions": [],
+    "review_notes": "Reviewed all candidate relationships against accepted entity rows only. Rejected relationships using unsupported TG-lowering therapy endpoint and the caveated fibrates-increase-LDL relationship. Revised PREVENTS to REDUCES where the evidence stated decreased events rather than complete prevention."
+  },
+  "raw_response": {
+    "id": "resp_0252aa755ac58007006a47e8a7ad70819e9ada35aeb4cbc88f",
+    "created_at": 1783097511.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0252aa755ac58007006a47e8a8d9e0819ea487307fb60c7878",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0252aa755ac58007006a47e8fc7e30819ebdd7bf75586ae654",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"relationship_reviews\":[{\"relationship_gold_id\":\"silver_relationship:9b001018c094f7b9\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant cholesterol\",\"source_normalized_name\":\"Remnant cholesterol\",\"target_entity_id\":\"condition:cardiovascular_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular disease\",\"target_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"every 88.6 mg/dL (1 mmol/L) increase in remnant cholesterol was associated with a 2.8-fold increase in CVD risk\",\"evidence_start_char\":\"19752\",\"evidence_end_char\":\"19863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Both endpoints are accepted, and the evidence explicitly states that increased remnant cholesterol was associated with increased CVD risk.\"},{\"relationship_gold_id\":\"silver_relationship:3263e5ae1cfc087d\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:remnant_cholesterol\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Remnant cholesterol\",\"source_normalized_name\":\"Remnant cholesterol\",\"target_entity_id\":\"biomarker:triglyceride_rich_lipoproteins\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglyceride-rich lipoproteins\",\"target_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"Elevated remnant cholesterol levels, which directly correlate with elevated levels of TRLs\",\"evidence_start_char\":\"19556\",\"evidence_end_char\":\"19646\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Both accepted biomarker endpoints are explicitly linked by direct correlation in the evidence.\"},{\"relationship_gold_id\":\"silver_relationship:da561a2690258800\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:myocardial_infarction\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myocardial infarction\",\"target_normalized_name\":\"Myocardial infarction\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and MI is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:b0ce90abec01e13e\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:niacin\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Niacin\",\"source_normalized_name\":\"Niacin\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"evidence_start_char\":\"20494\",\"evidence_end_char\":\"20608\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Niacin is explicitly listed as a TG-lowering agent, supporting a reduction in triglycerides.\"},{\"relationship_gold_id\":\"silver_relationship:9988e1b8ea3aa73c\",\"decision\":\"rejected\",\"relationship_type\":\"TREATS\",\"source_entity_id\":\"drug:tg_lowering_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"TG-lowering therapy\",\"source_normalized_name\":\"TG-lowering therapy\",\"target_entity_id\":\"condition:severe_hypertriglyceridemia\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Severe hypertriglyceridemia\",\"target_normalized_name\":\"Severe hypertriglyceridemia\",\"evidence_text\":\"the majority of guidelines define severe hypertriglyceridemia as a TG level of \u2265500 mg/dL (\u22655.6 mmol/L). In such cases, guidelines recommend the initiation of TG-lowering therapy\",\"evidence_start_char\":\"20094\",\"evidence_end_char\":\"20272\",\"direction_verified\":\"no\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The source endpoint TG-lowering therapy is not among the accepted entity rows, so the relationship must be rejected.\"},{\"relationship_gold_id\":\"silver_relationship:89d6e39406e90eac\",\"decision\":\"accepted\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:myopathy\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Myopathy\",\"target_normalized_name\":\"Myopathy\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Myopathy is explicitly listed among adverse effects associated with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:d63bdc94597fa27f\",\"decision\":\"rejected\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:ldl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"LDL cholesterol\",\"target_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"fibrate-induced increases in LDL-C may occur in patients with severe hypertriglyceridemia\",\"evidence_start_char\":\"20774\",\"evidence_end_char\":\"20863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"yes\",\"reason\":\"The evidence is caveated with 'may occur' and is condition-specific, so it should not be accepted as a definitive general fibrates-increase-LDL relationship.\"},{\"relationship_gold_id\":\"silver_relationship:b3cb9e5a0e0fa726\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8% and increase HDL C levels by \u223c10%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20754\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates increase HDL-C levels by approximately 10%.\"},{\"relationship_gold_id\":\"silver_relationship:94a7aa78914245cc\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"fibrate therapy was associated with a significant decrease in major cardiovascular events\",\"evidence_start_char\":\"21231\",\"evidence_end_char\":\"21320\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence supports a reduction/decrease in cardiovascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES.\"},{\"relationship_gold_id\":\"silver_relationship:6aa7629c98eebc52\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:apolipoprotein_b\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Apolipoprotein B\",\"target_normalized_name\":\"Apolipoprotein B\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with higher apoB levels.\"},{\"relationship_gold_id\":\"silver_relationship:bdcba7962cf5592f\",\"decision\":\"revised\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"evidence_start_char\":\"16831\",\"evidence_end_char\":\"16920\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The original evidence used the speculative phrase 'are thought to be'; revised to a non-speculative sentence that explicitly supports the association.\"},{\"relationship_gold_id\":\"silver_relationship:b52a83c43c1deb05\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:fasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Fasting triglycerides\",\"source_normalized_name\":\"Fasting triglycerides\",\"target_entity_id\":\"condition:cardiovascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Cardiovascular events\",\"target_normalized_name\":\"Cardiovascular events\",\"evidence_text\":\"both fasting and nonfasting TG levels are significant predictors of cardiovascular events\",\"evidence_start_char\":\"16831\",\"evidence_end_char\":\"16920\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fasting TG levels are significant predictors of cardiovascular events.\"},{\"relationship_gold_id\":\"silver_relationship:ab105d1f050a1e83\",\"decision\":\"rejected\",\"relationship_type\":\"PREVENTS\",\"source_entity_id\":\"drug:tg_lowering_therapy\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"TG-lowering therapy\",\"source_normalized_name\":\"TG-lowering therapy\",\"target_entity_id\":\"condition:pancreatitis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Pancreatitis\",\"target_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"guidelines recommend the initiation of TG-lowering therapy to reduce the risk of pancreatitis\",\"evidence_start_char\":\"20214\",\"evidence_end_char\":\"20307\",\"direction_verified\":\"no\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The source endpoint TG-lowering therapy is not an accepted entity row, so the relationship must be rejected despite supportive evidence.\"},{\"relationship_gold_id\":\"silver_relationship:7f2bb9350ba9ba50\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"HDL cholesterol\",\"target_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with low HDL-C levels.\"},{\"relationship_gold_id\":\"silver_relationship:8a5c6cc7dd48cfd1\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:ldl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"LDL cholesterol\",\"target_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%, and LDL-C levels by \u223c8%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20720\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease LDL-C levels by approximately 8%.\"},{\"relationship_gold_id\":\"silver_relationship:2821eac8ae4dfa47\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:fasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Fasting triglycerides\",\"source_normalized_name\":\"Fasting triglycerides\",\"target_entity_id\":\"condition:recurrent_coronary_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Recurrent coronary heart disease\",\"target_normalized_name\":\"Recurrent coronary heart disease\",\"evidence_text\":\"an on-treatment fasting TG level <150 mg/dL (<1.7 mmol/L) was associated with a reduction in recurrent coronary heart disease risk versus higher TG levels\",\"evidence_start_char\":\"16523\",\"evidence_end_char\":\"16677\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates on-treatment fasting TG level with recurrent coronary heart disease risk.\"},{\"relationship_gold_id\":\"silver_relationship:1586da1bd7ef7386\",\"decision\":\"accepted\",\"relationship_type\":\"HAS_ADVERSE_EFFECT\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:rhabdomyolysis\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Rhabdomyolysis\",\"target_normalized_name\":\"Rhabdomyolysis\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels, myopathy, and, in rare cases, rhabdomyolysis\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21909\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Rhabdomyolysis is explicitly listed as a rare adverse effect associated with fibrate therapy.\"},{\"relationship_gold_id\":\"silver_relationship:cc74057b0204782a\",\"decision\":\"revised\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"condition:vascular_events\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Vascular events\",\"target_normalized_name\":\"Vascular events\",\"evidence_text\":\"fibrate therapy was associated with a 25% decrease in vascular events\",\"evidence_start_char\":\"21554\",\"evidence_end_char\":\"21623\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence supports a decrease in vascular events, not complete prevention; relationship type revised from PREVENTS to REDUCES.\"},{\"relationship_gold_id\":\"silver_relationship:4082b0d53eb8ca27\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:ischemic_heart_disease\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic heart disease\",\"target_normalized_name\":\"Ischemic heart disease\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic heart disease is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:ead42386011f7f16\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Triglycerides\",\"source_normalized_name\":\"Triglycerides\",\"target_entity_id\":\"biomarker:non_hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-HDL cholesterol\",\"target_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"Elevated TG levels are closely associated with higher levels of non-HDL-C and apoB and low levels of HDL-C\",\"evidence_start_char\":\"19354\",\"evidence_end_char\":\"19460\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that elevated TG levels are closely associated with higher non-HDL-C levels.\"},{\"relationship_gold_id\":\"silver_relationship:859495a951e905fc\",\"decision\":\"accepted\",\"relationship_type\":\"ASSOCIATED_WITH\",\"source_entity_id\":\"biomarker:nonfasting_triglycerides\",\"source_entity_type\":\"Biomarker\",\"source_entity_text\":\"Nonfasting triglycerides\",\"source_normalized_name\":\"Nonfasting triglycerides\",\"target_entity_id\":\"condition:ischemic_stroke\",\"target_entity_type\":\"Condition\",\"target_entity_text\":\"Ischemic stroke\",\"target_normalized_name\":\"Ischemic stroke\",\"evidence_text\":\"the cumulative incidence of cardiovascular events (ischemic stroke, MI, ischemic heart disease) and all-cause mortality were strongly associated with increasing nonfasting TG levels\",\"evidence_start_char\":\"17920\",\"evidence_end_char\":\"18101\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"strong_implication\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly associates increasing nonfasting TG levels with cardiovascular events, and ischemic stroke is listed as a component of those events.\"},{\"relationship_gold_id\":\"silver_relationship:2a641624c72fe5ba\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20666\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease TG levels by approximately 36%.\"},{\"relationship_gold_id\":\"silver_relationship:249d71ba8d76700b\",\"decision\":\"accepted\",\"relationship_type\":\"INTERACTS_WITH\",\"source_entity_id\":\"drug:gemfibrozil\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Gemfibrozil\",\"source_normalized_name\":\"Gemfibrozil\",\"target_entity_id\":\"drug:statins\",\"target_entity_type\":\"Drug\",\"target_entity_text\":\"Statins\",\"target_normalized_name\":\"Statins\",\"evidence_text\":\"Gemfibrozil, in particular, has been shown to increase exposure to and reduce the renal clearance of statins by inhibiting their glucuronidation, potentially leading to severe side effects\",\"evidence_start_char\":\"21984\",\"evidence_end_char\":\"22172\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly describes gemfibrozil altering statin exposure and clearance, supporting a drug-drug interaction.\"},{\"relationship_gold_id\":\"silver_relationship:8e7d813cac541ff9\",\"decision\":\"accepted\",\"relationship_type\":\"INCREASES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:creatinine\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Creatinine\",\"target_normalized_name\":\"Creatinine\",\"evidence_text\":\"Fibrate therapy is associated with a number of adverse effects, including increases in creatinine levels\",\"evidence_start_char\":\"21759\",\"evidence_end_char\":\"21863\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrate therapy is associated with increases in creatinine levels.\"},{\"relationship_gold_id\":\"silver_relationship:0788ad3d2986d986\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:fibrates\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Fibrates\",\"source_normalized_name\":\"Fibrates\",\"target_entity_id\":\"biomarker:non_hdl_cholesterol\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Non-HDL cholesterol\",\"target_normalized_name\":\"Non-HDL cholesterol\",\"evidence_text\":\"Fibrates decrease TG levels by \u223c36%, non-HDL-C levels by \u223c6%\u201316%\",\"evidence_start_char\":\"20631\",\"evidence_end_char\":\"20695\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"The evidence explicitly states that fibrates decrease non-HDL-C levels by approximately 6%\u201316%.\"},{\"relationship_gold_id\":\"silver_relationship:0aecda6fb31d6701\",\"decision\":\"accepted\",\"relationship_type\":\"REDUCES\",\"source_entity_id\":\"drug:omega_3_fatty_acids\",\"source_entity_type\":\"Drug\",\"source_entity_text\":\"Omega-3 fatty acids\",\"source_normalized_name\":\"Omega-3 fatty acids\",\"target_entity_id\":\"biomarker:triglycerides\",\"target_entity_type\":\"Biomarker\",\"target_entity_text\":\"Triglycerides\",\"target_normalized_name\":\"Triglycerides\",\"evidence_text\":\"a number of guidelines recommend the use of TG-lowering agents, primarily fibrates, niacin, or omega-3 fatty acids\",\"evidence_start_char\":\"20494\",\"evidence_end_char\":\"20608\",\"direction_verified\":\"yes\",\"explicit_or_implied\":\"explicit\",\"negated\":\"no\",\"speculative\":\"no\",\"reason\":\"Omega-3 fatty acids are explicitly listed as TG-lowering agents, supporting a reduction in triglycerides.\"}],\"relationship_additions\":[],\"review_notes\":\"Reviewed all candidate relationships against accepted entity rows only. Rejected relationships using unsupported TG-lowering therapy endpoint and the caveated fibrates-increase-LDL relationship. Revised PREVENTS to REDUCES where the evidence stated decreased events rather than complete prevention.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783097634.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_relationship_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "relationship_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "added",
+                      "rejected",
+                      "replaced",
+                      "revised"
+                    ]
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "decision",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "relationship_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "relationship_gold_id": {
+                    "type": "string"
+                  },
+                  "relationship_type": {
+                    "type": "string",
+                    "enum": [
+                      "TREATS",
+                      "PREVENTS",
+                      "REDUCES",
+                      "INCREASES",
+                      "ASSOCIATED_WITH",
+                      "HAS_ADVERSE_EFFECT",
+                      "CAUSES",
+                      "HAS_SYMPTOM",
+                      "INCREASES_RISK_OF",
+                      "INTERACTS_WITH",
+                      "CONTRAINDICATED_FOR",
+                      "MENTIONS"
+                    ]
+                  },
+                  "source_entity_id": {
+                    "type": "string"
+                  },
+                  "source_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "source_entity_text": {
+                    "type": "string"
+                  },
+                  "source_normalized_name": {
+                    "type": "string"
+                  },
+                  "target_entity_id": {
+                    "type": "string"
+                  },
+                  "target_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "target_entity_text": {
+                    "type": "string"
+                  },
+                  "target_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "direction_verified": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "needs_review"
+                    ]
+                  },
+                  "explicit_or_implied": {
+                    "type": "string",
+                    "enum": [
+                      "explicit",
+                      "strong_implication",
+                      "weak_implication"
+                    ]
+                  },
+                  "negated": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "speculative": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "unclear"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "relationship_gold_id",
+                  "relationship_type",
+                  "source_entity_id",
+                  "source_entity_type",
+                  "source_entity_text",
+                  "source_normalized_name",
+                  "target_entity_id",
+                  "target_entity_type",
+                  "target_entity_text",
+                  "target_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "direction_verified",
+                  "explicit_or_implied",
+                  "negated",
+                  "speculative",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "relationship_reviews",
+            "relationship_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 21433,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 10393,
+      "output_tokens_details": {
+        "reasoning_tokens": 5178
+      },
+      "total_tokens": 31826
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T16:51:51.987962+00:00",
+  "finished_at": "2026-07-03T16:53:55.465449+00:00",
+  "duration_ms": 128784.507,
+  "status": "ok",
+  "error": ""
+}

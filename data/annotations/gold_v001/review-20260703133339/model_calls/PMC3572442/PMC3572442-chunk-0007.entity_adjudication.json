@@ -1,0 +1,1332 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC3572442-chunk-0007\",\n    \"document_id\": \"paper:PMC3572442\",\n    \"pmcid\": \"PMC3572442\",\n    \"section\": \"TABLE\",\n    \"start_char\": \"32969\",\n    \"end_char\": \"38968\",\n    \"text\": \"Lipoprotein(a) Relationship to CVD unclear, studies contradictory Polygenic Hypercholesterolemia No family history, no physical manifestations such as xanthomas, exact cause is unknown Lp(X) Associate with obstructive hepatic disease, CVD risk unclear Sitosterolemia rare; plant sterols absorbed in large amounts, tendon xanthomas develop in childhood, LDL levels normal to high Cerebrotendinous Xanthomatosis rare; associated with neurologic disease, tendon xanthomas, and cataracts in young adults Elevated cholesterol and triglycerides Combined (Familial) Hyperlipidemia May occur randomly or with strong family history of hyperlipidemia; type 2 diabetes and metabolic syndrome are associated and can make diagnosis more difficult Familial Dysbetalipoproteinemia (Type III Hyperlipoproteinemia) severe hypertriglyceridemia and hypercholesterolemia (both often > 300), associated with premature diffuse vascular disease, male predominance, Palmar xanthomas are pathognomonic Hepatic Lipase Deficiency Rare disorder with very high cholesterol and triglyceride concentrations, phenotypically similar to familial dysbetalipoproteinemia. Isolated triglyceride elevations LPL deficiency Results in elevated chylomicrons, which carry dietary fat; chylomicrons are generally not present after an overnight fast, so a creamy looking plasma in a fasting specimen should be a clue to the diagnosis, especially if seen in young children; extremely high triglycerides can lead to pancreatitis ApoCII deficiency This apolipoprotein is an activator of LPL; its absence causes a clinical picture identical to LPL deficiency Familial hypertriglyceridemia Autosomal dominant inheritance; Main defect is overproduction of VLDL triglycerides by the liver;\\n\\nSecondary causes of hyperlipidemia\\n\\nDiet Drugs Disease &Disorders ofMetabolism Saturated & trans Fats Thiazide Diuretics Hypothyroidism Excess Calories Beta-Blockers Obesity Alcohol Glucocorticoids Type 2 Diabetes Red meat Sex hormones Metabolic syndrome Whole milk Retinoic Acid derivations Renal disease High sugar beverages & foods Antipsychotics HIV Antiretrovirals PCOS Immunosuppressive agents\\n\\nCurrent HMG-CoA-inhibitors.\\n\\nDrug TradeName DoseRange % LDL-CDecrease % HDL-CIncrease % TGDecrease Fluvastatin Lescol 20\\u201380 mg 22\\u201335 3\\u201311 17\\u201321 Pravastatin Pravachol 10\\u201380 mg 22\\u201337 2\\u201312 15\\u201324 Lovastatin Altoprev/Mevacor 10\\u201380 mg 21\\u201342 2\\u20138 6\\u201321 Simvastatin Zocor 5\\u201380 mg 26\\u201347 10\\u201316 12\\u201333 Atorvastatin Lipitor 10\\u201380 mg 39\\u201360 5\\u20139 19\\u201337 Rosuvastatin Crestor 5\\u201340 mg 45\\u201363 8\\u201310 10\\u201330 Pitavastatin Livalo 1\\u20134 mg 38\\u201344 5\\u20138 14\\u201322\\n\\nStudies of direct comparisons of 2 or more statins' efficacy in lipid lowering.\\n\\nStudy Name NumberParticipants DrugsCompared Conclusions *PATROL 302 pitavastatin, atorvastatin, and rosuvastatin The safety and efficacy of these 3 strong statins are equal **CIRCLE 743 atorvastatin vs pitavastatin vs pravastatin Pitavastatin or atorvastatin resulted in better reduction of LDL-C than pravastatin; pitavastatin significantly increased HDL-C compared to placebo, while the other two statins did not *SATURN 1039 atorvastatin vs rosuvastatin No difference in progression of arterial plaques by intravascular ultrasound despite statistically significant lower LDL with rosuvastatin\\n\\nprospective randomized multi-center trial,\\n\\nRetrospective study.\\n\\nStatin alternatives\\n\\nDRUG EFFECTS ADVERSEREACTIONS Bile acid sequestrants Cholestyramine (4\\u201316 g)Colestipol (5\\u201320 g)Colesevelam (2.6\\u20133.8 g) LDL \\u221215\\u201330%HDL +3\\u20135%TG No change orincrease GastrointestinaldistressConstipationDecreasedabsorptionof other drugs Nicotinic acid Immediate release(crystalline) nicotinic acid(1.5\\u20133 gm), extendedrelease nicotinic acid(Niaspan\\u00ae) (1\\u20132 g),sustained releasenicotinic acid (1\\u20132 g) LDL \\u22125\\u201325%HDL +15\\u201335%TG \\u221220\\u201350% FlushingHyperglycemiaHyperuricemia(or gout)Upper GI distressHepatotoxicity Fibric acids Gemfibrozil(600 mg BID)Fenofibrate (200 mg)Clofibrate(1000 mgBID) LDL \\u22125\\u201320%(may be increased inpatients with high TG)HDL +10\\u201320%TG \\u221220\\u201350% DyspepsiaGallstonesMyopathy Ezetimibe Zetia (10 mg daily)As monotherapy, often combined witha statin LDL-C \\u221218%HDL-C +3%TG \\u22128% DiarrheaArthralgiaNasopharyngitis orSinusitisControversialregarding reductionof CVD events Omega 3 fatty acids LovazaFish OilPlant sources Prescription fatty acid ester indicated only fortreatment of TG > 500 mg/dl to preventpancreatitisFish oil has been shown to reduce elevated TGwith subsequent mild reduction in LDL andnon-HDL-C; however a recent major studyshowed no benefit from fish oil capsules;consumption of fish is preferred. Plant sourcesof omega-3 FA have been subjected to fewclinical trials with CVD endpoints\\n\\nSummary of conclusions from evidence comparing use of a specific statin in combination with another lipid-modifying agent with use of a higher dose statin in populations requiring intensive treatment and subgroups\\n\\nOutcome Strength of Evidence (GRADE) Summary/conclusions Key Question 1. For patients who require intensive lipid-modifying therapy, what are the comparative long-term benefits and rates of serious adverse events of coadministration of different lipid-modifying agents (i.e., a statin plus another lipid-modifying agent) compared with higher dose statin monotherapy? All-cause mortality Very low Insufficient evidence was available regarding mortality. Based on small trials with few events, no difference in mortality was noted for any statin combination associated with ezetimibe or fibrates compared with higher dose statin monotherapy.No evidence was available for other combinations. Vascular death --- No evidence was available for any statin combination vs. higher dose statin monotherapy. Seriousaadverse events Very low Up to a maximum followup of 24 weeks, no intervention was significantly safer when statin-ezetimibe combination was compared with higher dose statin monotherapy. No evidence was available for other combinations. Key Question 2. Do these regimens differ in reaching LDL targets (or other surrogate markers), short-term\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:9c6453a761761040\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:chylomicrons\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Chylomicrons\",\n      \"normalized_name\": \"Chylomicrons\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"chylomicrons\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34173,\n      \"evidence_end_char\": 34185,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d6406a4b3f7c9b1e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7ea935ac530ad622\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:ldl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL cholesterol\",\n      \"normalized_name\": \"LDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL cholesterol\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7469dd30093d48b3\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:lipoprotein_a\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein(a)\",\n      \"normalized_name\": \"Lipoprotein(a)\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Lipoprotein(a)\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 32969,\n      \"evidence_end_char\": 32983,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d94f1fab14e8d7fa\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:lp_x\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lp(X)\",\n      \"normalized_name\": \"Lp(X)\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Lp(X)\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33154,\n      \"evidence_end_char\": 33159,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:93527e2f0c177d6a\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33494,\n      \"evidence_end_char\": 33507,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9034d102cb1d34b2\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"biomarker:vldl_triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"VLDL triglycerides\",\n      \"normalized_name\": \"VLDL triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"VLDL triglycerides\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34675,\n      \"evidence_end_char\": 34693,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:83939538a52fe419\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:apocii_deficiency\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"ApoCII deficiency\",\n      \"normalized_name\": \"ApoCII deficiency\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"ApoCII deficiency\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34452,\n      \"evidence_end_char\": 34469,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c7d14caa50cc6ce0\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular Disease\",\n      \"normalized_name\": \"Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Cardiovascular Disease\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:7fe40c3d49b93e3b\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:cataracts\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cataracts\",\n      \"normalized_name\": \"Cataracts\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cataracts\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33443,\n      \"evidence_end_char\": 33452,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8f15d3d7a2a4f5aa\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:cerebrotendinous_xanthomatosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cerebrotendinous Xanthomatosis\",\n      \"normalized_name\": \"Cerebrotendinous Xanthomatosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Cerebrotendinous Xanthomatosis\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33348,\n      \"evidence_end_char\": 33378,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ba21f1a610191da5\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:combined_familial_hyperlipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Combined Familial Hyperlipidemia\",\n      \"normalized_name\": \"Combined Familial Hyperlipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Combined Familial Hyperlipidemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:855461e379dc02a4\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:familial_dysbetalipoproteinemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Familial Dysbetalipoproteinemia\",\n      \"normalized_name\": \"Familial Dysbetalipoproteinemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Familial Dysbetalipoproteinemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33703,\n      \"evidence_end_char\": 33734,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bd9683c56eba148d\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:familial_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Familial hypertriglyceridemia\",\n      \"normalized_name\": \"Familial hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Familial hypertriglyceridemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34580,\n      \"evidence_end_char\": 34609,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:55030599eec6cd99\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:gallstones\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Gallstones\",\n      \"normalized_name\": \"Gallstones\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Gallstones\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36962,\n      \"evidence_end_char\": 36972,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:fe98607e92b80a2e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:gout\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Gout\",\n      \"normalized_name\": \"Gout\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gout\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36763,\n      \"evidence_end_char\": 36767,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f599a7818844342b\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hepatic_lipase_deficiency\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hepatic Lipase Deficiency\",\n      \"normalized_name\": \"Hepatic Lipase Deficiency\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hepatic Lipase Deficiency\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33946,\n      \"evidence_end_char\": 33971,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e8f44e6f98b986f2\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hepatotoxicity\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hepatotoxicity\",\n      \"normalized_name\": \"Hepatotoxicity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hepatotoxicity\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36785,\n      \"evidence_end_char\": 36799,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8fd6a03e3a8914df\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hypercholesterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypercholesterolemia\",\n      \"normalized_name\": \"Hypercholesterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hypercholesterolemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33045,\n      \"evidence_end_char\": 33065,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:234145a570c5aab6\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hyperglycemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hyperglycemia\",\n      \"normalized_name\": \"Hyperglycemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hyperglycemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36733,\n      \"evidence_end_char\": 36746,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:23e3a4d43440c39c\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hyperlipidemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hyperlipidemia\",\n      \"normalized_name\": \"Hyperlipidemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hyperlipidemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33528,\n      \"evidence_end_char\": 33542,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6f3aa4ed8eb7448e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypertriglyceridemia\",\n      \"normalized_name\": \"Hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hypertriglyceridemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33774,\n      \"evidence_end_char\": 33794,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3d73dc419ae6e6f5\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:hypothyroidism\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hypothyroidism\",\n      \"normalized_name\": \"Hypothyroidism\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Hypothyroidism\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34830,\n      \"evidence_end_char\": 34844,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:eb66d2a002fac0f0\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:lpl_deficiency\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"LPL deficiency\",\n      \"normalized_name\": \"LPL deficiency\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LPL deficiency\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34138,\n      \"evidence_end_char\": 34152,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:087e7e8a8821d6dd\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:metabolic_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Metabolic syndrome\",\n      \"normalized_name\": \"Metabolic syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"metabolic syndrome\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33631,\n      \"evidence_end_char\": 33649,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:bbc0b4db783c9506\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:myopathy\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myopathy\",\n      \"normalized_name\": \"Myopathy\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Myopathy\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36972,\n      \"evidence_end_char\": 36980,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f125731d0cb53ea8\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:neurologic_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Neurologic disease\",\n      \"normalized_name\": \"Neurologic disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"neurologic disease\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33401,\n      \"evidence_end_char\": 33419,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:75dc084aa42b38c3\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:obstructive_hepatic_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Obstructive hepatic disease\",\n      \"normalized_name\": \"Obstructive hepatic disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"obstructive hepatic disease\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33175,\n      \"evidence_end_char\": 33202,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dc459fdd64152e16\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:pancreatitis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Pancreatitis\",\n      \"normalized_name\": \"Pancreatitis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"pancreatitis\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34439,\n      \"evidence_end_char\": 34451,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:674d74e907268978\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:premature_diffuse_vascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Premature diffuse vascular disease\",\n      \"normalized_name\": \"Premature diffuse vascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"premature diffuse vascular disease\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33856,\n      \"evidence_end_char\": 33890,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e9f6411648501c8e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:sitosterolemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Sitosterolemia\",\n      \"normalized_name\": \"Sitosterolemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Sitosterolemia\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33221,\n      \"evidence_end_char\": 33235,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a1a0ac6874c8bc9e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"condition:type_2_diabetes\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Type 2 Diabetes\",\n      \"normalized_name\": \"Type 2 Diabetes\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"type 2 diabetes\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33611,\n      \"evidence_end_char\": 33626,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b7d8740dbd85aaf8\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:atorvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Atorvastatin\",\n      \"normalized_name\": \"Atorvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Atorvastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35398,\n      \"evidence_end_char\": 35410,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:16892dbb9750f0fd\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:beta_blockers\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Beta-blockers\",\n      \"normalized_name\": \"Beta-blockers\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Beta-Blockers\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34861,\n      \"evidence_end_char\": 34874,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1f7637b9261286d3\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:bile_acid_sequestrants\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Bile acid sequestrants\",\n      \"normalized_name\": \"Bile acid sequestrants\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Bile acid sequestrants\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36329,\n      \"evidence_end_char\": 36351,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2a0ad53081517c11\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:ezetimibe\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Ezetimibe\",\n      \"normalized_name\": \"Ezetimibe\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Ezetimibe\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36981,\n      \"evidence_end_char\": 36990,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:aad036c890bfad6e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:fibric_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fibric acids\",\n      \"normalized_name\": \"Fibric acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Fibric acids\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36800,\n      \"evidence_end_char\": 36812,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:72e62411b1ea657a\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:fish_oil\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fish oil\",\n      \"normalized_name\": \"Fish oil\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Fish Oil\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 37197,\n      \"evidence_end_char\": 37205,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ef58168c6c06bc98\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:fluvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Fluvastatin\",\n      \"normalized_name\": \"Fluvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Fluvastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35209,\n      \"evidence_end_char\": 35220,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dc4aac77feb2708e\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:glucocorticoids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Glucocorticoids\",\n      \"normalized_name\": \"Glucocorticoids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Glucocorticoids\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34891,\n      \"evidence_end_char\": 34906,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:479cc986c752ae57\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:lovastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Lovastatin\",\n      \"normalized_name\": \"Lovastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Lovastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35302,\n      \"evidence_end_char\": 35312,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0daf3e95087dd0c4\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:nicotinic_acid\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Nicotinic acid\",\n      \"normalized_name\": \"Nicotinic acid\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Nicotinic acid\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 36532,\n      \"evidence_end_char\": 36546,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ca7084c24253d9e1\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega 3 fatty acids\",\n      \"normalized_name\": \"Omega 3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Omega 3 fatty acids\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 37171,\n      \"evidence_end_char\": 37190,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:59f589bcc160486f\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:pitavastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pitavastatin\",\n      \"normalized_name\": \"Pitavastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Pitavastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35490,\n      \"evidence_end_char\": 35502,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8206fe3f196051a9\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:pravastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Pravastatin\",\n      \"normalized_name\": \"Pravastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Pravastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35254,\n      \"evidence_end_char\": 35265,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:19db7adce011d9fa\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:rosuvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Rosuvastatin\",\n      \"normalized_name\": \"Rosuvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Rosuvastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35444,\n      \"evidence_end_char\": 35456,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f76c38505f5273c3\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:simvastatin\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Simvastatin\",\n      \"normalized_name\": \"Simvastatin\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Simvastatin\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 35354,\n      \"evidence_end_char\": 35365,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c1691e403ce4d7e3\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"drug:thiazide_diuretics\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Thiazide diuretics\",\n      \"normalized_name\": \"Thiazide diuretics\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Thiazide Diuretics\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34811,\n      \"evidence_end_char\": 34829,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a1b0f4023eb94e8a\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"riskfactor:obesity\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"Obesity\",\n      \"normalized_name\": \"Obesity\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Obesity\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 34875,\n      \"evidence_end_char\": 34882,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:de5ed5e8dfa2ec9a\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"symptom:palmar_xanthomas\",\n      \"entity_type\": \"Symptom\",\n      \"entity_text\": \"Palmar xanthomas\",\n      \"normalized_name\": \"Palmar xanthomas\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Palmar xanthomas\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33911,\n      \"evidence_end_char\": 33927,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:aeb829c2a0216afe\",\n      \"document_id\": \"paper:PMC3572442\",\n      \"chunk_id\": \"PMC3572442-chunk-0007\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC3572442\",\n      \"entity_id\": \"symptom:tendon_xanthomas\",\n      \"entity_type\": \"Symptom\",\n      \"entity_text\": \"Tendon xanthomas\",\n      \"normalized_name\": \"Tendon xanthomas\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"tendon xanthomas\",\n      \"evidence_section\": \"TABLE\",\n      \"evidence_start_char\": 33283,\n      \"evidence_end_char\": 33299,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC3572442/PMC3572442-chunk-0007.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:9c6453a761761040\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"chylomicrons\",\"revised_normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"34173\",\"evidence_end_char\":\"34185\",\"reason\":\"Explicit lipoprotein particle mentioned in the LPL deficiency description.\"},{\"entity_gold_id\":\"silver_entity:d6406a4b3f7c9b1e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"35182\",\"evidence_end_char\":\"35187\",\"reason\":\"HDL-C is explicitly present as the standard abbreviation for HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:7ea935ac530ad622\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"35166\",\"evidence_end_char\":\"35171\",\"reason\":\"LDL-C is explicitly present as the standard abbreviation for LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:7469dd30093d48b3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lipoprotein(a)\",\"revised_normalized_name\":\"Lipoprotein(a)\",\"evidence_text\":\"Lipoprotein(a)\",\"evidence_start_char\":\"32969\",\"evidence_end_char\":\"32983\",\"reason\":\"Explicit biomarker/lipoprotein term in the table.\"},{\"entity_gold_id\":\"silver_entity:d94f1fab14e8d7fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lp(X)\",\"revised_normalized_name\":\"Lp(X)\",\"evidence_text\":\"Lp(X)\",\"evidence_start_char\":\"33154\",\"evidence_end_char\":\"33159\",\"reason\":\"Explicit lipoprotein biomarker term in the table.\"},{\"entity_gold_id\":\"silver_entity:93527e2f0c177d6a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"triglycerides\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"33494\",\"evidence_end_char\":\"33507\",\"reason\":\"Explicit lipid biomarker mentioned in the table.\"},{\"entity_gold_id\":\"silver_entity:9034d102cb1d34b2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL triglycerides\",\"revised_normalized_name\":\"VLDL triglycerides\",\"evidence_text\":\"VLDL triglycerides\",\"evidence_start_char\":\"34675\",\"evidence_end_char\":\"34693\",\"reason\":\"Explicit lipid biomarker phrase in familial hypertriglyceridemia description.\"},{\"entity_gold_id\":\"silver_entity:83939538a52fe419\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"ApoCII deficiency\",\"revised_normalized_name\":\"ApoCII deficiency\",\"evidence_text\":\"ApoCII deficiency\",\"evidence_start_char\":\"34452\",\"evidence_end_char\":\"34469\",\"reason\":\"Explicit deficiency disorder listed in the table.\"},{\"entity_gold_id\":\"silver_entity:c7d14caa50cc6ce0\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"33000\",\"evidence_end_char\":\"33003\",\"reason\":\"CVD is explicitly present and is the standard abbreviation for cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:7fe40c3d49b93e3b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"cataracts\",\"revised_normalized_name\":\"Cataracts\",\"evidence_text\":\"cataracts\",\"evidence_start_char\":\"33443\",\"evidence_end_char\":\"33452\",\"reason\":\"Explicit condition associated with cerebrotendinous xanthomatosis.\"},{\"entity_gold_id\":\"silver_entity:8f15d3d7a2a4f5aa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cerebrotendinous Xanthomatosis\",\"revised_normalized_name\":\"Cerebrotendinous xanthomatosis\",\"evidence_text\":\"Cerebrotendinous Xanthomatosis\",\"evidence_start_char\":\"33348\",\"evidence_end_char\":\"33378\",\"reason\":\"Explicit named disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:ba21f1a610191da5\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Combined (Familial) Hyperlipidemia\",\"revised_normalized_name\":\"Combined familial hyperlipidemia\",\"evidence_text\":\"Combined (Familial) Hyperlipidemia\",\"evidence_start_char\":\"33508\",\"evidence_end_char\":\"33542\",\"reason\":\"The table explicitly names the disorder with parenthetical formatting.\"},{\"entity_gold_id\":\"silver_entity:855461e379dc02a4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Familial Dysbetalipoproteinemia\",\"revised_normalized_name\":\"Familial dysbetalipoproteinemia\",\"evidence_text\":\"Familial Dysbetalipoproteinemia\",\"evidence_start_char\":\"33703\",\"evidence_end_char\":\"33734\",\"reason\":\"Explicit named lipid disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:bd9683c56eba148d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Familial hypertriglyceridemia\",\"revised_normalized_name\":\"Familial hypertriglyceridemia\",\"evidence_text\":\"Familial hypertriglyceridemia\",\"evidence_start_char\":\"34580\",\"evidence_end_char\":\"34609\",\"reason\":\"Explicit named disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:55030599eec6cd99\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Gallstones\",\"revised_normalized_name\":\"Gallstones\",\"evidence_text\":\"Gallstones\",\"evidence_start_char\":\"36962\",\"evidence_end_char\":\"36972\",\"reason\":\"Explicit adverse condition listed for fibric acids.\"},{\"entity_gold_id\":\"silver_entity:fe98607e92b80a2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"gout\",\"revised_normalized_name\":\"Gout\",\"evidence_text\":\"gout\",\"evidence_start_char\":\"36763\",\"evidence_end_char\":\"36767\",\"reason\":\"Explicit condition listed as an adverse reaction context for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:f599a7818844342b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hepatic Lipase Deficiency\",\"revised_normalized_name\":\"Hepatic lipase deficiency\",\"evidence_text\":\"Hepatic Lipase Deficiency\",\"evidence_start_char\":\"33946\",\"evidence_end_char\":\"33971\",\"reason\":\"Explicit named deficiency disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:e8f44e6f98b986f2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hepatotoxicity\",\"revised_normalized_name\":\"Hepatotoxicity\",\"evidence_text\":\"Hepatotoxicity\",\"evidence_start_char\":\"36785\",\"evidence_end_char\":\"36799\",\"reason\":\"Explicit adverse condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:8fd6a03e3a8914df\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hypercholesterolemia\",\"revised_normalized_name\":\"Hypercholesterolemia\",\"evidence_text\":\"hypercholesterolemia\",\"evidence_start_char\":\"33799\",\"evidence_end_char\":\"33819\",\"reason\":\"Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description.\"},{\"entity_gold_id\":\"silver_entity:234145a570c5aab6\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hyperglycemia\",\"revised_normalized_name\":\"Hyperglycemia\",\"evidence_text\":\"Hyperglycemia\",\"evidence_start_char\":\"36733\",\"evidence_end_char\":\"36746\",\"reason\":\"Explicit adverse metabolic condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:23e3a4d43440c39c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hyperlipidemia\",\"revised_normalized_name\":\"Hyperlipidemia\",\"evidence_text\":\"hyperlipidemia\",\"evidence_start_char\":\"33595\",\"evidence_end_char\":\"33609\",\"reason\":\"Explicit disorder term mentioned in the family history context.\"},{\"entity_gold_id\":\"silver_entity:6f3aa4ed8eb7448e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"33774\",\"evidence_end_char\":\"33794\",\"reason\":\"Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description.\"},{\"entity_gold_id\":\"silver_entity:3d73dc419ae6e6f5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypothyroidism\",\"revised_normalized_name\":\"Hypothyroidism\",\"evidence_text\":\"Hypothyroidism\",\"evidence_start_char\":\"34830\",\"evidence_end_char\":\"34844\",\"reason\":\"Explicit disease/disorder listed as a secondary cause of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:eb66d2a002fac0f0\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"LPL deficiency\",\"revised_normalized_name\":\"LPL deficiency\",\"evidence_text\":\"LPL deficiency\",\"evidence_start_char\":\"34138\",\"evidence_end_char\":\"34152\",\"reason\":\"Explicit named deficiency disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:087e7e8a8821d6dd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"33631\",\"evidence_end_char\":\"33649\",\"reason\":\"Explicit condition associated with combined familial hyperlipidemia and listed as a secondary cause.\"},{\"entity_gold_id\":\"silver_entity:bbc0b4db783c9506\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myopathy\",\"revised_normalized_name\":\"Myopathy\",\"evidence_text\":\"Myopathy\",\"evidence_start_char\":\"36972\",\"evidence_end_char\":\"36980\",\"reason\":\"Explicit adverse condition listed for fibric acids.\"},{\"entity_gold_id\":\"silver_entity:f125731d0cb53ea8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"neurologic disease\",\"revised_normalized_name\":\"Neurologic disease\",\"evidence_text\":\"neurologic disease\",\"evidence_start_char\":\"33401\",\"evidence_end_char\":\"33419\",\"reason\":\"Explicit disease category associated with cerebrotendinous xanthomatosis.\"},{\"entity_gold_id\":\"silver_entity:75dc084aa42b38c3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"obstructive hepatic disease\",\"revised_normalized_name\":\"Obstructive hepatic disease\",\"evidence_text\":\"obstructive hepatic disease\",\"evidence_start_char\":\"33175\",\"evidence_end_char\":\"33202\",\"reason\":\"Explicit hepatic disease condition associated with Lp(X).\"},{\"entity_gold_id\":\"silver_entity:dc459fdd64152e16\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"pancreatitis\",\"revised_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"pancreatitis\",\"evidence_start_char\":\"34439\",\"evidence_end_char\":\"34451\",\"reason\":\"Explicit condition described as a consequence of extremely high triglycerides.\"},{\"entity_gold_id\":\"silver_entity:674d74e907268978\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"premature diffuse vascular disease\",\"revised_normalized_name\":\"Premature diffuse vascular disease\",\"evidence_text\":\"premature diffuse vascular disease\",\"evidence_start_char\":\"33856\",\"evidence_end_char\":\"33890\",\"reason\":\"Explicit vascular disease condition associated with familial dysbetalipoproteinemia.\"},{\"entity_gold_id\":\"silver_entity:e9f6411648501c8e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Sitosterolemia\",\"revised_normalized_name\":\"Sitosterolemia\",\"evidence_text\":\"Sitosterolemia\",\"evidence_start_char\":\"33221\",\"evidence_end_char\":\"33235\",\"reason\":\"Explicit named lipid/sterol disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:a1a0ac6874c8bc9e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"type 2 diabetes\",\"revised_normalized_name\":\"Type 2 diabetes\",\"evidence_text\":\"type 2 diabetes\",\"evidence_start_char\":\"33611\",\"evidence_end_char\":\"33626\",\"reason\":\"Explicit condition associated with combined familial hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:b7d8740dbd85aaf8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Atorvastatin\",\"revised_normalized_name\":\"Atorvastatin\",\"evidence_text\":\"Atorvastatin\",\"evidence_start_char\":\"35398\",\"evidence_end_char\":\"35410\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:16892dbb9750f0fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Beta-Blockers\",\"revised_normalized_name\":\"Beta-blockers\",\"evidence_text\":\"Beta-Blockers\",\"evidence_start_char\":\"34861\",\"evidence_end_char\":\"34874\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:1f7637b9261286d3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Bile acid sequestrants\",\"revised_normalized_name\":\"Bile acid sequestrants\",\"evidence_text\":\"Bile acid sequestrants\",\"evidence_start_char\":\"36329\",\"evidence_end_char\":\"36351\",\"reason\":\"Explicit lipid-modifying drug class in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:2a0ad53081517c11\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Ezetimibe\",\"revised_normalized_name\":\"Ezetimibe\",\"evidence_text\":\"Ezetimibe\",\"evidence_start_char\":\"36981\",\"evidence_end_char\":\"36990\",\"reason\":\"Explicit lipid-modifying drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:aad036c890bfad6e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fibric acids\",\"revised_normalized_name\":\"Fibric acids\",\"evidence_text\":\"Fibric acids\",\"evidence_start_char\":\"36800\",\"evidence_end_char\":\"36812\",\"reason\":\"Explicit lipid-modifying drug class in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:72e62411b1ea657a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fish Oil\",\"revised_normalized_name\":\"Fish oil\",\"evidence_text\":\"Fish Oil\",\"evidence_start_char\":\"37197\",\"evidence_end_char\":\"37205\",\"reason\":\"Explicit therapeutic supplement/product listed under omega-3 fatty acids.\"},{\"entity_gold_id\":\"silver_entity:ef58168c6c06bc98\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fluvastatin\",\"revised_normalized_name\":\"Fluvastatin\",\"evidence_text\":\"Fluvastatin\",\"evidence_start_char\":\"35209\",\"evidence_end_char\":\"35220\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:dc4aac77feb2708e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Glucocorticoids\",\"revised_normalized_name\":\"Glucocorticoids\",\"evidence_text\":\"Glucocorticoids\",\"evidence_start_char\":\"34891\",\"evidence_end_char\":\"34906\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:479cc986c752ae57\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Lovastatin\",\"revised_normalized_name\":\"Lovastatin\",\"evidence_text\":\"Lovastatin\",\"evidence_start_char\":\"35302\",\"evidence_end_char\":\"35312\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:0daf3e95087dd0c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Nicotinic acid\",\"revised_normalized_name\":\"Nicotinic acid\",\"evidence_text\":\"Nicotinic acid\",\"evidence_start_char\":\"36532\",\"evidence_end_char\":\"36546\",\"reason\":\"Explicit lipid-modifying drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:ca7084c24253d9e1\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Omega 3 fatty acids\",\"revised_normalized_name\":\"Omega 3 fatty acids\",\"evidence_text\":\"Omega 3 fatty acids\",\"evidence_start_char\":\"37171\",\"evidence_end_char\":\"37190\",\"reason\":\"Explicit therapeutic fatty-acid product class listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:59f589bcc160486f\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Pitavastatin\",\"revised_normalized_name\":\"Pitavastatin\",\"evidence_text\":\"Pitavastatin\",\"evidence_start_char\":\"35490\",\"evidence_end_char\":\"35502\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:8206fe3f196051a9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Pravastatin\",\"revised_normalized_name\":\"Pravastatin\",\"evidence_text\":\"Pravastatin\",\"evidence_start_char\":\"35254\",\"evidence_end_char\":\"35265\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:19db7adce011d9fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Rosuvastatin\",\"revised_normalized_name\":\"Rosuvastatin\",\"evidence_text\":\"Rosuvastatin\",\"evidence_start_char\":\"35444\",\"evidence_end_char\":\"35456\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:f76c38505f5273c3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Simvastatin\",\"revised_normalized_name\":\"Simvastatin\",\"evidence_text\":\"Simvastatin\",\"evidence_start_char\":\"35354\",\"evidence_end_char\":\"35365\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:c1691e403ce4d7e3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Thiazide Diuretics\",\"revised_normalized_name\":\"Thiazide diuretics\",\"evidence_text\":\"Thiazide Diuretics\",\"evidence_start_char\":\"34811\",\"evidence_end_char\":\"34829\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:a1b0f4023eb94e8a\",\"decision\":\"accepted\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"Obesity\",\"revised_normalized_name\":\"Obesity\",\"evidence_text\":\"Obesity\",\"evidence_start_char\":\"34875\",\"evidence_end_char\":\"34882\",\"reason\":\"Explicit secondary cause/risk factor for hyperlipidemia listed in the table.\"},{\"entity_gold_id\":\"silver_entity:de5ed5e8dfa2ec9a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"Palmar xanthomas\",\"revised_normalized_name\":\"Palmar xanthomas\",\"evidence_text\":\"Palmar xanthomas\",\"evidence_start_char\":\"33911\",\"evidence_end_char\":\"33927\",\"reason\":\"Explicit pathognomonic clinical finding in familial dysbetalipoproteinemia.\"},{\"entity_gold_id\":\"silver_entity:aeb829c2a0216afe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"tendon xanthomas\",\"revised_normalized_name\":\"Tendon xanthomas\",\"evidence_text\":\"tendon xanthomas\",\"evidence_start_char\":\"33283\",\"evidence_end_char\":\"33299\",\"reason\":\"Explicit clinical finding associated with sitosterolemia and cerebrotendinous xanthomatosis.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:polygenic_hypercholesterolemia\",\"entity_type\":\"Condition\",\"entity_text\":\"Polygenic Hypercholesterolemia\",\"normalized_name\":\"Polygenic hypercholesterolemia\",\"evidence_text\":\"Polygenic Hypercholesterolemia\",\"evidence_start_char\":\"33035\",\"evidence_end_char\":\"33065\",\"reason\":\"Specific named lipid disorder present but not captured as a full entity.\"},{\"entity_gold_id\":\"added_entity:cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"cholesterol\",\"normalized_name\":\"Cholesterol\",\"evidence_text\":\"cholesterol\",\"evidence_start_char\":\"33478\",\"evidence_end_char\":\"33489\",\"reason\":\"Important lipid biomarker explicitly mentioned with triglycerides.\"},{\"entity_gold_id\":\"added_entity:saturated_trans_fats\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Saturated & trans Fats\",\"normalized_name\":\"Saturated and trans fats\",\"evidence_text\":\"Saturated & trans Fats\",\"evidence_start_char\":\"34788\",\"evidence_end_char\":\"34810\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:excess_calories\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Excess Calories\",\"normalized_name\":\"Excess calories\",\"evidence_text\":\"Excess Calories\",\"evidence_start_char\":\"34845\",\"evidence_end_char\":\"34860\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:alcohol\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Alcohol\",\"normalized_name\":\"Alcohol\",\"evidence_text\":\"Alcohol\",\"evidence_start_char\":\"34883\",\"evidence_end_char\":\"34890\",\"reason\":\"Explicit secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:red_meat\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Red meat\",\"normalized_name\":\"Red meat\",\"evidence_text\":\"Red meat\",\"evidence_start_char\":\"34923\",\"evidence_end_char\":\"34931\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:sex_hormones\",\"entity_type\":\"Drug\",\"entity_text\":\"Sex hormones\",\"normalized_name\":\"Sex hormones\",\"evidence_text\":\"Sex hormones\",\"evidence_start_char\":\"34932\",\"evidence_end_char\":\"34944\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:whole_milk\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Whole milk\",\"normalized_name\":\"Whole milk\",\"evidence_text\":\"Whole milk\",\"evidence_start_char\":\"34964\",\"evidence_end_char\":\"34974\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:retinoic_acid_derivations\",\"entity_type\":\"Drug\",\"entity_text\":\"Retinoic Acid derivations\",\"normalized_name\":\"Retinoic acid derivatives\",\"evidence_text\":\"Retinoic Acid derivations\",\"evidence_start_char\":\"34975\",\"evidence_end_char\":\"35000\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:renal_disease\",\"entity_type\":\"Condition\",\"entity_text\":\"Renal disease\",\"normalized_name\":\"Renal disease\",\"evidence_text\":\"Renal disease\",\"evidence_start_char\":\"35001\",\"evidence_end_char\":\"35014\",\"reason\":\"Explicit disease/disorder listed as a secondary cause of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:high_sugar_beverages_foods\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"High sugar beverages & foods\",\"normalized_name\":\"High-sugar beverages and foods\",\"evidence_text\":\"High sugar beverages & foods\",\"evidence_start_char\":\"35015\",\"evidence_end_char\":\"35043\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:antipsychotics\",\"entity_type\":\"Drug\",\"entity_text\":\"Antipsychotics\",\"normalized_name\":\"Antipsychotics\",\"evidence_text\":\"Antipsychotics\",\"evidence_start_char\":\"35044\",\"evidence_end_char\":\"35058\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:hiv_antiretrovirals\",\"entity_type\":\"Drug\",\"entity_text\":\"HIV Antiretrovirals\",\"normalized_name\":\"HIV antiretrovirals\",\"evidence_text\":\"HIV Antiretrovirals\",\"evidence_start_char\":\"35059\",\"evidence_end_char\":\"35078\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:pcos\",\"entity_type\":\"Condition\",\"entity_text\":\"PCOS\",\"normalized_name\":\"Polycystic ovary syndrome\",\"evidence_text\":\"PCOS\",\"evidence_start_char\":\"35079\",\"evidence_end_char\":\"35083\",\"reason\":\"Explicit condition abbreviation listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:immunosuppressive_agents\",\"entity_type\":\"Drug\",\"entity_text\":\"Immunosuppressive agents\",\"normalized_name\":\"Immunosuppressive agents\",\"evidence_text\":\"Immunosuppressive agents\",\"evidence_start_char\":\"35084\",\"evidence_end_char\":\"35108\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:cholestyramine\",\"entity_type\":\"Drug\",\"entity_text\":\"Cholestyramine\",\"normalized_name\":\"Cholestyramine\",\"evidence_text\":\"Cholestyramine\",\"evidence_start_char\":\"36352\",\"evidence_end_char\":\"36366\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:colestipol\",\"entity_type\":\"Drug\",\"entity_text\":\"Colestipol\",\"normalized_name\":\"Colestipol\",\"evidence_text\":\"Colestipol\",\"evidence_start_char\":\"36375\",\"evidence_end_char\":\"36385\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:colesevelam\",\"entity_type\":\"Drug\",\"entity_text\":\"Colesevelam\",\"normalized_name\":\"Colesevelam\",\"evidence_text\":\"Colesevelam\",\"evidence_start_char\":\"36394\",\"evidence_end_char\":\"36405\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:hyperuricemia\",\"entity_type\":\"Condition\",\"entity_text\":\"Hyperuricemia\",\"normalized_name\":\"Hyperuricemia\",\"evidence_text\":\"Hyperuricemia\",\"evidence_start_char\":\"36746\",\"evidence_end_char\":\"36759\",\"reason\":\"Explicit adverse metabolic condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"added_entity:gemfibrozil\",\"entity_type\":\"Drug\",\"entity_text\":\"Gemfibrozil\",\"normalized_name\":\"Gemfibrozil\",\"evidence_text\":\"Gemfibrozil\",\"evidence_start_char\":\"36813\",\"evidence_end_char\":\"36824\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:fenofibrate\",\"entity_type\":\"Drug\",\"entity_text\":\"Fenofibrate\",\"normalized_name\":\"Fenofibrate\",\"evidence_text\":\"Fenofibrate\",\"evidence_start_char\":\"36836\",\"evidence_end_char\":\"36847\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:clofibrate\",\"entity_type\":\"Drug\",\"entity_text\":\"Clofibrate\",\"normalized_name\":\"Clofibrate\",\"evidence_text\":\"Clofibrate\",\"evidence_start_char\":\"36856\",\"evidence_end_char\":\"36866\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:dyspepsia\",\"entity_type\":\"Symptom\",\"entity_text\":\"Dyspepsia\",\"normalized_name\":\"Dyspepsia\",\"evidence_text\":\"Dyspepsia\",\"evidence_start_char\":\"36953\",\"evidence_end_char\":\"36962\",\"reason\":\"Explicit adverse symptom listed for fibric acids.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Several entities were normalized from abbreviations or table formatting, and selected high-salience missing lipid disorders, biomarkers, secondary causes, adverse findings, and specific lipid-modifying drugs were added.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:9c6453a761761040",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "chylomicrons",
+        "revised_normalized_name": "Chylomicrons",
+        "evidence_text": "chylomicrons",
+        "evidence_start_char": "34173",
+        "evidence_end_char": "34185",
+        "reason": "Explicit lipoprotein particle mentioned in the LPL deficiency description."
+      },
+      {
+        "entity_gold_id": "silver_entity:d6406a4b3f7c9b1e",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "HDL-C",
+        "revised_normalized_name": "HDL cholesterol",
+        "evidence_text": "HDL-C",
+        "evidence_start_char": "35182",
+        "evidence_end_char": "35187",
+        "reason": "HDL-C is explicitly present as the standard abbreviation for HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:7ea935ac530ad622",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "LDL-C",
+        "revised_normalized_name": "LDL cholesterol",
+        "evidence_text": "LDL-C",
+        "evidence_start_char": "35166",
+        "evidence_end_char": "35171",
+        "reason": "LDL-C is explicitly present as the standard abbreviation for LDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:7469dd30093d48b3",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Lipoprotein(a)",
+        "revised_normalized_name": "Lipoprotein(a)",
+        "evidence_text": "Lipoprotein(a)",
+        "evidence_start_char": "32969",
+        "evidence_end_char": "32983",
+        "reason": "Explicit biomarker/lipoprotein term in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:d94f1fab14e8d7fa",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "Lp(X)",
+        "revised_normalized_name": "Lp(X)",
+        "evidence_text": "Lp(X)",
+        "evidence_start_char": "33154",
+        "evidence_end_char": "33159",
+        "reason": "Explicit lipoprotein biomarker term in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:93527e2f0c177d6a",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "triglycerides",
+        "revised_normalized_name": "Triglycerides",
+        "evidence_text": "triglycerides",
+        "evidence_start_char": "33494",
+        "evidence_end_char": "33507",
+        "reason": "Explicit lipid biomarker mentioned in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:9034d102cb1d34b2",
+        "decision": "accepted",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "VLDL triglycerides",
+        "revised_normalized_name": "VLDL triglycerides",
+        "evidence_text": "VLDL triglycerides",
+        "evidence_start_char": "34675",
+        "evidence_end_char": "34693",
+        "reason": "Explicit lipid biomarker phrase in familial hypertriglyceridemia description."
+      },
+      {
+        "entity_gold_id": "silver_entity:83939538a52fe419",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "ApoCII deficiency",
+        "revised_normalized_name": "ApoCII deficiency",
+        "evidence_text": "ApoCII deficiency",
+        "evidence_start_char": "34452",
+        "evidence_end_char": "34469",
+        "reason": "Explicit deficiency disorder listed in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:c7d14caa50cc6ce0",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "CVD",
+        "revised_normalized_name": "Cardiovascular disease",
+        "evidence_text": "CVD",
+        "evidence_start_char": "33000",
+        "evidence_end_char": "33003",
+        "reason": "CVD is explicitly present and is the standard abbreviation for cardiovascular disease."
+      },
+      {
+        "entity_gold_id": "silver_entity:7fe40c3d49b93e3b",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "cataracts",
+        "revised_normalized_name": "Cataracts",
+        "evidence_text": "cataracts",
+        "evidence_start_char": "33443",
+        "evidence_end_char": "33452",
+        "reason": "Explicit condition associated with cerebrotendinous xanthomatosis."
+      },
+      {
+        "entity_gold_id": "silver_entity:8f15d3d7a2a4f5aa",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Cerebrotendinous Xanthomatosis",
+        "revised_normalized_name": "Cerebrotendinous xanthomatosis",
+        "evidence_text": "Cerebrotendinous Xanthomatosis",
+        "evidence_start_char": "33348",
+        "evidence_end_char": "33378",
+        "reason": "Explicit named disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:ba21f1a610191da5",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Combined (Familial) Hyperlipidemia",
+        "revised_normalized_name": "Combined familial hyperlipidemia",
+        "evidence_text": "Combined (Familial) Hyperlipidemia",
+        "evidence_start_char": "33508",
+        "evidence_end_char": "33542",
+        "reason": "The table explicitly names the disorder with parenthetical formatting."
+      },
+      {
+        "entity_gold_id": "silver_entity:855461e379dc02a4",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Familial Dysbetalipoproteinemia",
+        "revised_normalized_name": "Familial dysbetalipoproteinemia",
+        "evidence_text": "Familial Dysbetalipoproteinemia",
+        "evidence_start_char": "33703",
+        "evidence_end_char": "33734",
+        "reason": "Explicit named lipid disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:bd9683c56eba148d",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Familial hypertriglyceridemia",
+        "revised_normalized_name": "Familial hypertriglyceridemia",
+        "evidence_text": "Familial hypertriglyceridemia",
+        "evidence_start_char": "34580",
+        "evidence_end_char": "34609",
+        "reason": "Explicit named disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:55030599eec6cd99",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Gallstones",
+        "revised_normalized_name": "Gallstones",
+        "evidence_text": "Gallstones",
+        "evidence_start_char": "36962",
+        "evidence_end_char": "36972",
+        "reason": "Explicit adverse condition listed for fibric acids."
+      },
+      {
+        "entity_gold_id": "silver_entity:fe98607e92b80a2e",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "gout",
+        "revised_normalized_name": "Gout",
+        "evidence_text": "gout",
+        "evidence_start_char": "36763",
+        "evidence_end_char": "36767",
+        "reason": "Explicit condition listed as an adverse reaction context for nicotinic acid."
+      },
+      {
+        "entity_gold_id": "silver_entity:f599a7818844342b",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hepatic Lipase Deficiency",
+        "revised_normalized_name": "Hepatic lipase deficiency",
+        "evidence_text": "Hepatic Lipase Deficiency",
+        "evidence_start_char": "33946",
+        "evidence_end_char": "33971",
+        "reason": "Explicit named deficiency disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:e8f44e6f98b986f2",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hepatotoxicity",
+        "revised_normalized_name": "Hepatotoxicity",
+        "evidence_text": "Hepatotoxicity",
+        "evidence_start_char": "36785",
+        "evidence_end_char": "36799",
+        "reason": "Explicit adverse condition listed for nicotinic acid."
+      },
+      {
+        "entity_gold_id": "silver_entity:8fd6a03e3a8914df",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "hypercholesterolemia",
+        "revised_normalized_name": "Hypercholesterolemia",
+        "evidence_text": "hypercholesterolemia",
+        "evidence_start_char": "33799",
+        "evidence_end_char": "33819",
+        "reason": "Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description."
+      },
+      {
+        "entity_gold_id": "silver_entity:234145a570c5aab6",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hyperglycemia",
+        "revised_normalized_name": "Hyperglycemia",
+        "evidence_text": "Hyperglycemia",
+        "evidence_start_char": "36733",
+        "evidence_end_char": "36746",
+        "reason": "Explicit adverse metabolic condition listed for nicotinic acid."
+      },
+      {
+        "entity_gold_id": "silver_entity:23e3a4d43440c39c",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "hyperlipidemia",
+        "revised_normalized_name": "Hyperlipidemia",
+        "evidence_text": "hyperlipidemia",
+        "evidence_start_char": "33595",
+        "evidence_end_char": "33609",
+        "reason": "Explicit disorder term mentioned in the family history context."
+      },
+      {
+        "entity_gold_id": "silver_entity:6f3aa4ed8eb7448e",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "hypertriglyceridemia",
+        "revised_normalized_name": "Hypertriglyceridemia",
+        "evidence_text": "hypertriglyceridemia",
+        "evidence_start_char": "33774",
+        "evidence_end_char": "33794",
+        "reason": "Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description."
+      },
+      {
+        "entity_gold_id": "silver_entity:3d73dc419ae6e6f5",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Hypothyroidism",
+        "revised_normalized_name": "Hypothyroidism",
+        "evidence_text": "Hypothyroidism",
+        "evidence_start_char": "34830",
+        "evidence_end_char": "34844",
+        "reason": "Explicit disease/disorder listed as a secondary cause of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:eb66d2a002fac0f0",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "LPL deficiency",
+        "revised_normalized_name": "LPL deficiency",
+        "evidence_text": "LPL deficiency",
+        "evidence_start_char": "34138",
+        "evidence_end_char": "34152",
+        "reason": "Explicit named deficiency disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:087e7e8a8821d6dd",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "metabolic syndrome",
+        "revised_normalized_name": "Metabolic syndrome",
+        "evidence_text": "metabolic syndrome",
+        "evidence_start_char": "33631",
+        "evidence_end_char": "33649",
+        "reason": "Explicit condition associated with combined familial hyperlipidemia and listed as a secondary cause."
+      },
+      {
+        "entity_gold_id": "silver_entity:bbc0b4db783c9506",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Myopathy",
+        "revised_normalized_name": "Myopathy",
+        "evidence_text": "Myopathy",
+        "evidence_start_char": "36972",
+        "evidence_end_char": "36980",
+        "reason": "Explicit adverse condition listed for fibric acids."
+      },
+      {
+        "entity_gold_id": "silver_entity:f125731d0cb53ea8",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "neurologic disease",
+        "revised_normalized_name": "Neurologic disease",
+        "evidence_text": "neurologic disease",
+        "evidence_start_char": "33401",
+        "evidence_end_char": "33419",
+        "reason": "Explicit disease category associated with cerebrotendinous xanthomatosis."
+      },
+      {
+        "entity_gold_id": "silver_entity:75dc084aa42b38c3",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "obstructive hepatic disease",
+        "revised_normalized_name": "Obstructive hepatic disease",
+        "evidence_text": "obstructive hepatic disease",
+        "evidence_start_char": "33175",
+        "evidence_end_char": "33202",
+        "reason": "Explicit hepatic disease condition associated with Lp(X)."
+      },
+      {
+        "entity_gold_id": "silver_entity:dc459fdd64152e16",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "pancreatitis",
+        "revised_normalized_name": "Pancreatitis",
+        "evidence_text": "pancreatitis",
+        "evidence_start_char": "34439",
+        "evidence_end_char": "34451",
+        "reason": "Explicit condition described as a consequence of extremely high triglycerides."
+      },
+      {
+        "entity_gold_id": "silver_entity:674d74e907268978",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "premature diffuse vascular disease",
+        "revised_normalized_name": "Premature diffuse vascular disease",
+        "evidence_text": "premature diffuse vascular disease",
+        "evidence_start_char": "33856",
+        "evidence_end_char": "33890",
+        "reason": "Explicit vascular disease condition associated with familial dysbetalipoproteinemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:e9f6411648501c8e",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Sitosterolemia",
+        "revised_normalized_name": "Sitosterolemia",
+        "evidence_text": "Sitosterolemia",
+        "evidence_start_char": "33221",
+        "evidence_end_char": "33235",
+        "reason": "Explicit named lipid/sterol disorder in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:a1a0ac6874c8bc9e",
+        "decision": "accepted",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "type 2 diabetes",
+        "revised_normalized_name": "Type 2 diabetes",
+        "evidence_text": "type 2 diabetes",
+        "evidence_start_char": "33611",
+        "evidence_end_char": "33626",
+        "reason": "Explicit condition associated with combined familial hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:b7d8740dbd85aaf8",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Atorvastatin",
+        "revised_normalized_name": "Atorvastatin",
+        "evidence_text": "Atorvastatin",
+        "evidence_start_char": "35398",
+        "evidence_end_char": "35410",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:16892dbb9750f0fd",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Beta-Blockers",
+        "revised_normalized_name": "Beta-blockers",
+        "evidence_text": "Beta-Blockers",
+        "evidence_start_char": "34861",
+        "evidence_end_char": "34874",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:1f7637b9261286d3",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Bile acid sequestrants",
+        "revised_normalized_name": "Bile acid sequestrants",
+        "evidence_text": "Bile acid sequestrants",
+        "evidence_start_char": "36329",
+        "evidence_end_char": "36351",
+        "reason": "Explicit lipid-modifying drug class in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "silver_entity:2a0ad53081517c11",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Ezetimibe",
+        "revised_normalized_name": "Ezetimibe",
+        "evidence_text": "Ezetimibe",
+        "evidence_start_char": "36981",
+        "evidence_end_char": "36990",
+        "reason": "Explicit lipid-modifying drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "silver_entity:aad036c890bfad6e",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Fibric acids",
+        "revised_normalized_name": "Fibric acids",
+        "evidence_text": "Fibric acids",
+        "evidence_start_char": "36800",
+        "evidence_end_char": "36812",
+        "reason": "Explicit lipid-modifying drug class in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "silver_entity:72e62411b1ea657a",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Fish Oil",
+        "revised_normalized_name": "Fish oil",
+        "evidence_text": "Fish Oil",
+        "evidence_start_char": "37197",
+        "evidence_end_char": "37205",
+        "reason": "Explicit therapeutic supplement/product listed under omega-3 fatty acids."
+      },
+      {
+        "entity_gold_id": "silver_entity:ef58168c6c06bc98",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Fluvastatin",
+        "revised_normalized_name": "Fluvastatin",
+        "evidence_text": "Fluvastatin",
+        "evidence_start_char": "35209",
+        "evidence_end_char": "35220",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:dc4aac77feb2708e",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Glucocorticoids",
+        "revised_normalized_name": "Glucocorticoids",
+        "evidence_text": "Glucocorticoids",
+        "evidence_start_char": "34891",
+        "evidence_end_char": "34906",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:479cc986c752ae57",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Lovastatin",
+        "revised_normalized_name": "Lovastatin",
+        "evidence_text": "Lovastatin",
+        "evidence_start_char": "35302",
+        "evidence_end_char": "35312",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:0daf3e95087dd0c4",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Nicotinic acid",
+        "revised_normalized_name": "Nicotinic acid",
+        "evidence_text": "Nicotinic acid",
+        "evidence_start_char": "36532",
+        "evidence_end_char": "36546",
+        "reason": "Explicit lipid-modifying drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "silver_entity:ca7084c24253d9e1",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Omega 3 fatty acids",
+        "revised_normalized_name": "Omega 3 fatty acids",
+        "evidence_text": "Omega 3 fatty acids",
+        "evidence_start_char": "37171",
+        "evidence_end_char": "37190",
+        "reason": "Explicit therapeutic fatty-acid product class listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "silver_entity:59f589bcc160486f",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Pitavastatin",
+        "revised_normalized_name": "Pitavastatin",
+        "evidence_text": "Pitavastatin",
+        "evidence_start_char": "35490",
+        "evidence_end_char": "35502",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:8206fe3f196051a9",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Pravastatin",
+        "revised_normalized_name": "Pravastatin",
+        "evidence_text": "Pravastatin",
+        "evidence_start_char": "35254",
+        "evidence_end_char": "35265",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:19db7adce011d9fa",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Rosuvastatin",
+        "revised_normalized_name": "Rosuvastatin",
+        "evidence_text": "Rosuvastatin",
+        "evidence_start_char": "35444",
+        "evidence_end_char": "35456",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:f76c38505f5273c3",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Simvastatin",
+        "revised_normalized_name": "Simvastatin",
+        "evidence_text": "Simvastatin",
+        "evidence_start_char": "35354",
+        "evidence_end_char": "35365",
+        "reason": "Explicit statin drug listed in the HMG-CoA inhibitor table."
+      },
+      {
+        "entity_gold_id": "silver_entity:c1691e403ce4d7e3",
+        "decision": "accepted",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "Thiazide Diuretics",
+        "revised_normalized_name": "Thiazide diuretics",
+        "evidence_text": "Thiazide Diuretics",
+        "evidence_start_char": "34811",
+        "evidence_end_char": "34829",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:a1b0f4023eb94e8a",
+        "decision": "accepted",
+        "revised_entity_type": "RiskFactor",
+        "revised_entity_text": "Obesity",
+        "revised_normalized_name": "Obesity",
+        "evidence_text": "Obesity",
+        "evidence_start_char": "34875",
+        "evidence_end_char": "34882",
+        "reason": "Explicit secondary cause/risk factor for hyperlipidemia listed in the table."
+      },
+      {
+        "entity_gold_id": "silver_entity:de5ed5e8dfa2ec9a",
+        "decision": "accepted",
+        "revised_entity_type": "Symptom",
+        "revised_entity_text": "Palmar xanthomas",
+        "revised_normalized_name": "Palmar xanthomas",
+        "evidence_text": "Palmar xanthomas",
+        "evidence_start_char": "33911",
+        "evidence_end_char": "33927",
+        "reason": "Explicit pathognomonic clinical finding in familial dysbetalipoproteinemia."
+      },
+      {
+        "entity_gold_id": "silver_entity:aeb829c2a0216afe",
+        "decision": "accepted",
+        "revised_entity_type": "Symptom",
+        "revised_entity_text": "tendon xanthomas",
+        "revised_normalized_name": "Tendon xanthomas",
+        "evidence_text": "tendon xanthomas",
+        "evidence_start_char": "33283",
+        "evidence_end_char": "33299",
+        "reason": "Explicit clinical finding associated with sitosterolemia and cerebrotendinous xanthomatosis."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "added_entity:polygenic_hypercholesterolemia",
+        "entity_type": "Condition",
+        "entity_text": "Polygenic Hypercholesterolemia",
+        "normalized_name": "Polygenic hypercholesterolemia",
+        "evidence_text": "Polygenic Hypercholesterolemia",
+        "evidence_start_char": "33035",
+        "evidence_end_char": "33065",
+        "reason": "Specific named lipid disorder present but not captured as a full entity."
+      },
+      {
+        "entity_gold_id": "added_entity:cholesterol",
+        "entity_type": "Biomarker",
+        "entity_text": "cholesterol",
+        "normalized_name": "Cholesterol",
+        "evidence_text": "cholesterol",
+        "evidence_start_char": "33478",
+        "evidence_end_char": "33489",
+        "reason": "Important lipid biomarker explicitly mentioned with triglycerides."
+      },
+      {
+        "entity_gold_id": "added_entity:saturated_trans_fats",
+        "entity_type": "RiskFactor",
+        "entity_text": "Saturated & trans Fats",
+        "normalized_name": "Saturated and trans fats",
+        "evidence_text": "Saturated & trans Fats",
+        "evidence_start_char": "34788",
+        "evidence_end_char": "34810",
+        "reason": "Explicit dietary secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:excess_calories",
+        "entity_type": "RiskFactor",
+        "entity_text": "Excess Calories",
+        "normalized_name": "Excess calories",
+        "evidence_text": "Excess Calories",
+        "evidence_start_char": "34845",
+        "evidence_end_char": "34860",
+        "reason": "Explicit dietary secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:alcohol",
+        "entity_type": "RiskFactor",
+        "entity_text": "Alcohol",
+        "normalized_name": "Alcohol",
+        "evidence_text": "Alcohol",
+        "evidence_start_char": "34883",
+        "evidence_end_char": "34890",
+        "reason": "Explicit secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:red_meat",
+        "entity_type": "RiskFactor",
+        "entity_text": "Red meat",
+        "normalized_name": "Red meat",
+        "evidence_text": "Red meat",
+        "evidence_start_char": "34923",
+        "evidence_end_char": "34931",
+        "reason": "Explicit dietary secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:sex_hormones",
+        "entity_type": "Drug",
+        "entity_text": "Sex hormones",
+        "normalized_name": "Sex hormones",
+        "evidence_text": "Sex hormones",
+        "evidence_start_char": "34932",
+        "evidence_end_char": "34944",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:whole_milk",
+        "entity_type": "RiskFactor",
+        "entity_text": "Whole milk",
+        "normalized_name": "Whole milk",
+        "evidence_text": "Whole milk",
+        "evidence_start_char": "34964",
+        "evidence_end_char": "34974",
+        "reason": "Explicit dietary secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:retinoic_acid_derivations",
+        "entity_type": "Drug",
+        "entity_text": "Retinoic Acid derivations",
+        "normalized_name": "Retinoic acid derivatives",
+        "evidence_text": "Retinoic Acid derivations",
+        "evidence_start_char": "34975",
+        "evidence_end_char": "35000",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:renal_disease",
+        "entity_type": "Condition",
+        "entity_text": "Renal disease",
+        "normalized_name": "Renal disease",
+        "evidence_text": "Renal disease",
+        "evidence_start_char": "35001",
+        "evidence_end_char": "35014",
+        "reason": "Explicit disease/disorder listed as a secondary cause of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:high_sugar_beverages_foods",
+        "entity_type": "RiskFactor",
+        "entity_text": "High sugar beverages & foods",
+        "normalized_name": "High-sugar beverages and foods",
+        "evidence_text": "High sugar beverages & foods",
+        "evidence_start_char": "35015",
+        "evidence_end_char": "35043",
+        "reason": "Explicit dietary secondary cause/risk factor for hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:antipsychotics",
+        "entity_type": "Drug",
+        "entity_text": "Antipsychotics",
+        "normalized_name": "Antipsychotics",
+        "evidence_text": "Antipsychotics",
+        "evidence_start_char": "35044",
+        "evidence_end_char": "35058",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:hiv_antiretrovirals",
+        "entity_type": "Drug",
+        "entity_text": "HIV Antiretrovirals",
+        "normalized_name": "HIV antiretrovirals",
+        "evidence_text": "HIV Antiretrovirals",
+        "evidence_start_char": "35059",
+        "evidence_end_char": "35078",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:pcos",
+        "entity_type": "Condition",
+        "entity_text": "PCOS",
+        "normalized_name": "Polycystic ovary syndrome",
+        "evidence_text": "PCOS",
+        "evidence_start_char": "35079",
+        "evidence_end_char": "35083",
+        "reason": "Explicit condition abbreviation listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:immunosuppressive_agents",
+        "entity_type": "Drug",
+        "entity_text": "Immunosuppressive agents",
+        "normalized_name": "Immunosuppressive agents",
+        "evidence_text": "Immunosuppressive agents",
+        "evidence_start_char": "35084",
+        "evidence_end_char": "35108",
+        "reason": "Explicit drug class listed among secondary causes of hyperlipidemia."
+      },
+      {
+        "entity_gold_id": "added_entity:cholestyramine",
+        "entity_type": "Drug",
+        "entity_text": "Cholestyramine",
+        "normalized_name": "Cholestyramine",
+        "evidence_text": "Cholestyramine",
+        "evidence_start_char": "36352",
+        "evidence_end_char": "36366",
+        "reason": "Specific bile acid sequestrant drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:colestipol",
+        "entity_type": "Drug",
+        "entity_text": "Colestipol",
+        "normalized_name": "Colestipol",
+        "evidence_text": "Colestipol",
+        "evidence_start_char": "36375",
+        "evidence_end_char": "36385",
+        "reason": "Specific bile acid sequestrant drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:colesevelam",
+        "entity_type": "Drug",
+        "entity_text": "Colesevelam",
+        "normalized_name": "Colesevelam",
+        "evidence_text": "Colesevelam",
+        "evidence_start_char": "36394",
+        "evidence_end_char": "36405",
+        "reason": "Specific bile acid sequestrant drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:hyperuricemia",
+        "entity_type": "Condition",
+        "entity_text": "Hyperuricemia",
+        "normalized_name": "Hyperuricemia",
+        "evidence_text": "Hyperuricemia",
+        "evidence_start_char": "36746",
+        "evidence_end_char": "36759",
+        "reason": "Explicit adverse metabolic condition listed for nicotinic acid."
+      },
+      {
+        "entity_gold_id": "added_entity:gemfibrozil",
+        "entity_type": "Drug",
+        "entity_text": "Gemfibrozil",
+        "normalized_name": "Gemfibrozil",
+        "evidence_text": "Gemfibrozil",
+        "evidence_start_char": "36813",
+        "evidence_end_char": "36824",
+        "reason": "Specific fibric acid drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:fenofibrate",
+        "entity_type": "Drug",
+        "entity_text": "Fenofibrate",
+        "normalized_name": "Fenofibrate",
+        "evidence_text": "Fenofibrate",
+        "evidence_start_char": "36836",
+        "evidence_end_char": "36847",
+        "reason": "Specific fibric acid drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:clofibrate",
+        "entity_type": "Drug",
+        "entity_text": "Clofibrate",
+        "normalized_name": "Clofibrate",
+        "evidence_text": "Clofibrate",
+        "evidence_start_char": "36856",
+        "evidence_end_char": "36866",
+        "reason": "Specific fibric acid drug listed in the statin alternatives table."
+      },
+      {
+        "entity_gold_id": "added_entity:dyspepsia",
+        "entity_type": "Symptom",
+        "entity_text": "Dyspepsia",
+        "normalized_name": "Dyspepsia",
+        "evidence_text": "Dyspepsia",
+        "evidence_start_char": "36953",
+        "evidence_end_char": "36962",
+        "reason": "Explicit adverse symptom listed for fibric acids."
+      }
+    ],
+    "review_notes": "All candidate entities were supported by the chunk. Several entities were normalized from abbreviations or table formatting, and selected high-salience missing lipid disorders, biomarkers, secondary causes, adverse findings, and specific lipid-modifying drugs were added."
+  },
+  "raw_response": {
+    "id": "resp_049c3fe13d127c27006a47cd6e3c4881a0b6618aa7a9b1c262",
+    "created_at": 1783090542.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_049c3fe13d127c27006a47cd6ecd8481a0bf672e03257970c1",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_049c3fe13d127c27006a47ce5d470c81a0bd52b0d0e62fb8e1",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:9c6453a761761040\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"chylomicrons\",\"revised_normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"34173\",\"evidence_end_char\":\"34185\",\"reason\":\"Explicit lipoprotein particle mentioned in the LPL deficiency description.\"},{\"entity_gold_id\":\"silver_entity:d6406a4b3f7c9b1e\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"35182\",\"evidence_end_char\":\"35187\",\"reason\":\"HDL-C is explicitly present as the standard abbreviation for HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:7ea935ac530ad622\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"LDL-C\",\"revised_normalized_name\":\"LDL cholesterol\",\"evidence_text\":\"LDL-C\",\"evidence_start_char\":\"35166\",\"evidence_end_char\":\"35171\",\"reason\":\"LDL-C is explicitly present as the standard abbreviation for LDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:7469dd30093d48b3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lipoprotein(a)\",\"revised_normalized_name\":\"Lipoprotein(a)\",\"evidence_text\":\"Lipoprotein(a)\",\"evidence_start_char\":\"32969\",\"evidence_end_char\":\"32983\",\"reason\":\"Explicit biomarker/lipoprotein term in the table.\"},{\"entity_gold_id\":\"silver_entity:d94f1fab14e8d7fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"Lp(X)\",\"revised_normalized_name\":\"Lp(X)\",\"evidence_text\":\"Lp(X)\",\"evidence_start_char\":\"33154\",\"evidence_end_char\":\"33159\",\"reason\":\"Explicit lipoprotein biomarker term in the table.\"},{\"entity_gold_id\":\"silver_entity:93527e2f0c177d6a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"triglycerides\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"33494\",\"evidence_end_char\":\"33507\",\"reason\":\"Explicit lipid biomarker mentioned in the table.\"},{\"entity_gold_id\":\"silver_entity:9034d102cb1d34b2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"VLDL triglycerides\",\"revised_normalized_name\":\"VLDL triglycerides\",\"evidence_text\":\"VLDL triglycerides\",\"evidence_start_char\":\"34675\",\"evidence_end_char\":\"34693\",\"reason\":\"Explicit lipid biomarker phrase in familial hypertriglyceridemia description.\"},{\"entity_gold_id\":\"silver_entity:83939538a52fe419\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"ApoCII deficiency\",\"revised_normalized_name\":\"ApoCII deficiency\",\"evidence_text\":\"ApoCII deficiency\",\"evidence_start_char\":\"34452\",\"evidence_end_char\":\"34469\",\"reason\":\"Explicit deficiency disorder listed in the table.\"},{\"entity_gold_id\":\"silver_entity:c7d14caa50cc6ce0\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"33000\",\"evidence_end_char\":\"33003\",\"reason\":\"CVD is explicitly present and is the standard abbreviation for cardiovascular disease.\"},{\"entity_gold_id\":\"silver_entity:7fe40c3d49b93e3b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"cataracts\",\"revised_normalized_name\":\"Cataracts\",\"evidence_text\":\"cataracts\",\"evidence_start_char\":\"33443\",\"evidence_end_char\":\"33452\",\"reason\":\"Explicit condition associated with cerebrotendinous xanthomatosis.\"},{\"entity_gold_id\":\"silver_entity:8f15d3d7a2a4f5aa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Cerebrotendinous Xanthomatosis\",\"revised_normalized_name\":\"Cerebrotendinous xanthomatosis\",\"evidence_text\":\"Cerebrotendinous Xanthomatosis\",\"evidence_start_char\":\"33348\",\"evidence_end_char\":\"33378\",\"reason\":\"Explicit named disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:ba21f1a610191da5\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Combined (Familial) Hyperlipidemia\",\"revised_normalized_name\":\"Combined familial hyperlipidemia\",\"evidence_text\":\"Combined (Familial) Hyperlipidemia\",\"evidence_start_char\":\"33508\",\"evidence_end_char\":\"33542\",\"reason\":\"The table explicitly names the disorder with parenthetical formatting.\"},{\"entity_gold_id\":\"silver_entity:855461e379dc02a4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Familial Dysbetalipoproteinemia\",\"revised_normalized_name\":\"Familial dysbetalipoproteinemia\",\"evidence_text\":\"Familial Dysbetalipoproteinemia\",\"evidence_start_char\":\"33703\",\"evidence_end_char\":\"33734\",\"reason\":\"Explicit named lipid disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:bd9683c56eba148d\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Familial hypertriglyceridemia\",\"revised_normalized_name\":\"Familial hypertriglyceridemia\",\"evidence_text\":\"Familial hypertriglyceridemia\",\"evidence_start_char\":\"34580\",\"evidence_end_char\":\"34609\",\"reason\":\"Explicit named disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:55030599eec6cd99\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Gallstones\",\"revised_normalized_name\":\"Gallstones\",\"evidence_text\":\"Gallstones\",\"evidence_start_char\":\"36962\",\"evidence_end_char\":\"36972\",\"reason\":\"Explicit adverse condition listed for fibric acids.\"},{\"entity_gold_id\":\"silver_entity:fe98607e92b80a2e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"gout\",\"revised_normalized_name\":\"Gout\",\"evidence_text\":\"gout\",\"evidence_start_char\":\"36763\",\"evidence_end_char\":\"36767\",\"reason\":\"Explicit condition listed as an adverse reaction context for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:f599a7818844342b\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hepatic Lipase Deficiency\",\"revised_normalized_name\":\"Hepatic lipase deficiency\",\"evidence_text\":\"Hepatic Lipase Deficiency\",\"evidence_start_char\":\"33946\",\"evidence_end_char\":\"33971\",\"reason\":\"Explicit named deficiency disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:e8f44e6f98b986f2\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hepatotoxicity\",\"revised_normalized_name\":\"Hepatotoxicity\",\"evidence_text\":\"Hepatotoxicity\",\"evidence_start_char\":\"36785\",\"evidence_end_char\":\"36799\",\"reason\":\"Explicit adverse condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:8fd6a03e3a8914df\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hypercholesterolemia\",\"revised_normalized_name\":\"Hypercholesterolemia\",\"evidence_text\":\"hypercholesterolemia\",\"evidence_start_char\":\"33799\",\"evidence_end_char\":\"33819\",\"reason\":\"Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description.\"},{\"entity_gold_id\":\"silver_entity:234145a570c5aab6\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hyperglycemia\",\"revised_normalized_name\":\"Hyperglycemia\",\"evidence_text\":\"Hyperglycemia\",\"evidence_start_char\":\"36733\",\"evidence_end_char\":\"36746\",\"reason\":\"Explicit adverse metabolic condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"silver_entity:23e3a4d43440c39c\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hyperlipidemia\",\"revised_normalized_name\":\"Hyperlipidemia\",\"evidence_text\":\"hyperlipidemia\",\"evidence_start_char\":\"33595\",\"evidence_end_char\":\"33609\",\"reason\":\"Explicit disorder term mentioned in the family history context.\"},{\"entity_gold_id\":\"silver_entity:6f3aa4ed8eb7448e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"hypertriglyceridemia\",\"revised_normalized_name\":\"Hypertriglyceridemia\",\"evidence_text\":\"hypertriglyceridemia\",\"evidence_start_char\":\"33774\",\"evidence_end_char\":\"33794\",\"reason\":\"Explicit lipid disorder/abnormality mentioned in familial dysbetalipoproteinemia description.\"},{\"entity_gold_id\":\"silver_entity:3d73dc419ae6e6f5\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Hypothyroidism\",\"revised_normalized_name\":\"Hypothyroidism\",\"evidence_text\":\"Hypothyroidism\",\"evidence_start_char\":\"34830\",\"evidence_end_char\":\"34844\",\"reason\":\"Explicit disease/disorder listed as a secondary cause of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:eb66d2a002fac0f0\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"LPL deficiency\",\"revised_normalized_name\":\"LPL deficiency\",\"evidence_text\":\"LPL deficiency\",\"evidence_start_char\":\"34138\",\"evidence_end_char\":\"34152\",\"reason\":\"Explicit named deficiency disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:087e7e8a8821d6dd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"metabolic syndrome\",\"revised_normalized_name\":\"Metabolic syndrome\",\"evidence_text\":\"metabolic syndrome\",\"evidence_start_char\":\"33631\",\"evidence_end_char\":\"33649\",\"reason\":\"Explicit condition associated with combined familial hyperlipidemia and listed as a secondary cause.\"},{\"entity_gold_id\":\"silver_entity:bbc0b4db783c9506\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Myopathy\",\"revised_normalized_name\":\"Myopathy\",\"evidence_text\":\"Myopathy\",\"evidence_start_char\":\"36972\",\"evidence_end_char\":\"36980\",\"reason\":\"Explicit adverse condition listed for fibric acids.\"},{\"entity_gold_id\":\"silver_entity:f125731d0cb53ea8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"neurologic disease\",\"revised_normalized_name\":\"Neurologic disease\",\"evidence_text\":\"neurologic disease\",\"evidence_start_char\":\"33401\",\"evidence_end_char\":\"33419\",\"reason\":\"Explicit disease category associated with cerebrotendinous xanthomatosis.\"},{\"entity_gold_id\":\"silver_entity:75dc084aa42b38c3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"obstructive hepatic disease\",\"revised_normalized_name\":\"Obstructive hepatic disease\",\"evidence_text\":\"obstructive hepatic disease\",\"evidence_start_char\":\"33175\",\"evidence_end_char\":\"33202\",\"reason\":\"Explicit hepatic disease condition associated with Lp(X).\"},{\"entity_gold_id\":\"silver_entity:dc459fdd64152e16\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"pancreatitis\",\"revised_normalized_name\":\"Pancreatitis\",\"evidence_text\":\"pancreatitis\",\"evidence_start_char\":\"34439\",\"evidence_end_char\":\"34451\",\"reason\":\"Explicit condition described as a consequence of extremely high triglycerides.\"},{\"entity_gold_id\":\"silver_entity:674d74e907268978\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"premature diffuse vascular disease\",\"revised_normalized_name\":\"Premature diffuse vascular disease\",\"evidence_text\":\"premature diffuse vascular disease\",\"evidence_start_char\":\"33856\",\"evidence_end_char\":\"33890\",\"reason\":\"Explicit vascular disease condition associated with familial dysbetalipoproteinemia.\"},{\"entity_gold_id\":\"silver_entity:e9f6411648501c8e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Sitosterolemia\",\"revised_normalized_name\":\"Sitosterolemia\",\"evidence_text\":\"Sitosterolemia\",\"evidence_start_char\":\"33221\",\"evidence_end_char\":\"33235\",\"reason\":\"Explicit named lipid/sterol disorder in the table.\"},{\"entity_gold_id\":\"silver_entity:a1a0ac6874c8bc9e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"type 2 diabetes\",\"revised_normalized_name\":\"Type 2 diabetes\",\"evidence_text\":\"type 2 diabetes\",\"evidence_start_char\":\"33611\",\"evidence_end_char\":\"33626\",\"reason\":\"Explicit condition associated with combined familial hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:b7d8740dbd85aaf8\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Atorvastatin\",\"revised_normalized_name\":\"Atorvastatin\",\"evidence_text\":\"Atorvastatin\",\"evidence_start_char\":\"35398\",\"evidence_end_char\":\"35410\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:16892dbb9750f0fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Beta-Blockers\",\"revised_normalized_name\":\"Beta-blockers\",\"evidence_text\":\"Beta-Blockers\",\"evidence_start_char\":\"34861\",\"evidence_end_char\":\"34874\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:1f7637b9261286d3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Bile acid sequestrants\",\"revised_normalized_name\":\"Bile acid sequestrants\",\"evidence_text\":\"Bile acid sequestrants\",\"evidence_start_char\":\"36329\",\"evidence_end_char\":\"36351\",\"reason\":\"Explicit lipid-modifying drug class in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:2a0ad53081517c11\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Ezetimibe\",\"revised_normalized_name\":\"Ezetimibe\",\"evidence_text\":\"Ezetimibe\",\"evidence_start_char\":\"36981\",\"evidence_end_char\":\"36990\",\"reason\":\"Explicit lipid-modifying drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:aad036c890bfad6e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fibric acids\",\"revised_normalized_name\":\"Fibric acids\",\"evidence_text\":\"Fibric acids\",\"evidence_start_char\":\"36800\",\"evidence_end_char\":\"36812\",\"reason\":\"Explicit lipid-modifying drug class in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:72e62411b1ea657a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fish Oil\",\"revised_normalized_name\":\"Fish oil\",\"evidence_text\":\"Fish Oil\",\"evidence_start_char\":\"37197\",\"evidence_end_char\":\"37205\",\"reason\":\"Explicit therapeutic supplement/product listed under omega-3 fatty acids.\"},{\"entity_gold_id\":\"silver_entity:ef58168c6c06bc98\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Fluvastatin\",\"revised_normalized_name\":\"Fluvastatin\",\"evidence_text\":\"Fluvastatin\",\"evidence_start_char\":\"35209\",\"evidence_end_char\":\"35220\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:dc4aac77feb2708e\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Glucocorticoids\",\"revised_normalized_name\":\"Glucocorticoids\",\"evidence_text\":\"Glucocorticoids\",\"evidence_start_char\":\"34891\",\"evidence_end_char\":\"34906\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:479cc986c752ae57\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Lovastatin\",\"revised_normalized_name\":\"Lovastatin\",\"evidence_text\":\"Lovastatin\",\"evidence_start_char\":\"35302\",\"evidence_end_char\":\"35312\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:0daf3e95087dd0c4\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Nicotinic acid\",\"revised_normalized_name\":\"Nicotinic acid\",\"evidence_text\":\"Nicotinic acid\",\"evidence_start_char\":\"36532\",\"evidence_end_char\":\"36546\",\"reason\":\"Explicit lipid-modifying drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:ca7084c24253d9e1\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Omega 3 fatty acids\",\"revised_normalized_name\":\"Omega 3 fatty acids\",\"evidence_text\":\"Omega 3 fatty acids\",\"evidence_start_char\":\"37171\",\"evidence_end_char\":\"37190\",\"reason\":\"Explicit therapeutic fatty-acid product class listed in the statin alternatives table.\"},{\"entity_gold_id\":\"silver_entity:59f589bcc160486f\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Pitavastatin\",\"revised_normalized_name\":\"Pitavastatin\",\"evidence_text\":\"Pitavastatin\",\"evidence_start_char\":\"35490\",\"evidence_end_char\":\"35502\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:8206fe3f196051a9\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Pravastatin\",\"revised_normalized_name\":\"Pravastatin\",\"evidence_text\":\"Pravastatin\",\"evidence_start_char\":\"35254\",\"evidence_end_char\":\"35265\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:19db7adce011d9fa\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Rosuvastatin\",\"revised_normalized_name\":\"Rosuvastatin\",\"evidence_text\":\"Rosuvastatin\",\"evidence_start_char\":\"35444\",\"evidence_end_char\":\"35456\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:f76c38505f5273c3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Simvastatin\",\"revised_normalized_name\":\"Simvastatin\",\"evidence_text\":\"Simvastatin\",\"evidence_start_char\":\"35354\",\"evidence_end_char\":\"35365\",\"reason\":\"Explicit statin drug listed in the HMG-CoA inhibitor table.\"},{\"entity_gold_id\":\"silver_entity:c1691e403ce4d7e3\",\"decision\":\"accepted\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"Thiazide Diuretics\",\"revised_normalized_name\":\"Thiazide diuretics\",\"evidence_text\":\"Thiazide Diuretics\",\"evidence_start_char\":\"34811\",\"evidence_end_char\":\"34829\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"silver_entity:a1b0f4023eb94e8a\",\"decision\":\"accepted\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"Obesity\",\"revised_normalized_name\":\"Obesity\",\"evidence_text\":\"Obesity\",\"evidence_start_char\":\"34875\",\"evidence_end_char\":\"34882\",\"reason\":\"Explicit secondary cause/risk factor for hyperlipidemia listed in the table.\"},{\"entity_gold_id\":\"silver_entity:de5ed5e8dfa2ec9a\",\"decision\":\"accepted\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"Palmar xanthomas\",\"revised_normalized_name\":\"Palmar xanthomas\",\"evidence_text\":\"Palmar xanthomas\",\"evidence_start_char\":\"33911\",\"evidence_end_char\":\"33927\",\"reason\":\"Explicit pathognomonic clinical finding in familial dysbetalipoproteinemia.\"},{\"entity_gold_id\":\"silver_entity:aeb829c2a0216afe\",\"decision\":\"accepted\",\"revised_entity_type\":\"Symptom\",\"revised_entity_text\":\"tendon xanthomas\",\"revised_normalized_name\":\"Tendon xanthomas\",\"evidence_text\":\"tendon xanthomas\",\"evidence_start_char\":\"33283\",\"evidence_end_char\":\"33299\",\"reason\":\"Explicit clinical finding associated with sitosterolemia and cerebrotendinous xanthomatosis.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:polygenic_hypercholesterolemia\",\"entity_type\":\"Condition\",\"entity_text\":\"Polygenic Hypercholesterolemia\",\"normalized_name\":\"Polygenic hypercholesterolemia\",\"evidence_text\":\"Polygenic Hypercholesterolemia\",\"evidence_start_char\":\"33035\",\"evidence_end_char\":\"33065\",\"reason\":\"Specific named lipid disorder present but not captured as a full entity.\"},{\"entity_gold_id\":\"added_entity:cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"cholesterol\",\"normalized_name\":\"Cholesterol\",\"evidence_text\":\"cholesterol\",\"evidence_start_char\":\"33478\",\"evidence_end_char\":\"33489\",\"reason\":\"Important lipid biomarker explicitly mentioned with triglycerides.\"},{\"entity_gold_id\":\"added_entity:saturated_trans_fats\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Saturated & trans Fats\",\"normalized_name\":\"Saturated and trans fats\",\"evidence_text\":\"Saturated & trans Fats\",\"evidence_start_char\":\"34788\",\"evidence_end_char\":\"34810\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:excess_calories\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Excess Calories\",\"normalized_name\":\"Excess calories\",\"evidence_text\":\"Excess Calories\",\"evidence_start_char\":\"34845\",\"evidence_end_char\":\"34860\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:alcohol\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Alcohol\",\"normalized_name\":\"Alcohol\",\"evidence_text\":\"Alcohol\",\"evidence_start_char\":\"34883\",\"evidence_end_char\":\"34890\",\"reason\":\"Explicit secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:red_meat\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Red meat\",\"normalized_name\":\"Red meat\",\"evidence_text\":\"Red meat\",\"evidence_start_char\":\"34923\",\"evidence_end_char\":\"34931\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:sex_hormones\",\"entity_type\":\"Drug\",\"entity_text\":\"Sex hormones\",\"normalized_name\":\"Sex hormones\",\"evidence_text\":\"Sex hormones\",\"evidence_start_char\":\"34932\",\"evidence_end_char\":\"34944\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:whole_milk\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"Whole milk\",\"normalized_name\":\"Whole milk\",\"evidence_text\":\"Whole milk\",\"evidence_start_char\":\"34964\",\"evidence_end_char\":\"34974\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:retinoic_acid_derivations\",\"entity_type\":\"Drug\",\"entity_text\":\"Retinoic Acid derivations\",\"normalized_name\":\"Retinoic acid derivatives\",\"evidence_text\":\"Retinoic Acid derivations\",\"evidence_start_char\":\"34975\",\"evidence_end_char\":\"35000\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:renal_disease\",\"entity_type\":\"Condition\",\"entity_text\":\"Renal disease\",\"normalized_name\":\"Renal disease\",\"evidence_text\":\"Renal disease\",\"evidence_start_char\":\"35001\",\"evidence_end_char\":\"35014\",\"reason\":\"Explicit disease/disorder listed as a secondary cause of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:high_sugar_beverages_foods\",\"entity_type\":\"RiskFactor\",\"entity_text\":\"High sugar beverages & foods\",\"normalized_name\":\"High-sugar beverages and foods\",\"evidence_text\":\"High sugar beverages & foods\",\"evidence_start_char\":\"35015\",\"evidence_end_char\":\"35043\",\"reason\":\"Explicit dietary secondary cause/risk factor for hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:antipsychotics\",\"entity_type\":\"Drug\",\"entity_text\":\"Antipsychotics\",\"normalized_name\":\"Antipsychotics\",\"evidence_text\":\"Antipsychotics\",\"evidence_start_char\":\"35044\",\"evidence_end_char\":\"35058\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:hiv_antiretrovirals\",\"entity_type\":\"Drug\",\"entity_text\":\"HIV Antiretrovirals\",\"normalized_name\":\"HIV antiretrovirals\",\"evidence_text\":\"HIV Antiretrovirals\",\"evidence_start_char\":\"35059\",\"evidence_end_char\":\"35078\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:pcos\",\"entity_type\":\"Condition\",\"entity_text\":\"PCOS\",\"normalized_name\":\"Polycystic ovary syndrome\",\"evidence_text\":\"PCOS\",\"evidence_start_char\":\"35079\",\"evidence_end_char\":\"35083\",\"reason\":\"Explicit condition abbreviation listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:immunosuppressive_agents\",\"entity_type\":\"Drug\",\"entity_text\":\"Immunosuppressive agents\",\"normalized_name\":\"Immunosuppressive agents\",\"evidence_text\":\"Immunosuppressive agents\",\"evidence_start_char\":\"35084\",\"evidence_end_char\":\"35108\",\"reason\":\"Explicit drug class listed among secondary causes of hyperlipidemia.\"},{\"entity_gold_id\":\"added_entity:cholestyramine\",\"entity_type\":\"Drug\",\"entity_text\":\"Cholestyramine\",\"normalized_name\":\"Cholestyramine\",\"evidence_text\":\"Cholestyramine\",\"evidence_start_char\":\"36352\",\"evidence_end_char\":\"36366\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:colestipol\",\"entity_type\":\"Drug\",\"entity_text\":\"Colestipol\",\"normalized_name\":\"Colestipol\",\"evidence_text\":\"Colestipol\",\"evidence_start_char\":\"36375\",\"evidence_end_char\":\"36385\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:colesevelam\",\"entity_type\":\"Drug\",\"entity_text\":\"Colesevelam\",\"normalized_name\":\"Colesevelam\",\"evidence_text\":\"Colesevelam\",\"evidence_start_char\":\"36394\",\"evidence_end_char\":\"36405\",\"reason\":\"Specific bile acid sequestrant drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:hyperuricemia\",\"entity_type\":\"Condition\",\"entity_text\":\"Hyperuricemia\",\"normalized_name\":\"Hyperuricemia\",\"evidence_text\":\"Hyperuricemia\",\"evidence_start_char\":\"36746\",\"evidence_end_char\":\"36759\",\"reason\":\"Explicit adverse metabolic condition listed for nicotinic acid.\"},{\"entity_gold_id\":\"added_entity:gemfibrozil\",\"entity_type\":\"Drug\",\"entity_text\":\"Gemfibrozil\",\"normalized_name\":\"Gemfibrozil\",\"evidence_text\":\"Gemfibrozil\",\"evidence_start_char\":\"36813\",\"evidence_end_char\":\"36824\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:fenofibrate\",\"entity_type\":\"Drug\",\"entity_text\":\"Fenofibrate\",\"normalized_name\":\"Fenofibrate\",\"evidence_text\":\"Fenofibrate\",\"evidence_start_char\":\"36836\",\"evidence_end_char\":\"36847\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:clofibrate\",\"entity_type\":\"Drug\",\"entity_text\":\"Clofibrate\",\"normalized_name\":\"Clofibrate\",\"evidence_text\":\"Clofibrate\",\"evidence_start_char\":\"36856\",\"evidence_end_char\":\"36866\",\"reason\":\"Specific fibric acid drug listed in the statin alternatives table.\"},{\"entity_gold_id\":\"added_entity:dyspepsia\",\"entity_type\":\"Symptom\",\"entity_text\":\"Dyspepsia\",\"normalized_name\":\"Dyspepsia\",\"evidence_text\":\"Dyspepsia\",\"evidence_start_char\":\"36953\",\"evidence_end_char\":\"36962\",\"reason\":\"Explicit adverse symptom listed for fibric acids.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Several entities were normalized from abbreviations or table formatting, and selected high-salience missing lipid disorders, biomarkers, secondary causes, adverse findings, and specific lipid-modifying drugs were added.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783090834.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 16614,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 22522,
+      "output_tokens_details": {
+        "reasoning_tokens": 16056
+      },
+      "total_tokens": 39136
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T14:55:42.130685+00:00",
+  "finished_at": "2026-07-03T15:00:34.885483+00:00",
+  "duration_ms": 302105.189,
+  "status": "ok",
+  "error": ""
+}

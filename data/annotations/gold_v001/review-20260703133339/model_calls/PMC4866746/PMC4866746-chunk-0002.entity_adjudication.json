@@ -1,0 +1,913 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4866746-chunk-0002\",\n    \"document_id\": \"paper:PMC4866746\",\n    \"pmcid\": \"PMC4866746\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"5497\",\n    \"end_char\": \"11495\",\n    \"text\": \"are combined into lipoprotein particles in association with proteins that allow them to be transported in the plasma. Cholesterol is transported by all lipoproteins and is particularly concentrated in HDL and LDL particles. In general, TGs are transported in the plasma in VLDL, chylomicrons, and their remnants created during metabolism. These TRLs are the largest lipoprotein particles. In addition to size, lipoproteins may also be characterized by the apos they contain, with apoB100 (also known as apoB) being associated with VLDL and LDL and apoA-I associated with HDL. There are several other apos involved in lipoprotein metabolism, many of which are thought to potentially contribute to a number of diseases, such as CVD, multiple sclerosis, and Alzheimer\\u2019s disease.\\n\\nTRLs are highly heterogeneous, differing in size, density, composition, and associated cardiovascular risk. They are composed of a neutral core of TG and cholesterol esters and a surface monolayer comprising phospholipids, free cholesterol, and apos, which participate in the regulation of transport and metabolism of the TRL. The metabolism of TRLs occurs via two principal pathways, an exogenous pathway that originates in the small intestine and an endogenous pathway regulated by the liver (Figure 1). During the exogenous pathway, TGs from dietary fat are absorbed by enterocytes following the ingestion of a meal. Here, they are incorporated into chylomicrons, which are large apoB48-containing lipoproteins with a large TG core (80%\\u201395%). Newly synthesized chylomicrons are then exported via perimesenteric lymphatics before entering the circulation, where they acquire apoC-II, apoC-III, and apoE. Once in circulation, chylomicrons are quickly hydrolyzed by lipoprotein lipase (LPL) along the luminal surface of the capillaries. LPL is synthesized by myocytes and adipocytes before being transported to the lumen of the capillaries via GPIHBPI, a small glycosylphosphatidylinositol-anchored protein synthesized by the capillary endothelial cells. LPL requires activation via apoC-II, and its activity is highly regulated by various proteins, including apoC-III, apoA5, and angiopoietin-like proteins 3 and 4. The hydrolysis of chylomicrons via LPL results in the production of free fatty acids and chylomicron remnants. The free fatty acids liberated by lipolysis are oxidized by a variety of cell types, such as skeletal and myocardial myocytes, or stored in adipose tissue. The chylomicron remnants, which are rich in cholesterol esters and apoE, are removed from circulation by the liver via binding to the LDL receptor or the LDL receptor-related protein.\\n\\nDuring the endogenous pathway, TGs are synthesized in hepatocytes from free fatty acids and glycerol and then incorporated into the core of apoB-containing VLDL particles. ApoC-I, apoC-II, apoC-III, and apoE are added to the surface of VLDL particles during secretion. Following secretion, VLDLs undergo LPL-mediated hydrolysis in the plasma, generating in succession progressively smaller VLDLs and then intermediate-density lipoproteins (IDLs). Some IDL particles are taken up by the liver, and some undergo further catabolism by LPL and hepatic TG lipase to produce LDL particles.\\n\\nImportantly, polymorphisms in genes encoding key components of the TRL biosynthetic pathways are known to be strongly associated with CVD risk.\\n\\nProposed pathophysiology of TRLs in the progression of atherosclerosis\\n\\nEvidence suggests that TRLs and their remnants and specific markers of TG metabolism, such as LPL and apoC-III, contribute to the progression of atherosclerosis and CVD both directly and indirectly. These proposed pathophysiological mechanisms are summarized in Figure 2.\\n\\nIt has been suggested that it is primarily the cholesterol content of TRL remnants that directly contributes to the progression of atherosclerosis, rather than the TGs themselves. Like LDL, cholesterol-enriched, TG-depleted TRL remnants are able to penetrate the arterial intima, where they become selectively bound to the connective tissue matrix. Once entrapped in the subendothelial space, TRLs can be scavenged by resident macrophages, thereby contributing to macrophage foam cell formation as well as plaque formation and progression. TRLs are thought to be equally or more atherogenic than LDL. In contrast to LDL, TRL remnants can be taken up directly by arterial macrophages without oxidative modification and, due to their larger size, carry more cholesterol per particle than LDL. TRL remnants have also been shown to promote endothelial dysfunction, which potentiates atherogenesis.\\n\\nLPL-mediated TRL hydrolysis results in a high concentration of lipolytic products, such as oxidized free fatty acids, along the vascular endothelium or within the arterial intima. These lipolytic products, along with TRLs themselves, are also known to activate a number of proinflammatory, procoagulant, and proapoptotic signaling pathways that play a fundamental role in the pathogenesis of atherosclerosis. Oxidized free fatty acids are known to increase the expression of inflammatory interleukins and cytokines, leading to endothelial inflammation, while TRL remnants have been shown to upregulate the endothelial expression of intercellular adhesion molecule-1 and vascular cell adhesion molecule-1. These proatherogenic adhesion molecules facilitate the transendothelial migration of leukocytes to sites of inflammation. Consequently, their TRL remnant-mediated activation leads to endothelial monocyte adhesion and an enhanced inflammatory response. TRL remnants have also been shown to induce early monocyte and neutrophil activation.\\n\\nAdditionally, TRL remnants are known to increase the production of reactive oxygen species, which can increase vascular endothelial permeability, promote leukocyte adhesion, and, at high concentrations, cause cellular injury and death. TRL remnants have also been shown to induce endothelial cell apoptosis via increased secretion of the\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:530221a483dd7986\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apoa_i\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ApoA-I\",\n      \"normalized_name\": \"ApoA-I\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apoA-I\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 6045,\n      \"evidence_end_char\": 6051,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5abf9b447312088e\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apob\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ApoB\",\n      \"normalized_name\": \"ApoB\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apoB\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 5977,\n      \"evidence_end_char\": 5981,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:07db2d7ec54c3d9d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:apoc_iii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"ApoC-III\",\n      \"normalized_name\": \"ApoC-III\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apoC-III\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7160,\n      \"evidence_end_char\": 7168,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3bc6085c4fca6547\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:hdl\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL\",\n      \"normalized_name\": \"HDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 5698,\n      \"evidence_end_char\": 5701,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8554ef0e86d718ff\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:intercellular_adhesion_molecule_1\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Intercellular adhesion molecule-1\",\n      \"normalized_name\": \"Intercellular adhesion molecule-1\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"intercellular adhesion molecule-1\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10745,\n      \"evidence_end_char\": 10778,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:6e9c4b94948a8783\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:ldl\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"LDL\",\n      \"normalized_name\": \"LDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"LDL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 5706,\n      \"evidence_end_char\": 5709,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c4ed2b99e682bf52\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:lipoprotein_lipase\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Lipoprotein lipase\",\n      \"normalized_name\": \"Lipoprotein lipase\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"lipoprotein lipase\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 7240,\n      \"evidence_end_char\": 7258,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:f96927a07a9e3d06\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:oxidized_free_fatty_acids\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Oxidized free fatty acids\",\n      \"normalized_name\": \"Oxidized free fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"oxidized free fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10204,\n      \"evidence_end_char\": 10229,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8fd73e2e9ee72c95\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:reactive_oxygen_species\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Reactive oxygen species\",\n      \"normalized_name\": \"Reactive oxygen species\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"reactive oxygen species\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11224,\n      \"evidence_end_char\": 11247,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e6db48928b0120a4\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoprotein_remnants\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoprotein remnants\",\n      \"normalized_name\": \"Triglyceride-rich lipoprotein remnants\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglyceride-rich lipoprotein remnants\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9ad9e367cf021ab2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglyceride_rich_lipoproteins\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglyceride-rich lipoproteins\",\n      \"normalized_name\": \"Triglyceride-rich lipoproteins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglyceride-rich lipoproteins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:dbf1a82230ee3594\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2b9ac17840497012\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:vldl\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"VLDL\",\n      \"normalized_name\": \"VLDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"VLDL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 5770,\n      \"evidence_end_char\": 5774,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d8d7d801f730219d\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"biomarker:vascular_cell_adhesion_molecule_1\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Vascular cell adhesion molecule-1\",\n      \"normalized_name\": \"Vascular cell adhesion molecule-1\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"vascular cell adhesion molecule-1\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10783,\n      \"evidence_end_char\": 10816,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:22771596d863d0c7\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:alzheimer_s_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Alzheimer's disease\",\n      \"normalized_name\": \"Alzheimer's disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Alzheimer's disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:1fc27518eb42455c\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerosis\",\n      \"normalized_name\": \"Atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherosclerosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 8928,\n      \"evidence_end_char\": 8943,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:36f41188ad52bb0f\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular Disease\",\n      \"normalized_name\": \"Cardiovascular Disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Cardiovascular Disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9ef33fc294a38505\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:cellular_injury_and_death\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cellular injury and death\",\n      \"normalized_name\": \"Cellular injury and death\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cellular injury and death\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 11366,\n      \"evidence_end_char\": 11391,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ae49b65c577a3131\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:endothelial_dysfunction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Endothelial dysfunction\",\n      \"normalized_name\": \"Endothelial dysfunction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"endothelial dysfunction\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10054,\n      \"evidence_end_char\": 10077,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:33e710667cb9cec9\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:endothelial_inflammation\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Endothelial inflammation\",\n      \"normalized_name\": \"Endothelial inflammation\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"endothelial inflammation\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 10640,\n      \"evidence_end_char\": 10664,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d77ac4bccf2843d2\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"condition:multiple_sclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Multiple sclerosis\",\n      \"normalized_name\": \"Multiple sclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"multiple sclerosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 6228,\n      \"evidence_end_char\": 6246,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b429ba8787fb2f36\",\n      \"document_id\": \"paper:PMC4866746\",\n      \"chunk_id\": \"PMC4866746-chunk-0002\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4866746\",\n      \"entity_id\": \"riskfactor:polymorphisms_in_genes_encoding_key_components_of_the_trl_biosynthetic_pathways\",\n      \"entity_type\": \"RiskFactor\",\n      \"entity_text\": \"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\n      \"normalized_name\": \"Polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 8741,\n      \"evidence_end_char\": 8820,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4866746/PMC4866746-chunk-0002.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:530221a483dd7986\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoA-I\",\"evidence_start_char\":\"6045\",\"evidence_end_char\":\"6051\",\"reason\":\"Supported standalone apolipoprotein biomarker explicitly mentioned as associated with HDL.\"},{\"entity_gold_id\":\"silver_entity:5abf9b447312088e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"6000\",\"evidence_end_char\":\"6004\",\"reason\":\"Supported standalone apolipoprotein biomarker; the chunk states apoB100 is also known as apoB.\"},{\"entity_gold_id\":\"silver_entity:07db2d7ec54c3d9d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoC-III\",\"evidence_start_char\":\"7160\",\"evidence_end_char\":\"7168\",\"reason\":\"Supported standalone apolipoprotein biomarker explicitly mentioned in TRL metabolism.\"},{\"entity_gold_id\":\"silver_entity:3bc6085c4fca6547\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"HDL\",\"evidence_start_char\":\"5698\",\"evidence_end_char\":\"5701\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8554ef0e86d718ff\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"intercellular adhesion molecule-1\",\"evidence_start_char\":\"10745\",\"evidence_end_char\":\"10778\",\"reason\":\"Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:6e9c4b94948a8783\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LDL\",\"evidence_start_char\":\"5706\",\"evidence_end_char\":\"5709\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:c4ed2b99e682bf52\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"lipoprotein lipase\",\"evidence_start_char\":\"7240\",\"evidence_end_char\":\"7258\",\"reason\":\"Supported standalone enzyme biomarker explicitly mentioned as hydrolyzing chylomicrons and TRLs.\"},{\"entity_gold_id\":\"silver_entity:f96927a07a9e3d06\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"oxidized free fatty acids\",\"evidence_start_char\":\"10204\",\"evidence_end_char\":\"10229\",\"reason\":\"Supported standalone lipid-related biomarker/pathophysiologic mediator explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8fd73e2e9ee72c95\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reactive oxygen species\",\"evidence_start_char\":\"11224\",\"evidence_end_char\":\"11247\",\"reason\":\"Supported standalone biomarker/pathophysiologic mediator explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:e6db48928b0120a4\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRL remnants\",\"revised_normalized_name\":\"Triglyceride-rich lipoprotein remnants\",\"evidence_text\":\"TRL remnants\",\"evidence_start_char\":\"10009\",\"evidence_end_char\":\"10021\",\"reason\":\"The chunk supports the abbreviated surface form rather than the full candidate surface form; revised to the explicit evidence span.\"},{\"entity_gold_id\":\"silver_entity:9ad9e367cf021ab2\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRLs\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"TRLs\",\"evidence_start_char\":\"5842\",\"evidence_end_char\":\"5846\",\"reason\":\"The chunk explicitly uses the abbreviated surface form TRLs; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:dbf1a82230ee3594\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TGs\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TGs\",\"evidence_start_char\":\"5733\",\"evidence_end_char\":\"5736\",\"reason\":\"The chunk explicitly uses the abbreviated surface form TGs; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:2b9ac17840497012\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"5770\",\"evidence_end_char\":\"5774\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d8d7d801f730219d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular cell adhesion molecule-1\",\"evidence_start_char\":\"10783\",\"evidence_end_char\":\"10816\",\"reason\":\"Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:22771596d863d0c7\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Alzheimer\u2019s disease\",\"revised_normalized_name\":\"Alzheimer's disease\",\"evidence_text\":\"Alzheimer\u2019s disease\",\"evidence_start_char\":\"6252\",\"evidence_end_char\":\"6271\",\"reason\":\"Supported condition; normalized apostrophe style while preserving the explicit evidence span.\"},{\"entity_gold_id\":\"silver_entity:1fc27518eb42455c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"8928\",\"evidence_end_char\":\"8943\",\"reason\":\"Supported standalone condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:36f41188ad52bb0f\",\"decision\":\"revised\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"6223\",\"evidence_end_char\":\"6226\",\"reason\":\"The chunk supports the abbreviated condition mention CVD; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:9ef33fc294a38505\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cellular injury and death\",\"evidence_start_char\":\"11366\",\"evidence_end_char\":\"11391\",\"reason\":\"Although the phrase appears in the chunk, it is a generic cellular outcome rather than a standalone condition entity for this ontology.\"},{\"entity_gold_id\":\"silver_entity:ae49b65c577a3131\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"endothelial dysfunction\",\"evidence_start_char\":\"10054\",\"evidence_end_char\":\"10077\",\"reason\":\"Supported standalone pathophysiologic condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:33e710667cb9cec9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"endothelial inflammation\",\"evidence_start_char\":\"10640\",\"evidence_end_char\":\"10664\",\"reason\":\"Supported standalone inflammatory/pathophysiologic condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d77ac4bccf2843d2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"multiple sclerosis\",\"evidence_start_char\":\"6228\",\"evidence_end_char\":\"6246\",\"reason\":\"Supported standalone condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:b429ba8787fb2f36\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"revised_normalized_name\":\"Genetic polymorphisms in TRL biosynthetic pathway genes\",\"evidence_text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"evidence_start_char\":\"8741\",\"evidence_end_char\":\"8820\",\"reason\":\"Supported risk factor because the chunk states these polymorphisms are strongly associated with CVD risk; normalized to a concise concept name.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Cholesterol\",\"normalized_name\":\"Cholesterol\",\"evidence_text\":\"Cholesterol\",\"evidence_start_char\":\"5615\",\"evidence_end_char\":\"5626\",\"reason\":\"Important lipid biomarker explicitly discussed as transported by lipoproteins and concentrated in HDL/LDL.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"5776\",\"evidence_end_char\":\"5788\",\"reason\":\"Important lipoprotein particle class explicitly mentioned as a TRL-related carrier.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apob48\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB48\",\"normalized_name\":\"ApoB48\",\"evidence_text\":\"apoB48-containing\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important apolipoprotein marker of chylomicrons explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoc_ii\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoC-II\",\"normalized_name\":\"ApoC-II\",\"evidence_text\":\"apoC-II\",\"evidence_start_char\":\"7151\",\"evidence_end_char\":\"7158\",\"reason\":\"Important apolipoprotein biomarker explicitly acquired by chylomicrons and required for LPL activation.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoe\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoE\",\"normalized_name\":\"ApoE\",\"evidence_text\":\"apoE\",\"evidence_start_char\":\"7174\",\"evidence_end_char\":\"7178\",\"reason\":\"Important apolipoprotein biomarker explicitly mentioned on chylomicrons/VLDL and chylomicron remnants.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:gpihbpi\",\"entity_type\":\"Biomarker\",\"entity_text\":\"GPIHBPI\",\"normalized_name\":\"GPIHBP1\",\"evidence_text\":\"GPIHBPI\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important protein explicitly described as transporting LPL to the capillary lumen; normalized to the standard GPIHBP1 name.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoa5\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoA5\",\"normalized_name\":\"ApoA5\",\"evidence_text\":\"apoA5\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important apolipoprotein regulator of LPL activity explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:angiopoietin_like_proteins_3_and_4\",\"entity_type\":\"Biomarker\",\"entity_text\":\"angiopoietin-like proteins 3 and 4\",\"normalized_name\":\"Angiopoietin-like proteins 3 and 4\",\"evidence_text\":\"angiopoietin-like proteins 3 and 4\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important LPL-regulating protein group explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:free_fatty_acids\",\"entity_type\":\"Biomarker\",\"entity_text\":\"free fatty acids\",\"normalized_name\":\"Free fatty acids\",\"evidence_text\":\"free fatty acids\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important lipid products of chylomicron hydrolysis explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:chylomicron_remnants\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicron remnants\",\"normalized_name\":\"Chylomicron remnants\",\"evidence_text\":\"chylomicron remnants\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important remnant lipoprotein biomarker explicitly produced by chylomicron hydrolysis and discussed in clearance.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoc_i\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ApoC-I\",\"normalized_name\":\"ApoC-I\",\"evidence_text\":\"ApoC-I\",\"evidence_start_char\":\"8310\",\"evidence_end_char\":\"8316\",\"reason\":\"Important apolipoprotein explicitly added to the surface of VLDL particles during secretion.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:idls\",\"entity_type\":\"Biomarker\",\"entity_text\":\"IDLs\",\"normalized_name\":\"Intermediate-density lipoproteins\",\"evidence_text\":\"intermediate-density lipoproteins (IDLs)\",\"evidence_start_char\":\"8543\",\"evidence_end_char\":\"8584\",\"reason\":\"Important lipoprotein class explicitly generated during VLDL catabolism.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:hepatic_tg_lipase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"hepatic TG lipase\",\"normalized_name\":\"Hepatic triglyceride lipase\",\"evidence_text\":\"hepatic TG lipase\",\"evidence_start_char\":\"8678\",\"evidence_end_char\":\"8695\",\"reason\":\"Important enzyme biomarker explicitly involved in IDL catabolism to LDL.\"}],\"review_notes\":\"Reviewed all candidate entities against the chunk. Revised abbreviation-derived entities to explicit evidence spans, normalized minor surface-form differences, and rejected one generic cellular outcome.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:530221a483dd7986",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apoA-I",
+        "evidence_start_char": "6045",
+        "evidence_end_char": "6051",
+        "reason": "Supported standalone apolipoprotein biomarker explicitly mentioned as associated with HDL."
+      },
+      {
+        "entity_gold_id": "silver_entity:5abf9b447312088e",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apoB",
+        "evidence_start_char": "6000",
+        "evidence_end_char": "6004",
+        "reason": "Supported standalone apolipoprotein biomarker; the chunk states apoB100 is also known as apoB."
+      },
+      {
+        "entity_gold_id": "silver_entity:07db2d7ec54c3d9d",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apoC-III",
+        "evidence_start_char": "7160",
+        "evidence_end_char": "7168",
+        "reason": "Supported standalone apolipoprotein biomarker explicitly mentioned in TRL metabolism."
+      },
+      {
+        "entity_gold_id": "silver_entity:3bc6085c4fca6547",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "HDL",
+        "evidence_start_char": "5698",
+        "evidence_end_char": "5701",
+        "reason": "Supported standalone lipoprotein biomarker explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:8554ef0e86d718ff",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "intercellular adhesion molecule-1",
+        "evidence_start_char": "10745",
+        "evidence_end_char": "10778",
+        "reason": "Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:6e9c4b94948a8783",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "LDL",
+        "evidence_start_char": "5706",
+        "evidence_end_char": "5709",
+        "reason": "Supported standalone lipoprotein biomarker explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:c4ed2b99e682bf52",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "lipoprotein lipase",
+        "evidence_start_char": "7240",
+        "evidence_end_char": "7258",
+        "reason": "Supported standalone enzyme biomarker explicitly mentioned as hydrolyzing chylomicrons and TRLs."
+      },
+      {
+        "entity_gold_id": "silver_entity:f96927a07a9e3d06",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "oxidized free fatty acids",
+        "evidence_start_char": "10204",
+        "evidence_end_char": "10229",
+        "reason": "Supported standalone lipid-related biomarker/pathophysiologic mediator explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:8fd73e2e9ee72c95",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "reactive oxygen species",
+        "evidence_start_char": "11224",
+        "evidence_end_char": "11247",
+        "reason": "Supported standalone biomarker/pathophysiologic mediator explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:e6db48928b0120a4",
+        "decision": "revised",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TRL remnants",
+        "revised_normalized_name": "Triglyceride-rich lipoprotein remnants",
+        "evidence_text": "TRL remnants",
+        "evidence_start_char": "10009",
+        "evidence_end_char": "10021",
+        "reason": "The chunk supports the abbreviated surface form rather than the full candidate surface form; revised to the explicit evidence span."
+      },
+      {
+        "entity_gold_id": "silver_entity:9ad9e367cf021ab2",
+        "decision": "revised",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TRLs",
+        "revised_normalized_name": "Triglyceride-rich lipoproteins",
+        "evidence_text": "TRLs",
+        "evidence_start_char": "5842",
+        "evidence_end_char": "5846",
+        "reason": "The chunk explicitly uses the abbreviated surface form TRLs; revised surface text to match the evidence span."
+      },
+      {
+        "entity_gold_id": "silver_entity:dbf1a82230ee3594",
+        "decision": "revised",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "TGs",
+        "revised_normalized_name": "Triglycerides",
+        "evidence_text": "TGs",
+        "evidence_start_char": "5733",
+        "evidence_end_char": "5736",
+        "reason": "The chunk explicitly uses the abbreviated surface form TGs; revised surface text to match the evidence span."
+      },
+      {
+        "entity_gold_id": "silver_entity:2b9ac17840497012",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "VLDL",
+        "evidence_start_char": "5770",
+        "evidence_end_char": "5774",
+        "reason": "Supported standalone lipoprotein biomarker explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:d8d7d801f730219d",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "vascular cell adhesion molecule-1",
+        "evidence_start_char": "10783",
+        "evidence_end_char": "10816",
+        "reason": "Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:22771596d863d0c7",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "Alzheimer\u2019s disease",
+        "revised_normalized_name": "Alzheimer's disease",
+        "evidence_text": "Alzheimer\u2019s disease",
+        "evidence_start_char": "6252",
+        "evidence_end_char": "6271",
+        "reason": "Supported condition; normalized apostrophe style while preserving the explicit evidence span."
+      },
+      {
+        "entity_gold_id": "silver_entity:1fc27518eb42455c",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atherosclerosis",
+        "evidence_start_char": "8928",
+        "evidence_end_char": "8943",
+        "reason": "Supported standalone condition explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:36f41188ad52bb0f",
+        "decision": "revised",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "CVD",
+        "revised_normalized_name": "Cardiovascular disease",
+        "evidence_text": "CVD",
+        "evidence_start_char": "6223",
+        "evidence_end_char": "6226",
+        "reason": "The chunk supports the abbreviated condition mention CVD; revised surface text to match the evidence span."
+      },
+      {
+        "entity_gold_id": "silver_entity:9ef33fc294a38505",
+        "decision": "rejected",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cellular injury and death",
+        "evidence_start_char": "11366",
+        "evidence_end_char": "11391",
+        "reason": "Although the phrase appears in the chunk, it is a generic cellular outcome rather than a standalone condition entity for this ontology."
+      },
+      {
+        "entity_gold_id": "silver_entity:ae49b65c577a3131",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "endothelial dysfunction",
+        "evidence_start_char": "10054",
+        "evidence_end_char": "10077",
+        "reason": "Supported standalone pathophysiologic condition explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:33e710667cb9cec9",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "endothelial inflammation",
+        "evidence_start_char": "10640",
+        "evidence_end_char": "10664",
+        "reason": "Supported standalone inflammatory/pathophysiologic condition explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:d77ac4bccf2843d2",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "multiple sclerosis",
+        "evidence_start_char": "6228",
+        "evidence_end_char": "6246",
+        "reason": "Supported standalone condition explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:b429ba8787fb2f36",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "RiskFactor",
+        "revised_entity_text": "polymorphisms in genes encoding key components of the TRL biosynthetic pathways",
+        "revised_normalized_name": "Genetic polymorphisms in TRL biosynthetic pathway genes",
+        "evidence_text": "polymorphisms in genes encoding key components of the TRL biosynthetic pathways",
+        "evidence_start_char": "8741",
+        "evidence_end_char": "8820",
+        "reason": "Supported risk factor because the chunk states these polymorphisms are strongly associated with CVD risk; normalized to a concise concept name."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:cholesterol",
+        "entity_type": "Biomarker",
+        "entity_text": "Cholesterol",
+        "normalized_name": "Cholesterol",
+        "evidence_text": "Cholesterol",
+        "evidence_start_char": "5615",
+        "evidence_end_char": "5626",
+        "reason": "Important lipid biomarker explicitly discussed as transported by lipoproteins and concentrated in HDL/LDL."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:chylomicrons",
+        "entity_type": "Biomarker",
+        "entity_text": "chylomicrons",
+        "normalized_name": "Chylomicrons",
+        "evidence_text": "chylomicrons",
+        "evidence_start_char": "5776",
+        "evidence_end_char": "5788",
+        "reason": "Important lipoprotein particle class explicitly mentioned as a TRL-related carrier."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:apob48",
+        "entity_type": "Biomarker",
+        "entity_text": "apoB48",
+        "normalized_name": "ApoB48",
+        "evidence_text": "apoB48-containing",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important apolipoprotein marker of chylomicrons explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:apoc_ii",
+        "entity_type": "Biomarker",
+        "entity_text": "apoC-II",
+        "normalized_name": "ApoC-II",
+        "evidence_text": "apoC-II",
+        "evidence_start_char": "7151",
+        "evidence_end_char": "7158",
+        "reason": "Important apolipoprotein biomarker explicitly acquired by chylomicrons and required for LPL activation."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:apoe",
+        "entity_type": "Biomarker",
+        "entity_text": "apoE",
+        "normalized_name": "ApoE",
+        "evidence_text": "apoE",
+        "evidence_start_char": "7174",
+        "evidence_end_char": "7178",
+        "reason": "Important apolipoprotein biomarker explicitly mentioned on chylomicrons/VLDL and chylomicron remnants."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:gpihbpi",
+        "entity_type": "Biomarker",
+        "entity_text": "GPIHBPI",
+        "normalized_name": "GPIHBP1",
+        "evidence_text": "GPIHBPI",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important protein explicitly described as transporting LPL to the capillary lumen; normalized to the standard GPIHBP1 name."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:apoa5",
+        "entity_type": "Biomarker",
+        "entity_text": "apoA5",
+        "normalized_name": "ApoA5",
+        "evidence_text": "apoA5",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important apolipoprotein regulator of LPL activity explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:angiopoietin_like_proteins_3_and_4",
+        "entity_type": "Biomarker",
+        "entity_text": "angiopoietin-like proteins 3 and 4",
+        "normalized_name": "Angiopoietin-like proteins 3 and 4",
+        "evidence_text": "angiopoietin-like proteins 3 and 4",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important LPL-regulating protein group explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:free_fatty_acids",
+        "entity_type": "Biomarker",
+        "entity_text": "free fatty acids",
+        "normalized_name": "Free fatty acids",
+        "evidence_text": "free fatty acids",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important lipid products of chylomicron hydrolysis explicitly mentioned in the chunk."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:chylomicron_remnants",
+        "entity_type": "Biomarker",
+        "entity_text": "chylomicron remnants",
+        "normalized_name": "Chylomicron remnants",
+        "evidence_text": "chylomicron remnants",
+        "evidence_start_char": "",
+        "evidence_end_char": "",
+        "reason": "Important remnant lipoprotein biomarker explicitly produced by chylomicron hydrolysis and discussed in clearance."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:apoc_i",
+        "entity_type": "Biomarker",
+        "entity_text": "ApoC-I",
+        "normalized_name": "ApoC-I",
+        "evidence_text": "ApoC-I",
+        "evidence_start_char": "8310",
+        "evidence_end_char": "8316",
+        "reason": "Important apolipoprotein explicitly added to the surface of VLDL particles during secretion."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:idls",
+        "entity_type": "Biomarker",
+        "entity_text": "IDLs",
+        "normalized_name": "Intermediate-density lipoproteins",
+        "evidence_text": "intermediate-density lipoproteins (IDLs)",
+        "evidence_start_char": "8543",
+        "evidence_end_char": "8584",
+        "reason": "Important lipoprotein class explicitly generated during VLDL catabolism."
+      },
+      {
+        "entity_gold_id": "added_entity:PMC4866746-chunk-0002:hepatic_tg_lipase",
+        "entity_type": "Biomarker",
+        "entity_text": "hepatic TG lipase",
+        "normalized_name": "Hepatic triglyceride lipase",
+        "evidence_text": "hepatic TG lipase",
+        "evidence_start_char": "8678",
+        "evidence_end_char": "8695",
+        "reason": "Important enzyme biomarker explicitly involved in IDL catabolism to LDL."
+      }
+    ],
+    "review_notes": "Reviewed all candidate entities against the chunk. Revised abbreviation-derived entities to explicit evidence spans, normalized minor surface-form differences, and rejected one generic cellular outcome."
+  },
+  "raw_response": {
+    "id": "resp_00ac9df592f914fc006a47e48ac24c81918555ab1eeb5740df",
+    "created_at": 1783096458.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_00ac9df592f914fc006a47e48b4b0c819188136fdbfa601ac5",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_00ac9df592f914fc006a47e5b457488191868308ecc78c7659",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:530221a483dd7986\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoA-I\",\"evidence_start_char\":\"6045\",\"evidence_end_char\":\"6051\",\"reason\":\"Supported standalone apolipoprotein biomarker explicitly mentioned as associated with HDL.\"},{\"entity_gold_id\":\"silver_entity:5abf9b447312088e\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoB\",\"evidence_start_char\":\"6000\",\"evidence_end_char\":\"6004\",\"reason\":\"Supported standalone apolipoprotein biomarker; the chunk states apoB100 is also known as apoB.\"},{\"entity_gold_id\":\"silver_entity:07db2d7ec54c3d9d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apoC-III\",\"evidence_start_char\":\"7160\",\"evidence_end_char\":\"7168\",\"reason\":\"Supported standalone apolipoprotein biomarker explicitly mentioned in TRL metabolism.\"},{\"entity_gold_id\":\"silver_entity:3bc6085c4fca6547\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"HDL\",\"evidence_start_char\":\"5698\",\"evidence_end_char\":\"5701\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8554ef0e86d718ff\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"intercellular adhesion molecule-1\",\"evidence_start_char\":\"10745\",\"evidence_end_char\":\"10778\",\"reason\":\"Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:6e9c4b94948a8783\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"LDL\",\"evidence_start_char\":\"5706\",\"evidence_end_char\":\"5709\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:c4ed2b99e682bf52\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"lipoprotein lipase\",\"evidence_start_char\":\"7240\",\"evidence_end_char\":\"7258\",\"reason\":\"Supported standalone enzyme biomarker explicitly mentioned as hydrolyzing chylomicrons and TRLs.\"},{\"entity_gold_id\":\"silver_entity:f96927a07a9e3d06\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"oxidized free fatty acids\",\"evidence_start_char\":\"10204\",\"evidence_end_char\":\"10229\",\"reason\":\"Supported standalone lipid-related biomarker/pathophysiologic mediator explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:8fd73e2e9ee72c95\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reactive oxygen species\",\"evidence_start_char\":\"11224\",\"evidence_end_char\":\"11247\",\"reason\":\"Supported standalone biomarker/pathophysiologic mediator explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:e6db48928b0120a4\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRL remnants\",\"revised_normalized_name\":\"Triglyceride-rich lipoprotein remnants\",\"evidence_text\":\"TRL remnants\",\"evidence_start_char\":\"10009\",\"evidence_end_char\":\"10021\",\"reason\":\"The chunk supports the abbreviated surface form rather than the full candidate surface form; revised to the explicit evidence span.\"},{\"entity_gold_id\":\"silver_entity:9ad9e367cf021ab2\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TRLs\",\"revised_normalized_name\":\"Triglyceride-rich lipoproteins\",\"evidence_text\":\"TRLs\",\"evidence_start_char\":\"5842\",\"evidence_end_char\":\"5846\",\"reason\":\"The chunk explicitly uses the abbreviated surface form TRLs; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:dbf1a82230ee3594\",\"decision\":\"revised\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"TGs\",\"revised_normalized_name\":\"Triglycerides\",\"evidence_text\":\"TGs\",\"evidence_start_char\":\"5733\",\"evidence_end_char\":\"5736\",\"reason\":\"The chunk explicitly uses the abbreviated surface form TGs; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:2b9ac17840497012\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"5770\",\"evidence_end_char\":\"5774\",\"reason\":\"Supported standalone lipoprotein biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d8d7d801f730219d\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"vascular cell adhesion molecule-1\",\"evidence_start_char\":\"10783\",\"evidence_end_char\":\"10816\",\"reason\":\"Supported standalone endothelial adhesion molecule biomarker explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:22771596d863d0c7\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"Alzheimer\u2019s disease\",\"revised_normalized_name\":\"Alzheimer's disease\",\"evidence_text\":\"Alzheimer\u2019s disease\",\"evidence_start_char\":\"6252\",\"evidence_end_char\":\"6271\",\"reason\":\"Supported condition; normalized apostrophe style while preserving the explicit evidence span.\"},{\"entity_gold_id\":\"silver_entity:1fc27518eb42455c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"8928\",\"evidence_end_char\":\"8943\",\"reason\":\"Supported standalone condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:36f41188ad52bb0f\",\"decision\":\"revised\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"CVD\",\"revised_normalized_name\":\"Cardiovascular disease\",\"evidence_text\":\"CVD\",\"evidence_start_char\":\"6223\",\"evidence_end_char\":\"6226\",\"reason\":\"The chunk supports the abbreviated condition mention CVD; revised surface text to match the evidence span.\"},{\"entity_gold_id\":\"silver_entity:9ef33fc294a38505\",\"decision\":\"rejected\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cellular injury and death\",\"evidence_start_char\":\"11366\",\"evidence_end_char\":\"11391\",\"reason\":\"Although the phrase appears in the chunk, it is a generic cellular outcome rather than a standalone condition entity for this ontology.\"},{\"entity_gold_id\":\"silver_entity:ae49b65c577a3131\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"endothelial dysfunction\",\"evidence_start_char\":\"10054\",\"evidence_end_char\":\"10077\",\"reason\":\"Supported standalone pathophysiologic condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:33e710667cb9cec9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"endothelial inflammation\",\"evidence_start_char\":\"10640\",\"evidence_end_char\":\"10664\",\"reason\":\"Supported standalone inflammatory/pathophysiologic condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d77ac4bccf2843d2\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"multiple sclerosis\",\"evidence_start_char\":\"6228\",\"evidence_end_char\":\"6246\",\"reason\":\"Supported standalone condition explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"silver_entity:b429ba8787fb2f36\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"RiskFactor\",\"revised_entity_text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"revised_normalized_name\":\"Genetic polymorphisms in TRL biosynthetic pathway genes\",\"evidence_text\":\"polymorphisms in genes encoding key components of the TRL biosynthetic pathways\",\"evidence_start_char\":\"8741\",\"evidence_end_char\":\"8820\",\"reason\":\"Supported risk factor because the chunk states these polymorphisms are strongly associated with CVD risk; normalized to a concise concept name.\"}],\"entity_additions\":[{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:cholesterol\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Cholesterol\",\"normalized_name\":\"Cholesterol\",\"evidence_text\":\"Cholesterol\",\"evidence_start_char\":\"5615\",\"evidence_end_char\":\"5626\",\"reason\":\"Important lipid biomarker explicitly discussed as transported by lipoproteins and concentrated in HDL/LDL.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"5776\",\"evidence_end_char\":\"5788\",\"reason\":\"Important lipoprotein particle class explicitly mentioned as a TRL-related carrier.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apob48\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoB48\",\"normalized_name\":\"ApoB48\",\"evidence_text\":\"apoB48-containing\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important apolipoprotein marker of chylomicrons explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoc_ii\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoC-II\",\"normalized_name\":\"ApoC-II\",\"evidence_text\":\"apoC-II\",\"evidence_start_char\":\"7151\",\"evidence_end_char\":\"7158\",\"reason\":\"Important apolipoprotein biomarker explicitly acquired by chylomicrons and required for LPL activation.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoe\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoE\",\"normalized_name\":\"ApoE\",\"evidence_text\":\"apoE\",\"evidence_start_char\":\"7174\",\"evidence_end_char\":\"7178\",\"reason\":\"Important apolipoprotein biomarker explicitly mentioned on chylomicrons/VLDL and chylomicron remnants.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:gpihbpi\",\"entity_type\":\"Biomarker\",\"entity_text\":\"GPIHBPI\",\"normalized_name\":\"GPIHBP1\",\"evidence_text\":\"GPIHBPI\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important protein explicitly described as transporting LPL to the capillary lumen; normalized to the standard GPIHBP1 name.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoa5\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apoA5\",\"normalized_name\":\"ApoA5\",\"evidence_text\":\"apoA5\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important apolipoprotein regulator of LPL activity explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:angiopoietin_like_proteins_3_and_4\",\"entity_type\":\"Biomarker\",\"entity_text\":\"angiopoietin-like proteins 3 and 4\",\"normalized_name\":\"Angiopoietin-like proteins 3 and 4\",\"evidence_text\":\"angiopoietin-like proteins 3 and 4\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important LPL-regulating protein group explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:free_fatty_acids\",\"entity_type\":\"Biomarker\",\"entity_text\":\"free fatty acids\",\"normalized_name\":\"Free fatty acids\",\"evidence_text\":\"free fatty acids\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important lipid products of chylomicron hydrolysis explicitly mentioned in the chunk.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:chylomicron_remnants\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicron remnants\",\"normalized_name\":\"Chylomicron remnants\",\"evidence_text\":\"chylomicron remnants\",\"evidence_start_char\":\"\",\"evidence_end_char\":\"\",\"reason\":\"Important remnant lipoprotein biomarker explicitly produced by chylomicron hydrolysis and discussed in clearance.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:apoc_i\",\"entity_type\":\"Biomarker\",\"entity_text\":\"ApoC-I\",\"normalized_name\":\"ApoC-I\",\"evidence_text\":\"ApoC-I\",\"evidence_start_char\":\"8310\",\"evidence_end_char\":\"8316\",\"reason\":\"Important apolipoprotein explicitly added to the surface of VLDL particles during secretion.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:idls\",\"entity_type\":\"Biomarker\",\"entity_text\":\"IDLs\",\"normalized_name\":\"Intermediate-density lipoproteins\",\"evidence_text\":\"intermediate-density lipoproteins (IDLs)\",\"evidence_start_char\":\"8543\",\"evidence_end_char\":\"8584\",\"reason\":\"Important lipoprotein class explicitly generated during VLDL catabolism.\"},{\"entity_gold_id\":\"added_entity:PMC4866746-chunk-0002:hepatic_tg_lipase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"hepatic TG lipase\",\"normalized_name\":\"Hepatic triglyceride lipase\",\"evidence_text\":\"hepatic TG lipase\",\"evidence_start_char\":\"8678\",\"evidence_end_char\":\"8695\",\"reason\":\"Important enzyme biomarker explicitly involved in IDL catabolism to LDL.\"}],\"review_notes\":\"Reviewed all candidate entities against the chunk. Revised abbreviation-derived entities to explicit evidence spans, normalized minor surface-form differences, and rejected one generic cellular outcome.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783096781.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 8153,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 24898,
+      "output_tokens_details": {
+        "reasoning_tokens": 21754
+      },
+      "total_tokens": 33051
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T16:34:19.516565+00:00",
+  "finished_at": "2026-07-03T16:39:42.450718+00:00",
+  "duration_ms": 336808.853,
+  "status": "ok",
+  "error": ""
+}

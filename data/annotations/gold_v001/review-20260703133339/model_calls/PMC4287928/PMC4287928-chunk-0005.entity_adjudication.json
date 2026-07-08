@@ -1,0 +1,907 @@
+{
+  "provider": "openai",
+  "model": "gpt-5.5",
+  "prompt_version": "annotation_adjudication_v001",
+  "request": {
+    "model": "gpt-5.5",
+    "input": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "input_text",
+            "text": "You are reviewing extracted biomedical entities for a MedGraphRAG gold dataset.\nReturn strict JSON matching the supplied schema. Do not include prose outside JSON.\n\nInput JSON:\n{\n  \"task\": \"ENTITY_ADJUDICATION\",\n  \"rules\": [\n    \"Use only the chunk text as evidence.\",\n    \"Return one entity_reviews item for every candidate entity row.\",\n    \"Accept only standalone biomedical concepts supported by the chunk.\",\n    \"Reject unsupported, generic, duplicate, wrong-type, or modifier-only entities.\",\n    \"Use entity_additions only for important missing entities explicitly present in the chunk.\"\n  ],\n  \"ontology\": {\n    \"entity_types\": [\n      \"Drug\",\n      \"Condition\",\n      \"Symptom\",\n      \"RiskFactor\",\n      \"Biomarker\",\n      \"Paper\"\n    ]\n  },\n  \"chunk\": {\n    \"chunk_id\": \"PMC4287928-chunk-0005\",\n    \"document_id\": \"paper:PMC4287928\",\n    \"pmcid\": \"PMC4287928\",\n    \"section\": \"INTRO\",\n    \"start_char\": \"21986\",\n    \"end_char\": \"27972\",\n    \"text\": \"r triglyceride levels, improve endothelial function, and have favorable effects on thrombotic and arrhythmic potential. The triglyceride-lowering effects of omega-3 fatty acids are due to multiple mechanisms, including stimulation of transcription factors such as PPAR \\u03b1, increased hepatic and extrahepatic fatty acid oxidation, and decreased hepatic incorporation of fatty acids into triglyceride resulting in decreased VLDL synthesis (Sheareret al,). Despite efficacy in triglyceride lowering, data indicating a cardiovascular benefit alone or when added to statins are inconclusive (Rizoset al,). A concentrated formulation of EPA, eicosapent ethyl, is being evaluated for effects on lipoproteins, biomarkers of cardiovascular risk, and clinical cardiovascular outcomes (Ballantyneet al,; NCT01492361).\\n\\nApolipoprotein C-III\\n\\nApoC-III is located on the surface of triglyceride-rich lipoproteins including VLDL, chylomicrons, and their remnants and is implicated in cardiovascular disease. High levels of apoC-III are associated with delayed clearance of VLDL (Aalto-Setalaet al, ) and may exert pro-inflammatory effects at the level of the artery wall (Kawakamiet al,). Further supporting its atherogenic role, those with dysfunctional apoC-III have lower cardiovascular risk. In two recent genetic studies, subjects with loss-of-function mutations in the gene encoding apoC-III were noted to have 39\\u201344% lower levels of triglycerides and \\u02dc40% lower risk of coronary heart disease (J\\u00f8rgensenet al,; TG and HDL Working Group,). An apoC-III antisense oligonucleotide has demonstrated substantial reductions in apoC-III, triglycerides (Fig4) in addition to elevations of HDL-C, without inducing hepatic steatosis (Grahamet al,). This agent is currently being evaluated in patients with severe hypertriglyceridemia. The impact of this approach on cardiovascular risk has not yet been studied. ApoC-III is also present on HDL particles. It is uncertain whether ApoC-III on HDL conveys pro- or anti-atherogenic properties (Cho,; Riwantoet al,).\\n\\nEffects of apolipoprotein C-III antisense oligonucleotide (ASO)\\n\\n(A) Effects of VLDL-associated apoC-III in mice. Mice were administered control ASO or one of two doses of apoC-III ASO for 6 weeks. Western blot demonstrates a dose-dependent reduction of VLDL-associated apoC-III protein. (B) Effects of apoC-III ASO on circulating apoC-III and triglycerides in healthy human volunteers. ASO was administered by subcutaneous injections with loading dose followed by three weekly doses of either 50, 100, 200, or 400 mg. A dose-dependent response was demonstrated, with up to 75% reduction in apoC-III and 50% reduction in triglycerides, sustained over 50 days [Reproduced with permission from Grahamet al ].\\n\\nEffect of dalcetrapib on HDL-C and cardiovascular risk after ACS\\n\\nDalcetrapib was administered to patients with recent ACS on background statin therapy. While dalcetrapib raised HDL-C by 30% compared with placebo (top), there was no difference between groups in the primary endpoint of death from coronary heart disease, non-fatal myocardial infarction, hospitalization for unstable angina, resuscitation after cardiac arrest, or stroke from presumed atherothrombotic cause (bottom) [Reproduced with permission from Schwartzet al ].\\n\\nDiacylglycerol acyltransferase (DGAT)\\n\\nDGAT is an enzyme expressed in small intestine, liver, and adipose tissue. DGAT isozyme 1 is involved in a final committed step of triglyceride synthesis from diacylglycerol. Inhibition of the enzyme may work to reduce serum triglyceride concentrations. Small molecule inhibitors have been developed, but clinical application is likely to be limited by gastrointestinal side effects (Denisonet al,).\\n\\nApolipoprotein E\\n\\nApoE is a ligand for receptor-mediated clearance of chylomicron and VLDL remnants, which are particles that may promote atherosclerosis directly or through the action of lipases to release toxic products of lipolysis (Goldberget al,). ApoE also participates in the biogenesis of HDL, as it is recycled from triglyceride-rich lipoproteins in the liver (Zanniset al,). ApoE mimetic peptides have been developed that exert anti-inflammatory effects, promote HDL functionin vitro (Zhaoet al,), and oppose atherosclerosisin vivo. In LDL receptor knockout mice prone to atherosclerosis, ApoE mimetic peptides reduce plasma cholesterol and the extent of vascular lesions (Handattuet al,). One ApoE mimetic peptide, AEM-28, has been granted orphan drug status by the US Food and Drug Administration and may enter early phase clinical testing.\\n\\nHDL and related atheroprotective lipoproteins\\n\\nHDL particles and associated apolipoprotein A-I are believed to be anti-inflammatory and atheroprotective (Besleret al,). Experimental data support the concept that HDL and/or apoA-1 have vascular anti-inflammatory effects. For example, administration of reconstituted HDL to animals has been shown to reduce expression of adhesion molecules in vascular endothelium and to attenuate the inflammatory response to experimental arterial injury (Nichollset al,). Additionally, HDL may promote the expression of endothelial nitric oxide synthase and exert anti-thrombotic effects (Barteret al,). Several large population studies reported an inverse relationship between HDL-C levels and prospective risk of cardiovascular events (Castelliet al,), independent of atherogenic lipoprotein levels (Diet al,).\\n\\nHDL facilitates reverse cholesterol transport and cholesterol efflux from peripheral tissues. Subpopulations of HDL interact with different membrane bound transporters such as ATP binding cassette A1 (ABCA1), ATP binding cassette G1 (ABCG1), and scavenger receptor-BI (SR-BI) to assist in cholesterol efflux (Actonet al,; Vaughan & Oram,). Cholesterol is transferred to HDL particles, esterified by lecithin/cholesterol acyltransferase (LCAT), and then transported to the liver for excretion.\\n\\nYet, agents that substantially raised HDL-C failed to demonstrate\"\n  },\n  \"candidate_entities\": [\n    {\n      \"entity_gold_id\": \"silver_entity:a21deca9fe355c05\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:adhesion_molecules\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Adhesion molecules\",\n      \"normalized_name\": \"Adhesion molecules\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"adhesion molecules\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 26935,\n      \"evidence_end_char\": 26953,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:2901e0e935fbb333\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:apolipoprotein_c_iii\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Apolipoprotein C-III\",\n      \"normalized_name\": \"Apolipoprotein C-III\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein C-III\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22793,\n      \"evidence_end_char\": 22813,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d16876ccd559e274\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:hdl_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"HDL cholesterol\",\n      \"normalized_name\": \"HDL cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"HDL cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d3e9a7b0e73fd769\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:plasma_cholesterol\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Plasma cholesterol\",\n      \"normalized_name\": \"Plasma cholesterol\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"plasma cholesterol\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 26339,\n      \"evidence_end_char\": 26357,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3150d4bfe707febe\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"biomarker:triglycerides\",\n      \"entity_type\": \"Biomarker\",\n      \"entity_text\": \"Triglycerides\",\n      \"normalized_name\": \"Triglycerides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"triglycerides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 23410,\n      \"evidence_end_char\": 23423,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:ae955767afb36c9d\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:acute_coronary_syndrome\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Acute coronary syndrome\",\n      \"normalized_name\": \"Acute coronary syndrome\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Acute coronary syndrome\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:854a2b8b4faf6ece\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:atherosclerosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Atherosclerosis\",\n      \"normalized_name\": \"Atherosclerosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"atherosclerosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25849,\n      \"evidence_end_char\": 25864,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:d9be85b41fda19fd\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiac_arrest\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiac arrest\",\n      \"normalized_name\": \"Cardiac arrest\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiac arrest\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25148,\n      \"evidence_end_char\": 25162,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b25a71bf15ecc8f\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular disease\",\n      \"normalized_name\": \"Cardiovascular disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22954,\n      \"evidence_end_char\": 22976,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8a7f1488d3f0fc5c\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:cardiovascular_events\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Cardiovascular events\",\n      \"normalized_name\": \"Cardiovascular events\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"cardiovascular events\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 27314,\n      \"evidence_end_char\": 27335,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:b9eac3a1c5893416\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:coronary_heart_disease\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Coronary heart disease\",\n      \"normalized_name\": \"Coronary heart disease\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"coronary heart disease\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 23447,\n      \"evidence_end_char\": 23469,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9cbbed8f209699d8\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:gastrointestinal_side_effects\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Gastrointestinal side effects\",\n      \"normalized_name\": \"Gastrointestinal side effects\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"gastrointestinal side effects\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25663,\n      \"evidence_end_char\": 25692,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:a9e4ff749b608708\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:hepatic_steatosis\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Hepatic steatosis\",\n      \"normalized_name\": \"Hepatic steatosis\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"hepatic steatosis\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 23681,\n      \"evidence_end_char\": 23698,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:5f6d136983d3b28c\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:myocardial_infarction\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Myocardial infarction\",\n      \"normalized_name\": \"Myocardial infarction\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"myocardial infarction\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25068,\n      \"evidence_end_char\": 25089,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:edac00be1cb4525b\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:severe_hypertriglyceridemia\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Severe hypertriglyceridemia\",\n      \"normalized_name\": \"Severe hypertriglyceridemia\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"severe hypertriglyceridemia\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 23772,\n      \"evidence_end_char\": 23799,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:df82a30edb269de9\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:stroke\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Stroke\",\n      \"normalized_name\": \"Stroke\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"stroke\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25167,\n      \"evidence_end_char\": 25173,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3c462146646b7864\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"condition:unstable_angina\",\n      \"entity_type\": \"Condition\",\n      \"entity_text\": \"Unstable angina\",\n      \"normalized_name\": \"Unstable angina\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"unstable angina\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 25111,\n      \"evidence_end_char\": 25126,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:0fad0b8a86b750f0\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:aem_28\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"AEM-28\",\n      \"normalized_name\": \"AEM-28\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"AEM-28\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 26437,\n      \"evidence_end_char\": 26443,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:62d5cc38aaff49c9\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:apolipoprotein_c_iii_antisense_oligonucleotide\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Apolipoprotein C-III antisense oligonucleotide\",\n      \"normalized_name\": \"Apolipoprotein C-III antisense oligonucleotide\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"apolipoprotein C-III antisense oligonucleotide\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 24040,\n      \"evidence_end_char\": 24086,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:e100ec2bf3194186\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:apolipoprotein_e_mimetic_peptides\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Apolipoprotein E mimetic peptides\",\n      \"normalized_name\": \"Apolipoprotein E mimetic peptides\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"Apolipoprotein E mimetic peptides\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:8eed55dc8dc9ede8\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:dgat_inhibitors\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"DGAT inhibitors\",\n      \"normalized_name\": \"DGAT inhibitors\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"DGAT inhibitors\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": null,\n      \"evidence_end_char\": null,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:924eb62730de7dfb\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:dalcetrapib\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Dalcetrapib\",\n      \"normalized_name\": \"Dalcetrapib\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"dalcetrapib\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 24747,\n      \"evidence_end_char\": 24758,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:c370cedc65ffb994\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:eicosapent_ethyl\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Eicosapent ethyl\",\n      \"normalized_name\": \"Eicosapent ethyl\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"eicosapent ethyl\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22621,\n      \"evidence_end_char\": 22637,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:3b674a48b2e75966\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:omega_3_fatty_acids\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Omega-3 fatty acids\",\n      \"normalized_name\": \"Omega-3 fatty acids\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"omega-3 fatty acids\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22143,\n      \"evidence_end_char\": 22162,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:9172f3224b613733\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:reconstituted_hdl\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Reconstituted HDL\",\n      \"normalized_name\": \"Reconstituted HDL\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"reconstituted HDL\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 26867,\n      \"evidence_end_char\": 26884,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    },\n    {\n      \"entity_gold_id\": \"silver_entity:271433441431d426\",\n      \"document_id\": \"paper:PMC4287928\",\n      \"chunk_id\": \"PMC4287928-chunk-0005\",\n      \"pmid\": null,\n      \"pmcid\": \"PMC4287928\",\n      \"entity_id\": \"drug:statins\",\n      \"entity_type\": \"Drug\",\n      \"entity_text\": \"Statins\",\n      \"normalized_name\": \"Statins\",\n      \"aliases\": null,\n      \"category\": null,\n      \"mesh_id\": null,\n      \"icd10\": null,\n      \"drugbank_id\": null,\n      \"unit\": null,\n      \"normal_range\": null,\n      \"description\": null,\n      \"evidence_text\": \"statins\",\n      \"evidence_section\": \"INTRO\",\n      \"evidence_start_char\": 22546,\n      \"evidence_end_char\": 22553,\n      \"annotator\": \"frontier / openai / gpt-5.5\",\n      \"annotation_status\": \"needs_review\",\n      \"notes\": \"silver bootstrap; audit=data/annotations/bootstrap_v001/annotation-20260630171629/model_calls/PMC4287928/PMC4287928-chunk-0005.extraction.json\"\n    }\n  ]\n}\n"
+          }
+        ]
+      }
+    ],
+    "reasoning": {
+      "effort": "high"
+    },
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "medgraphrag_entity_adjudication",
+        "strict": true,
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        }
+      }
+    }
+  },
+  "json_schema": {
+    "type": "json_schema",
+    "name": "medgraphrag_entity_adjudication",
+    "strict": true,
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entity_reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "decision": {
+                "type": "string",
+                "enum": [
+                  "accepted",
+                  "accepted_with_normalization",
+                  "added",
+                  "rejected",
+                  "revised",
+                  "superseded"
+                ]
+              },
+              "revised_entity_type": {
+                "type": "string",
+                "enum": [
+                  "",
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "revised_entity_text": {
+                "type": "string"
+              },
+              "revised_normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "decision",
+              "revised_entity_type",
+              "revised_entity_text",
+              "revised_normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "entity_additions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "entity_gold_id": {
+                "type": "string"
+              },
+              "entity_type": {
+                "type": "string",
+                "enum": [
+                  "Drug",
+                  "Condition",
+                  "Symptom",
+                  "RiskFactor",
+                  "Biomarker",
+                  "Paper"
+                ]
+              },
+              "entity_text": {
+                "type": "string"
+              },
+              "normalized_name": {
+                "type": "string"
+              },
+              "evidence_text": {
+                "type": "string"
+              },
+              "evidence_start_char": {
+                "type": "string"
+              },
+              "evidence_end_char": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "entity_gold_id",
+              "entity_type",
+              "entity_text",
+              "normalized_name",
+              "evidence_text",
+              "evidence_start_char",
+              "evidence_end_char",
+              "reason"
+            ]
+          }
+        },
+        "review_notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_reviews",
+        "entity_additions",
+        "review_notes"
+      ]
+    }
+  },
+  "response_text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:a21deca9fe355c05\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"adhesion molecules\",\"evidence_start_char\":\"26935\",\"evidence_end_char\":\"26953\",\"reason\":\"Standalone biomedical molecule class explicitly mentioned as being reduced in vascular endothelium.\"},{\"entity_gold_id\":\"silver_entity:2901e0e935fbb333\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Apolipoprotein C-III\",\"evidence_start_char\":\"22793\",\"evidence_end_char\":\"22813\",\"reason\":\"Explicit standalone apolipoprotein/biomarker discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d16876ccd559e274\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"24762\",\"evidence_end_char\":\"24767\",\"reason\":\"The chunk uses the standard abbreviation HDL-C, which normalizes to HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:d3e9a7b0e73fd769\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"plasma cholesterol\",\"evidence_start_char\":\"26339\",\"evidence_end_char\":\"26357\",\"reason\":\"Explicit lipid biomarker mentioned as reduced by ApoE mimetic peptides.\"},{\"entity_gold_id\":\"silver_entity:3150d4bfe707febe\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"23410\",\"evidence_end_char\":\"23423\",\"reason\":\"Explicit lipid biomarker repeatedly discussed in relation to ApoC-III and therapy effects.\"},{\"entity_gold_id\":\"silver_entity:ae955767afb36c9d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"ACS\",\"revised_normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"ACS\",\"evidence_start_char\":\"24798\",\"evidence_end_char\":\"24801\",\"reason\":\"The chunk explicitly mentions ACS in the dalcetrapib context; ACS is the standard abbreviation for acute coronary syndrome.\"},{\"entity_gold_id\":\"silver_entity:854a2b8b4faf6ece\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"25849\",\"evidence_end_char\":\"25864\",\"reason\":\"Explicit cardiovascular condition/pathologic process discussed in relation to ApoE mimetic peptides.\"},{\"entity_gold_id\":\"silver_entity:d9be85b41fda19fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiac arrest\",\"evidence_start_char\":\"25148\",\"evidence_end_char\":\"25162\",\"reason\":\"Explicit clinical condition included in the cardiovascular endpoint list.\"},{\"entity_gold_id\":\"silver_entity:3b25a71bf15ecc8f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"22954\",\"evidence_end_char\":\"22976\",\"reason\":\"Explicit condition category stated as associated with ApoC-III-containing lipoproteins.\"},{\"entity_gold_id\":\"silver_entity:8a7f1488d3f0fc5c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"27314\",\"evidence_end_char\":\"27335\",\"reason\":\"Explicit clinical cardiovascular outcome category discussed in relation to HDL-C levels.\"},{\"entity_gold_id\":\"silver_entity:b9eac3a1c5893416\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"23447\",\"evidence_end_char\":\"23469\",\"reason\":\"Explicit condition mentioned as having lower risk in subjects with apoC-III loss-of-function mutations.\"},{\"entity_gold_id\":\"silver_entity:9cbbed8f209699d8\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gastrointestinal side effects\",\"evidence_start_char\":\"25663\",\"evidence_end_char\":\"25692\",\"reason\":\"Explicit adverse clinical condition category limiting DGAT inhibitor application.\"},{\"entity_gold_id\":\"silver_entity:a9e4ff749b608708\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"23681\",\"evidence_end_char\":\"23698\",\"reason\":\"Explicit condition mentioned as not being induced by the apoC-III antisense oligonucleotide.\"},{\"entity_gold_id\":\"silver_entity:5f6d136983d3b28c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"25068\",\"evidence_end_char\":\"25089\",\"reason\":\"Explicit clinical condition included in the primary cardiovascular endpoint.\"},{\"entity_gold_id\":\"silver_entity:edac00be1cb4525b\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"23772\",\"evidence_end_char\":\"23799\",\"reason\":\"Explicit condition/patient population in which the apoC-III antisense agent is being evaluated.\"},{\"entity_gold_id\":\"silver_entity:df82a30edb269de9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"stroke\",\"evidence_start_char\":\"25167\",\"evidence_end_char\":\"25173\",\"reason\":\"Explicit clinical condition included in the primary cardiovascular endpoint.\"},{\"entity_gold_id\":\"silver_entity:3c462146646b7864\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"unstable angina\",\"evidence_start_char\":\"25111\",\"evidence_end_char\":\"25126\",\"reason\":\"Explicit clinical condition included in the hospitalization endpoint.\"},{\"entity_gold_id\":\"silver_entity:0fad0b8a86b750f0\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"AEM-28\",\"evidence_start_char\":\"26437\",\"evidence_end_char\":\"26443\",\"reason\":\"Explicit therapeutic ApoE mimetic peptide granted orphan drug status.\"},{\"entity_gold_id\":\"silver_entity:62d5cc38aaff49c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoprotein C-III antisense oligonucleotide\",\"evidence_start_char\":\"24040\",\"evidence_end_char\":\"24086\",\"reason\":\"Explicit therapeutic antisense oligonucleotide targeting apoC-III.\"},{\"entity_gold_id\":\"silver_entity:e100ec2bf3194186\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"ApoE mimetic peptides\",\"revised_normalized_name\":\"Apolipoprotein E mimetic peptides\",\"evidence_text\":\"ApoE mimetic peptides\",\"evidence_start_char\":\"26310\",\"evidence_end_char\":\"26331\",\"reason\":\"The chunk uses the abbreviation ApoE for apolipoprotein E; the therapeutic peptide class is explicitly mentioned.\"},{\"entity_gold_id\":\"silver_entity:8eed55dc8dc9ede8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"DGAT inhibitors\",\"revised_normalized_name\":\"DGAT inhibitors\",\"evidence_text\":\"DGAT is an enzyme expressed in small intestine, liver, and adipose tissue. DGAT isozyme 1 is involved in a final committed step of triglyceride synthesis from diacylglycerol. Inhibition of the enzyme may work to reduce serum triglyceride concentrations. Small molecule inhibitors have been developed\",\"evidence_start_char\":\"25311\",\"evidence_end_char\":\"25589\",\"reason\":\"The DGAT paragraph explicitly describes enzyme inhibition and developed small molecule inhibitors, supporting the normalized concept DGAT inhibitors.\"},{\"entity_gold_id\":\"silver_entity:924eb62730de7dfb\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"dalcetrapib\",\"evidence_start_char\":\"24747\",\"evidence_end_char\":\"24758\",\"reason\":\"Explicit drug administered to patients with recent ACS.\"},{\"entity_gold_id\":\"silver_entity:c370cedc65ffb994\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"eicosapent ethyl\",\"evidence_start_char\":\"22621\",\"evidence_end_char\":\"22637\",\"reason\":\"Explicit drug/formulation of EPA being evaluated for cardiovascular outcomes.\"},{\"entity_gold_id\":\"silver_entity:3b674a48b2e75966\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 fatty acids\",\"evidence_start_char\":\"22143\",\"evidence_end_char\":\"22162\",\"reason\":\"Explicit therapeutic fatty acid class discussed for triglyceride lowering.\"},{\"entity_gold_id\":\"silver_entity:9172f3224b613733\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reconstituted HDL\",\"evidence_start_char\":\"26867\",\"evidence_end_char\":\"26884\",\"reason\":\"Explicit administered biologic/lipoprotein intervention in animal experiments.\"},{\"entity_gold_id\":\"silver_entity:271433441431d426\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22546\",\"evidence_end_char\":\"22553\",\"reason\":\"Explicit drug class mentioned as background/add-on therapy context.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:ppar_alpha\",\"entity_type\":\"Biomarker\",\"entity_text\":\"PPAR \u03b1\",\"normalized_name\":\"PPAR alpha\",\"evidence_text\":\"PPAR \u03b1\",\"evidence_start_char\":\"22250\",\"evidence_end_char\":\"22256\",\"reason\":\"Important transcription factor explicitly named as a mechanism for omega-3 fatty acid triglyceride lowering.\"},{\"entity_gold_id\":\"gold_addition:vldl\",\"entity_type\":\"Biomarker\",\"entity_text\":\"VLDL\",\"normalized_name\":\"Very-low-density lipoprotein\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"22894\",\"evidence_end_char\":\"22898\",\"reason\":\"Important triglyceride-rich lipoprotein explicitly discussed in ApoC-III metabolism and cardiovascular disease context.\"},{\"entity_gold_id\":\"gold_addition:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"22900\",\"evidence_end_char\":\"22911\",\"reason\":\"Important triglyceride-rich lipoprotein explicitly listed as carrying ApoC-III.\"},{\"entity_gold_id\":\"gold_addition:diacylglycerol_acyltransferase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Diacylglycerol acyltransferase (DGAT)\",\"normalized_name\":\"Diacylglycerol acyltransferase\",\"evidence_text\":\"Diacylglycerol acyltransferase (DGAT)\",\"evidence_start_char\":\"25272\",\"evidence_end_char\":\"25309\",\"reason\":\"Important enzyme target with its own subsection and therapeutic inhibitor discussion.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_e\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Apolipoprotein E\",\"normalized_name\":\"Apolipoprotein E\",\"evidence_text\":\"Apolipoprotein E\",\"evidence_start_char\":\"25711\",\"evidence_end_char\":\"25727\",\"reason\":\"Important apolipoprotein with a dedicated subsection and therapeutic mimetic peptide discussion.\"},{\"entity_gold_id\":\"gold_addition:hdl_particles\",\"entity_type\":\"Biomarker\",\"entity_text\":\"HDL particles\",\"normalized_name\":\"High-density lipoprotein\",\"evidence_text\":\"HDL particles\",\"evidence_start_char\":\"26612\",\"evidence_end_char\":\"26625\",\"reason\":\"Central atheroprotective lipoprotein concept explicitly discussed separately from HDL-C.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_a_i\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apolipoprotein A-I\",\"normalized_name\":\"Apolipoprotein A-I\",\"evidence_text\":\"apolipoprotein A-I\",\"evidence_start_char\":\"26641\",\"evidence_end_char\":\"26659\",\"reason\":\"Important HDL-associated apolipoprotein explicitly described as anti-inflammatory and atheroprotective.\"},{\"entity_gold_id\":\"gold_addition:endothelial_nitric_oxide_synthase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"endothelial nitric oxide synthase\",\"normalized_name\":\"Endothelial nitric oxide synthase\",\"evidence_text\":\"endothelial nitric oxide synthase\",\"evidence_start_char\":\"27118\",\"evidence_end_char\":\"27151\",\"reason\":\"Important enzyme biomarker explicitly mentioned as promoted by HDL.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Abbreviated mentions were normalized where the chunk used ACS, HDL-C, ApoE, or DGAT-context language. Additions are limited to major missing molecular/lipoprotein concepts central to the chunk.\"}",
+  "parsed_json": {
+    "entity_reviews": [
+      {
+        "entity_gold_id": "silver_entity:a21deca9fe355c05",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "adhesion molecules",
+        "evidence_start_char": "26935",
+        "evidence_end_char": "26953",
+        "reason": "Standalone biomedical molecule class explicitly mentioned as being reduced in vascular endothelium."
+      },
+      {
+        "entity_gold_id": "silver_entity:2901e0e935fbb333",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "Apolipoprotein C-III",
+        "evidence_start_char": "22793",
+        "evidence_end_char": "22813",
+        "reason": "Explicit standalone apolipoprotein/biomarker discussed in the chunk."
+      },
+      {
+        "entity_gold_id": "silver_entity:d16876ccd559e274",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Biomarker",
+        "revised_entity_text": "HDL-C",
+        "revised_normalized_name": "HDL cholesterol",
+        "evidence_text": "HDL-C",
+        "evidence_start_char": "24762",
+        "evidence_end_char": "24767",
+        "reason": "The chunk uses the standard abbreviation HDL-C, which normalizes to HDL cholesterol."
+      },
+      {
+        "entity_gold_id": "silver_entity:d3e9a7b0e73fd769",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "plasma cholesterol",
+        "evidence_start_char": "26339",
+        "evidence_end_char": "26357",
+        "reason": "Explicit lipid biomarker mentioned as reduced by ApoE mimetic peptides."
+      },
+      {
+        "entity_gold_id": "silver_entity:3150d4bfe707febe",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "triglycerides",
+        "evidence_start_char": "23410",
+        "evidence_end_char": "23423",
+        "reason": "Explicit lipid biomarker repeatedly discussed in relation to ApoC-III and therapy effects."
+      },
+      {
+        "entity_gold_id": "silver_entity:ae955767afb36c9d",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Condition",
+        "revised_entity_text": "ACS",
+        "revised_normalized_name": "Acute coronary syndrome",
+        "evidence_text": "ACS",
+        "evidence_start_char": "24798",
+        "evidence_end_char": "24801",
+        "reason": "The chunk explicitly mentions ACS in the dalcetrapib context; ACS is the standard abbreviation for acute coronary syndrome."
+      },
+      {
+        "entity_gold_id": "silver_entity:854a2b8b4faf6ece",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "atherosclerosis",
+        "evidence_start_char": "25849",
+        "evidence_end_char": "25864",
+        "reason": "Explicit cardiovascular condition/pathologic process discussed in relation to ApoE mimetic peptides."
+      },
+      {
+        "entity_gold_id": "silver_entity:d9be85b41fda19fd",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiac arrest",
+        "evidence_start_char": "25148",
+        "evidence_end_char": "25162",
+        "reason": "Explicit clinical condition included in the cardiovascular endpoint list."
+      },
+      {
+        "entity_gold_id": "silver_entity:3b25a71bf15ecc8f",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular disease",
+        "evidence_start_char": "22954",
+        "evidence_end_char": "22976",
+        "reason": "Explicit condition category stated as associated with ApoC-III-containing lipoproteins."
+      },
+      {
+        "entity_gold_id": "silver_entity:8a7f1488d3f0fc5c",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "cardiovascular events",
+        "evidence_start_char": "27314",
+        "evidence_end_char": "27335",
+        "reason": "Explicit clinical cardiovascular outcome category discussed in relation to HDL-C levels."
+      },
+      {
+        "entity_gold_id": "silver_entity:b9eac3a1c5893416",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "coronary heart disease",
+        "evidence_start_char": "23447",
+        "evidence_end_char": "23469",
+        "reason": "Explicit condition mentioned as having lower risk in subjects with apoC-III loss-of-function mutations."
+      },
+      {
+        "entity_gold_id": "silver_entity:9cbbed8f209699d8",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "gastrointestinal side effects",
+        "evidence_start_char": "25663",
+        "evidence_end_char": "25692",
+        "reason": "Explicit adverse clinical condition category limiting DGAT inhibitor application."
+      },
+      {
+        "entity_gold_id": "silver_entity:a9e4ff749b608708",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "hepatic steatosis",
+        "evidence_start_char": "23681",
+        "evidence_end_char": "23698",
+        "reason": "Explicit condition mentioned as not being induced by the apoC-III antisense oligonucleotide."
+      },
+      {
+        "entity_gold_id": "silver_entity:5f6d136983d3b28c",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "myocardial infarction",
+        "evidence_start_char": "25068",
+        "evidence_end_char": "25089",
+        "reason": "Explicit clinical condition included in the primary cardiovascular endpoint."
+      },
+      {
+        "entity_gold_id": "silver_entity:edac00be1cb4525b",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "severe hypertriglyceridemia",
+        "evidence_start_char": "23772",
+        "evidence_end_char": "23799",
+        "reason": "Explicit condition/patient population in which the apoC-III antisense agent is being evaluated."
+      },
+      {
+        "entity_gold_id": "silver_entity:df82a30edb269de9",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "stroke",
+        "evidence_start_char": "25167",
+        "evidence_end_char": "25173",
+        "reason": "Explicit clinical condition included in the primary cardiovascular endpoint."
+      },
+      {
+        "entity_gold_id": "silver_entity:3c462146646b7864",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "unstable angina",
+        "evidence_start_char": "25111",
+        "evidence_end_char": "25126",
+        "reason": "Explicit clinical condition included in the hospitalization endpoint."
+      },
+      {
+        "entity_gold_id": "silver_entity:0fad0b8a86b750f0",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "AEM-28",
+        "evidence_start_char": "26437",
+        "evidence_end_char": "26443",
+        "reason": "Explicit therapeutic ApoE mimetic peptide granted orphan drug status."
+      },
+      {
+        "entity_gold_id": "silver_entity:62d5cc38aaff49c9",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "apolipoprotein C-III antisense oligonucleotide",
+        "evidence_start_char": "24040",
+        "evidence_end_char": "24086",
+        "reason": "Explicit therapeutic antisense oligonucleotide targeting apoC-III."
+      },
+      {
+        "entity_gold_id": "silver_entity:e100ec2bf3194186",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "ApoE mimetic peptides",
+        "revised_normalized_name": "Apolipoprotein E mimetic peptides",
+        "evidence_text": "ApoE mimetic peptides",
+        "evidence_start_char": "26310",
+        "evidence_end_char": "26331",
+        "reason": "The chunk uses the abbreviation ApoE for apolipoprotein E; the therapeutic peptide class is explicitly mentioned."
+      },
+      {
+        "entity_gold_id": "silver_entity:8eed55dc8dc9ede8",
+        "decision": "accepted_with_normalization",
+        "revised_entity_type": "Drug",
+        "revised_entity_text": "DGAT inhibitors",
+        "revised_normalized_name": "DGAT inhibitors",
+        "evidence_text": "DGAT is an enzyme expressed in small intestine, liver, and adipose tissue. DGAT isozyme 1 is involved in a final committed step of triglyceride synthesis from diacylglycerol. Inhibition of the enzyme may work to reduce serum triglyceride concentrations. Small molecule inhibitors have been developed",
+        "evidence_start_char": "25311",
+        "evidence_end_char": "25589",
+        "reason": "The DGAT paragraph explicitly describes enzyme inhibition and developed small molecule inhibitors, supporting the normalized concept DGAT inhibitors."
+      },
+      {
+        "entity_gold_id": "silver_entity:924eb62730de7dfb",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "dalcetrapib",
+        "evidence_start_char": "24747",
+        "evidence_end_char": "24758",
+        "reason": "Explicit drug administered to patients with recent ACS."
+      },
+      {
+        "entity_gold_id": "silver_entity:c370cedc65ffb994",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "eicosapent ethyl",
+        "evidence_start_char": "22621",
+        "evidence_end_char": "22637",
+        "reason": "Explicit drug/formulation of EPA being evaluated for cardiovascular outcomes."
+      },
+      {
+        "entity_gold_id": "silver_entity:3b674a48b2e75966",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "omega-3 fatty acids",
+        "evidence_start_char": "22143",
+        "evidence_end_char": "22162",
+        "reason": "Explicit therapeutic fatty acid class discussed for triglyceride lowering."
+      },
+      {
+        "entity_gold_id": "silver_entity:9172f3224b613733",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "reconstituted HDL",
+        "evidence_start_char": "26867",
+        "evidence_end_char": "26884",
+        "reason": "Explicit administered biologic/lipoprotein intervention in animal experiments."
+      },
+      {
+        "entity_gold_id": "silver_entity:271433441431d426",
+        "decision": "accepted",
+        "revised_entity_type": "",
+        "revised_entity_text": "",
+        "revised_normalized_name": "",
+        "evidence_text": "statins",
+        "evidence_start_char": "22546",
+        "evidence_end_char": "22553",
+        "reason": "Explicit drug class mentioned as background/add-on therapy context."
+      }
+    ],
+    "entity_additions": [
+      {
+        "entity_gold_id": "gold_addition:ppar_alpha",
+        "entity_type": "Biomarker",
+        "entity_text": "PPAR \u03b1",
+        "normalized_name": "PPAR alpha",
+        "evidence_text": "PPAR \u03b1",
+        "evidence_start_char": "22250",
+        "evidence_end_char": "22256",
+        "reason": "Important transcription factor explicitly named as a mechanism for omega-3 fatty acid triglyceride lowering."
+      },
+      {
+        "entity_gold_id": "gold_addition:vldl",
+        "entity_type": "Biomarker",
+        "entity_text": "VLDL",
+        "normalized_name": "Very-low-density lipoprotein",
+        "evidence_text": "VLDL",
+        "evidence_start_char": "22894",
+        "evidence_end_char": "22898",
+        "reason": "Important triglyceride-rich lipoprotein explicitly discussed in ApoC-III metabolism and cardiovascular disease context."
+      },
+      {
+        "entity_gold_id": "gold_addition:chylomicrons",
+        "entity_type": "Biomarker",
+        "entity_text": "chylomicrons",
+        "normalized_name": "Chylomicrons",
+        "evidence_text": "chylomicrons",
+        "evidence_start_char": "22900",
+        "evidence_end_char": "22911",
+        "reason": "Important triglyceride-rich lipoprotein explicitly listed as carrying ApoC-III."
+      },
+      {
+        "entity_gold_id": "gold_addition:diacylglycerol_acyltransferase",
+        "entity_type": "Biomarker",
+        "entity_text": "Diacylglycerol acyltransferase (DGAT)",
+        "normalized_name": "Diacylglycerol acyltransferase",
+        "evidence_text": "Diacylglycerol acyltransferase (DGAT)",
+        "evidence_start_char": "25272",
+        "evidence_end_char": "25309",
+        "reason": "Important enzyme target with its own subsection and therapeutic inhibitor discussion."
+      },
+      {
+        "entity_gold_id": "gold_addition:apolipoprotein_e",
+        "entity_type": "Biomarker",
+        "entity_text": "Apolipoprotein E",
+        "normalized_name": "Apolipoprotein E",
+        "evidence_text": "Apolipoprotein E",
+        "evidence_start_char": "25711",
+        "evidence_end_char": "25727",
+        "reason": "Important apolipoprotein with a dedicated subsection and therapeutic mimetic peptide discussion."
+      },
+      {
+        "entity_gold_id": "gold_addition:hdl_particles",
+        "entity_type": "Biomarker",
+        "entity_text": "HDL particles",
+        "normalized_name": "High-density lipoprotein",
+        "evidence_text": "HDL particles",
+        "evidence_start_char": "26612",
+        "evidence_end_char": "26625",
+        "reason": "Central atheroprotective lipoprotein concept explicitly discussed separately from HDL-C."
+      },
+      {
+        "entity_gold_id": "gold_addition:apolipoprotein_a_i",
+        "entity_type": "Biomarker",
+        "entity_text": "apolipoprotein A-I",
+        "normalized_name": "Apolipoprotein A-I",
+        "evidence_text": "apolipoprotein A-I",
+        "evidence_start_char": "26641",
+        "evidence_end_char": "26659",
+        "reason": "Important HDL-associated apolipoprotein explicitly described as anti-inflammatory and atheroprotective."
+      },
+      {
+        "entity_gold_id": "gold_addition:endothelial_nitric_oxide_synthase",
+        "entity_type": "Biomarker",
+        "entity_text": "endothelial nitric oxide synthase",
+        "normalized_name": "Endothelial nitric oxide synthase",
+        "evidence_text": "endothelial nitric oxide synthase",
+        "evidence_start_char": "27118",
+        "evidence_end_char": "27151",
+        "reason": "Important enzyme biomarker explicitly mentioned as promoted by HDL."
+      }
+    ],
+    "review_notes": "All candidate entities were supported by the chunk. Abbreviated mentions were normalized where the chunk used ACS, HDL-C, ApoE, or DGAT-context language. Additions are limited to major missing molecular/lipoprotein concepts central to the chunk."
+  },
+  "raw_response": {
+    "id": "resp_0a2877dc5cad9b7a006a47d786cdac81a187110945f6c550a6",
+    "created_at": 1783093126.0,
+    "error": null,
+    "incomplete_details": null,
+    "instructions": null,
+    "metadata": {},
+    "model": "gpt-5.5-2026-04-23",
+    "object": "response",
+    "output": [
+      {
+        "id": "rs_0a2877dc5cad9b7a006a47d787835881a1a705ae23f7e27ada",
+        "summary": [],
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": null,
+        "status": null
+      },
+      {
+        "id": "msg_0a2877dc5cad9b7a006a47d869972081a1a8ae6d6b33c1840a",
+        "content": [
+          {
+            "annotations": [],
+            "text": "{\"entity_reviews\":[{\"entity_gold_id\":\"silver_entity:a21deca9fe355c05\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"adhesion molecules\",\"evidence_start_char\":\"26935\",\"evidence_end_char\":\"26953\",\"reason\":\"Standalone biomedical molecule class explicitly mentioned as being reduced in vascular endothelium.\"},{\"entity_gold_id\":\"silver_entity:2901e0e935fbb333\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"Apolipoprotein C-III\",\"evidence_start_char\":\"22793\",\"evidence_end_char\":\"22813\",\"reason\":\"Explicit standalone apolipoprotein/biomarker discussed in the chunk.\"},{\"entity_gold_id\":\"silver_entity:d16876ccd559e274\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Biomarker\",\"revised_entity_text\":\"HDL-C\",\"revised_normalized_name\":\"HDL cholesterol\",\"evidence_text\":\"HDL-C\",\"evidence_start_char\":\"24762\",\"evidence_end_char\":\"24767\",\"reason\":\"The chunk uses the standard abbreviation HDL-C, which normalizes to HDL cholesterol.\"},{\"entity_gold_id\":\"silver_entity:d3e9a7b0e73fd769\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"plasma cholesterol\",\"evidence_start_char\":\"26339\",\"evidence_end_char\":\"26357\",\"reason\":\"Explicit lipid biomarker mentioned as reduced by ApoE mimetic peptides.\"},{\"entity_gold_id\":\"silver_entity:3150d4bfe707febe\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"triglycerides\",\"evidence_start_char\":\"23410\",\"evidence_end_char\":\"23423\",\"reason\":\"Explicit lipid biomarker repeatedly discussed in relation to ApoC-III and therapy effects.\"},{\"entity_gold_id\":\"silver_entity:ae955767afb36c9d\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Condition\",\"revised_entity_text\":\"ACS\",\"revised_normalized_name\":\"Acute coronary syndrome\",\"evidence_text\":\"ACS\",\"evidence_start_char\":\"24798\",\"evidence_end_char\":\"24801\",\"reason\":\"The chunk explicitly mentions ACS in the dalcetrapib context; ACS is the standard abbreviation for acute coronary syndrome.\"},{\"entity_gold_id\":\"silver_entity:854a2b8b4faf6ece\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"atherosclerosis\",\"evidence_start_char\":\"25849\",\"evidence_end_char\":\"25864\",\"reason\":\"Explicit cardiovascular condition/pathologic process discussed in relation to ApoE mimetic peptides.\"},{\"entity_gold_id\":\"silver_entity:d9be85b41fda19fd\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiac arrest\",\"evidence_start_char\":\"25148\",\"evidence_end_char\":\"25162\",\"reason\":\"Explicit clinical condition included in the cardiovascular endpoint list.\"},{\"entity_gold_id\":\"silver_entity:3b25a71bf15ecc8f\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular disease\",\"evidence_start_char\":\"22954\",\"evidence_end_char\":\"22976\",\"reason\":\"Explicit condition category stated as associated with ApoC-III-containing lipoproteins.\"},{\"entity_gold_id\":\"silver_entity:8a7f1488d3f0fc5c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"cardiovascular events\",\"evidence_start_char\":\"27314\",\"evidence_end_char\":\"27335\",\"reason\":\"Explicit clinical cardiovascular outcome category discussed in relation to HDL-C levels.\"},{\"entity_gold_id\":\"silver_entity:b9eac3a1c5893416\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"coronary heart disease\",\"evidence_start_char\":\"23447\",\"evidence_end_char\":\"23469\",\"reason\":\"Explicit condition mentioned as having lower risk in subjects with apoC-III loss-of-function mutations.\"},{\"entity_gold_id\":\"silver_entity:9cbbed8f209699d8\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"gastrointestinal side effects\",\"evidence_start_char\":\"25663\",\"evidence_end_char\":\"25692\",\"reason\":\"Explicit adverse clinical condition category limiting DGAT inhibitor application.\"},{\"entity_gold_id\":\"silver_entity:a9e4ff749b608708\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"hepatic steatosis\",\"evidence_start_char\":\"23681\",\"evidence_end_char\":\"23698\",\"reason\":\"Explicit condition mentioned as not being induced by the apoC-III antisense oligonucleotide.\"},{\"entity_gold_id\":\"silver_entity:5f6d136983d3b28c\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"myocardial infarction\",\"evidence_start_char\":\"25068\",\"evidence_end_char\":\"25089\",\"reason\":\"Explicit clinical condition included in the primary cardiovascular endpoint.\"},{\"entity_gold_id\":\"silver_entity:edac00be1cb4525b\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"severe hypertriglyceridemia\",\"evidence_start_char\":\"23772\",\"evidence_end_char\":\"23799\",\"reason\":\"Explicit condition/patient population in which the apoC-III antisense agent is being evaluated.\"},{\"entity_gold_id\":\"silver_entity:df82a30edb269de9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"stroke\",\"evidence_start_char\":\"25167\",\"evidence_end_char\":\"25173\",\"reason\":\"Explicit clinical condition included in the primary cardiovascular endpoint.\"},{\"entity_gold_id\":\"silver_entity:3c462146646b7864\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"unstable angina\",\"evidence_start_char\":\"25111\",\"evidence_end_char\":\"25126\",\"reason\":\"Explicit clinical condition included in the hospitalization endpoint.\"},{\"entity_gold_id\":\"silver_entity:0fad0b8a86b750f0\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"AEM-28\",\"evidence_start_char\":\"26437\",\"evidence_end_char\":\"26443\",\"reason\":\"Explicit therapeutic ApoE mimetic peptide granted orphan drug status.\"},{\"entity_gold_id\":\"silver_entity:62d5cc38aaff49c9\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"apolipoprotein C-III antisense oligonucleotide\",\"evidence_start_char\":\"24040\",\"evidence_end_char\":\"24086\",\"reason\":\"Explicit therapeutic antisense oligonucleotide targeting apoC-III.\"},{\"entity_gold_id\":\"silver_entity:e100ec2bf3194186\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"ApoE mimetic peptides\",\"revised_normalized_name\":\"Apolipoprotein E mimetic peptides\",\"evidence_text\":\"ApoE mimetic peptides\",\"evidence_start_char\":\"26310\",\"evidence_end_char\":\"26331\",\"reason\":\"The chunk uses the abbreviation ApoE for apolipoprotein E; the therapeutic peptide class is explicitly mentioned.\"},{\"entity_gold_id\":\"silver_entity:8eed55dc8dc9ede8\",\"decision\":\"accepted_with_normalization\",\"revised_entity_type\":\"Drug\",\"revised_entity_text\":\"DGAT inhibitors\",\"revised_normalized_name\":\"DGAT inhibitors\",\"evidence_text\":\"DGAT is an enzyme expressed in small intestine, liver, and adipose tissue. DGAT isozyme 1 is involved in a final committed step of triglyceride synthesis from diacylglycerol. Inhibition of the enzyme may work to reduce serum triglyceride concentrations. Small molecule inhibitors have been developed\",\"evidence_start_char\":\"25311\",\"evidence_end_char\":\"25589\",\"reason\":\"The DGAT paragraph explicitly describes enzyme inhibition and developed small molecule inhibitors, supporting the normalized concept DGAT inhibitors.\"},{\"entity_gold_id\":\"silver_entity:924eb62730de7dfb\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"dalcetrapib\",\"evidence_start_char\":\"24747\",\"evidence_end_char\":\"24758\",\"reason\":\"Explicit drug administered to patients with recent ACS.\"},{\"entity_gold_id\":\"silver_entity:c370cedc65ffb994\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"eicosapent ethyl\",\"evidence_start_char\":\"22621\",\"evidence_end_char\":\"22637\",\"reason\":\"Explicit drug/formulation of EPA being evaluated for cardiovascular outcomes.\"},{\"entity_gold_id\":\"silver_entity:3b674a48b2e75966\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"omega-3 fatty acids\",\"evidence_start_char\":\"22143\",\"evidence_end_char\":\"22162\",\"reason\":\"Explicit therapeutic fatty acid class discussed for triglyceride lowering.\"},{\"entity_gold_id\":\"silver_entity:9172f3224b613733\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"reconstituted HDL\",\"evidence_start_char\":\"26867\",\"evidence_end_char\":\"26884\",\"reason\":\"Explicit administered biologic/lipoprotein intervention in animal experiments.\"},{\"entity_gold_id\":\"silver_entity:271433441431d426\",\"decision\":\"accepted\",\"revised_entity_type\":\"\",\"revised_entity_text\":\"\",\"revised_normalized_name\":\"\",\"evidence_text\":\"statins\",\"evidence_start_char\":\"22546\",\"evidence_end_char\":\"22553\",\"reason\":\"Explicit drug class mentioned as background/add-on therapy context.\"}],\"entity_additions\":[{\"entity_gold_id\":\"gold_addition:ppar_alpha\",\"entity_type\":\"Biomarker\",\"entity_text\":\"PPAR \u03b1\",\"normalized_name\":\"PPAR alpha\",\"evidence_text\":\"PPAR \u03b1\",\"evidence_start_char\":\"22250\",\"evidence_end_char\":\"22256\",\"reason\":\"Important transcription factor explicitly named as a mechanism for omega-3 fatty acid triglyceride lowering.\"},{\"entity_gold_id\":\"gold_addition:vldl\",\"entity_type\":\"Biomarker\",\"entity_text\":\"VLDL\",\"normalized_name\":\"Very-low-density lipoprotein\",\"evidence_text\":\"VLDL\",\"evidence_start_char\":\"22894\",\"evidence_end_char\":\"22898\",\"reason\":\"Important triglyceride-rich lipoprotein explicitly discussed in ApoC-III metabolism and cardiovascular disease context.\"},{\"entity_gold_id\":\"gold_addition:chylomicrons\",\"entity_type\":\"Biomarker\",\"entity_text\":\"chylomicrons\",\"normalized_name\":\"Chylomicrons\",\"evidence_text\":\"chylomicrons\",\"evidence_start_char\":\"22900\",\"evidence_end_char\":\"22911\",\"reason\":\"Important triglyceride-rich lipoprotein explicitly listed as carrying ApoC-III.\"},{\"entity_gold_id\":\"gold_addition:diacylglycerol_acyltransferase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Diacylglycerol acyltransferase (DGAT)\",\"normalized_name\":\"Diacylglycerol acyltransferase\",\"evidence_text\":\"Diacylglycerol acyltransferase (DGAT)\",\"evidence_start_char\":\"25272\",\"evidence_end_char\":\"25309\",\"reason\":\"Important enzyme target with its own subsection and therapeutic inhibitor discussion.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_e\",\"entity_type\":\"Biomarker\",\"entity_text\":\"Apolipoprotein E\",\"normalized_name\":\"Apolipoprotein E\",\"evidence_text\":\"Apolipoprotein E\",\"evidence_start_char\":\"25711\",\"evidence_end_char\":\"25727\",\"reason\":\"Important apolipoprotein with a dedicated subsection and therapeutic mimetic peptide discussion.\"},{\"entity_gold_id\":\"gold_addition:hdl_particles\",\"entity_type\":\"Biomarker\",\"entity_text\":\"HDL particles\",\"normalized_name\":\"High-density lipoprotein\",\"evidence_text\":\"HDL particles\",\"evidence_start_char\":\"26612\",\"evidence_end_char\":\"26625\",\"reason\":\"Central atheroprotective lipoprotein concept explicitly discussed separately from HDL-C.\"},{\"entity_gold_id\":\"gold_addition:apolipoprotein_a_i\",\"entity_type\":\"Biomarker\",\"entity_text\":\"apolipoprotein A-I\",\"normalized_name\":\"Apolipoprotein A-I\",\"evidence_text\":\"apolipoprotein A-I\",\"evidence_start_char\":\"26641\",\"evidence_end_char\":\"26659\",\"reason\":\"Important HDL-associated apolipoprotein explicitly described as anti-inflammatory and atheroprotective.\"},{\"entity_gold_id\":\"gold_addition:endothelial_nitric_oxide_synthase\",\"entity_type\":\"Biomarker\",\"entity_text\":\"endothelial nitric oxide synthase\",\"normalized_name\":\"Endothelial nitric oxide synthase\",\"evidence_text\":\"endothelial nitric oxide synthase\",\"evidence_start_char\":\"27118\",\"evidence_end_char\":\"27151\",\"reason\":\"Important enzyme biomarker explicitly mentioned as promoted by HDL.\"}],\"review_notes\":\"All candidate entities were supported by the chunk. Abbreviated mentions were normalized where the chunk used ACS, HDL-C, ApoE, or DGAT-context language. Additions are limited to major missing molecular/lipoprotein concepts central to the chunk.\"}",
+            "type": "output_text",
+            "logprobs": []
+          }
+        ],
+        "role": "assistant",
+        "status": "completed",
+        "type": "message",
+        "phase": "final_answer"
+      }
+    ],
+    "parallel_tool_calls": true,
+    "temperature": 1.0,
+    "tool_choice": "auto",
+    "tools": [],
+    "top_p": 0.98,
+    "background": false,
+    "completed_at": 1783093377.0,
+    "conversation": null,
+    "max_output_tokens": null,
+    "max_tool_calls": null,
+    "moderation": null,
+    "previous_response_id": null,
+    "prompt": null,
+    "prompt_cache_key": null,
+    "prompt_cache_retention": "24h",
+    "reasoning": {
+      "context": "current_turn",
+      "effort": "high",
+      "generate_summary": null,
+      "summary": null,
+      "mode": "standard"
+    },
+    "safety_identifier": null,
+    "service_tier": "default",
+    "status": "completed",
+    "text": {
+      "format": {
+        "name": "medgraphrag_entity_adjudication",
+        "schema_": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity_reviews": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "decision": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "accepted_with_normalization",
+                      "added",
+                      "rejected",
+                      "revised",
+                      "superseded"
+                    ]
+                  },
+                  "revised_entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "revised_entity_text": {
+                    "type": "string"
+                  },
+                  "revised_normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "decision",
+                  "revised_entity_type",
+                  "revised_entity_text",
+                  "revised_normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "entity_additions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "entity_gold_id": {
+                    "type": "string"
+                  },
+                  "entity_type": {
+                    "type": "string",
+                    "enum": [
+                      "Drug",
+                      "Condition",
+                      "Symptom",
+                      "RiskFactor",
+                      "Biomarker",
+                      "Paper"
+                    ]
+                  },
+                  "entity_text": {
+                    "type": "string"
+                  },
+                  "normalized_name": {
+                    "type": "string"
+                  },
+                  "evidence_text": {
+                    "type": "string"
+                  },
+                  "evidence_start_char": {
+                    "type": "string"
+                  },
+                  "evidence_end_char": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "entity_gold_id",
+                  "entity_type",
+                  "entity_text",
+                  "normalized_name",
+                  "evidence_text",
+                  "evidence_start_char",
+                  "evidence_end_char",
+                  "reason"
+                ]
+              }
+            },
+            "review_notes": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entity_reviews",
+            "entity_additions",
+            "review_notes"
+          ]
+        },
+        "type": "json_schema",
+        "description": null,
+        "strict": true
+      },
+      "verbosity": "medium"
+    },
+    "top_logprobs": 0,
+    "truncation": "disabled",
+    "usage": {
+      "input_tokens": 9350,
+      "input_tokens_details": {
+        "cached_tokens": 0
+      },
+      "output_tokens": 19429,
+      "output_tokens_details": {
+        "reasoning_tokens": 16443
+      },
+      "total_tokens": 28779
+    },
+    "user": null,
+    "billing": {
+      "payer": "developer"
+    },
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+    "store": true,
+    "tool_usage": {
+      "image_gen": {
+        "input_tokens": 0,
+        "input_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "output_tokens": 0,
+        "output_tokens_details": {
+          "image_tokens": 0,
+          "text_tokens": 0
+        },
+        "total_tokens": 0
+      },
+      "web_search": {
+        "num_requests": 0
+      }
+    }
+  },
+  "started_at": "2026-07-03T15:38:46.856486+00:00",
+  "finished_at": "2026-07-03T15:42:58.973891+00:00",
+  "duration_ms": 261070.244,
+  "status": "ok",
+  "error": ""
+}
