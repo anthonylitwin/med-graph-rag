@@ -10,7 +10,7 @@ from typing import Any
 from unittest import mock
 
 from pipelines.ingestion.chunking import chunk_article
-from pipelines.ingestion.extractors import GLiNEROllamaExtractor, OpenAIResponsesExtractor
+from pipelines.ingestion.extractors import GLiNERExtractor, GLiNEROllamaExtractor, OpenAIResponsesExtractor, get_extractor
 from pipelines.ingestion.models import ChunkRecord, ExtractionContext
 from pipelines.ingestion.neo4j_loader import load_processed_record_with_session
 from pipelines.ingestion.pmc_bioc import parse_bioc_payload
@@ -314,6 +314,56 @@ class OpenAIExtractorTests(unittest.TestCase):
 
 
 class LocalExtractorTests(unittest.TestCase):
+    def test_gliner_extractor_returns_entities_without_generative_relationship_calls(self) -> None:
+        class FakeGLiNER:
+            def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:
+                self.text = text
+                self.labels = labels
+                self.threshold = threshold
+                return [
+                    {"text": "Fish oil", "label": "Drug", "score": 0.91},
+                    {"text": "Triglycerides", "label": "Biomarker", "score": 0.88},
+                ]
+
+        chunk = ChunkRecord(
+            id="PMC3572442-chunk-0001",
+            document_id="paper:PMC3572442",
+            pmcid="PMC3572442",
+            order=1,
+            char_start=0,
+            char_end=64,
+            section="Abstract",
+            type="abstract",
+            source_sections=["Abstract"],
+            text="Fish oil reduced triglycerides in adults.",
+        )
+        document = {"id": "paper:PMC3572442", "pmcid": "PMC3572442", "title": "Mock paper"}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            extractor = GLiNERExtractor(
+                entity_model="fake-gliner",
+                entity_threshold=0.42,
+                gliner_model=FakeGLiNER(),
+                model_call_root=Path(tmpdir) / "model_calls",
+            )
+            output = extractor.extract(document, chunk)
+            audit = json.loads(Path(extractor.last_model_call_paths[0]).read_text(encoding="utf-8"))
+
+        self.assertEqual(extractor.provider, "gliner")
+        self.assertEqual(extractor.model, "fake-gliner")
+        self.assertEqual([item["name"] for item in output["entities"]], ["Fish oil", "Triglycerides"])
+        self.assertEqual(output["relationships"], [])
+        self.assertEqual(len(extractor.last_model_call_paths), 1)
+        self.assertEqual(audit["provider"], "gliner")
+        self.assertEqual(audit["request"]["threshold"], 0.42)
+
+    def test_get_extractor_routes_gliner_provider_without_ollama(self) -> None:
+        extractor = get_extractor("gliner", model="custom-ner", entity_threshold=0.61)
+
+        self.assertIsInstance(extractor, GLiNERExtractor)
+        self.assertEqual(extractor.model, "custom-ner")
+        self.assertEqual(extractor.entity_threshold, 0.61)
+
     def test_gliner_ollama_extractor_uses_candidates_and_validates_relationships(self) -> None:
         class FakeGLiNER:
             def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:

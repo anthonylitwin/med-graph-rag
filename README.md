@@ -28,6 +28,8 @@ The app supports runtime profiles through `MODEL_PROFILE`:
 | `frontier` | OpenAI Responses API | OpenAI Responses API |
 | `local-qwen25` | Ollama `qwen2.5:7b-instruct` | GLiNER-BioMed entities + Ollama relationships |
 | `local-qwen3` | Ollama `qwen3:8b` | GLiNER-BioMed entities + Ollama relationships |
+| `local-gliner` | Ollama `qwen2.5:7b-instruct` | GLiNER-BioMed entities only; no generative extraction calls |
+| `local-non-instruct` | Ollama `qwen2.5:7b-instruct` | GLiNER + terminology normalization + cosine-scored relationships |
 | `noop` | Deterministic smoke-test fixtures | No-op extractor |
 
 For host-run Python, keep `OLLAMA_BASE_URL=http://localhost:11434`. For Docker, use

@@ -20,6 +20,8 @@ class ChatServiceTests(unittest.TestCase):
         self.assertIn(options["defaultProfile"], profile_names)
         self.assertIn("local-qwen25", profile_names)
         self.assertIn("local-qwen3", profile_names)
+        self.assertIn("local-gliner", profile_names)
+        self.assertIn("local-non-instruct", profile_names)
         self.assertIn("noop", profile_names)
 
     def test_answer_question_honors_noop_profile_metadata(self) -> None:

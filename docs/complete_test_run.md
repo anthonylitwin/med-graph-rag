@@ -63,6 +63,8 @@ Model profiles are resolved in `packages/llm/profiles.py`.
 | `frontier` | OpenAI, `OPENAI_MODEL` | OpenAI, `OPENAI_MODEL` | Best current extraction/QA path. |
 | `local-qwen25` | Ollama, `qwen2.5:7b-instruct` | GLiNER-BioMed + Ollama | Local end-to-end development. |
 | `local-qwen3` | Ollama, `qwen3:8b` | GLiNER-BioMed + Ollama | Alternate local Qwen runtime. |
+| `local-gliner` | Ollama, `qwen2.5:7b-instruct` | GLiNER-BioMed entities only | Non-generative extraction baseline. |
+| `local-non-instruct` | Ollama, `qwen2.5:7b-instruct` | GLiNER + normalization + semantic relation scoring | Iterative non-generative extraction pipeline. |
 | `noop` | Noop fixtures | Noop extractor | Fast plumbing tests without services. |
 
 Select a profile with one of:
@@ -294,7 +296,7 @@ Useful ingestion options:
 
 | Option | Use |
 | --- | --- |
-| `--model-profile` | Select `frontier`, `local-qwen25`, `local-qwen3`, or `noop`. |
+| `--model-profile` | Select `frontier`, `local-qwen25`, `local-qwen3`, `local-gliner`, `local-non-instruct`, or `noop`. |
 | `--model` | Override OpenAI or Ollama relation model. |
 | `--entity-model` | Override the GLiNER entity model. |
 | `--min-confidence` | Drop relationships below a confidence threshold. |
@@ -509,7 +511,7 @@ Good next improvements:
 | Symptom | Check |
 | --- | --- |
 | Ollama works on host but not Docker | Use `DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434`. |
-| `gliner_ollama` import error | Install `requirements-local-models.txt`. |
+| GLiNER extractor import error | Install `requirements-local-models.txt`. |
 | OpenAI path fails | Check `OPENAI_API_KEY` and `OPENAI_MODEL`. |
 | Annotation workbook export fails | Install `apps/api/requirements.txt`; the workbook exporter needs `openpyxl`. |
 | Annotation run has no `model_calls` files | Use `pipelines/annotation/bootstrap_annotations.py`; regular ingestion only records calls when configured by annotation mode. |

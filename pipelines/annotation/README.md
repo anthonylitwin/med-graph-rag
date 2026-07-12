@@ -60,10 +60,11 @@ Useful options:
 
 | Option | Purpose |
 | --- | --- |
-| `--model-profile` | Select `local-qwen25` by default, or `noop`, `local-qwen3`, `frontier`. |
+| `--model-profile` | Select `local-qwen25` by default, or `local-gliner`, `local-non-instruct`, `noop`, `local-qwen3`, `frontier`. |
 | `--model` | Override the OpenAI or Ollama extraction model. |
 | `--entity-model` | Override the GLiNER entity model for local extraction. |
-| `--min-confidence` | Drop extracted relationships below this confidence. |
+| `--entity-threshold` | Minimum GLiNER confidence for local entity candidates. |
+| `--min-confidence` | Final validation floor for emitted relationship confidence. |
 | `--output-root` | Override the root for annotation runs. Default is `data/annotations/bootstrap_v001`. |
 | `--clean-output` | Delete the annotation output root before creating a new run. |
 | `--fail-fast` | Stop on the first failed article or chunk. |
@@ -181,6 +182,27 @@ Run a local extraction experiment:
   --eval-id local-qwen25-bootstrap-v001
 ```
 
+Run the non-instruct entity-only baseline without Ollama relationship calls:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile local-gliner `
+  --eval-id local-gliner-bootstrap-v001
+```
+
+Run the composed non-instruct pipeline with terminology normalization and
+cosine-scored relationship candidates:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile local-non-instruct `
+  --eval-id local-non-instruct-bootstrap-v001 `
+  --relation-threshold 0.66 `
+  --concept-threshold 0.84
+```
+
 Or use make:
 
 ```powershell
@@ -251,6 +273,136 @@ The MLflow run logs gold/model parameters, overall/entity/relationship metrics,
 per-entity-type and per-relationship-type metrics, and the full durable eval
 artifact folder unless `--no-mlflow-artifacts` is passed. The local
 `eval_manifest.json` records the MLflow run ID and logging status.
+
+### DVC Experiments
+
+The annotation evaluation stage is defined in `experiments/dvc.yaml`, with its
+model, gold-set, threshold, run-id, and MLflow settings in
+`experiments/params.yaml`. The checked-in default uses the no-op profile and is
+safe for validating the experiment plumbing.
+
+The approved document split, sequential parameter sweeps, selection rules, and
+final comparison policy are defined in
+[`docs/annotation_evaluation_matrix.md`](../../docs/annotation_evaluation_matrix.md).
+
+Install and initialize DVC once, then reproduce the configured evaluation from
+the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-experiments.txt
+.\.venv\Scripts\python.exe -m dvc init
+.\.venv\Scripts\python.exe -m dvc repro experiments/dvc.yaml:annotation-eval
+```
+
+Change `annotation_eval.model_profile`, `eval_id`, model overrides, thresholds,
+or MLflow settings in `experiments/params.yaml` for each experiment. The
+`annotation_eval.python` default targets the Windows virtual environment; set it
+to `../.venv-wsl/bin/python` when running the stage from WSL. Run and compare
+DVC experiments with:
+
+```powershell
+.\.venv\Scripts\python.exe -m dvc exp run experiments/dvc.yaml:annotation-eval
+.\.venv\Scripts\python.exe -m dvc exp show
+.\.venv\Scripts\python.exe -m dvc metrics diff
+```
+
+DVC tracks the durable evaluation artifacts and the nested `metrics.json` used
+for comparisons. The stage fixes `neo4j_load_mode` to `none`; Neo4j ingestion
+remains a separate explicit workflow.
+
+Use `model_profile: local-gliner` for the entity-only baseline. Use
+`model_profile: local-non-instruct` for the composed pipeline, then tune the
+`non_instruct` thresholds and score weights in `experiments/params.yaml`. Both
+profiles avoid generative extraction calls.
+
+The composed pipeline applies these stages in order:
+
+1. GLiNER-BioMed detects typed entity mentions and confidence scores.
+2. Unicode/whitespace cleanup and exact aliases normalize known terminology.
+3. Type-constrained semantic search resolves remaining mentions above
+   `concept_threshold` using cosine similarity.
+4. Same-sentence entity pairs are filtered by ontology type and direction.
+5. Relationship candidates combine semantic similarity, lexical cues, entity
+   proximity, and NER confidence.
+6. Negated candidates are rejected and candidates below `relation_threshold`
+   remain in the audit artifact for analysis.
+
+The `non_instruct` DVC parameters are:
+
+| Parameter | Purpose |
+| --- | --- |
+| `embedding_model` | Local sentence-transformer used for concept search and relation prototypes. |
+| `terminology_path` | Non-gold canonical concept and alias JSON. |
+| `entity_threshold` | Minimum GLiNER confidence for entity candidates. |
+| `concept_threshold` | Minimum cosine score for semantic concept normalization. |
+| `relation_threshold` | Minimum combined score for an emitted relationship. |
+| `semantic_floor` | Minimum semantic score when no lexical cue is present. |
+| `semantic_weight` | Contribution from sentence-to-relationship cosine similarity. |
+| `cue_weight` | Contribution from deterministic relationship cue matching. |
+| `proximity_weight` | Contribution from mention distance within a sentence. |
+| `entity_confidence_weight` | Contribution from the two GLiNER confidence scores. |
+| `max_pair_distance` | Maximum character distance between candidate endpoints. |
+
+Each chunk writes a `non_instruct_pipeline` audit JSON containing normalized
+mentions, every accepted/rejected relation candidate, component scores, and the
+effective configuration. The terminology file must remain independent of the
+gold evaluation exports to avoid leaking expected answers into extraction.
+
+### Artifact Management
+
+Evaluation runs are generated under `data/annotations/eval_v001/` and ignored
+by Git. Use the artifact manager instead of manually deleting run directories.
+
+List runs with profiles, completion status, metrics, size, and protection flags:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/manage_evaluation_artifacts.py list
+make annotation-eval-artifacts
+make annotation-eval-artifacts ARGS="--profile local-non-instruct"
+make annotation-eval-artifacts ARGS="--match 'dev-*' --status complete"
+```
+
+Write machine-readable JSON and CSV indexes for reporting or spreadsheet use:
+
+```powershell
+make annotation-eval-index
+```
+
+Verify durable artifacts against `artifact_manifest.json` SHA-256 hashes. Paths
+are resolved relative to the run when a repository has moved:
+
+```powershell
+make annotation-eval-verify
+make annotation-eval-verify ARGS="local-non-instruct-smoke"
+```
+
+Pin important runs so retention commands cannot remove them:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/manage_evaluation_artifacts.py pin holdout-frontier-final-v001
+.\.venv\Scripts\python.exe pipelines/annotation/manage_evaluation_artifacts.py unpin holdout-frontier-final-v001
+```
+
+Pruning is a dry-run unless `--execute` is explicitly supplied. The active DVC
+run from `experiments/params.yaml` and all pinned runs are always protected:
+
+```powershell
+make annotation-eval-prune ARGS="--smoke --older-than-days 7"
+make annotation-eval-prune ARGS="--smoke --older-than-days 7 --execute"
+make annotation-eval-prune ARGS="--incomplete --older-than-days 1"
+make annotation-eval-prune ARGS="--match 'dev-*' --keep-latest 3"
+```
+
+Recommended retention policy:
+
+1. Pin final holdout runs and any run cited in a report.
+2. Keep the active DVC output and the latest development winner for each phase.
+3. Remove old smoke runs after seven days.
+4. Remove incomplete runs after one day once their errors have been inspected.
+5. Use `dvc push` before pruning reproducible DVC outputs that must survive
+   beyond the local cache.
+6. Manage the DVC cache separately with DVC commands; the artifact manager only
+   removes generated workspace run directories.
 
 ## Audit JSON
 

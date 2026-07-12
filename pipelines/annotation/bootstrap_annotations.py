@@ -46,6 +46,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--model-profile", default=DEFAULT_ANNOTATION_MODEL_PROFILE)
     parser.add_argument("--model", help="Override the profile extraction or local relation model")
     parser.add_argument("--entity-model", help="Override the GLiNER entity model for local extraction")
+    parser.add_argument("--embedding-model", default="sentence-transformers/all-MiniLM-L6-v2")
+    parser.add_argument(
+        "--terminology-path",
+        type=Path,
+        default=Path("data/terminology/biomedical_aliases_v001.json"),
+    )
+    parser.add_argument("--entity-threshold", type=float, default=0.5)
+    parser.add_argument("--concept-threshold", type=float, default=0.84)
+    parser.add_argument("--relation-threshold", type=float, default=0.66)
+    parser.add_argument("--semantic-floor", type=float, default=0.52)
+    parser.add_argument("--semantic-weight", type=float, default=0.50)
+    parser.add_argument("--cue-weight", type=float, default=0.25)
+    parser.add_argument("--proximity-weight", type=float, default=0.10)
+    parser.add_argument("--entity-confidence-weight", type=float, default=0.15)
+    parser.add_argument("--max-pair-distance", type=int, default=300)
     parser.add_argument("--min-confidence", type=float, default=0.5)
     parser.add_argument("--force", action="store_true")
     parser.add_argument("--fail-fast", action="store_true")
@@ -113,6 +128,17 @@ def run_bootstrap(args: argparse.Namespace) -> dict[str, Any]:
         extractor_provider=profile.extractor_provider,
         model=profile.extractor_model,
         entity_model=profile.entity_model,
+        embedding_model=args.embedding_model,
+        terminology_path=args.terminology_path,
+        entity_threshold=args.entity_threshold,
+        concept_threshold=args.concept_threshold,
+        relation_threshold=args.relation_threshold,
+        semantic_floor=args.semantic_floor,
+        semantic_weight=args.semantic_weight,
+        cue_weight=args.cue_weight,
+        proximity_weight=args.proximity_weight,
+        entity_confidence_weight=args.entity_confidence_weight,
+        max_pair_distance=args.max_pair_distance,
         min_confidence=args.min_confidence,
         skip_load=True,
         force=args.force,

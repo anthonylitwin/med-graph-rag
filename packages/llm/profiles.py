@@ -10,6 +10,7 @@ DEFAULT_MODEL_PROFILE = "frontier"
 DEFAULT_OLLAMA_MODEL = "qwen2.5:7b-instruct"
 DEFAULT_QWEN3_MODEL = "qwen3:8b"
 DEFAULT_GLINER_BIOMED_MODEL = "Ihor/gliner-biomed-small-v1.0"
+DEFAULT_NON_INSTRUCT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,6 +62,28 @@ _PROFILES: dict[str, ModelProfile] = {
         extractor_model=DEFAULT_QWEN3_MODEL,
         entity_model=DEFAULT_GLINER_BIOMED_MODEL,
     ),
+    "local-gliner": ModelProfile(
+        name="local-gliner",
+        label="Local GLiNER (non-instruct extraction)",
+        description="Use Ollama for QA and GLiNER-BioMed alone for non-generative entity extraction.",
+        qa_provider="ollama",
+        qa_model=DEFAULT_OLLAMA_MODEL,
+        qa_retriever="graph",
+        extractor_provider="gliner",
+        extractor_model=DEFAULT_GLINER_BIOMED_MODEL,
+        entity_model=DEFAULT_GLINER_BIOMED_MODEL,
+    ),
+    "local-non-instruct": ModelProfile(
+        name="local-non-instruct",
+        label="Local non-instruct pipeline",
+        description="Use GLiNER-BioMed, terminology normalization, and cosine-scored relation candidates.",
+        qa_provider="ollama",
+        qa_model=DEFAULT_OLLAMA_MODEL,
+        qa_retriever="graph",
+        extractor_provider="non_instruct",
+        extractor_model=DEFAULT_NON_INSTRUCT_EMBEDDING_MODEL,
+        entity_model=DEFAULT_GLINER_BIOMED_MODEL,
+    ),
     "noop": ModelProfile(
         name="noop",
         label="Noop smoke test",
@@ -78,6 +101,11 @@ _ALIASES = {
     "qwen25": "local-qwen25",
     "qwen2.5": "local-qwen25",
     "qwen3": "local-qwen3",
+    "gliner": "local-gliner",
+    "local-ner": "local-gliner",
+    "non-instruct": "local-non-instruct",
+    "local-semantic": "local-non-instruct",
+    "gliner-semantic": "local-non-instruct",
     "openai": "frontier",
     "api": "frontier",
     "none": "noop",
@@ -94,7 +122,10 @@ def normalize_model_profile_name(name: str | None = None) -> str:
 
 
 def list_model_profiles() -> list[ModelProfile]:
-    return [_PROFILES[name] for name in ("frontier", "local-qwen25", "local-qwen3", "noop")]
+    return [
+        _PROFILES[name]
+        for name in ("frontier", "local-qwen25", "local-qwen3", "local-gliner", "local-non-instruct", "noop")
+    ]
 
 
 def resolve_model_profile(
@@ -155,8 +186,19 @@ def resolve_model_profile(
         elif normalized_extractor_provider in {"gliner_ollama", "gliner-ollama"} and profile.extractor_provider != "gliner_ollama":
             resolved_extractor_model = local_model or DEFAULT_OLLAMA_MODEL
             resolved_entity_model = resolved_entity_model or DEFAULT_GLINER_BIOMED_MODEL
+        elif normalized_extractor_provider in {"gliner", "gliner_ner", "gliner-ner"}:
+            resolved_entity_model = resolved_entity_model or DEFAULT_GLINER_BIOMED_MODEL
+            resolved_extractor_model = resolved_entity_model
+        elif normalized_extractor_provider in {"non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"}:
+            resolved_entity_model = resolved_entity_model or DEFAULT_GLINER_BIOMED_MODEL
+            resolved_extractor_model = DEFAULT_NON_INSTRUCT_EMBEDDING_MODEL
         elif normalized_extractor_provider == "openai":
             resolved_extractor_model = openai_model or DEFAULT_FRONTIER_MODEL
+
+    if resolved_extractor_provider.lower().strip() in {"gliner", "gliner_ner", "gliner-ner"}:
+        if entity_model is None and extractor_model is not None:
+            resolved_entity_model = resolved_extractor_model
+        resolved_extractor_model = resolved_entity_model or resolved_extractor_model
 
     return replace(
         profile,
@@ -176,6 +218,7 @@ def default_model_profile_name() -> str:
 __all__ = [
     "DEFAULT_GLINER_BIOMED_MODEL",
     "DEFAULT_MODEL_PROFILE",
+    "DEFAULT_NON_INSTRUCT_EMBEDDING_MODEL",
     "DEFAULT_OLLAMA_MODEL",
     "DEFAULT_QWEN3_MODEL",
     "ModelProfile",

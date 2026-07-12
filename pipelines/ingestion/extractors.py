@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import asdict
 from datetime import UTC, datetime
 import json
 import os
@@ -10,6 +11,15 @@ from typing import Any, Protocol
 from packages.llm.profiles import DEFAULT_GLINER_BIOMED_MODEL, DEFAULT_OLLAMA_MODEL
 from packages.llm.providers import LanguageModel, ModelCallRecord, OpenAIResponsesModel, get_language_model
 from pipelines.ingestion.models import ChunkRecord, DEFAULT_OPENAI_MODEL, DEFAULT_PROMPT_VERSION
+from pipelines.ingestion.non_instruct import (
+    NonInstructPipelineConfig,
+    NormalizedMention,
+    RelationCandidateScorer,
+    SentenceTransformerEmbedder,
+    TerminologyNormalizer,
+    TextEmbedder,
+    accepted_relationships,
+)
 
 
 PROMPT_PATH = Path(__file__).resolve().parents[2] / "packages/graph/schema/001_initial_prompt.md"
@@ -413,7 +423,7 @@ class GLiNEROllamaExtractor:
                 from gliner import GLiNER
             except ImportError as exc:
                 raise RuntimeError(
-                    "Install local model dependencies with requirements-local-models.txt to use gliner_ollama"
+                    "Install local model dependencies with requirements-local-models.txt to use GLiNER extraction"
                 ) from exc
             self._gliner_model = GLiNER.from_pretrained(self.entity_model)
         return self._gliner_model
@@ -424,6 +434,7 @@ class GLiNEROllamaExtractor:
         raw_candidates: Any = []
         entities_by_key: dict[tuple[str, str], dict[str, Any]] = {}
         rejected: list[dict[str, str]] = []
+        mentions: list[dict[str, Any]] = []
         status = "ok"
         error = ""
         try:
@@ -444,6 +455,25 @@ class GLiNEROllamaExtractor:
                     )
                     continue
                 key = (entity_type, name.lower())
+                try:
+                    confidence = float(raw_candidate.get("score", 1.0))
+                except (TypeError, ValueError):
+                    confidence = 1.0
+                try:
+                    start_offset = int(raw_candidate.get("start"))
+                    end_offset = int(raw_candidate.get("end"))
+                except (TypeError, ValueError):
+                    start_offset = chunk.text.casefold().find(name.casefold())
+                    end_offset = start_offset + len(name) if start_offset >= 0 else -1
+                mentions.append(
+                    {
+                        "type": entity_type,
+                        "text": name,
+                        "start": start_offset,
+                        "end": end_offset,
+                        "confidence": max(0.0, min(1.0, confidence)),
+                    }
+                )
                 entities_by_key[key] = {
                     "id": "",
                     "type": entity_type,
@@ -454,6 +484,7 @@ class GLiNEROllamaExtractor:
             status = "error"
             error = str(exc)
         entities = list(entities_by_key.values())
+        self.last_entity_mentions = mentions
         if self.model_call_root is not None:
             path = _write_model_call(
                 self.model_call_root,
@@ -539,6 +570,164 @@ class NoopExtractor:
         }
 
 
+class GLiNERExtractor(GLiNEROllamaExtractor):
+    """Local non-generative entity extraction with no relationship model calls."""
+
+    provider = "gliner"
+
+    def __init__(
+        self,
+        model: str | None = None,
+        entity_model: str | None = None,
+        entity_threshold: float | None = None,
+        gliner_model: Any | None = None,
+        model_call_root: Path | None = None,
+    ) -> None:
+        self.entity_model = entity_model or model or os.getenv("EXTRACTOR_ENTITY_MODEL", DEFAULT_GLINER_BIOMED_MODEL)
+        self.entity_threshold = (
+            float(os.getenv("GLINER_ENTITY_THRESHOLD", "0.35"))
+            if entity_threshold is None
+            else entity_threshold
+        )
+        self.model = self.entity_model
+        self._gliner_model = gliner_model
+        self.model_call_root = model_call_root
+        self.last_model_call_paths: list[str] = []
+        self.last_entity_mentions: list[dict[str, Any]] = []
+
+    def extract(self, document: dict[str, Any], chunk: ChunkRecord) -> dict[str, Any]:
+        self.last_model_call_paths = []
+        entities, rejected = self._extract_entities(chunk)
+        return {
+            "paper": _paper_payload(document, chunk),
+            "entities": entities,
+            "relationships": [],
+            "rejected_candidates": rejected,
+        }
+
+
+class NonInstructExtractor(GLiNERExtractor):
+    provider = "non_instruct"
+
+    def __init__(
+        self,
+        model: str | None = None,
+        entity_model: str | None = None,
+        entity_threshold: float | None = None,
+        pipeline_config: NonInstructPipelineConfig | None = None,
+        embedder: TextEmbedder | None = None,
+        normalizer: TerminologyNormalizer | None = None,
+        relation_scorer: RelationCandidateScorer | None = None,
+        gliner_model: Any | None = None,
+        model_call_root: Path | None = None,
+    ) -> None:
+        self.pipeline_config = pipeline_config or NonInstructPipelineConfig(
+            embedding_model=model or NonInstructPipelineConfig().embedding_model,
+            entity_threshold=0.5 if entity_threshold is None else entity_threshold,
+        )
+        super().__init__(
+            entity_model=entity_model,
+            entity_threshold=self.pipeline_config.entity_threshold,
+            gliner_model=gliner_model,
+            model_call_root=model_call_root,
+        )
+        self.embedding_model = self.pipeline_config.embedding_model
+        self.model = f"{self.entity_model} + {self.embedding_model}"
+        self.embedder = embedder or SentenceTransformerEmbedder(self.embedding_model)
+        self.normalizer = normalizer or TerminologyNormalizer.from_json(
+            self.pipeline_config.terminology_path,
+            embedder=self.embedder,
+            semantic_threshold=self.pipeline_config.concept_threshold,
+        )
+        self.relation_scorer = relation_scorer or RelationCandidateScorer(
+            self.embedder,
+            self.pipeline_config.relation_scoring,
+        )
+
+    def _normalized_mentions(self, entities: list[dict[str, Any]], chunk: ChunkRecord) -> list[NormalizedMention]:
+        raw_mentions = self.last_entity_mentions
+        if not raw_mentions:
+            raw_mentions = []
+            for entity in entities:
+                name = str(entity.get("name") or "")
+                start = chunk.text.casefold().find(name.casefold())
+                raw_mentions.append(
+                    {
+                        "type": str(entity.get("type") or ""),
+                        "text": name,
+                        "start": start,
+                        "end": start + len(name) if start >= 0 else -1,
+                        "confidence": 1.0,
+                    }
+                )
+        return [
+            self.normalizer.normalize(
+                entity_type=str(mention["type"]),
+                text=str(mention["text"]),
+                start=int(mention["start"]),
+                end=int(mention["end"]),
+                confidence=float(mention["confidence"]),
+            )
+            for mention in raw_mentions
+            if int(mention.get("start", -1)) >= 0 and int(mention.get("end", -1)) >= 0
+        ]
+
+    def extract(self, document: dict[str, Any], chunk: ChunkRecord) -> dict[str, Any]:
+        self.last_model_call_paths = []
+        started_at = datetime.now(UTC).isoformat()
+        start = perf_counter()
+        entities, rejected = self._extract_entities(chunk)
+        mentions = self._normalized_mentions(entities, chunk)
+        normalized_entities = {
+            (mention.type, mention.canonical_name.casefold()): mention.entity_payload() for mention in mentions
+        }
+        candidates = self.relation_scorer.score(chunk.text, mentions)
+        relationships = accepted_relationships(candidates)
+        output = {
+            "paper": _paper_payload(document, chunk),
+            "entities": list(normalized_entities.values()),
+            "relationships": relationships,
+            "rejected_candidates": rejected,
+        }
+        if self.model_call_root is not None:
+            pipeline_config_payload = asdict(self.pipeline_config)
+            terminology_path = pipeline_config_payload.get("terminology_path")
+            if isinstance(terminology_path, Path):
+                pipeline_config_payload["terminology_path"] = terminology_path.as_posix()
+            audit_path = _write_model_call(
+                self.model_call_root,
+                chunk,
+                "non_instruct_pipeline",
+                {
+                    "provider": self.provider,
+                    "model": self.model,
+                    "prompt_version": DEFAULT_PROMPT_VERSION,
+                    "request": {
+                        "chunk_id": chunk.id,
+                        "text": chunk.text,
+                        "entity_model": self.entity_model,
+                        "entity_threshold": self.entity_threshold,
+                        "pipeline_config": pipeline_config_payload,
+                    },
+                    "json_schema": None,
+                    "response_text": json.dumps(output, ensure_ascii=True),
+                    "parsed_json": output,
+                    "raw_response": {
+                        "normalized_mentions": [asdict(mention) for mention in mentions],
+                        "relation_candidates": [candidate.audit_payload() for candidate in candidates],
+                    },
+                    "started_at": started_at,
+                    "finished_at": datetime.now(UTC).isoformat(),
+                    "duration_ms": round((perf_counter() - start) * 1000, 3),
+                    "status": "ok",
+                    "error": "",
+                },
+            )
+            if audit_path:
+                self.last_model_call_paths.append(audit_path)
+        return output
+
+
 class StaticFixtureExtractor:
     provider = "fixture"
 
@@ -557,12 +746,29 @@ def get_extractor(
     model: str | None = None,
     entity_model: str | None = None,
     model_call_root: Path | None = None,
+    entity_threshold: float | None = None,
+    non_instruct_config: NonInstructPipelineConfig | None = None,
 ) -> BiomedicalExtractor:
     normalized = provider.lower().strip()
     if normalized == "openai":
         return OpenAIResponsesExtractor(model=model, model_call_root=model_call_root)
     if normalized in {"gliner_ollama", "gliner-ollama"}:
         return GLiNEROllamaExtractor(model=model, entity_model=entity_model, model_call_root=model_call_root)
+    if normalized in {"gliner", "gliner_ner", "gliner-ner"}:
+        return GLiNERExtractor(
+            model=model,
+            entity_model=entity_model,
+            entity_threshold=entity_threshold,
+            model_call_root=model_call_root,
+        )
+    if normalized in {"non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"}:
+        return NonInstructExtractor(
+            model=model,
+            entity_model=entity_model,
+            entity_threshold=entity_threshold,
+            pipeline_config=non_instruct_config,
+            model_call_root=model_call_root,
+        )
     if normalized in {"noop", "none"}:
         return NoopExtractor(model=model or "noop-extractor-v0")
     raise ValueError(f"Unsupported extractor provider: {provider}")
@@ -571,8 +777,10 @@ def get_extractor(
 __all__ = [
     "BiomedicalExtractor",
     "GLiNEROllamaExtractor",
+    "GLiNERExtractor",
     "OpenAIResponsesExtractor",
     "NoopExtractor",
+    "NonInstructExtractor",
     "StaticFixtureExtractor",
     "get_extractor",
     "extraction_json_schema",
