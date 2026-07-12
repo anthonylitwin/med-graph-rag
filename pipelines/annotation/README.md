@@ -156,6 +156,102 @@ chunk entities-first and relationships-second, updates only the copied
 `reviewed_annotation_workbook.xlsx`, and writes audit JSON under
 `model_calls/<pmcid>/<chunk_id>.*_adjudication.json`.
 
+## Gold Evaluation
+
+Annotation evaluation runs a model against the canonical chunks in a gold
+manifest and scores extracted entities and relationships against the exported
+gold CSV files. It is artifact-only and does not load Neo4j, apply the Neo4j
+schema, or mutate graph state.
+
+Smoke-test the plumbing with the deterministic no-op extractor:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile noop `
+  --limit 2
+```
+
+Run a local extraction experiment:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile local-qwen25 `
+  --eval-id local-qwen25-bootstrap-v001
+```
+
+Or use make:
+
+```powershell
+make annotation-eval MODEL_PROFILE=noop ARGS="--gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json --limit 2"
+make annotation-eval MODEL_PROFILE=local-qwen25 ARGS="--gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json --eval-id local-qwen25-bootstrap-v001"
+```
+
+Each evaluation writes:
+
+| File | Purpose |
+| --- | --- |
+| `eval_manifest.json` | Run config, source gold set, output paths, and summary metrics. |
+| `artifact_manifest.json` | SHA-256 hashes for durable experiment artifacts. |
+| `summary.md` | Human-readable run summary and key artifact paths. |
+| `metrics.json` / `metrics.csv` | Overall, separate entity/relationship, per-entity-type, and per-relationship-type precision/recall/F1. |
+| `chunk_results.csv` | Per-chunk extraction status and counts. |
+| `errors.csv` | Extraction errors with chunk/document provenance; header-only when no errors occur. |
+| `matches/entity_matches.csv` | Entity TP/FP/FN rows with chunk, type, normalized name, and stable match key. |
+| `matches/relationship_matches.csv` | Relationship TP/FP/FN rows with chunk, relationship type, source endpoint, target endpoint, and stable match key. |
+| `gold_snapshot/*` | Copied gold manifest, workbook, gold CSVs, and snapshot manifest used for this exact run. |
+| `predictions/processed/*.json` | Per-document prediction records using the ingestion processed-record shape. |
+| `model_calls/<pmcid>/*.json` | Provider/model audit JSON when the extractor supports audit logging. |
+| `neo4j_load_report.json` | Artifact-only report confirming no Neo4j writes were attempted. |
+
+The CLI exposes reserved Neo4j boundary flags so accidental graph writes fail
+clearly:
+
+```powershell
+--neo4j-load-mode none
+--apply-schema
+--neo4j-run-label <label>
+```
+
+Only `--neo4j-load-mode none` is accepted in the evaluation runner. Gold or
+prediction ingestion should be handled by a separate explicit Neo4j ingestion
+step.
+
+### MLflow Logging
+
+MLflow logging is optional and disabled by default. Start the local MLflow stack
+with Docker Compose, then pass `--mlflow`:
+
+```powershell
+docker compose up mlflow minio
+
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile noop `
+  --limit 2 `
+  --eval-id noop-mlflow-smoke `
+  --mlflow
+```
+
+Use custom tracking metadata when needed:
+
+```powershell
+.\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
+  --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
+  --model-profile local-qwen25 `
+  --eval-id local-qwen25-bootstrap-v001 `
+  --mlflow `
+  --mlflow-tracking-uri http://localhost:5000 `
+  --mlflow-experiment medgraphrag-annotation-eval `
+  --mlflow-run-name local-qwen25-bootstrap-v001
+```
+
+The MLflow run logs gold/model parameters, overall/entity/relationship metrics,
+per-entity-type and per-relationship-type metrics, and the full durable eval
+artifact folder unless `--no-mlflow-artifacts` is passed. The local
+`eval_manifest.json` records the MLflow run ID and logging status.
+
 ## Audit JSON
 
 Model-call audit files record request payloads, prompts, JSON schemas, parsed
