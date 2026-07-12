@@ -62,6 +62,17 @@ class PipelineConfig:
     extractor_provider: str = DEFAULT_EXTRACTOR_PROVIDER
     model: str = DEFAULT_OPENAI_MODEL
     entity_model: str = ""
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    terminology_path: Path | None = Path("data/terminology/biomedical_aliases_v001.json")
+    entity_threshold: float = 0.5
+    concept_threshold: float = 0.84
+    relation_threshold: float = 0.66
+    semantic_floor: float = 0.52
+    semantic_weight: float = 0.50
+    cue_weight: float = 0.25
+    proximity_weight: float = 0.10
+    entity_confidence_weight: float = 0.15
+    max_pair_distance: int = 300
     min_confidence: float = 0.5
     apply_schema: bool = False
     skip_extract: bool = False

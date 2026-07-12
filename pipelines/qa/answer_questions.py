@@ -27,7 +27,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--question-file", type=Path, help="JSON or JSONL file containing question records.")
     parser.add_argument("--output-root", type=Path, default=DEFAULT_QA_OUTPUT_ROOT)
     parser.add_argument("--clean-output", action="store_true", help="Delete output directory before writing artifacts")
-    parser.add_argument("--model-profile", help="Runtime profile: frontier, local-qwen25, local-qwen3, or noop.")
+    parser.add_argument(
+        "--model-profile",
+        help="Runtime profile: frontier, local-qwen25, local-qwen3, local-gliner, local-non-instruct, or noop.",
+    )
     parser.add_argument("--answerer", choices=["openai", "ollama", "local", "fine_tuned", "noop"], help="Override the profile QA provider.")
     parser.add_argument("--model", help="Override the profile QA model.")
     parser.add_argument("--retriever", choices=["graph", "noop"], help="Override the profile QA retriever.")

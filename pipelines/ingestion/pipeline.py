@@ -14,6 +14,7 @@ from pipelines.ingestion.models import (
     ExtractionContext,
     PipelineConfig,
 )
+from pipelines.ingestion.non_instruct import NonInstructPipelineConfig, RelationScoringConfig
 from pipelines.ingestion.neo4j_loader import load_processed_record
 from pipelines.ingestion.pmc_bioc import fetch_pmc_bioc, parse_bioc_payload
 from pipelines.ingestion.validation import validate_extraction_output
@@ -71,6 +72,10 @@ def _dedupe(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def _extractor_model_name(config: PipelineConfig) -> str:
     if config.extractor_provider in {"gliner_ollama", "gliner-ollama"}:
         return f"{config.entity_model} + {config.model}"
+    if config.extractor_provider in {"gliner", "gliner_ner", "gliner-ner"}:
+        return config.entity_model or config.model
+    if config.extractor_provider in {"non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"}:
+        return f"{config.entity_model} + {config.model}"
     return config.model
 
 
@@ -92,9 +97,29 @@ def build_processed_record(
             "model_profile": config.model_profile,
             "extractor_provider": config.extractor_provider,
             "extractor_model": _extractor_model_name(config),
-            "entity_model": config.entity_model if config.extractor_provider in {"gliner_ollama", "gliner-ollama"} else "",
+            "entity_model": (
+                config.entity_model
+                if config.extractor_provider in {
+                    "gliner_ollama", "gliner-ollama", "gliner", "gliner_ner", "gliner-ner",
+                    "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic",
+                }
+                else ""
+            ),
             "prompt_version": "001_initial_prompt",
             "min_confidence": config.min_confidence,
+            "non_instruct_config": {
+                "embedding_model": config.embedding_model,
+                "terminology_path": config.terminology_path.as_posix() if config.terminology_path else "",
+                "entity_threshold": config.entity_threshold,
+                "concept_threshold": config.concept_threshold,
+                "relation_threshold": config.relation_threshold,
+                "semantic_floor": config.semantic_floor,
+                "semantic_weight": config.semantic_weight,
+                "cue_weight": config.cue_weight,
+                "proximity_weight": config.proximity_weight,
+                "entity_confidence_weight": config.entity_confidence_weight,
+                "max_pair_distance": config.max_pair_distance,
+            },
         },
         "document": article.document,
         "chunks": chunks,
@@ -108,10 +133,42 @@ def build_processed_record(
 def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
     pmcids = config.pmcids[: config.limit] if config.limit is not None else config.pmcids
     raw_dir, text_dir, processed_dir = ensure_output_directories(config.output_root, config.clean_output)
+    non_instruct_config = NonInstructPipelineConfig(
+        embedding_model=config.embedding_model or config.model,
+        terminology_path=config.terminology_path,
+        entity_threshold=config.entity_threshold,
+        concept_threshold=config.concept_threshold,
+        relation_scoring=RelationScoringConfig(
+            relation_threshold=config.relation_threshold,
+            semantic_floor=config.semantic_floor,
+            semantic_weight=config.semantic_weight,
+            cue_weight=config.cue_weight,
+            proximity_weight=config.proximity_weight,
+            entity_confidence_weight=config.entity_confidence_weight,
+            max_pair_distance=config.max_pair_distance,
+        ),
+    )
     extractor = (
         None
         if config.skip_extract
-        else get_extractor(config.extractor_provider, config.model, config.entity_model, config.model_call_root)
+        else get_extractor(
+            config.extractor_provider,
+            config.model,
+            config.entity_model,
+            config.model_call_root,
+            entity_threshold=(
+                config.entity_threshold
+                if config.extractor_provider in {
+                    "gliner", "gliner_ner", "gliner-ner", "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"
+                }
+                else None
+            ),
+            non_instruct_config=(
+                non_instruct_config
+                if config.extractor_provider in {"non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"}
+                else None
+            ),
+        )
     )
     run_id = datetime.now(UTC).strftime("pmc-%Y%m%d%H%M%S")
     results: list[ArticlePipelineResult] = []

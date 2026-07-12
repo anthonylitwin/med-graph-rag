@@ -1,4 +1,4 @@
-.PHONY: bootstrap up down logs test smoke-test web api qa-answer qa-dataset qa-eval annotation-bootstrap annotation-review annotation-eval ollama-pull
+.PHONY: bootstrap up down logs test smoke-test web api qa-answer qa-dataset qa-eval annotation-bootstrap annotation-review annotation-eval annotation-eval-artifacts annotation-eval-index annotation-eval-verify annotation-eval-prune ollama-pull
 
 # Override at runtime, e.g. `make schema PYTHON=.venv-wsl/bin/python`
 PYTHON ?= .venv/Scripts/python.exe
@@ -71,3 +71,15 @@ annotation-review:
 
 annotation-eval:
 	MODEL_PROFILE=$(MODEL_PROFILE) LOCAL_MODEL=$(LOCAL_MODEL) OLLAMA_BASE_URL=$(OLLAMA_BASE_URL) EXTRACTOR_ENTITY_MODEL=$(EXTRACTOR_ENTITY_MODEL) PYTHONPATH=. $(PYTHON) pipelines/annotation/evaluate_annotations.py $(ARGS)
+
+annotation-eval-artifacts:
+	PYTHONPATH=. $(PYTHON) pipelines/annotation/manage_evaluation_artifacts.py list $(ARGS)
+
+annotation-eval-index:
+	PYTHONPATH=. $(PYTHON) pipelines/annotation/manage_evaluation_artifacts.py index $(ARGS)
+
+annotation-eval-verify:
+	PYTHONPATH=. $(PYTHON) pipelines/annotation/manage_evaluation_artifacts.py verify $(ARGS)
+
+annotation-eval-prune:
+	PYTHONPATH=. $(PYTHON) pipelines/annotation/manage_evaluation_artifacts.py prune $(ARGS)

@@ -75,6 +75,6 @@ OLLAMA_BASE_URL=http://localhost:11434
 QA_MAX_EVIDENCE=12
 ```
 
-Supported profiles are `frontier`, `local-qwen25`, `local-qwen3`, and `noop`.
+Supported profiles are `frontier`, `local-qwen25`, `local-qwen3`, `local-gliner`, `local-non-instruct`, and `noop`.
 You can still override the profile with `--answerer`, `--model`, and `--retriever`
 for one-off runs.

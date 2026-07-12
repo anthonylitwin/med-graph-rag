@@ -5,7 +5,7 @@ import os
 import unittest
 from unittest import mock
 
-from packages.llm.profiles import DEFAULT_QWEN3_MODEL, resolve_model_profile
+from packages.llm.profiles import DEFAULT_GLINER_BIOMED_MODEL, DEFAULT_QWEN3_MODEL, resolve_model_profile
 from packages.llm.providers import OllamaChatModel
 
 
@@ -37,6 +37,26 @@ class ModelProfileTests(unittest.TestCase):
         self.assertEqual(profile.name, "frontier")
         self.assertEqual(profile.qa_provider, "noop")
         self.assertEqual(profile.qa_model, "noop-language-model-v0")
+
+    def test_local_gliner_profile_uses_non_generative_extractor(self) -> None:
+        profile = resolve_model_profile("local-gliner")
+
+        self.assertEqual(profile.extractor_provider, "gliner")
+        self.assertEqual(profile.extractor_model, DEFAULT_GLINER_BIOMED_MODEL)
+        self.assertEqual(profile.entity_model, DEFAULT_GLINER_BIOMED_MODEL)
+
+    def test_local_gliner_model_override_updates_entity_model(self) -> None:
+        profile = resolve_model_profile("local-gliner", extractor_model="custom-medical-ner")
+
+        self.assertEqual(profile.extractor_model, "custom-medical-ner")
+        self.assertEqual(profile.entity_model, "custom-medical-ner")
+
+    def test_local_non_instruct_profile_uses_semantic_extractor(self) -> None:
+        profile = resolve_model_profile("local-non-instruct")
+
+        self.assertEqual(profile.extractor_provider, "non_instruct")
+        self.assertEqual(profile.entity_model, DEFAULT_GLINER_BIOMED_MODEL)
+        self.assertIn("sentence-transformers", profile.extractor_model)
 
 
 class OllamaChatModelTests(unittest.TestCase):

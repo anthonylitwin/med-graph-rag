@@ -254,13 +254,18 @@ make annotation-bootstrap PMCIDS="PMC3572442" MODEL_PROFILE=frontier
 | `--clean-output` | Delete the output root before writing new artifacts. |
 | `--chunk-max-chars` | Maximum chunk size in characters. |
 | `--chunk-overlap-chars` | Character overlap between chunks. |
-| `--model-profile` | Select `frontier`, `local-qwen25`, `local-qwen3`, or `noop`. |
-| `--extractor` | Override the profile extractor with `openai`, `gliner_ollama`, or `noop`. |
+| `--model-profile` | Select `frontier`, `local-qwen25`, `local-qwen3`, `local-gliner`, `local-non-instruct`, or `noop`. |
+| `--extractor` | Override the profile extractor with `openai`, `gliner_ollama`, `gliner`, `non_instruct`, or `noop`. |
 | `--model` | Override the profile relation/frontier model. |
-| `--entity-model` | Override the GLiNER model used by `gliner_ollama`. |
+| `--entity-model` | Override the GLiNER model used by `gliner_ollama` or `gliner`. |
+| `--entity-threshold` | Minimum GLiNER confidence for local entity candidates. |
+| `--concept-threshold` | Minimum cosine score for semantic terminology normalization. |
+| `--relation-threshold` | Minimum combined score for a non-instruct relationship candidate. |
+| `--semantic-floor` | Required semantic score when no lexical relationship cue matches. |
+| `--max-pair-distance` | Maximum character distance between candidate relationship endpoints. |
 | `--skip-load` | Do not write to Neo4j. |
 | `--apply-schema` | Apply Cypher schema before Neo4j loading. |
-| `--min-confidence` | Drop model relationships below this confidence. |
+| `--min-confidence` | Final validation floor for emitted relationship confidence. |
 | `--fail-fast` | Stop on the first article or chunk error. |
 
 Annotation bootstrap supports the same PMCID, model profile, model override,

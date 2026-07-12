@@ -13,6 +13,11 @@ from packages.llm.profiles import resolve_model_profile
 from pipelines.annotation.review_workbook import ReviewWorkbook, read_review_workbook
 from pipelines.ingestion.extractors import get_extractor
 from pipelines.ingestion.models import ChunkRecord, ExtractionContext
+from pipelines.ingestion.non_instruct import (
+    DEFAULT_TERMINOLOGY_PATH,
+    NonInstructPipelineConfig,
+    RelationScoringConfig,
+)
 from pipelines.ingestion.validation import normalize_name, validate_extraction_output
 
 
@@ -30,6 +35,17 @@ class AnnotationEvaluationConfig:
     model_profile: str = "noop"
     model: str | None = None
     entity_model: str | None = None
+    embedding_model: str | None = None
+    terminology_path: Path | None = DEFAULT_TERMINOLOGY_PATH
+    entity_threshold: float = 0.5
+    concept_threshold: float = 0.84
+    relation_threshold: float = 0.66
+    semantic_floor: float = 0.52
+    semantic_weight: float = 0.50
+    cue_weight: float = 0.25
+    proximity_weight: float = 0.10
+    entity_confidence_weight: float = 0.15
+    max_pair_distance: int = 300
     min_confidence: float = 0.5
     limit: int | None = None
     force: bool = False
@@ -61,6 +77,26 @@ def _safe_metric_name(value: str) -> str:
 
 
 def _validate_artifact_only_config(config: AnnotationEvaluationConfig) -> None:
+    bounded_values = {
+        "min_confidence": config.min_confidence,
+        "entity_threshold": config.entity_threshold,
+        "concept_threshold": config.concept_threshold,
+        "relation_threshold": config.relation_threshold,
+        "semantic_floor": config.semantic_floor,
+    }
+    for name, value in bounded_values.items():
+        if not 0 <= value <= 1:
+            raise ValueError(f"{name} must be between 0 and 1")
+    weights = {
+        "semantic_weight": config.semantic_weight,
+        "cue_weight": config.cue_weight,
+        "proximity_weight": config.proximity_weight,
+        "entity_confidence_weight": config.entity_confidence_weight,
+    }
+    if any(value < 0 for value in weights.values()) or sum(weights.values()) <= 0:
+        raise ValueError("Non-instruct score weights must be non-negative and sum to more than zero")
+    if config.max_pair_distance <= 0:
+        raise ValueError("max_pair_distance must be positive")
     if config.neo4j_load_mode not in NEO4J_LOAD_MODES:
         supported = ", ".join(sorted(NEO4J_LOAD_MODES))
         raise ValueError(f"Unsupported Neo4j load mode: {config.neo4j_load_mode}. Supported modes: {supported}")
@@ -599,6 +635,17 @@ def _log_mlflow_result(
         "extractor_model": result["model_profile"]["extractor_model"],
         "entity_model": result["model_profile"].get("entity_model", ""),
         "min_confidence": config.min_confidence,
+        "entity_threshold": config.entity_threshold,
+        "embedding_model": config.embedding_model or result["model_profile"]["extractor_model"],
+        "terminology_path": config.terminology_path.as_posix() if config.terminology_path else "",
+        "concept_threshold": config.concept_threshold,
+        "relation_threshold": config.relation_threshold,
+        "semantic_floor": config.semantic_floor,
+        "semantic_weight": config.semantic_weight,
+        "cue_weight": config.cue_weight,
+        "proximity_weight": config.proximity_weight,
+        "entity_confidence_weight": config.entity_confidence_weight,
+        "max_pair_distance": config.max_pair_distance,
         "chunk_count": result["chunk_count"],
         "success_count": result["success_count"],
         "error_count": result["error_count"],
@@ -644,8 +691,41 @@ def run_annotation_evaluation(config: AnnotationEvaluationConfig) -> dict[str, A
             extractor_model=config.model,
             entity_model=config.entity_model,
         )
+        non_instruct_config = NonInstructPipelineConfig(
+            embedding_model=config.embedding_model or profile.extractor_model,
+            terminology_path=config.terminology_path,
+            entity_threshold=config.entity_threshold,
+            concept_threshold=config.concept_threshold,
+            relation_scoring=RelationScoringConfig(
+                relation_threshold=config.relation_threshold,
+                semantic_floor=config.semantic_floor,
+                semantic_weight=config.semantic_weight,
+                cue_weight=config.cue_weight,
+                proximity_weight=config.proximity_weight,
+                entity_confidence_weight=config.entity_confidence_weight,
+                max_pair_distance=config.max_pair_distance,
+            ),
+        )
         model_call_root = eval_root / "model_calls"
-        extractor = get_extractor(profile.extractor_provider, profile.extractor_model, profile.entity_model, model_call_root)
+        model_call_root.mkdir(parents=True, exist_ok=True)
+        extractor = get_extractor(
+            profile.extractor_provider,
+            profile.extractor_model,
+            profile.entity_model,
+            model_call_root,
+            entity_threshold=(
+                config.entity_threshold
+                if profile.extractor_provider in {
+                    "gliner", "gliner_ner", "gliner-ner", "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"
+                }
+                else None
+            ),
+            non_instruct_config=(
+                non_instruct_config
+                if profile.extractor_provider in {"non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"}
+                else None
+            ),
+        )
         manifest, review, gold_entities, gold_relationships = _load_gold_inputs(config.gold_manifest_path)
         gold_snapshot = _snapshot_gold_artifacts(config.gold_manifest_path, manifest, eval_root / "gold_snapshot")
         documents = _document_by_id(review)
@@ -727,6 +807,7 @@ def run_annotation_evaluation(config: AnnotationEvaluationConfig) -> dict[str, A
             "extractor_model": extractor.model,
             "entity_model": profile.entity_model,
             "min_confidence": config.min_confidence,
+            "entity_threshold": config.entity_threshold,
             "artifact_only": True,
             "neo4j_load_mode": ARTIFACT_ONLY_NEO4J_LOAD_MODE,
         }
@@ -816,7 +897,11 @@ def run_annotation_evaluation(config: AnnotationEvaluationConfig) -> dict[str, A
             "output_root": eval_root.as_posix(),
             "model_profile": profile.to_dict(),
             "config": asdict(config)
-            | {"gold_manifest_path": config.gold_manifest_path.as_posix(), "output_root": config.output_root.as_posix()},
+            | {
+                "gold_manifest_path": config.gold_manifest_path.as_posix(),
+                "output_root": config.output_root.as_posix(),
+                "terminology_path": config.terminology_path.as_posix() if config.terminology_path else None,
+            },
             "chunk_count": len(chunks),
             "success_count": sum(1 for item in chunk_results if item.get("status") == "ok"),
             "error_count": sum(1 for item in chunk_results if item.get("status") == "error"),

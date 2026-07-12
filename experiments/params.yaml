@@ -1,2 +1,39 @@
-project: med-graph-rag
-experiment: placeholder
+annotation_eval:
+  # Keep this stable for a parameter set so DVC can identify the stage output.
+  eval_id: dvc-annotation-eval
+  python: ..\.venv\Scripts\python.exe
+  gold_manifest: data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json
+  gold_root: data/annotations/gold_v001/bootstrap_v001_full
+  output_root: data/annotations/eval_v001
+
+  # Safe default for validating the pipeline. Change to frontier, local-qwen25,
+  # local-qwen3, local-gliner, or local-non-instruct for a model experiment.
+  model_profile: noop
+  model: null
+  entity_model: null
+  min_confidence: 0.5
+  limit: null
+  fail_fast: false
+
+  non_instruct:
+    embedding_model: sentence-transformers/all-MiniLM-L6-v2
+    terminology_path: data/terminology/biomedical_aliases_v001.json
+    entity_threshold: 0.50
+    concept_threshold: 0.84
+    relation_threshold: 0.66
+    semantic_floor: 0.52
+    semantic_weight: 0.50
+    cue_weight: 0.25
+    proximity_weight: 0.10
+    entity_confidence_weight: 0.15
+    max_pair_distance: 300
+
+  # Evaluation remains artifact-only. Graph ingestion is a separate workflow.
+  neo4j_load_mode: none
+
+  mlflow:
+    enabled: false
+    tracking_uri: http://localhost:5000
+    experiment: medgraphrag-annotation-eval
+    run_name: ""
+    log_artifacts: true

@@ -1,3 +1,34 @@
 stages:
-  placeholder:
-    cmd: python pipelines/training/train_dummy.py
+  annotation-eval:
+    cmd: ${annotation_eval.python} run_annotation_eval.py --params params.yaml
+    params:
+      - annotation_eval
+    deps:
+      - run_annotation_eval.py
+      - ../apps/api/requirements.txt
+      - ../packages/llm
+      - ../packages/graph/schema/001_initial_prompt.md
+      - ../pipelines/annotation/evaluation.py
+      - ../pipelines/annotation/review_workbook.py
+      - ../pipelines/ingestion/extractors.py
+      - ../pipelines/ingestion/models.py
+      - ../pipelines/ingestion/non_instruct.py
+      - ../pipelines/ingestion/validation.py
+      - ../requirements-experiments.txt
+      - ../requirements-local-models.txt
+      - ../${annotation_eval.non_instruct.terminology_path}
+      - ../${annotation_eval.gold_root}
+    outs:
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/artifact_manifest.json
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/chunk_results.csv
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/errors.csv
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/eval_manifest.json
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/gold_snapshot
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/matches
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/metrics.csv
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/model_calls
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/neo4j_load_report.json
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/predictions
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/summary.md
+    metrics:
+      - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/metrics.json
