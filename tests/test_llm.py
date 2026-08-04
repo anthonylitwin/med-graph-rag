@@ -58,6 +58,11 @@ class ModelProfileTests(unittest.TestCase):
         self.assertEqual(profile.entity_model, DEFAULT_GLINER_BIOMED_MODEL)
         self.assertIn("sentence-transformers", profile.extractor_model)
 
+    def test_experiment_profiles_still_resolve(self) -> None:
+        profiles = [resolve_model_profile(name).name for name in ("frontier", "local-qwen25", "local-qwen3", "noop")]
+
+        self.assertEqual(profiles, ["frontier", "local-qwen25", "local-qwen3", "noop"])
+
 
 class OllamaChatModelTests(unittest.TestCase):
     def test_generate_json_sends_raw_schema_and_parses_message_content(self) -> None:

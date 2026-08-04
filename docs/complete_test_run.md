@@ -1,7 +1,7 @@
 # MedGraphRAG Complete Test Runbook
 
-This runbook covers the current workspace end to end: model selection, smoke
-tests, full UI startup, benchmark ingestion, annotation bootstrap, QA runs,
+This runbook covers the current workspace end to end: local-only app startup,
+experiment model selection, smoke tests, benchmark ingestion, annotation bootstrap, QA runs,
 generated artifacts, and the main extension points for improving algorithms.
 
 The primary app surfaces are:
@@ -48,7 +48,8 @@ NEO4J_USERNAME=neo4j
 NEO4J_PASSWORD=medgraphrag-password
 OPENAI_API_KEY=...
 OPENAI_MODEL=gpt-5.5
-MODEL_PROFILE=frontier
+APP_MODEL_PROFILE=local-non-instruct
+LOCAL_MODEL=qwen2.5:7b-instruct
 OLLAMA_BASE_URL=http://localhost:11434
 DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434
 ```
@@ -77,8 +78,8 @@ Select a profile with one of:
 # Make
 make qa-answer QUESTIONS=eval/questions/qa_eval_v001.json MODEL_PROFILE=local-qwen25
 
-# API/UI default
-$env:MODEL_PROFILE = "noop"
+# API/UI launch profile for local smoke testing
+$env:APP_MODEL_PROFILE = "noop"
 ```
 
 Override the concrete model for one run:
@@ -90,7 +91,8 @@ Override the concrete model for one run:
   --model qwen3:8b
 ```
 
-The Chat UI also has a profile selector. It sends `modelProfile` to `POST /chat`.
+The Chat UI does not expose model selection. `POST /chat` uses the server's
+`APP_MODEL_PROFILE` and ignores any client-supplied `modelProfile`.
 
 ## 3. Fast Smoke Tests
 
@@ -167,14 +169,14 @@ data/annotations/bootstrap_v001/<run_id>/source_documents/processed/*.json
 Start the platform:
 
 ```powershell
-make up MODEL_PROFILE=frontier
+make up
 ```
 
 For local Ollama from Docker:
 
 ```powershell
 make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
-make up MODEL_PROFILE=local-qwen25 DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434
+make up APP_MODEL_PROFILE=local-non-instruct DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434
 ```
 
 Open:
@@ -192,7 +194,7 @@ MinIO:  http://localhost:9001
 Use this when iterating on backend and frontend code:
 
 ```powershell
-$env:MODEL_PROFILE = "noop"
+$env:APP_MODEL_PROFILE = "noop"
 $env:PYTHONPATH = "."
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir apps/api --reload
 ```
@@ -214,9 +216,8 @@ Invoke-WebRequest -UseBasicParsing http://127.0.0.1:8000/chat/model-options
 Use the UI:
 
 1. Open `http://127.0.0.1:5173`.
-2. On Chat, select `Noop`, `Frontier API`, `Local Qwen 2.5`, or `Local Qwen 3`.
-3. Ask a question from `eval/questions/qa_eval_v001.json`.
-4. On Graph, click Refresh Graph after seeding or loading Neo4j.
+2. Ask a question from `eval/questions/qa_eval_v001.json`.
+3. On Graph, click Refresh Graph after seeding or loading Neo4j.
 
 ## 5. Graph Smoke Test
 
