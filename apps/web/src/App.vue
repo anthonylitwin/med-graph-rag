@@ -9,6 +9,9 @@
     <RouterLink to="/ingestion">
       Ingestion
     </RouterLink>
+    <RouterLink to="/administration">
+      Administration
+    </RouterLink>
   </nav>
 
   <RouterView />
