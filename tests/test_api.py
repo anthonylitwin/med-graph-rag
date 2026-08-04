@@ -13,6 +13,43 @@ if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
 from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
+from app.routes import graph as graph_routes
+
+
+class _FakeResult:
+    def __init__(self, record: dict | None) -> None:
+        self.record = record
+
+    def single(self) -> dict | None:
+        return self.record
+
+
+class _FakeSession:
+    def __init__(self, record: dict | None) -> None:
+        self.record = record
+        self.params = {}
+
+    def __enter__(self) -> "_FakeSession":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def run(self, query: str, **params: object) -> _FakeResult:
+        self.params = params
+        return _FakeResult(self.record)
+
+
+class _FakeDriver:
+    def __init__(self, session: _FakeSession) -> None:
+        self._session = session
+        self.closed = False
+
+    def session(self) -> _FakeSession:
+        return self._session
+
+    def close(self) -> None:
+        self.closed = True
 
 
 class ChatServiceTests(unittest.TestCase):
@@ -70,6 +107,66 @@ class ChatServiceTests(unittest.TestCase):
 
         self.assertIn("message: string;", api_client)
         self.assertNotIn("modelProfile?:", api_client)
+
+
+class GraphRouteTests(unittest.TestCase):
+    def test_browse_graph_serializes_nodes_relationships_and_metadata(self) -> None:
+        session = _FakeSession(
+            {
+                "nodes": [
+                    {
+                        "id": "drug-1",
+                        "labels": ["Drug"],
+                        "properties": {"name": "Aspirin"},
+                    },
+                    {
+                        "id": "condition-1",
+                        "labels": ["Condition"],
+                        "properties": {"name": "Bleeding risk"},
+                    },
+                ],
+                "relationshipRows": [
+                    {
+                        "sourceId": "drug-1",
+                        "targetId": "condition-1",
+                        "type": "INCREASES_RISK_OF",
+                        "properties": {"evidence": "sample evidence"},
+                    }
+                ],
+            }
+        )
+        driver = _FakeDriver(session)
+
+        with mock.patch("app.routes.graph.get_driver", return_value=driver):
+            response = graph_routes.browse_graph(
+                q="Aspirin",
+                label="Drug",
+                relationship_type="increases_risk_of",
+                pmcid="PMC3572442",
+                limit=10,
+            )
+
+        self.assertTrue(driver.closed)
+        self.assertEqual(response["metadata"]["q"], "aspirin")
+        self.assertEqual(response["metadata"]["label"], "Drug")
+        self.assertEqual(response["metadata"]["relationshipType"], "INCREASES_RISK_OF")
+        self.assertEqual(response["metadata"]["pmcid"], "PMC3572442")
+        self.assertEqual(response["metadata"]["nodeCount"], 2)
+        self.assertEqual(response["metadata"]["relationshipCount"], 1)
+        self.assertEqual(response["relationships"][0]["source"], "drug-1")
+        self.assertEqual(session.params["limit"], 10)
+        self.assertEqual(session.params["relationship_limit"], 30)
+
+    def test_browse_graph_rejects_unknown_filters(self) -> None:
+        with self.assertRaisesRegex(Exception, "Unsupported graph label"):
+            graph_routes.browse_graph(q=None, label="UnknownLabel")
+
+        with self.assertRaisesRegex(Exception, "Unsupported graph relationship type"):
+            graph_routes.browse_graph(
+                q=None,
+                label=None,
+                relationship_type="BAD_RELATIONSHIP",
+            )
 
 
 if __name__ == "__main__":
