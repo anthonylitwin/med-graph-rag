@@ -5,7 +5,7 @@ import json
 import shutil
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from pipelines.ingestion.chunking import chunk_article
 from pipelines.ingestion.extractors import get_extractor
@@ -130,7 +130,13 @@ def build_processed_record(
     }
 
 
-def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
+PipelineProgressCallback = Callable[[dict[str, Any]], None]
+
+
+def process_pmc_articles(
+    config: PipelineConfig,
+    progress_callback: PipelineProgressCallback | None = None,
+) -> list[ArticlePipelineResult]:
     pmcids = config.pmcids[: config.limit] if config.limit is not None else config.pmcids
     raw_dir, text_dir, processed_dir = ensure_output_directories(config.output_root, config.clean_output)
     non_instruct_config = NonInstructPipelineConfig(
@@ -180,6 +186,8 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
         apply_neo4j_schema()
 
     for pmcid in pmcids:
+        if progress_callback is not None:
+            progress_callback({"event": "article_started", "pmcid": pmcid})
         raw_path = raw_dir / f"{pmcid}.json"
         text_path = text_dir / f"{pmcid}.txt"
         processed_path = processed_dir / f"{pmcid}.json"
@@ -191,6 +199,7 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
             text_path=text_path,
             processed_path=processed_path,
             extractor_model=(extractor.model if extractor is not None else ""),
+            source_url=f"https://pmc.ncbi.nlm.nih.gov/articles/{pmcid}/",
         )
         try:
             bioc_payload = fetch_pmc_bioc(pmcid)
@@ -305,5 +314,7 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
 
         results.append(result)
         _write_manifest(config.output_root, results)
+        if progress_callback is not None:
+            progress_callback({"event": "article_finished", "pmcid": pmcid, "result": result})
 
     return results
