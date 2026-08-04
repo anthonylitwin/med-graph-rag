@@ -50,6 +50,15 @@ export type GraphRelationship = {
 export type GraphResponse = {
   nodes: GraphNode[];
   relationships: GraphRelationship[];
+  metadata?: {
+    q?: string | null;
+    label?: string | null;
+    relationshipType?: string | null;
+    pmcid?: string | null;
+    limit?: number;
+    nodeCount?: number;
+    relationshipCount?: number;
+  };
 };
 
 export async function getSampleGraph(): Promise<GraphResponse> {
@@ -57,6 +66,47 @@ export async function getSampleGraph(): Promise<GraphResponse> {
 
   if (!response.ok) {
     throw new Error(`Graph request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export type GraphBrowseParams = {
+  q?: string;
+  label?: string;
+  relationshipType?: string;
+  pmcid?: string;
+  limit?: number;
+};
+
+export async function browseGraph(params: GraphBrowseParams = {}): Promise<GraphResponse> {
+  const query = new URLSearchParams();
+
+  if (params.q) {
+    query.set("q", params.q);
+  }
+
+  if (params.label) {
+    query.set("label", params.label);
+  }
+
+  if (params.relationshipType) {
+    query.set("relationshipType", params.relationshipType);
+  }
+
+  if (params.pmcid) {
+    query.set("pmcid", params.pmcid);
+  }
+
+  if (params.limit) {
+    query.set("limit", String(params.limit));
+  }
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  const response = await fetch(`${API_BASE_URL}/graph/browse${suffix}`);
+
+  if (!response.ok) {
+    throw new Error(`Graph browse request failed: ${response.status}`);
   }
 
   return response.json();
