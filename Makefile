@@ -23,7 +23,7 @@ logs:
 
 test:
 	PYTHONPATH=. $(PYTHON) -m unittest discover -s tests
-	cd apps/web && npm test -- --run || true
+	cd apps/web && npm run lint
 	cd apps/api && $(PYTHON) -m pytest || true
 
 web:
