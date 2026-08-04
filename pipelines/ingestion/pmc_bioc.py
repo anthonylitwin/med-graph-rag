@@ -2,12 +2,20 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from collections.abc import Iterable
 from typing import Any
 from urllib import error, parse, request
 
 from pipelines.ingestion.models import ParsedArticle, PassageRecord
 from pipelines.ingestion.pmc_inputs import normalize_pmcid
+
+
+class BioCUnavailableError(RuntimeError):
+    """Raised when NCBI BioC has no JSON document for a valid PMC article."""
+
+
+RETRYABLE_HTTP_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
 def get_pmc_bioc_urls(pmcid: str) -> list[str]:
@@ -18,18 +26,56 @@ def get_pmc_bioc_urls(pmcid: str) -> list[str]:
     ]
 
 
-def fetch_pmc_bioc(pmcid: str, timeout_seconds: int = 45) -> Any:
-    last_error: Exception | None = None
-    for url in get_pmc_bioc_urls(pmcid):
-        try:
-            req = request.Request(url, headers={"User-Agent": "med-graph-rag-ingestion/0.1"})
-            with request.urlopen(req, timeout=timeout_seconds) as response:
-                payload = response.read().decode("utf-8")
-                return json.loads(payload)
-        except (error.HTTPError, error.URLError, TimeoutError, json.JSONDecodeError) as exc:
-            last_error = exc
-            continue
+def _is_no_result_response(payload: str) -> bool:
+    return payload.lstrip().startswith("[Error]") and "No result can be found" in payload[:200]
 
+
+def _is_retryable_fetch_error(exc: Exception) -> bool:
+    if isinstance(exc, error.HTTPError):
+        return exc.code in RETRYABLE_HTTP_STATUS_CODES
+    return isinstance(exc, (error.URLError, TimeoutError))
+
+
+def fetch_pmc_bioc(
+    pmcid: str,
+    timeout_seconds: int = 45,
+    retry_attempts: int = 3,
+    retry_delay_seconds: float = 2.0,
+) -> Any:
+    last_error: Exception | None = None
+    unavailable_error: BioCUnavailableError | None = None
+    normalized_pmcid = normalize_pmcid(pmcid)
+    for url in get_pmc_bioc_urls(pmcid):
+        for attempt in range(retry_attempts + 1):
+            try:
+                req = request.Request(url, headers={"User-Agent": "med-graph-rag-ingestion/0.1"})
+                with request.urlopen(req, timeout=timeout_seconds) as response:
+                    payload = response.read().decode("utf-8")
+                    content_type = response.headers.get("Content-Type", "")
+                    if _is_no_result_response(payload):
+                        unavailable_error = BioCUnavailableError(
+                            f"BioC JSON unavailable for {normalized_pmcid}: NCBI returned no result"
+                        )
+                        break
+                    if content_type and "json" not in content_type.casefold():
+                        last_error = RuntimeError(
+                            f"Expected BioC JSON from {url} but got {content_type}; body starts: {payload[:120]!r}"
+                        )
+                        break
+                    return json.loads(payload)
+            except (error.HTTPError, error.URLError, TimeoutError) as exc:
+                last_error = exc
+                if attempt < retry_attempts and _is_retryable_fetch_error(exc):
+                    if retry_delay_seconds > 0:
+                        time.sleep(retry_delay_seconds * (2**attempt))
+                    continue
+                break
+            except json.JSONDecodeError as exc:
+                last_error = exc
+                break
+
+    if unavailable_error is not None:
+        raise unavailable_error
     raise RuntimeError(f"Failed to fetch BioC JSON for {pmcid}: {last_error}")
 
 

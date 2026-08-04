@@ -7,13 +7,15 @@ import types
 import unittest
 from pathlib import Path
 from typing import Any
+from urllib import error
 from unittest import mock
 
 from pipelines.ingestion.chunking import chunk_article
 from pipelines.ingestion.extractors import GLiNERExtractor, GLiNEROllamaExtractor, OpenAIResponsesExtractor, get_extractor
-from pipelines.ingestion.models import ChunkRecord, ExtractionContext
+from pipelines.ingestion.models import ChunkRecord, ExtractionContext, PipelineConfig
 from pipelines.ingestion.neo4j_loader import load_processed_record_with_session
-from pipelines.ingestion.pmc_bioc import parse_bioc_payload
+from pipelines.ingestion.pipeline import process_pmc_articles
+from pipelines.ingestion.pmc_bioc import BioCUnavailableError, fetch_pmc_bioc, parse_bioc_payload
 from pipelines.ingestion.pmc_inputs import collect_pmcids, normalize_pmcid, read_pmcid_file
 from pipelines.ingestion.validation import validate_extraction_output
 
@@ -46,6 +48,51 @@ class PmcInputTests(unittest.TestCase):
 
 
 class BioCParsingAndChunkingTests(unittest.TestCase):
+    def test_fetch_pmc_bioc_retries_retryable_http_errors(self) -> None:
+        class FakeResponse:
+            headers = {"Content-Type": "application/json"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def read(self) -> bytes:
+                return b'{"documents": []}'
+
+        transient_error = error.HTTPError(
+            url="https://example.test/bioc",
+            code=503,
+            msg="Service Unavailable",
+            hdrs={},
+            fp=None,
+        )
+        with mock.patch(
+            "pipelines.ingestion.pmc_bioc.request.urlopen",
+            side_effect=[transient_error, FakeResponse()],
+        ):
+            payload = fetch_pmc_bioc("PMC6320142", retry_attempts=1, retry_delay_seconds=0)
+
+        self.assertEqual(payload, {"documents": []})
+
+    def test_fetch_pmc_bioc_detects_ncbi_no_result_response(self) -> None:
+        class FakeResponse:
+            headers = {"Content-Type": "text/html"}
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, traceback):
+                return False
+
+            def read(self) -> bytes:
+                return b"[Error] : No result can be found. <BR>"
+
+        with mock.patch("pipelines.ingestion.pmc_bioc.request.urlopen", side_effect=[FakeResponse(), FakeResponse()]):
+            with self.assertRaisesRegex(BioCUnavailableError, "BioC JSON unavailable for PMC7054063"):
+                fetch_pmc_bioc("PMC7054063")
+
     def test_parse_bioc_payload_accepts_list_shaped_response(self) -> None:
         payload = [
             {
@@ -109,6 +156,29 @@ class BioCParsingAndChunkingTests(unittest.TestCase):
         self.assertEqual(chunks[0].id, "PMC111-chunk-0001")
         self.assertLess(chunks[1].char_start, chunks[0].char_end)
         self.assertIn(chunks[0].section, {"Abstract", "abstract"})
+
+    def test_pipeline_skips_bioc_unavailable_articles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            config = PipelineConfig(
+                pmcids=["PMC7054063"],
+                output_root=Path(tmpdir),
+                skip_extract=True,
+                skip_load=True,
+                fail_fast=True,
+            )
+            with mock.patch(
+                "pipelines.ingestion.pipeline.fetch_pmc_bioc",
+                side_effect=BioCUnavailableError("BioC JSON unavailable for PMC7054063: NCBI returned no result"),
+            ):
+                results = process_pmc_articles(config)
+
+            manifest = (Path(tmpdir) / "manifest.csv").read_text(encoding="utf-8")
+
+        self.assertEqual(results[0].fetch_status, "skipped")
+        self.assertEqual(results[0].extract_status, "skipped")
+        self.assertEqual(results[0].load_status, "skipped")
+        self.assertEqual(results[0].status, "skipped")
+        self.assertIn("BioC JSON unavailable for PMC7054063", manifest)
 
 
 class ValidationTests(unittest.TestCase):

@@ -41,23 +41,23 @@ annotation_eval:
 
 qa_eval:
   # Keep this stable for a parameter set so DVC can identify the stage output.
-  eval_id: smoke-qa-noop-v001
+  eval_id: qa-retrieval-noninst-graph-v001
   python: ..\.venv\Scripts\python.exe
-  question_file: eval/questions/qa_eval_v001.json
+  question_file: eval/questions/qa_gold_v001.json
   question_root: eval/questions
   output_root: data/qa/eval_v001
 
   # Record the graph/input provenance for graph-backed QA runs.
-  graph_run_id: ""
-  graph_source: ""
+  graph_run_id: fullgold-local-noninst-initial-v001
+  graph_source: frozen local non-instruct ingestion
 
   # Safe default for validating the QA evaluation plumbing.
   model_profile: noop
-  answerer_provider:
+  answerer_provider: noop
   model:
-  retriever:
+  retriever: graph
   max_evidence: 12
-  skip_answer: false
+  skip_answer: true
   limit:
   fail_fast: true
 
@@ -70,5 +70,5 @@ qa_eval:
     enabled: true
     tracking_uri: http://127.0.0.1:5000
     experiment: medgraphrag-qa-eval-v001
-    run_name: smoke-qa-noop-v001
+    run_name: qa-retrieval-noninst-graph-v001
     log_artifacts: true
