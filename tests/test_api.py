@@ -16,6 +16,7 @@ if str(API_ROOT) not in sys.path:
 from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
 from app.services.ingestion_service import IngestionJobStore, IngestionQueueService
 from pipelines.ingestion.models import ArticlePipelineResult
+from app.routes import admin as admin_routes
 from app.routes import graph as graph_routes
 from app.routes import ingestion as ingestion_routes
 
@@ -54,6 +55,44 @@ class _FakeDriver:
 
     def close(self) -> None:
         self.closed = True
+
+
+class _FakeAdminSession:
+    def __init__(
+        self,
+        *,
+        node_counts: list[int],
+        relationship_counts: list[int],
+        delete_batches: list[int] | None = None,
+    ) -> None:
+        self.node_counts = node_counts
+        self.relationship_counts = relationship_counts
+        self.delete_batches = delete_batches or []
+        self.queries: list[str] = []
+        self.params: list[dict[str, object]] = []
+
+    def __enter__(self) -> "_FakeAdminSession":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
+
+    def run(self, query: str, **params: object) -> _FakeResult:
+        self.queries.append(query)
+        self.params.append(params)
+        if "DETACH DELETE" in query:
+            return _FakeResult({"deleted": self.delete_batches.pop(0)})
+        if "relationshipCount" in query:
+            return _FakeResult({"relationshipCount": self.relationship_counts.pop(0)})
+        return _FakeResult({"nodeCount": self.node_counts.pop(0)})
+
+
+class _FakeIngestionService:
+    def __init__(self, jobs: list[dict[str, object]]) -> None:
+        self.jobs = jobs
+
+    def list_jobs(self, limit: int = 50) -> list[dict[str, object]]:
+        return self.jobs[:limit]
 
 
 class ChatServiceTests(unittest.TestCase):
@@ -347,6 +386,121 @@ class GraphRouteTests(unittest.TestCase):
                 label=None,
                 relationship_type="BAD_RELATIONSHIP",
             )
+
+
+class AdminRouteTests(unittest.TestCase):
+    def test_neo4j_status_reports_counts_and_active_ingestion_jobs(self) -> None:
+        session = _FakeAdminSession(node_counts=[4], relationship_counts=[7])
+        driver = _FakeDriver(session)
+        service = _FakeIngestionService(
+            [
+                {
+                    "id": "ing-running",
+                    "status": "running",
+                    "sourceType": "pmc",
+                    "submittedAt": "2026-08-04T12:00:00+00:00",
+                },
+                {
+                    "id": "ing-complete",
+                    "status": "completed",
+                    "sourceType": "text",
+                    "submittedAt": "2026-08-04T11:00:00+00:00",
+                },
+            ]
+        )
+
+        with (
+            mock.patch("app.routes.admin.get_driver", return_value=driver),
+            mock.patch("app.routes.admin.get_ingestion_queue_service", return_value=service),
+        ):
+            response = admin_routes.neo4j_status()
+
+        self.assertTrue(driver.closed)
+        self.assertEqual(response["nodeCount"], 4)
+        self.assertEqual(response["relationshipCount"], 7)
+        self.assertFalse(response["canClear"])
+        self.assertEqual([job["id"] for job in response["activeIngestionJobs"]], ["ing-running"])
+
+    def test_clear_neo4j_rejects_missing_confirmation(self) -> None:
+        with self.assertRaisesRegex(Exception, "Type CLEAR"):
+            admin_routes.clear_neo4j(admin_routes.ClearNeo4jRequest(confirmation="clear"))
+
+    def test_clear_neo4j_rejects_active_ingestion_jobs_and_closes_driver(self) -> None:
+        session = _FakeAdminSession(node_counts=[5], relationship_counts=[2])
+        driver = _FakeDriver(session)
+        service = _FakeIngestionService(
+            [
+                {
+                    "id": "ing-queued",
+                    "status": "queued",
+                    "sourceType": "pmc",
+                    "submittedAt": "2026-08-04T12:00:00+00:00",
+                }
+            ]
+        )
+
+        with (
+            mock.patch("app.routes.admin.get_driver", return_value=driver),
+            mock.patch("app.routes.admin.get_ingestion_queue_service", return_value=service),
+        ):
+            with self.assertRaisesRegex(Exception, "Cannot clear Neo4j"):
+                admin_routes.clear_neo4j(admin_routes.ClearNeo4jRequest(confirmation="CLEAR"))
+
+        self.assertTrue(driver.closed)
+        self.assertFalse(any("DETACH DELETE" in query for query in session.queries))
+
+    def test_clear_neo4j_deletes_data_in_batches_and_reports_counts(self) -> None:
+        session = _FakeAdminSession(
+            node_counts=[5, 0],
+            relationship_counts=[3, 0],
+            delete_batches=[3, 2, 0],
+        )
+        driver = _FakeDriver(session)
+        service = _FakeIngestionService([])
+
+        with (
+            mock.patch("app.routes.admin.get_driver", return_value=driver),
+            mock.patch("app.routes.admin.get_ingestion_queue_service", return_value=service),
+        ):
+            response = admin_routes.clear_neo4j(admin_routes.ClearNeo4jRequest(confirmation="CLEAR"))
+
+        self.assertTrue(driver.closed)
+        self.assertEqual(response["before"], {"nodeCount": 5, "relationshipCount": 3})
+        self.assertEqual(response["after"], {"nodeCount": 0, "relationshipCount": 0})
+        self.assertEqual(response["deletedNodeCount"], 5)
+        self.assertEqual(len([query for query in session.queries if "DETACH DELETE" in query]), 3)
+        self.assertEqual(session.params[2]["batch_size"], admin_routes.DELETE_BATCH_SIZE)
+
+
+class AdministrationFrontendTests(unittest.TestCase):
+    def test_app_navigation_links_to_administration(self) -> None:
+        app_vue = (PROJECT_ROOT / "apps" / "web" / "src" / "App.vue").read_text(encoding="utf-8")
+
+        self.assertIn('to="/administration"', app_vue)
+        self.assertIn("Administration", app_vue)
+
+    def test_router_registers_administration_page(self) -> None:
+        router = (PROJECT_ROOT / "apps" / "web" / "src" / "router.ts").read_text(encoding="utf-8")
+
+        self.assertIn("AdministrationPage", router)
+        self.assertIn("path: '/administration'", router)
+
+    def test_api_client_exposes_admin_methods(self) -> None:
+        api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
+
+        self.assertIn("export type AdminNeo4jStatus", api_client)
+        self.assertIn("getAdminNeo4jStatus", api_client)
+        self.assertIn("clearAdminNeo4j", api_client)
+        self.assertIn("/admin/neo4j/status", api_client)
+        self.assertIn("/admin/neo4j/clear", api_client)
+
+    def test_administration_page_requires_typed_clear_confirmation(self) -> None:
+        page = (PROJECT_ROOT / "apps" / "web" / "src" / "routes" / "AdministrationPage.vue").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("confirmationText.value === 'CLEAR'", page)
+        self.assertIn("clearAdminNeo4j({ confirmation: confirmationText.value })", page)
 
 
 if __name__ == "__main__":

@@ -112,6 +112,65 @@ export async function browseGraph(params: GraphBrowseParams = {}): Promise<Graph
   return response.json();
 }
 
+export type AdminIngestionJob = {
+  id: string;
+  status: string;
+  sourceType: string;
+  submittedAt: string;
+};
+
+export type AdminNeo4jStatus = {
+  nodeCount: number;
+  relationshipCount: number;
+  activeIngestionJobs: AdminIngestionJob[];
+  canClear: boolean;
+};
+
+export type AdminNeo4jClearRequest = {
+  confirmation: string;
+};
+
+export type AdminNeo4jClearResponse = {
+  before: {
+    nodeCount: number;
+    relationshipCount: number;
+  };
+  after: {
+    nodeCount: number;
+    relationshipCount: number;
+  };
+  deletedNodeCount: number;
+  activeIngestionJobs: AdminIngestionJob[];
+  canClear: boolean;
+};
+
+export async function getAdminNeo4jStatus(): Promise<AdminNeo4jStatus> {
+  const response = await fetch(`${API_BASE_URL}/admin/neo4j/status`);
+
+  if (!response.ok) {
+    throw new Error(`Neo4j status request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function clearAdminNeo4j(request: AdminNeo4jClearRequest): Promise<AdminNeo4jClearResponse> {
+  const response = await fetch(`${API_BASE_URL}/admin/neo4j/clear`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+    throw new Error(`Neo4j clear request failed: ${response.status}${payload?.detail ? ` ${payload.detail}` : ''}`);
+  }
+
+  return response.json();
+}
+
 export type IngestionDocument = {
   documentKey: string;
   title: string;
