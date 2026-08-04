@@ -24,7 +24,8 @@ def _ensure_repo_root_on_path() -> Path:
 
 PROJECT_ROOT = _ensure_repo_root_on_path()
 
-from packages.llm.profiles import resolve_model_profile
+from app.services.qa_service import get_app_model_profile
+from packages.llm.profiles import normalize_model_profile_name
 from pipelines.ingestion.models import (
     DEFAULT_CHUNK_MAX_CHARS,
     DEFAULT_CHUNK_OVERLAP_CHARS,
@@ -390,7 +391,7 @@ class IngestionQueueService:
         fail_fast: bool = False,
     ) -> dict[str, Any]:
         normalized_source_type = source_type.strip().lower()
-        resolved_profile = resolve_model_profile(model_profile or os.getenv("APP_MODEL_PROFILE") or "local-non-instruct")
+        resolved_profile = self._active_ingestion_profile(model_profile)
 
         if normalized_source_type == "pmc":
             normalized_pmcids = collect_pmcids([pmcids or []])
@@ -470,7 +471,7 @@ class IngestionQueueService:
         job_id = job["id"]
         try:
             source_payload = self._source_payload(job_id)
-            profile = resolve_model_profile(job["modelProfile"])
+            profile = get_app_model_profile()
             config = PipelineConfig(
                 pmcids=source_payload.get("pmcids") or [],
                 output_root=Path(job["outputRoot"]),
@@ -522,6 +523,17 @@ class IngestionQueueService:
             raise ValueError(f"Unknown ingestion job: {job_id}")
         payload = _json_loads(row["source_payload"], {})
         return payload if isinstance(payload, dict) else {}
+
+    def _active_ingestion_profile(self, requested_profile: str | None = None):
+        active_profile = get_app_model_profile()
+        if requested_profile and requested_profile.strip():
+            requested_name = normalize_model_profile_name(requested_profile)
+            if requested_name != active_profile.name:
+                raise ValueError(
+                    "Ingestion uses the server-configured application model profile; "
+                    f"got '{requested_profile}', active profile is '{active_profile.name}'."
+                )
+        return active_profile
 
 
 _service: IngestionQueueService | None = None

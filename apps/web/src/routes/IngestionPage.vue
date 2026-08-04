@@ -15,7 +15,6 @@ const sourceType = ref<'pmc' | 'text'>('pmc')
 const pmcidText = ref('')
 const textTitle = ref('')
 const textBody = ref('')
-const selectedModelProfile = ref('local-non-instruct')
 const applySchema = ref(true)
 const skipLoad = ref(false)
 const failFast = ref(false)
@@ -23,7 +22,7 @@ const failFast = ref(false)
 const jobs = ref<IngestionJob[]>([])
 const selectedJob = ref<IngestionJob | null>(null)
 const artifacts = ref<IngestionArtifacts | null>(null)
-const modelProfiles = ref<IngestionModelProfile[]>([])
+const activeModelProfile = ref<IngestionModelProfile | null>(null)
 const isSubmitting = ref(false)
 const isRefreshing = ref(false)
 const error = ref<string | null>(null)
@@ -127,7 +126,6 @@ async function submitJob() {
         sourceType.value === 'text'
           ? [{ title: textTitle.value, text: textBody.value, sourceName: textTitle.value }]
           : undefined,
-      modelProfile: selectedModelProfile.value,
       applySchema: applySchema.value,
       skipLoad: skipLoad.value,
       failFast: failFast.value,
@@ -142,15 +140,12 @@ async function submitJob() {
   }
 }
 
-async function loadModelProfiles() {
-  modelProfiles.value = await getIngestionModelOptions()
-  if (!modelProfiles.value.some((profile) => profile.name === selectedModelProfile.value)) {
-    selectedModelProfile.value = modelProfiles.value[0]?.name ?? 'noop'
-  }
+async function loadActiveModelProfile() {
+  activeModelProfile.value = await getIngestionModelOptions()
 }
 
 onMounted(() => {
-  void loadModelProfiles().catch((err) => {
+  void loadActiveModelProfile().catch((err) => {
     error.value = err instanceof Error ? err.message : 'Unknown model option error'
   })
   void refreshJobs()
@@ -259,18 +254,10 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="options-grid">
-        <label>
-          Model
-          <select v-model="selectedModelProfile">
-            <option
-              v-for="profile in modelProfiles"
-              :key="profile.name"
-              :value="profile.name"
-            >
-              {{ profile.label }}
-            </option>
-          </select>
-        </label>
+        <div class="model-runtime">
+          <span>Model</span>
+          <strong>{{ activeModelProfile?.label ?? 'Server configured' }}</strong>
+        </div>
 
         <label class="checkbox-label">
           <input
@@ -543,6 +530,15 @@ button {
   gap: 1rem;
   align-items: end;
   margin-top: 1rem;
+}
+
+.model-runtime {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.model-runtime span {
+  color: #6b7280;
 }
 
 .checkbox-label {

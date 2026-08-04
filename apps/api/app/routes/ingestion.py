@@ -3,11 +3,11 @@ from __future__ import annotations
 import re
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel
 
 from app.services.ingestion_service import get_ingestion_queue_service
-from packages.llm.profiles import list_model_profiles
+from app.services.qa_service import get_active_model_runtime
 
 
 router = APIRouter()
@@ -24,7 +24,6 @@ class IngestionJobRequest(BaseModel):
     pmcids: list[str] = []
     pmcidText: str | None = None
     documents: list[TextDocumentPayload] = []
-    modelProfile: str | None = None
     applySchema: bool = False
     skipLoad: bool = False
     failFast: bool = False
@@ -46,15 +45,26 @@ def _model_payload(value: BaseModel) -> dict:
     return value.dict()
 
 
+async def _raw_model_profile(http_request: Request) -> str | None:
+    try:
+        payload = await http_request.json()
+    except Exception:  # noqa: BLE001
+        return None
+    if not isinstance(payload, dict):
+        return None
+    value = payload.get("modelProfile")
+    return str(value) if value is not None else None
+
+
 @router.post("/jobs")
-def create_ingestion_job(request: IngestionJobRequest) -> dict:
+async def create_ingestion_job(request: IngestionJobRequest, http_request: Request) -> dict:
     service = get_ingestion_queue_service()
     try:
         job = service.create_job(
             source_type=request.sourceType,
             pmcids=_pmcids_from_request(request),
             text_documents=[_model_payload(document) for document in request.documents],
-            model_profile=request.modelProfile,
+            model_profile=await _raw_model_profile(http_request),
             apply_schema=request.applySchema,
             skip_load=request.skipLoad,
             fail_fast=request.failFast,
@@ -100,4 +110,4 @@ def cancel_ingestion_job(job_id: str) -> dict:
 
 @router.get("/model-options")
 def ingestion_model_options() -> dict:
-    return {"profiles": [profile.to_dict() for profile in list_model_profiles()]}
+    return get_active_model_runtime()
