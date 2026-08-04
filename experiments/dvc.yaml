@@ -32,3 +32,30 @@ stages:
       - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/summary.md
     metrics:
       - ../${annotation_eval.output_root}/${annotation_eval.eval_id}/metrics.json
+
+  qa-eval:
+    cmd: ${qa_eval.python} run_qa_eval.py --params params.yaml
+    params:
+      - qa_eval
+    deps:
+      - run_qa_eval.py
+      - ../packages/llm
+      - ../packages/qa
+      - ../pipelines/qa/evaluation.py
+      - ../pipelines/qa/pipeline.py
+      - ../${qa_eval.question_file}
+    outs:
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/artifact_manifest.json
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/errors.csv
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/eval_manifest.json
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/gold_snapshot
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/llm_judge_report.json
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/manifest.csv
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/metrics.csv
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/model_calls
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/question_results.csv
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/retrieved
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/summary.md
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/answers
+    metrics:
+      - ../${qa_eval.output_root}/${qa_eval.eval_id}/metrics.json
