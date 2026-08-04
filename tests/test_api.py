@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sys
 import unittest
+import tempfile
 from pathlib import Path
 from unittest import mock
 
@@ -13,6 +14,8 @@ if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
 from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
+from app.services.ingestion_service import IngestionJobStore, IngestionQueueService
+from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import graph as graph_routes
 
 
@@ -104,9 +107,90 @@ class ChatServiceTests(unittest.TestCase):
 
     def test_chat_request_payload_contains_only_message(self) -> None:
         api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
+        chat_request_type = api_client.split("export type ChatResponse", maxsplit=1)[0]
 
-        self.assertIn("message: string;", api_client)
-        self.assertNotIn("modelProfile?:", api_client)
+        self.assertIn("message: string;", chat_request_type)
+        self.assertNotIn("modelProfile?:", chat_request_type)
+
+
+class IngestionQueueTests(unittest.TestCase):
+    def test_create_pmc_job_normalizes_and_persists_document_rows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch.dict(
+                os.environ,
+                {"INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs")},
+                clear=False,
+            ):
+                service = IngestionQueueService(
+                    store=IngestionJobStore(Path(tmpdir) / "jobs.sqlite"),
+                    poll_interval_seconds=0.01,
+                )
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["3572442", "PMC3572442", "PMC3234107"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+
+                loaded = service.get_job(job["id"])
+
+        self.assertIsNotNone(loaded)
+        assert loaded is not None
+        self.assertEqual(loaded["status"], "queued")
+        self.assertEqual(loaded["progressTotal"], 2)
+        self.assertEqual([document["documentKey"] for document in loaded["documents"]], ["PMC3572442", "PMC3234107"])
+
+    def test_worker_records_pmc_job_progress_and_completion(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch.dict(
+                os.environ,
+                {"INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs")},
+                clear=False,
+            ):
+                service = IngestionQueueService(
+                    store=IngestionJobStore(Path(tmpdir) / "jobs.sqlite"),
+                    poll_interval_seconds=0.01,
+                )
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+
+                def fake_process(config, progress_callback=None):
+                    result = ArticlePipelineResult(
+                        pmcid="PMC3572442",
+                        pmid="12345",
+                        title="Mock article",
+                        raw_path=config.output_root / "raw" / "PMC3572442.json",
+                        text_path=config.output_root / "text" / "PMC3572442.txt",
+                        processed_path=config.output_root / "processed" / "PMC3572442.json",
+                        chunk_count=2,
+                        entity_count=3,
+                        relationship_count=1,
+                        fetch_status="ok",
+                        extract_status="ok",
+                        load_status="skipped",
+                        status="ok",
+                    )
+                    if progress_callback is not None:
+                        progress_callback({"event": "article_started", "pmcid": "PMC3572442"})
+                        progress_callback({"event": "article_finished", "pmcid": "PMC3572442", "result": result})
+                    return [result]
+
+                with mock.patch("app.services.ingestion_service.process_pmc_articles", fake_process):
+                    did_run = service.run_next_job_once()
+
+                loaded = service.get_job(job["id"])
+
+        self.assertTrue(did_run)
+        self.assertIsNotNone(loaded)
+        assert loaded is not None
+        self.assertEqual(loaded["status"], "completed")
+        self.assertEqual(loaded["progressCurrent"], 1)
+        self.assertEqual(loaded["documents"][0]["status"], "completed")
+        self.assertEqual(loaded["documents"][0]["entityCount"], 3)
 
 
 class GraphRouteTests(unittest.TestCase):

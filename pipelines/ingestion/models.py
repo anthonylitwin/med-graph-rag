@@ -100,13 +100,14 @@ class ArticlePipelineResult:
     error: str = ""
     status: str = "pending"
     extractor_model: str = ""
+    source_url: str = ""
 
     def manifest_row(self) -> dict[str, Any]:
         return {
             "pmcid": self.pmcid,
             "pmid": self.pmid,
             "title": self.title,
-            "source_url": f"https://pmc.ncbi.nlm.nih.gov/articles/{self.pmcid}/",
+            "source_url": self.source_url or f"https://pmc.ncbi.nlm.nih.gov/articles/{self.pmcid}/",
             "raw_path": self.raw_path.as_posix(),
             "text_path": self.text_path.as_posix(),
             "processed_path": self.processed_path.as_posix(),

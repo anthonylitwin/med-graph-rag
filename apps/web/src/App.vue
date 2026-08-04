@@ -6,6 +6,9 @@
     <RouterLink to="/graph">
       Graph
     </RouterLink>
+    <RouterLink to="/ingestion">
+      Ingestion
+    </RouterLink>
   </nav>
 
   <RouterView />
