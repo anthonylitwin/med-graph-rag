@@ -15,13 +15,29 @@ MedGraphRAG is a modular healthcare knowledge graph and GraphRAG platform.
 
 ```bash
 cp .env.example .env
+make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
 make bootstrap
 make up
 ```
 
-### Model Profiles
+The launched API/web app is local-only. By default it uses
+`APP_MODEL_PROFILE=local-non-instruct`, Ollama for QA, GLiNER-BioMed entities,
+and the local non-instruct relation pipeline. Set `APP_MODEL_PROFILE`,
+`LOCAL_MODEL`, `OLLAMA_BASE_URL`, `DOCKER_OLLAMA_BASE_URL`, and
+`EXTRACTOR_ENTITY_MODEL` before launch; app users cannot choose models in the
+chat UI.
 
-The app supports runtime profiles through `MODEL_PROFILE`:
+For host-run Python, keep `OLLAMA_BASE_URL=http://localhost:11434`. For Docker,
+use `DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434`.
+
+```bash
+make up APP_MODEL_PROFILE=local-non-instruct LOCAL_MODEL=qwen2.5:7b-instruct
+```
+
+### Experiment Model Profiles
+
+CLI pipelines and evaluations support experiment profiles through
+`MODEL_PROFILE` or `--model-profile`:
 
 | Profile | QA runtime | Extraction runtime |
 | --- | --- | --- |
@@ -32,13 +48,9 @@ The app supports runtime profiles through `MODEL_PROFILE`:
 | `local-non-instruct` | Ollama `qwen2.5:7b-instruct` | GLiNER + terminology normalization + cosine-scored relationships |
 | `noop` | Deterministic smoke-test fixtures | No-op extractor |
 
-For host-run Python, keep `OLLAMA_BASE_URL=http://localhost:11434`. For Docker, use
-`DOCKER_OLLAMA_BASE_URL=http://host.docker.internal:11434`.
-
 ```bash
-make ollama-pull LOCAL_MODEL=qwen2.5:7b-instruct
-make up MODEL_PROFILE=local-qwen25
 make qa-answer QUESTIONS=eval/questions/qa_eval_v001.json MODEL_PROFILE=noop
+make qa-eval MODEL_PROFILE=local-qwen25
 ```
 
 For a complete end-to-end test run, including model selection, smoke tests,

@@ -1,96 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import {
-  getChatModelOptions,
-  sendChatMessage,
-  type ChatResponse,
-  type ModelOption,
-} from '../lib/apiClient'
-
-const FALLBACK_MODEL_OPTIONS: ModelOption[] = [
-  {
-    name: 'frontier',
-    label: 'Frontier API',
-    description: 'Configured OpenAI frontier runtime.',
-    qa_provider: 'openai',
-    qa_model: 'gpt-5.5',
-    qa_retriever: 'graph',
-    extractor_provider: 'openai',
-    extractor_model: 'gpt-5.5',
-    entity_model: '',
-  },
-  {
-    name: 'local-qwen25',
-    label: 'Local Qwen 2.5',
-    description: 'Ollama qwen2.5:7b-instruct runtime.',
-    qa_provider: 'ollama',
-    qa_model: 'qwen2.5:7b-instruct',
-    qa_retriever: 'graph',
-    extractor_provider: 'gliner_ollama',
-    extractor_model: 'qwen2.5:7b-instruct',
-    entity_model: 'Ihor/gliner-biomed-small-v1.0',
-  },
-  {
-    name: 'local-qwen3',
-    label: 'Local Qwen 3',
-    description: 'Ollama qwen3:8b runtime.',
-    qa_provider: 'ollama',
-    qa_model: 'qwen3:8b',
-    qa_retriever: 'graph',
-    extractor_provider: 'gliner_ollama',
-    extractor_model: 'qwen3:8b',
-    entity_model: 'Ihor/gliner-biomed-small-v1.0',
-  },
-  {
-    name: 'local-gliner',
-    label: 'Local GLiNER (non-instruct extraction)',
-    description: 'Ollama QA with non-generative GLiNER-BioMed entity extraction.',
-    qa_provider: 'ollama',
-    qa_model: 'qwen2.5:7b-instruct',
-    qa_retriever: 'graph',
-    extractor_provider: 'gliner',
-    extractor_model: 'Ihor/gliner-biomed-small-v1.0',
-    entity_model: 'Ihor/gliner-biomed-small-v1.0',
-  },
-  {
-    name: 'local-non-instruct',
-    label: 'Local non-instruct pipeline',
-    description: 'GLiNER entities with terminology normalization and cosine-scored relationships.',
-    qa_provider: 'ollama',
-    qa_model: 'qwen2.5:7b-instruct',
-    qa_retriever: 'graph',
-    extractor_provider: 'non_instruct',
-    extractor_model: 'sentence-transformers/all-MiniLM-L6-v2',
-    entity_model: 'Ihor/gliner-biomed-small-v1.0',
-  },
-  {
-    name: 'noop',
-    label: 'Noop',
-    description: 'Deterministic smoke-test runtime.',
-    qa_provider: 'noop',
-    qa_model: 'noop-language-model-v0',
-    qa_retriever: 'noop',
-    extractor_provider: 'noop',
-    extractor_model: 'noop-extractor-v0',
-    entity_model: '',
-  },
-]
+import { ref } from 'vue'
+import { sendChatMessage, type ChatResponse } from '../lib/apiClient'
 
 const message = ref('')
-const modelProfile = ref('frontier')
-const modelOptions = ref<ModelOption[]>(FALLBACK_MODEL_OPTIONS)
 const response = ref<ChatResponse | null>(null)
 const isLoading = ref(false)
-
-onMounted(async () => {
-  try {
-    const options = await getChatModelOptions()
-    modelOptions.value = options.profiles
-    modelProfile.value = options.defaultProfile
-  } catch {
-    modelOptions.value = FALLBACK_MODEL_OPTIONS
-  }
-})
 
 async function handleSubmit() {
   if (!message.value.trim()) {
@@ -103,7 +17,6 @@ async function handleSubmit() {
   try {
     response.value = await sendChatMessage({
       message: message.value,
-      modelProfile: modelProfile.value,
     })
   } catch (error) {
     response.value = {
@@ -112,7 +25,7 @@ async function handleSubmit() {
       reasoningPath: [],
       model: 'error',
       provider: 'error',
-      modelProfile: modelProfile.value,
+      modelProfile: 'server-configured',
     }
   } finally {
     isLoading.value = false
@@ -126,22 +39,6 @@ async function handleSubmit() {
     <p>Ask a biomedical question against the configured graph evidence.</p>
 
     <form @submit.prevent="handleSubmit">
-      <div class="model-row">
-        <label for="model-profile">Model</label>
-        <select
-          id="model-profile"
-          v-model="modelProfile"
-        >
-          <option
-            v-for="option in modelOptions"
-            :key="option.name"
-            :value="option.name"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </div>
-
       <textarea
         v-model="message"
         rows="5"
@@ -214,18 +111,6 @@ async function handleSubmit() {
   margin: 2rem auto;
   font-family: sans-serif;
   text-align: left;
-}
-
-.model-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-select {
-  min-width: 220px;
-  padding: 0.5rem;
 }
 
 textarea {

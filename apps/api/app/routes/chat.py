@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
 
-from app.services.qa_service import answer_question, get_model_options
+from app.services.qa_service import answer_question, get_active_model_runtime
 
 router = APIRouter()
 
@@ -34,20 +34,19 @@ class ModelOption(BaseModel):
     entity_model: str = ""
 
 
-class ModelOptionsResponse(BaseModel):
-    defaultProfile: str
-    profiles: list[ModelOption]
+class ActiveModelRuntimeResponse(BaseModel):
+    activeProfile: ModelOption
 
 
 @router.post("", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
     try:
-        result = answer_question(request.message, request.modelProfile)
+        result = answer_question(request.message)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return ChatResponse(**result)
 
 
-@router.get("/model-options", response_model=ModelOptionsResponse)
-def model_options() -> ModelOptionsResponse:
-    return ModelOptionsResponse(**get_model_options())
+@router.get("/model-options", response_model=ActiveModelRuntimeResponse)
+def model_options() -> ActiveModelRuntimeResponse:
+    return ActiveModelRuntimeResponse(**get_active_model_runtime())
