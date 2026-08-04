@@ -38,3 +38,37 @@ annotation_eval:
     experiment: medgraphrag-annotation-eval-v001
     run_name: fullgold-noninst-relation062-v001
     log_artifacts: true
+
+qa_eval:
+  # Keep this stable for a parameter set so DVC can identify the stage output.
+  eval_id: smoke-qa-noop-v001
+  python: ..\.venv\Scripts\python.exe
+  question_file: eval/questions/qa_eval_v001.json
+  question_root: eval/questions
+  output_root: data/qa/eval_v001
+
+  # Record the graph/input provenance for graph-backed QA runs.
+  graph_run_id: ""
+  graph_source: ""
+
+  # Safe default for validating the QA evaluation plumbing.
+  model_profile: noop
+  answerer_provider:
+  model:
+  retriever:
+  max_evidence: 12
+  skip_answer: false
+  limit:
+  fail_fast: true
+
+  llm_judge:
+    enabled: false
+    provider: openai
+    model:
+
+  mlflow:
+    enabled: true
+    tracking_uri: http://127.0.0.1:5000
+    experiment: medgraphrag-qa-eval-v001
+    run_name: smoke-qa-noop-v001
+    log_artifacts: true

@@ -27,6 +27,16 @@ def _read_json_or_jsonl(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _as_text_list(value: Any) -> list[str]:
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if isinstance(value, str):
+        return [item.strip() for item in value.split(";") if item.strip()]
+    return [str(value).strip()] if str(value).strip() else []
+
+
 def question_from_mapping(item: dict[str, Any], index: int) -> QuestionRecord:
     question = item.get("question") or item.get("message") or item.get("input")
     if not isinstance(question, str) or not question.strip():
@@ -35,9 +45,9 @@ def question_from_mapping(item: dict[str, Any], index: int) -> QuestionRecord:
     return QuestionRecord(
         id=str(item.get("id") or f"q{index:04d}"),
         question=question.strip(),
-        expected_facts=list(item.get("expected_facts") or []),
-        expected_entities=list(item.get("expected_entities") or []),
-        expected_relationships=list(item.get("expected_relationships") or []),
+        expected_facts=_as_text_list(item.get("expected_facts")),
+        expected_entities=_as_text_list(item.get("expected_entities")),
+        expected_relationships=_as_text_list(item.get("expected_relationships")),
         metadata={key: value for key, value in item.items() if key not in reserved},
     )
 
