@@ -9,7 +9,7 @@ The primary app surfaces are:
 | Area | Path | Role |
 | --- | --- | --- |
 | API | `apps/api/app` | FastAPI routes for health, chat, and graph sample views. |
-| Web UI | `apps/web` | Vite/React app with Chat and Graph pages. |
+| Web UI | `apps/web` | Vite/Vue app with Chat and Graph pages. |
 | Shared LLM runtime | `packages/llm` | Model profiles plus OpenAI, Ollama, local HTTP, and noop providers. |
 | Graph schema | `packages/graph/schema` | Ontology, Cypher schema, and frontier extraction prompt. |
 | Ingestion | `pipelines/ingestion` | PMC fetch, chunk, extract, validate, and load pipeline. |
@@ -17,8 +17,7 @@ The primary app surfaces are:
 | QA | `pipelines/qa` | Graph evidence retrieval, answer generation, and artifact writing. |
 | Evaluation | `eval` | Question sets and baseline runners. |
 
-`apps/ui/react-app` is present in the tree, but the active Docker and Make
-workflow uses `apps/web`.
+The active Docker and Make workflow uses `apps/web`.
 
 ## 1. One-Time Setup
 
@@ -498,7 +497,7 @@ Good next improvements:
 - `packages/graph/schema/001_initial_schema.cypher`: constraints and indexes.
 - `pipelines/ingestion/neo4j_loader.py`: graph write shape and idempotent MERGE behavior.
 - `apps/api/app/routes/graph.py`: current graph endpoint returns only `sample=true` graph data.
-- `apps/web/src/routes/GraphPage.tsx`: current graph view renders a simple list and raw JSON.
+- `apps/web/src/routes/GraphPage.vue`: current graph view renders a simple list and raw JSON.
 
 Good next improvements:
 
