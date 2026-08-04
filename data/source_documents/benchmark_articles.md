@@ -11,7 +11,7 @@
 | 5  | Evolving targets for lipid-modifying therapy                                                  | PMC4287928  | Lipid lowering therapies, statins                   |
 | 6  | Benefits of statin therapy and compliance in high risk cardiovascular patients                | PMC2952453  | Statins, cardiovascular prevention                  |
 | 7  | Triglycerides and risk of cardiovascular events in statin-treated patients                    | PMC10373341 | Statins, triglycerides, cardiovascular events       |
-| 8  | Triglycerides and Cardiovascular Outcomes—Can We REDUCE Residual Risk?                        | PMC7054063  | Residual cardiovascular risk, triglycerides         |
+| 8  | The Role of Triglycerides in Atherosclerosis: Recent Pathophysiologic Insights and Therapeutic Implications | PMC11107470 | Triglycerides, atherosclerosis, cardiovascular risk |
 | 9  | High Triglycerides Are Associated With Increased Cardiovascular Events                        | PMC6201477  | Triglycerides, heart disease                        |
 | 10 | The Association between Triglycerides and Incident Cardiovascular Disease                     | PMC7492406  | Triglycerides, cardiovascular disease               |
 | 11 | Role of fibrates in cardiovascular disease prevention                                         | PMC6067007  | Fenofibrate, fibrates, cardiovascular prevention    |

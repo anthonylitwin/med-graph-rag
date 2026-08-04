@@ -16,7 +16,7 @@ from pipelines.ingestion.models import (
 )
 from pipelines.ingestion.non_instruct import NonInstructPipelineConfig, RelationScoringConfig
 from pipelines.ingestion.neo4j_loader import load_processed_record
-from pipelines.ingestion.pmc_bioc import fetch_pmc_bioc, parse_bioc_payload
+from pipelines.ingestion.pmc_bioc import BioCUnavailableError, fetch_pmc_bioc, parse_bioc_payload
 from pipelines.ingestion.validation import validate_extraction_output
 
 
@@ -283,6 +283,12 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
                 result.load_status = "ok"
 
             result.status = "ok" if result.extract_status != "error" and result.load_status != "error" else "error"
+        except BioCUnavailableError as exc:
+            result.fetch_status = "skipped"
+            result.extract_status = "skipped"
+            result.load_status = "skipped"
+            result.status = "skipped"
+            result.error = str(exc)
         except Exception as exc:  # noqa: BLE001
             result.error = str(exc)
             if result.fetch_status == "pending":
