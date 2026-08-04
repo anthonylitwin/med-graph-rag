@@ -152,7 +152,6 @@ export type IngestionJobRequest = {
     text: string;
     sourceName?: string;
   }>;
-  modelProfile?: string;
   applySchema?: boolean;
   skipLoad?: boolean;
   failFast?: boolean;
@@ -230,7 +229,7 @@ export async function getIngestionArtifacts(jobId: string): Promise<IngestionArt
   return response.json();
 }
 
-export async function getIngestionModelOptions(): Promise<IngestionModelProfile[]> {
+export async function getIngestionModelOptions(): Promise<IngestionModelProfile> {
   const response = await fetch(`${API_BASE_URL}/ingestion/model-options`);
 
   if (!response.ok) {
@@ -238,5 +237,5 @@ export async function getIngestionModelOptions(): Promise<IngestionModelProfile[
   }
 
   const payload = await response.json();
-  return payload.profiles;
+  return payload.activeProfile;
 }

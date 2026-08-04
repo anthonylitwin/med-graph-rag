@@ -17,6 +17,7 @@ from app.services.qa_service import answer_question, get_active_model_runtime, g
 from app.services.ingestion_service import IngestionJobStore, IngestionQueueService
 from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import graph as graph_routes
+from app.routes import ingestion as ingestion_routes
 
 
 class _FakeResult:
@@ -118,7 +119,10 @@ class IngestionQueueTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             with mock.patch.dict(
                 os.environ,
-                {"INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs")},
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
                 clear=False,
             ):
                 service = IngestionQueueService(
@@ -138,13 +142,17 @@ class IngestionQueueTests(unittest.TestCase):
         assert loaded is not None
         self.assertEqual(loaded["status"], "queued")
         self.assertEqual(loaded["progressTotal"], 2)
+        self.assertEqual(loaded["modelProfile"], "noop")
         self.assertEqual([document["documentKey"] for document in loaded["documents"]], ["PMC3572442", "PMC3234107"])
 
     def test_worker_records_pmc_job_progress_and_completion(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             with mock.patch.dict(
                 os.environ,
-                {"INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs")},
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
                 clear=False,
             ):
                 service = IngestionQueueService(
@@ -191,6 +199,94 @@ class IngestionQueueTests(unittest.TestCase):
         self.assertEqual(loaded["progressCurrent"], 1)
         self.assertEqual(loaded["documents"][0]["status"], "completed")
         self.assertEqual(loaded["documents"][0]["entityCount"], 3)
+
+    def test_ingestion_model_options_reports_only_active_runtime(self) -> None:
+        with mock.patch.dict(os.environ, {"APP_MODEL_PROFILE": "noop"}, clear=True):
+            runtime = ingestion_routes.ingestion_model_options()
+
+        self.assertEqual(runtime["activeProfile"]["name"], "noop")
+        self.assertNotIn("profiles", runtime)
+
+    def test_create_job_without_model_profile_uses_app_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
+                clear=False,
+            ):
+                service = IngestionQueueService(
+                    store=IngestionJobStore(Path(tmpdir) / "jobs.sqlite"),
+                    poll_interval_seconds=0.01,
+                )
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442"],
+                    skip_load=True,
+                )
+
+        self.assertEqual(job["modelProfile"], "noop")
+
+    def test_create_job_rejects_non_app_profiles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            service = IngestionQueueService(
+                store=IngestionJobStore(Path(tmpdir) / "jobs.sqlite"),
+                poll_interval_seconds=0.01,
+            )
+            for profile_name in ("frontier", "local-qwen25", "local-qwen3"):
+                with self.subTest(profile_name=profile_name):
+                    with mock.patch.dict(os.environ, {"APP_MODEL_PROFILE": "noop"}, clear=True):
+                        with self.assertRaisesRegex(ValueError, "server-configured application model profile"):
+                            service.create_job(
+                                source_type="pmc",
+                                pmcids=["PMC3572442"],
+                                model_profile=profile_name,
+                                skip_load=True,
+                            )
+
+    def test_create_job_accepts_explicit_active_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
+                clear=False,
+            ):
+                service = IngestionQueueService(
+                    store=IngestionJobStore(Path(tmpdir) / "jobs.sqlite"),
+                    poll_interval_seconds=0.01,
+                )
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+
+        self.assertEqual(job["modelProfile"], "noop")
+
+    def test_ingestion_page_does_not_render_model_selector(self) -> None:
+        ingestion_page = (PROJECT_ROOT / "apps" / "web" / "src" / "routes" / "IngestionPage.vue").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertNotIn("<select", ingestion_page)
+        self.assertNotIn("v-model=\"selectedModelProfile\"", ingestion_page)
+
+    def test_ingestion_submit_payload_omits_model_profile(self) -> None:
+        ingestion_page = (PROJECT_ROOT / "apps" / "web" / "src" / "routes" / "IngestionPage.vue").read_text(
+            encoding="utf-8"
+        )
+        submit_block = ingestion_page.split("const job = await createIngestionJob(", maxsplit=1)[1].split(
+            "})",
+            maxsplit=1,
+        )[0]
+
+        self.assertNotIn("modelProfile", submit_block)
 
 
 class GraphRouteTests(unittest.TestCase):
