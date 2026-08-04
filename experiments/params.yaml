@@ -1,30 +1,31 @@
 annotation_eval:
   # Keep this stable for a parameter set so DVC can identify the stage output.
-  eval_id: dvc-annotation-eval
+  eval_id: fullgold-noninst-relation062-v001
   python: ..\.venv\Scripts\python.exe
-  gold_manifest: data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json
+  gold_manifest: 
+    data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json
   gold_root: data/annotations/gold_v001/bootstrap_v001_full
   output_root: data/annotations/eval_v001
 
   # Safe default for validating the pipeline. Change to frontier, local-qwen25,
   # local-qwen3, local-gliner, or local-non-instruct for a model experiment.
-  model_profile: noop
-  model: null
-  entity_model: null
+  model_profile: local-non-instruct
+  model: sentence-transformers/all-MiniLM-L6-v2
+  entity_model: Ihor/gliner-biomed-small-v1.0
   min_confidence: 0.5
-  limit: null
-  fail_fast: false
+  limit:
+  fail_fast: true
 
   non_instruct:
     embedding_model: sentence-transformers/all-MiniLM-L6-v2
     terminology_path: data/terminology/biomedical_aliases_v001.json
-    entity_threshold: 0.50
+    entity_threshold: 0.5
     concept_threshold: 0.84
-    relation_threshold: 0.66
+    relation_threshold: 0.62
     semantic_floor: 0.52
-    semantic_weight: 0.50
+    semantic_weight: 0.5
     cue_weight: 0.25
-    proximity_weight: 0.10
+    proximity_weight: 0.1
     entity_confidence_weight: 0.15
     max_pair_distance: 300
 
@@ -32,8 +33,8 @@ annotation_eval:
   neo4j_load_mode: none
 
   mlflow:
-    enabled: false
-    tracking_uri: http://localhost:5000
-    experiment: medgraphrag-annotation-eval
-    run_name: ""
+    enabled: true
+    tracking_uri: http://127.0.0.1:5000
+    experiment: medgraphrag-annotation-eval-v001
+    run_name: fullgold-noninst-relation062-v001
     log_artifacts: true

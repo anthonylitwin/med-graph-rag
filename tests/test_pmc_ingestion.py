@@ -364,6 +364,12 @@ class LocalExtractorTests(unittest.TestCase):
         self.assertEqual(extractor.model, "custom-ner")
         self.assertEqual(extractor.entity_threshold, 0.61)
 
+    def test_get_extractor_passes_threshold_to_gliner_ollama_provider(self) -> None:
+        extractor = get_extractor("gliner_ollama", model="qwen-test", entity_threshold=0.62)
+
+        self.assertIsInstance(extractor, GLiNEROllamaExtractor)
+        self.assertEqual(extractor.entity_threshold, 0.62)
+
     def test_gliner_ollama_extractor_uses_candidates_and_validates_relationships(self) -> None:
         class FakeGLiNER:
             def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:
@@ -437,6 +443,54 @@ class LocalExtractorTests(unittest.TestCase):
         self.assertEqual(len(normalized["entities"]), 2)
         self.assertEqual(len(normalized["relationships"]), 1)
         self.assertEqual(normalized["relationships"][0]["type"], "REDUCES")
+
+    def test_gliner_ollama_caps_relationship_candidates_without_dropping_entities(self) -> None:
+        class FakeGLiNER:
+            def predict_entities(self, text: str, labels: list[str], threshold: float) -> list[dict[str, object]]:
+                return [
+                    {"text": "Low confidence", "label": "Condition", "score": 0.51, "start": 0, "end": 14},
+                    {"text": "Fish oil", "label": "Drug", "score": 0.91, "start": 20, "end": 28},
+                    {"text": "Triglycerides", "label": "Biomarker", "score": 0.88, "start": 37, "end": 50},
+                ]
+
+        class FakeLanguageModel:
+            provider = "ollama"
+            model = "qwen-test"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, object]:
+                self.prompt = prompt
+                return {"relationships": [], "rejected_candidates": []}
+
+        chunk = ChunkRecord(
+            id="PMC3572442-chunk-0001",
+            document_id="paper:PMC3572442",
+            pmcid="PMC3572442",
+            order=1,
+            char_start=0,
+            char_end=64,
+            section="Abstract",
+            type="abstract",
+            source_sections=["Abstract"],
+            text="Low confidence. Fish oil reduced Triglycerides in adults.",
+        )
+        fake_model = FakeLanguageModel()
+        extractor = GLiNEROllamaExtractor(
+            model="qwen-test",
+            entity_model="fake-gliner",
+            language_model=fake_model,
+            gliner_model=FakeGLiNER(),
+            relationship_entity_limit=2,
+        )
+
+        output = extractor.extract({"id": "paper:PMC3572442", "pmcid": "PMC3572442"}, chunk)
+        prompt_payload = json.loads(fake_model.prompt.split("Input JSON:\n", 1)[1])
+        candidate_names = [item["name"] for item in prompt_payload["candidate_entities"]]
+
+        self.assertEqual(len(output["entities"]), 3)
+        self.assertEqual(candidate_names, ["Fish oil", "Triglycerides"])
 
     def test_gliner_ollama_extractor_records_entity_and_relationship_calls(self) -> None:
         class FakeGLiNER:

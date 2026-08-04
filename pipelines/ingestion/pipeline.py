@@ -159,7 +159,8 @@ def process_pmc_articles(config: PipelineConfig) -> list[ArticlePipelineResult]:
             entity_threshold=(
                 config.entity_threshold
                 if config.extractor_provider in {
-                    "gliner", "gliner_ner", "gliner-ner", "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"
+                    "gliner_ollama", "gliner-ollama", "gliner", "gliner_ner", "gliner-ner",
+                    "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic",
                 }
                 else None
             ),

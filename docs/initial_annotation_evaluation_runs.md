@@ -62,19 +62,19 @@ Wait until the services are ready:
 ```powershell
 do {
   Start-Sleep -Seconds 2
-  try { $mlflowReady = (Invoke-WebRequest -UseBasicParsing http://localhost:5000/health).StatusCode -eq 200 } catch { $mlflowReady = $false }
+  try { $mlflowReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5000/health).StatusCode -eq 200 } catch { $mlflowReady = $false }
 } until ($mlflowReady)
 
 do {
   Start-Sleep -Seconds 2
-  try { $minioReady = (Invoke-WebRequest -UseBasicParsing http://localhost:9000/minio/health/live).StatusCode -eq 200 } catch { $minioReady = $false }
+  try { $minioReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9000/minio/health/live).StatusCode -eq 200 } catch { $minioReady = $false }
 } until ($minioReady)
 ```
 
 Create the MinIO bucket used by MLflow. This command is idempotent:
 
 ```powershell
-.\.venv\Scripts\python.exe -c "import boto3; s3=boto3.client('s3', endpoint_url='http://localhost:9000', aws_access_key_id='medgraphrag', aws_secret_access_key='medgraphrag-password', region_name='us-east-1'); bucket='medgraphrag-artifacts'; names={item['Name'] for item in s3.list_buckets()['Buckets']}; s3.create_bucket(Bucket=bucket) if bucket not in names else None; print('ready:', bucket)"
+.\.venv\Scripts\python.exe -c "import boto3; s3=boto3.client('s3', endpoint_url='http://127.0.0.1:9000', aws_access_key_id='medgraphrag', aws_secret_access_key='medgraphrag-password', region_name='us-east-1'); bucket='medgraphrag-artifacts'; names={item['Name'] for item in s3.list_buckets()['Buckets']}; s3.create_bucket(Bucket=bucket) if bucket not in names else None; print('ready:', bucket)"
 ```
 
 Confirm Neo4j is empty:
@@ -95,7 +95,7 @@ Confirm MLflow contains no active test or smoke experiments. Immediately after
 the volume reset, only the built-in `Default` experiment should be listed:
 
 ```powershell
-.\.venv\Scripts\python.exe -c "import mlflow; from mlflow import MlflowClient; from mlflow.entities import ViewType; mlflow.set_tracking_uri('http://localhost:5000'); experiments=MlflowClient().search_experiments(view_type=ViewType.ACTIVE_ONLY); print([(item.experiment_id, item.name) for item in experiments])"
+.\.venv\Scripts\python.exe -c "import mlflow; from mlflow import MlflowClient; from mlflow.entities import ViewType; mlflow.set_tracking_uri('http://127.0.0.1:5000'); experiments=MlflowClient().search_experiments(view_type=ViewType.ACTIVE_ONLY); print([(item.experiment_id, item.name) for item in experiments])"
 ```
 
 Expected result:
@@ -118,7 +118,7 @@ docker compose exec -T neo4j cypher-shell `
   -u neo4j -p medgraphrag-password `
   "MATCH (n) DETACH DELETE n"
 
-.\.venv\Scripts\python.exe -c "import mlflow; from mlflow import MlflowClient; from mlflow.entities import ViewType; mlflow.set_tracking_uri('http://localhost:5000'); client=MlflowClient(); active=client.search_experiments(view_type=ViewType.ACTIVE_ONLY); doomed=[item for item in active if item.name != 'Default' and ('test' in item.name.lower() or 'smoke' in item.name.lower())]; [client.delete_experiment(item.experiment_id) for item in doomed]; print('deleted:', [item.name for item in doomed])"
+.\.venv\Scripts\python.exe -c "import mlflow; from mlflow import MlflowClient; from mlflow.entities import ViewType; mlflow.set_tracking_uri('http://127.0.0.1:5000'); client=MlflowClient(); active=client.search_experiments(view_type=ViewType.ACTIVE_ONLY); doomed=[item for item in active if item.name != 'Default' and ('test' in item.name.lower() or 'smoke' in item.name.lower())]; [client.delete_experiment(item.experiment_id) for item in doomed]; print('deleted:', [item.name for item in doomed])"
 ```
 
 MLflow experiment deletion is soft deletion. Those experiments disappear from
@@ -183,13 +183,28 @@ The evaluation runner executes on the host, not in Docker. Set the MinIO values
 so the MLflow client can upload artifacts through the host port:
 
 ```powershell
-$env:MLFLOW_TRACKING_URI = "http://localhost:5000"
-$env:MLFLOW_S3_ENDPOINT_URL = "http://localhost:9000"
+$env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+$env:MLFLOW_S3_ENDPOINT_URL = "http://127.0.0.1:9000"
 $env:AWS_ACCESS_KEY_ID = "medgraphrag"
 $env:AWS_SECRET_ACCESS_KEY = "medgraphrag-password"
 $env:AWS_DEFAULT_REGION = "us-east-1"
 $env:OLLAMA_BASE_URL = "http://localhost:11434"
+$env:OLLAMA_TIMEOUT_SECONDS = "600"
+$env:GLINER_RELATION_ENTITY_LIMIT = "20"
 ```
+
+The local instruct evaluation profiles send long relationship-extraction
+prompts to Ollama. Keep `OLLAMA_TIMEOUT_SECONDS` at 600 seconds or higher for
+full-gold `local-qwen25` and `local-qwen3` runs on CPU-bound or memory-constrained
+machines. `GLINER_RELATION_ENTITY_LIMIT` caps how many top-confidence entity
+candidates are sent to Qwen for relationship extraction while preserving the
+full GLiNER entity list for entity scoring; lower it to `12` or `16` if Qwen
+still times out, or set it to `0` to disable the cap.
+
+The current full-gold workbook uses fixed chunks that are close to 6000
+characters. Reducing ingestion chunk size will not change this evaluation unless
+the gold workbook is rebuilt. For the next gold set, prefer chunks around 3000
+characters with 250 to 300 characters of overlap for local instruct extraction.
 
 Use a rotated OpenAI key. Replace any revoked value in the local `.env` before
 later API use, but do not paste a key into this runbook, Git, or a DVC parameter.
@@ -230,6 +245,7 @@ and pins successful local artifacts against pruning:
 $Python = ".\.venv\Scripts\python.exe"
 $GoldManifest = "data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json"
 $MlflowExperiment = "medgraphrag-annotation-eval-v001"
+$MlflowTrackingUri = if ($env:MLFLOW_TRACKING_URI) { $env:MLFLOW_TRACKING_URI } else { "http://127.0.0.1:5000" }
 
 function Invoke-AnnotationEvaluation {
   param(
@@ -249,7 +265,7 @@ function Invoke-AnnotationEvaluation {
     "experiments/params.yaml:annotation_eval.fail_fast=true",
     "experiments/params.yaml:annotation_eval.neo4j_load_mode=none",
     "experiments/params.yaml:annotation_eval.mlflow.enabled=true",
-    "experiments/params.yaml:annotation_eval.mlflow.tracking_uri=http://localhost:5000",
+    "experiments/params.yaml:annotation_eval.mlflow.tracking_uri=$MlflowTrackingUri",
     "experiments/params.yaml:annotation_eval.mlflow.experiment=$MlflowExperiment",
     "experiments/params.yaml:annotation_eval.mlflow.run_name=$RunId",
     "experiments/params.yaml:annotation_eval.mlflow.log_artifacts=true"
@@ -280,6 +296,10 @@ function Invoke-AnnotationEvaluation {
 Do not run model evaluations in parallel. Ollama memory pressure, model
 downloads, provider rate limits, and shared workspace outputs make sequential
 runs easier to diagnose and compare.
+
+If you edit or pull changes to this helper, paste the full function into the
+PowerShell session again before rerunning. PowerShell keeps the previous
+function definition in memory, including any old hardcoded tracking URI.
 
 ## 6. Run The Plumbing Smoke Test
 

@@ -24,6 +24,7 @@ from pipelines.ingestion.non_instruct import (
 
 PROMPT_PATH = Path(__file__).resolve().parents[2] / "packages/graph/schema/001_initial_prompt.md"
 BIOMEDICAL_LABELS = ("Drug", "Condition", "Symptom", "RiskFactor", "Biomarker")
+DEFAULT_GLINER_RELATION_ENTITY_LIMIT = 20
 RELATIONSHIP_TYPES = (
     "TREATS",
     "PREVENTS",
@@ -337,6 +338,16 @@ def _candidate_name(candidate: dict[str, Any]) -> str:
     return ""
 
 
+def _env_int(name: str, default: int) -> int:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
 def _relationship_prompt(document: dict[str, Any], chunk: ChunkRecord, entities: list[dict[str, Any]]) -> str:
     payload = {
         "document": {
@@ -407,15 +418,22 @@ class GLiNEROllamaExtractor:
         language_model: LanguageModel | None = None,
         gliner_model: Any | None = None,
         model_call_root: Path | None = None,
+        relationship_entity_limit: int | None = None,
     ) -> None:
         self.relation_model = model or os.getenv("EXTRACTOR_MODEL") or os.getenv("LOCAL_MODEL", DEFAULT_OLLAMA_MODEL)
         self.entity_model = entity_model or os.getenv("EXTRACTOR_ENTITY_MODEL", DEFAULT_GLINER_BIOMED_MODEL)
         self.entity_threshold = entity_threshold or float(os.getenv("GLINER_ENTITY_THRESHOLD", "0.35"))
+        self.relationship_entity_limit = (
+            _env_int("GLINER_RELATION_ENTITY_LIMIT", DEFAULT_GLINER_RELATION_ENTITY_LIMIT)
+            if relationship_entity_limit is None
+            else relationship_entity_limit
+        )
         self.model = f"{self.entity_model} + {self.relation_model}"
         self.language_model = language_model or get_language_model("ollama", self.relation_model)
         self._gliner_model = gliner_model
         self.model_call_root = model_call_root
         self.last_model_call_paths: list[str] = []
+        self.last_entity_mentions: list[dict[str, Any]] = []
 
     def _load_gliner_model(self) -> Any:
         if self._gliner_model is None:
@@ -516,6 +534,27 @@ class GLiNEROllamaExtractor:
             raise RuntimeError(error or "GLiNER entity extraction failed")
         return entities, rejected
 
+    def _relationship_candidate_entities(self, entities: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        limit = self.relationship_entity_limit
+        if limit <= 0 or len(entities) <= limit:
+            return entities
+
+        mention_score_by_key: dict[tuple[str, str], float] = {}
+        mention_start_by_key: dict[tuple[str, str], int] = {}
+        for mention in self.last_entity_mentions:
+            key = (str(mention.get("type") or ""), str(mention.get("text") or "").casefold())
+            score = float(mention.get("confidence") or 0.0)
+            mention_score_by_key[key] = max(score, mention_score_by_key.get(key, 0.0))
+            mention_start_by_key.setdefault(key, int(mention.get("start") or 0))
+
+        def sort_key(entity: dict[str, Any]) -> tuple[float, int, str, str]:
+            entity_type = str(entity.get("type") or "")
+            name = str(entity.get("name") or "")
+            key = (entity_type, name.casefold())
+            return (-mention_score_by_key.get(key, 0.0), mention_start_by_key.get(key, 10**9), entity_type, name)
+
+        return sorted(entities, key=sort_key)[:limit]
+
     def extract(self, document: dict[str, Any], chunk: ChunkRecord) -> dict[str, Any]:
         self.last_model_call_paths = []
         entities, rejected = self._extract_entities(chunk)
@@ -527,9 +566,18 @@ class GLiNEROllamaExtractor:
                 "rejected_candidates": rejected,
             }
 
+        relationship_entities = self._relationship_candidate_entities(entities)
+        if len(relationship_entities) < 2:
+            return {
+                "paper": _paper_payload(document, chunk),
+                "entities": entities,
+                "relationships": [],
+                "rejected_candidates": rejected,
+            }
+
         raw_relationships, paths, error = _generate_json_with_audit(
             self.language_model,
-            _relationship_prompt(document, chunk, entities),
+            _relationship_prompt(document, chunk, relationship_entities),
             relationship_extraction_json_schema(),
             self.model_call_root,
             chunk,
@@ -753,7 +801,12 @@ def get_extractor(
     if normalized == "openai":
         return OpenAIResponsesExtractor(model=model, model_call_root=model_call_root)
     if normalized in {"gliner_ollama", "gliner-ollama"}:
-        return GLiNEROllamaExtractor(model=model, entity_model=entity_model, model_call_root=model_call_root)
+        return GLiNEROllamaExtractor(
+            model=model,
+            entity_model=entity_model,
+            entity_threshold=entity_threshold,
+            model_call_root=model_call_root,
+        )
     if normalized in {"gliner", "gliner_ner", "gliner-ner"}:
         return GLiNERExtractor(
             model=model,

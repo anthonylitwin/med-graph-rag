@@ -716,7 +716,8 @@ def run_annotation_evaluation(config: AnnotationEvaluationConfig) -> dict[str, A
             entity_threshold=(
                 config.entity_threshold
                 if profile.extractor_provider in {
-                    "gliner", "gliner_ner", "gliner-ner", "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic"
+                    "gliner_ollama", "gliner-ollama", "gliner", "gliner_ner", "gliner-ner",
+                    "non_instruct", "non-instruct", "gliner_semantic", "gliner-semantic",
                 }
                 else None
             ),

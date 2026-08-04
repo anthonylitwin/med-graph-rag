@@ -9,79 +9,79 @@ stages:
       size: 88
     - path: ../data/annotations/gold_v001/bootstrap_v001_full
       hash: md5
-      md5: 5b7296707131e3bfb893d6262f817fca.dir
-      size: 2016874
+      md5: f1f9a0e87d1a281a45e4e245b98a088d.dir
+      size: 2016978
       nfiles: 8
     - path: ../data/terminology/biomedical_aliases_v001.json
       hash: md5
-      md5: 1d9cb8ff08da6fb607c5dc984f00ca72
-      size: 1480
+      md5: eb97bc6e7c3e857e9f32a11f16d7e4cd
+      size: 1532
     - path: ../packages/graph/schema/001_initial_prompt.md
       hash: md5
       md5: dfd867ab29766b11f0527b13ac51112e
       size: 7622
     - path: ../packages/llm
       hash: md5
-      md5: 59535ee0d9758f1a5c7f1f97a0ddf21a.dir
-      size: 132950
+      md5: d7976954a22ac135f660f1e931a2a28f.dir
+      size: 134351
       nfiles: 16
     - path: ../pipelines/annotation/evaluation.py
       hash: md5
-      md5: fe3476b9345c8177b3d762eae64d492c
-      size: 40489
+      md5: bfbb4a5d52e4ac82b7aaef5a3becf1eb
+      size: 41524
     - path: ../pipelines/annotation/review_workbook.py
       hash: md5
       md5: 4d3b976ebd483b801341a2b6237e90ae
       size: 2656
     - path: ../pipelines/ingestion/extractors.py
       hash: md5
-      md5: a03a395695aa81e3339277962e17255d
-      size: 32369
+      md5: 405ef39584b60d995a37d676472ce44d
+      size: 34536
     - path: ../pipelines/ingestion/models.py
       hash: md5
       md5: 7875b1d26c4ead12337ff0a3b4f1f0bb
       size: 3856
     - path: ../pipelines/ingestion/non_instruct.py
       hash: md5
-      md5: 7bb21b1b86a2d9744c9b934588d39fd9
-      size: 20430
+      md5: fb5178150012c63793589979f0d67112
+      size: 20930
     - path: ../pipelines/ingestion/validation.py
       hash: md5
       md5: 2eecc1604aaa9a390a4b684959eab34c
       size: 10092
     - path: ../requirements-experiments.txt
       hash: md5
-      md5: 7a1ed42d54e808e7d5e453ba3d55fd0c
-      size: 130
+      md5: 82bf7f77d9c958262325dd209e88f85b
+      size: 135
     - path: ../requirements-local-models.txt
       hash: md5
-      md5: b306c9aaa56c6a42e3d2850ed1929d2d
-      size: 29
+      md5: 0724808ef7510811e993478b6699d733
+      size: 31
     - path: run_annotation_eval.py
       hash: md5
-      md5: 81903cf7ec73ce91a554957e20035ab7
-      size: 4718
+      md5: d1a03467d3bf1e9a6165b4597c8864c7
+      size: 4834
     params:
       params.yaml:
         annotation_eval:
-          eval_id: dvc-annotation-eval
+          eval_id: fullgold-noninst-relation062-v001
           python: ..\.venv\Scripts\python.exe
           gold_manifest: 
             data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json
           gold_root: data/annotations/gold_v001/bootstrap_v001_full
           output_root: data/annotations/eval_v001
-          model_profile: noop
-          model:
-          entity_model:
+          model_profile: local-non-instruct
+          model: sentence-transformers/all-MiniLM-L6-v2
+          entity_model: Ihor/gliner-biomed-small-v1.0
           min_confidence: 0.5
           limit:
-          fail_fast: false
+          fail_fast: true
           non_instruct:
             embedding_model: sentence-transformers/all-MiniLM-L6-v2
             terminology_path: data/terminology/biomedical_aliases_v001.json
             entity_threshold: 0.5
             concept_threshold: 0.84
-            relation_threshold: 0.66
+            relation_threshold: 0.62
             semantic_floor: 0.52
             semantic_weight: 0.5
             cue_weight: 0.25
@@ -90,63 +90,73 @@ stages:
             max_pair_distance: 300
           neo4j_load_mode: none
           mlflow:
-            enabled: false
-            tracking_uri: http://localhost:5000
-            experiment: medgraphrag-annotation-eval
-            run_name: ''
+            enabled: true
+            tracking_uri: http://127.0.0.1:5000
+            experiment: medgraphrag-annotation-eval-v001
+            run_name: fullgold-noninst-relation062-v001
             log_artifacts: true
     outs:
     - path: 
-        ../data/annotations/eval_v001/dvc-annotation-eval/artifact_manifest.json
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/artifact_manifest.json
       hash: md5
-      md5: fd1e1567ac08e140d2135d4b54d7eb62
-      size: 4391
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/chunk_results.csv
+      md5: d47b7d1f8b7646489092a6dc893b9058
+      size: 28738
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/chunk_results.csv
       hash: md5
-      md5: c18d3faadc6b9e5af87644a2c24b1b51
-      size: 2824
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/errors.csv
+      md5: 9e151e7c760173398c47656df181e48a
+      size: 2872
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/errors.csv
       hash: md5
       md5: 7f4a5fc7bf88fb7acb0ae5d5d3dd680a
       size: 40
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/eval_manifest.json
-      hash: md5
-      md5: 1c31b3819c5bbc9a0d859f6685dc28f0
-      size: 8167
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/gold_snapshot
-      hash: md5
-      md5: ddc53630a9e89c1445869941027723ea.dir
-      size: 1471279
-      nfiles: 5
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/matches
-      hash: md5
-      md5: 85a4d31deb38c4771462a870312c8dc2.dir
-      size: 293606
-      nfiles: 2
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/metrics.csv
-      hash: md5
-      md5: 1398babd9bd227ff6ae164b64ce305db
-      size: 923
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/metrics.json
-      hash: md5
-      md5: a5398ed2d26ab8b0fbb9bb9759733ac2
-      size: 3378
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/model_calls
-      hash: md5
-      md5: d751713988987e9331980363e24189ce.dir
-      size: 0
-      nfiles: 0
     - path: 
-        ../data/annotations/eval_v001/dvc-annotation-eval/neo4j_load_report.json
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/eval_manifest.json
       hash: md5
-      md5: ca48301fc7b623e119b88f7c252ab096
-      size: 277
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/predictions
+      md5: 486d1f97a758d1515519e133224a34c7
+      size: 9216
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/gold_snapshot
       hash: md5
-      md5: 16b60ce24dd6c34af0bdb65dc12f804d.dir
-      size: 274209
+      md5: 905a70a4ce65193d8f7b7bafaf44d3d4.dir
+      size: 1471439
       nfiles: 5
-    - path: ../data/annotations/eval_v001/dvc-annotation-eval/summary.md
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/matches
       hash: md5
-      md5: bef85acb7256be6049f8036e9059bd36
-      size: 1750
+      md5: 3d3b2fac5670c2c21384a3bfb2ea7c41.dir
+      size: 375732
+      nfiles: 2
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/metrics.csv
+      hash: md5
+      md5: a6cc6c46bd98c5da9ba3e0a383afeec6
+      size: 1132
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/metrics.json
+      hash: md5
+      md5: e98715f0ee5938a5d6be43ce3ac1e863
+      size: 3587
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/model_calls
+      hash: md5
+      md5: 0e3265eba1eb4ebe5fe85b4667631af6.dir
+      size: 18470685
+      nfiles: 86
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/neo4j_load_report.json
+      hash: md5
+      md5: 127e2987b6ec85739fc6283104b5c004
+      size: 277
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/predictions
+      hash: md5
+      md5: 65cc2d20a454f9b033c5da44e0b59728.dir
+      size: 2115163
+      nfiles: 5
+    - path: 
+        ../data/annotations/eval_v001/fullgold-noninst-relation062-v001/summary.md
+      hash: md5
+      md5: 0b6189a4900a8de5bec2a614e6e0fa2b
+      size: 2105
