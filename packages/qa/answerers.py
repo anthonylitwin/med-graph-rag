@@ -51,6 +51,11 @@ def _sources_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str, 
 
 
 def _reasoning_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str, Any]]:
+    path_order: dict[str, int] = {}
+    for item in evidence:
+        path_key = item.path_id or item.id
+        path_order.setdefault(path_key, len(path_order))
+
     return [
         {
             "source": item.source_name,
@@ -63,7 +68,10 @@ def _reasoning_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str
             "pathStep": item.path_step,
             "pathLength": item.path_length,
         }
-        for item in sorted(evidence, key=lambda child: (child.path_id or child.id, child.path_step, child.id))
+        for index, item in sorted(
+            enumerate(evidence),
+            key=lambda child: (path_order[child[1].path_id or child[1].id], child[1].path_step, child[0]),
+        )
     ]
 
 

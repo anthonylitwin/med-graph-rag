@@ -10,6 +10,33 @@ from packages.graph.neo4j_client import neo4j_driver
 from packages.qa.models import RetrievedEvidence
 from pipelines.ingestion.non_instruct import DEFAULT_TERMINOLOGY_PATH, normalize_term
 
+GRAPH_START_STOP_TERMS = {
+    "associated",
+    "condition",
+    "connect",
+    "connected",
+    "connects",
+    "cholesterol",
+    "cure",
+    "cures",
+    "definition",
+    "does",
+    "drug",
+    "graph",
+    "hop",
+    "path",
+    "relationship",
+    "relationships",
+    "through",
+    "lipid",
+    "treatment",
+    "using",
+    "what",
+    "which",
+    "what condition is hypertriglyceridemia associated with",
+    "with",
+}
+
 
 class EvidenceRetriever(Protocol):
     name: str
@@ -141,18 +168,19 @@ def _load_definitions(path: Path = Path("data/terminology/medical_definitions_v0
 
 def _question_terms(question: str) -> set[str]:
     normalized = normalize_term(question)
-    terms = {normalized} if normalized else set()
+    terms: set[str] = set()
     terms.update(token for token in normalized.split() if len(token) >= 3)
     return terms
 
 
 def _matched_entry_terms(question: str, entries: list[TerminologyEntry | DefinitionEntry]) -> set[str]:
     normalized_question = normalize_term(question)
+    normalized_question_padded = f" {normalized_question} "
     terms = _question_terms(question)
     for entry in entries:
         for text in entry.search_texts():
             normalized_text = normalize_term(text)
-            if normalized_text and normalized_text in normalized_question:
+            if normalized_text and f" {normalized_text} " in normalized_question_padded:
                 terms.update(normalize_term(value) for value in entry.search_texts() if normalize_term(value))
                 terms.add(entry.canonical_name.casefold())
     return terms
@@ -191,6 +219,20 @@ def _edge_term_overlap(row: dict[str, Any], terms: set[str]) -> float:
     return min(1.0, hits / max(1, min(len(terms), 6)))
 
 
+def _path_endpoint_overlap(path_rows: list[dict[str, Any]], terms: set[str]) -> float:
+    text = normalize_term(
+        " ".join(
+            str(row.get(key) or "")
+            for row in path_rows
+            for key in ("sourceName", "targetName")
+        )
+    )
+    if not terms or not text:
+        return 0.0
+    hits = sum(1 for term in terms if len(term) >= 3 and term in text)
+    return min(1.0, hits / max(1, min(len(terms), 6)))
+
+
 def _path_id(rows: list[dict[str, Any]]) -> str:
     parts = [str(row.get("relationshipId") or "") for row in rows]
     return "path:" + hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()
@@ -199,9 +241,10 @@ def _path_id(rows: list[dict[str, Any]]) -> str:
 def _definition_evidence(question: str, limit: int) -> list[RetrievedEvidence]:
     definitions = _load_definitions()
     normalized_question = normalize_term(question)
+    normalized_question_padded = f" {normalized_question} "
     evidence: list[RetrievedEvidence] = []
     for definition in definitions:
-        if not any(normalize_term(text) in normalized_question for text in definition.search_texts()):
+        if not any(f" {normalize_term(text)} " in normalized_question_padded for text in definition.search_texts()):
             continue
         evidence_id = "definition:" + hashlib.sha1(definition.canonical_name.encode("utf-8")).hexdigest()[:16]
         evidence.append(
@@ -243,17 +286,18 @@ class LegacyGraphRetriever:
         source,
         relationship,
         target,
-        coalesce(paperByPmcid, paperByMention) AS paper
+        coalesce(paperByPmcid, paperByMention) AS paper,
+        properties(relationship) AS relationshipProps
     RETURN DISTINCT
-        coalesce(relationship.id, elementId(relationship)) AS relationshipId,
+        coalesce(relationshipProps["id"], elementId(relationship)) AS relationshipId,
         source.name AS sourceName,
         labels(source) AS sourceLabels,
         type(relationship) AS relationshipType,
-        coalesce(relationship.evidence, relationship.evidence_text, relationship.evidenceText, "") AS evidenceText,
-        relationship.confidence AS confidence,
-        coalesce(relationship.source_pmcid, "") AS sourcePmcid,
-        coalesce(relationship.source_pmid, "") AS sourcePmid,
-        coalesce(relationship.chunk_id, "") AS chunkId,
+        coalesce(relationshipProps["evidence"], relationshipProps["evidence_text"], relationshipProps["evidenceText"], "") AS evidenceText,
+        relationshipProps["confidence"] AS confidence,
+        coalesce(relationshipProps["source_pmcid"], "") AS sourcePmcid,
+        coalesce(relationshipProps["source_pmid"], "") AS sourcePmid,
+        coalesce(relationshipProps["chunk_id"], "") AS chunkId,
         coalesce(paper.id, "") AS documentId,
         coalesce(paper.title, "") AS documentTitle,
         target.name AS targetName,
@@ -281,30 +325,31 @@ class GraphRetriever:
         OR toLower(candidate.name) CONTAINS term
         OR term CONTAINS toLower(candidate.name)
       )
-    RETURN DISTINCT elementId(candidate) AS id
+    WITH DISTINCT candidate
     ORDER BY candidate.name
+    RETURN elementId(candidate) AS id
     LIMIT $limit
     """
 
     PATH_QUERY = """
     MATCH (start)
     WHERE elementId(start) IN $start_ids
-    CALL {
-      WITH start
+    CALL (start) {
       MATCH (source)-[relationship]->(target)
       WHERE type(relationship) <> "MENTIONS"
         AND (elementId(source) = elementId(start) OR elementId(target) = elementId(start))
+      WITH source, relationship, target, properties(relationship) AS relationshipProps
       RETURN [
         {
-          relationshipId: coalesce(relationship.id, elementId(relationship)),
+          relationshipId: coalesce(relationshipProps["id"], elementId(relationship)),
           sourceName: coalesce(source.name, ""),
           sourceLabels: labels(source),
           relationshipType: type(relationship),
-          evidenceText: coalesce(relationship.evidence, relationship.evidence_text, relationship.evidenceText, ""),
-          confidence: relationship.confidence,
-          sourcePmcid: coalesce(relationship.source_pmcid, ""),
-          sourcePmid: coalesce(relationship.source_pmid, ""),
-          chunkId: coalesce(relationship.chunk_id, ""),
+          evidenceText: coalesce(relationshipProps["evidence"], relationshipProps["evidence_text"], relationshipProps["evidenceText"], ""),
+          confidence: relationshipProps["confidence"],
+          sourcePmcid: coalesce(relationshipProps["source_pmcid"], ""),
+          sourcePmid: coalesce(relationshipProps["source_pmid"], ""),
+          chunkId: coalesce(relationshipProps["chunk_id"], ""),
           targetName: coalesce(target.name, ""),
           targetLabels: labels(target),
           pathStep: 1,
@@ -312,7 +357,6 @@ class GraphRetriever:
         }
       ] AS pathRows
       UNION
-      WITH start
       MATCH path = (start)-[first]-(middle)-[second]-(finish)
       WHERE type(first) <> "MENTIONS"
         AND type(second) <> "MENTIONS"
@@ -322,18 +366,18 @@ class GraphRetriever:
         AND first <> second
       WITH relationships(path) AS rels
       UNWIND range(0, size(rels) - 1) AS index
-      WITH index, rels[index] AS relationship
-      WITH collect(
+      WITH rels, index, rels[index] AS relationship, properties(rels[index]) AS relationshipProps
+      WITH rels, collect(
         {
-          relationshipId: coalesce(relationship.id, elementId(relationship)),
+          relationshipId: coalesce(relationshipProps["id"], elementId(relationship)),
           sourceName: coalesce(startNode(relationship).name, ""),
           sourceLabels: labels(startNode(relationship)),
           relationshipType: type(relationship),
-          evidenceText: coalesce(relationship.evidence, relationship.evidence_text, relationship.evidenceText, ""),
-          confidence: relationship.confidence,
-          sourcePmcid: coalesce(relationship.source_pmcid, ""),
-          sourcePmid: coalesce(relationship.source_pmid, ""),
-          chunkId: coalesce(relationship.chunk_id, ""),
+          evidenceText: coalesce(relationshipProps["evidence"], relationshipProps["evidence_text"], relationshipProps["evidenceText"], ""),
+          confidence: relationshipProps["confidence"],
+          sourcePmcid: coalesce(relationshipProps["source_pmcid"], ""),
+          sourcePmid: coalesce(relationshipProps["source_pmid"], ""),
+          chunkId: coalesce(relationshipProps["chunk_id"], ""),
           targetName: coalesce(endNode(relationship).name, ""),
           targetLabels: labels(endNode(relationship)),
           pathStep: index + 1,
@@ -356,8 +400,13 @@ class GraphRetriever:
 
     def _terms(self, question: str) -> list[str]:
         entries = _load_terminology(self.terminology_path)
-        terms = _matched_entry_terms(question, entries)
-        return sorted(term.casefold() for term in terms if term.strip())
+        definitions = _load_definitions()
+        terms = _matched_entry_terms(question, [*entries, *definitions])
+        return sorted(
+            term.casefold()
+            for term in terms
+            if term.strip() and term.casefold() not in GRAPH_START_STOP_TERMS
+        )
 
     def _path_records(self, question: str, path_rows: list[dict[str, Any]], terms: set[str]) -> list[RetrievedEvidence]:
         path_identifier = _path_id(path_rows)
@@ -367,11 +416,13 @@ class GraphRetriever:
             max((_as_int(row.get("pathLength"), len(path_rows)) for row in path_rows), default=len(path_rows)),
             len(path_rows),
         )
+        endpoint_overlap = _path_endpoint_overlap(path_rows, terms)
         score = (
-            0.45 * max((_edge_term_overlap(row, terms) for row in path_rows), default=0.0)
-            + 0.25 * max((_relationship_relevance(str(row.get("relationshipType") or ""), question) for row in path_rows), default=0.0)
-            + 0.20 * min_confidence
-            + 0.10 * (1.0 if path_length > 1 else 0.5)
+            0.40 * endpoint_overlap
+            + 0.25 * max((_edge_term_overlap(row, terms) for row in path_rows), default=0.0)
+            + 0.20 * max((_relationship_relevance(str(row.get("relationshipType") or ""), question) for row in path_rows), default=0.0)
+            + 0.10 * min_confidence
+            + 0.05 * (1.0 if path_length > 1 else 0.5)
         )
         records: list[RetrievedEvidence] = []
         for index, row in enumerate(path_rows, start=1):
@@ -399,7 +450,7 @@ class GraphRetriever:
                     start_ids = [str(dict(row).get("id")) for row in start_rows if dict(row).get("id")]
                     if not start_ids:
                         return definitions[:limit]
-                    path_rows = list(session.run(self.PATH_QUERY, start_ids=start_ids, limit=max(graph_limit * 4, 20)))
+                    path_rows = list(session.run(self.PATH_QUERY, start_ids=start_ids, limit=max(graph_limit * 12, 120)))
         except Exception:
             if definitions:
                 return definitions[:limit]

@@ -6,6 +6,7 @@ import json
 import shutil
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +19,8 @@ from pipelines.qa.pipeline import process_questions
 
 DEFAULT_QA_EVAL_OUTPUT_ROOT = Path("data/qa/eval_v001")
 DEFAULT_QA_QUESTION_FILE = Path("eval/questions/qa_gold_v001.json")
+DEFAULT_TERMINOLOGY_FILE = Path("data/terminology/biomedical_aliases_v001.json")
+DEFAULT_DEFINITIONS_FILE = Path("data/terminology/medical_definitions_v001.json")
 
 
 @dataclass(frozen=True)
@@ -62,6 +65,37 @@ def _clean(value: Any) -> str:
 
 def _normalize(value: Any) -> str:
     return " ".join(_clean(value).casefold().replace("_", " ").split())
+
+
+@lru_cache(maxsize=1)
+def _entity_alias_groups() -> tuple[frozenset[str], ...]:
+    groups: list[frozenset[str]] = []
+    for path, key in ((DEFAULT_TERMINOLOGY_FILE, "concepts"), (DEFAULT_DEFINITIONS_FILE, "definitions")):
+        payload = _read_json(path)
+        records = payload.get(key) if isinstance(payload, dict) else []
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            names = [_normalize(record.get("canonical_name"))]
+            aliases = record.get("aliases") if isinstance(record.get("aliases"), list) else []
+            names.extend(_normalize(alias) for alias in aliases)
+            group = frozenset(name for name in names if name)
+            if group:
+                groups.append(group)
+    return tuple(groups)
+
+
+def _entity_alias_values(value: str) -> set[str]:
+    normalized = _normalize(value)
+    if not normalized:
+        return set()
+    values = {normalized}
+    for group in _entity_alias_groups():
+        if normalized in group:
+            values.update(group)
+    return values
 
 
 def _as_list(value: Any) -> list[str]:
@@ -196,10 +230,10 @@ def _evidence_identity_values(evidence: dict[str, Any]) -> set[str]:
 
 
 def _evidence_entity_values(evidence: dict[str, Any]) -> set[str]:
-    return {
-        _normalize(evidence.get("sourceName")),
-        _normalize(evidence.get("targetName")),
-    } - {""}
+    values: set[str] = set()
+    for field in ("sourceName", "targetName"):
+        values.update(_entity_alias_values(_clean(evidence.get(field))))
+    return values
 
 
 def _evidence_relationship_values(evidence: dict[str, Any]) -> set[str]:
@@ -264,7 +298,7 @@ def _coverage(expected_items: list[str], observed_items: set[str]) -> tuple[int,
     expected = [_normalize(item) for item in expected_items if _normalize(item)]
     if not expected:
         return 0, 0, 1.0
-    matched = sum(1 for item in expected if item in observed_items)
+    matched = sum(1 for item in expected if _entity_alias_values(item) & observed_items)
     return matched, len(expected), matched / len(expected)
 
 
@@ -329,9 +363,13 @@ def _score_question(
     answer_path = Path(manifest_row.get("answer_path") or "")
 
     evidence = _read_retrieved(retrieved_path)
+    answer_status = manifest_row.get("answer_status", "")
     answer_payload = _read_answer(answer_path) if answer_path.exists() else {}
     answer_text = _clean(answer_payload.get("answer"))
-    abstained = bool(answer_payload.get("abstained")) if answer_payload else _clean(manifest_row.get("abstained")).casefold() == "true"
+    if answer_status == "skipped":
+        abstained = not evidence
+    else:
+        abstained = bool(answer_payload.get("abstained")) if answer_payload else _clean(manifest_row.get("abstained")).casefold() == "true"
     sources = answer_payload.get("sources") if isinstance(answer_payload.get("sources"), list) else []
 
     expected_evidence_ids = _expected_evidence_ids(question)
@@ -365,7 +403,7 @@ def _score_question(
     )
     citation_supported = bool(sources) if not unanswerable and not abstained else abstained
     unsupported_answer = bool(answer_text) and not abstained and not retrieval_success
-    answer_success = (
+    answer_success = False if answer_status == "skipped" else (
         abstained
         if unanswerable
         else not abstained and fact_coverage >= 1.0 and citation_supported and not unsupported_answer
@@ -377,7 +415,7 @@ def _score_question(
         "question_type": _clean(_question_metadata(question).get("question_type") or _question_metadata(question).get("category")),
         "split": _clean(_question_metadata(question).get("split")),
         "status": manifest_row.get("status", ""),
-        "answer_status": manifest_row.get("answer_status", ""),
+        "answer_status": answer_status,
         "retrieved_count": int(manifest_row.get("retrieved_count") or 0),
         "source_count": int(manifest_row.get("source_count") or 0),
         "hop_count": expected_hops,

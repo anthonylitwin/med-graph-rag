@@ -13,7 +13,7 @@ from packages.qa.datasets import collect_questions, read_training_dataset, to_op
 from packages.qa.models import QAConfig, QuestionRecord, RetrievedEvidence
 from packages.qa.retrievers import GraphRetriever, NoopRetriever, evidence_from_record
 from experiments.run_qa_eval import load_qa_eval_config
-from pipelines.qa.evaluation import QAEvaluationConfig, run_qa_evaluation
+from pipelines.qa.evaluation import QAEvaluationConfig, _coverage, _evidence_entity_values, run_qa_evaluation
 from pipelines.qa.pipeline import process_questions
 
 
@@ -261,6 +261,14 @@ class QAPipelineTests(unittest.TestCase):
 
 
 class QAEvaluationTests(unittest.TestCase):
+    def test_entity_coverage_uses_curated_aliases(self) -> None:
+        observed = _evidence_entity_values({"sourceName": "HDL", "targetName": "niacin"})
+
+        hits, total, coverage = _coverage(["HDL cholesterol", "niacin"], observed)
+
+        self.assertEqual((hits, total), (2, 2))
+        self.assertEqual(coverage, 1.0)
+
     def test_qa_eval_params_loader_maps_dvc_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             params_path = Path(tmpdir) / "params.yaml"
@@ -386,6 +394,38 @@ class QAEvaluationTests(unittest.TestCase):
 
         self.assertEqual(result["metrics"]["overall"]["abstention_accuracy"], 1.0)
         self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 1.0)
+
+    def test_run_qa_evaluation_scores_retrieval_only_abstention(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": "q1",
+                            "question": "What treatment cures the sample-only condition?",
+                            "expected_abstention": True,
+                            "question_type": "unanswerable",
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_qa_evaluation(
+                QAEvaluationConfig(
+                    question_file=question_file,
+                    output_root=tmp_path / "eval",
+                    eval_id="qa-unanswerable-retrieval-only",
+                    model_profile="noop",
+                    skip_answer=True,
+                    force=True,
+                )
+            )
+
+        self.assertEqual(result["metrics"]["overall"]["abstention_accuracy"], 1.0)
+        self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 0.0)
 
 
 if __name__ == "__main__":
