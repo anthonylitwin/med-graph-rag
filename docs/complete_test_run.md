@@ -517,5 +517,6 @@ Good next improvements:
 | Annotation run has no `model_calls` files | Use `pipelines/annotation/bootstrap_annotations.py`; regular ingestion only records calls when configured by annotation mode. |
 | Graph QA retrieves nothing | Confirm Neo4j is loaded and the question contains an entity name present in the graph. |
 | Graph UI empty | Seed sample graph or extend `/graph/sample`; current endpoint only returns `sample=true` nodes. |
+| Vite cannot resolve `cytoscape` | From `apps/web`, run `npm.cmd install`; for Docker, run `docker compose down -v` once, then `docker compose up --build web`. |
 | PowerShell blocks `npm` | Use `npm.cmd run build` or `npm.cmd run dev`. |
 | Artifacts look stale | Use `--clean-output` with care on the specific output root for a fresh run. |
