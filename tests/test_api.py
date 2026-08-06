@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sqlite3
 import sys
 import unittest
 import tempfile
@@ -14,7 +15,7 @@ if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
 from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
-from app.services.ingestion_service import IngestionJobStore, IngestionQueueService
+from app.services.ingestion_service import IngestionJobStore, IngestionQueueService, PROJECT_ROOT
 from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import admin as admin_routes
 from app.routes import graph as graph_routes
@@ -182,7 +183,41 @@ class IngestionQueueTests(unittest.TestCase):
         self.assertEqual(loaded["status"], "queued")
         self.assertEqual(loaded["progressTotal"], 2)
         self.assertEqual(loaded["modelProfile"], "noop")
+        self.assertEqual(Path(loaded["outputRoot"]).name, job["id"])
         self.assertEqual([document["documentKey"] for document in loaded["documents"]], ["PMC3572442", "PMC3234107"])
+
+    def test_create_job_persists_repo_relative_output_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "jobs.sqlite"
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(PROJECT_ROOT / "data" / "source_documents" / "ui_ingestion"),
+                },
+                clear=False,
+            ):
+                service = IngestionQueueService(
+                    store=IngestionJobStore(db_path),
+                    poll_interval_seconds=0.01,
+                )
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+
+                connection = sqlite3.connect(db_path)
+                try:
+                    stored_output_root = connection.execute(
+                        "SELECT output_root FROM ingestion_jobs WHERE id = ?",
+                        (job["id"],),
+                    ).fetchone()[0]
+                finally:
+                    connection.close()
+
+        self.assertEqual(stored_output_root, f"data/source_documents/ui_ingestion/{job['id']}")
 
     def test_worker_records_pmc_job_progress_and_completion(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -18,6 +18,7 @@ from pipelines.ingestion.pipeline import process_pmc_articles
 from pipelines.ingestion.pmc_bioc import BioCUnavailableError, fetch_pmc_bioc, parse_bioc_payload
 from pipelines.ingestion.pmc_inputs import collect_pmcids, normalize_pmcid, read_pmcid_file
 from pipelines.ingestion.validation import validate_extraction_output
+from packages.graph.neo4j_client import get_neo4j_uri
 
 
 class PmcInputTests(unittest.TestCase):
@@ -45,6 +46,32 @@ class PmcInputTests(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 read_pmcid_file(pmcid_file)
+
+
+class Neo4jClientConfigTests(unittest.TestCase):
+    def test_host_scripts_prefer_local_neo4j_uri(self) -> None:
+        with mock.patch.dict(
+            "os.environ",
+            {
+                "NEO4J_LOCAL_URI": "bolt://localhost:7687",
+                "NEO4J_URI": "bolt://neo4j:7687",
+                "RUNNING_IN_DOCKER": "false",
+            },
+            clear=True,
+        ):
+            self.assertEqual(get_neo4j_uri(), "bolt://localhost:7687")
+
+    def test_docker_runtime_prefers_service_neo4j_uri(self) -> None:
+        with mock.patch.dict(
+            "os.environ",
+            {
+                "NEO4J_LOCAL_URI": "bolt://localhost:7687",
+                "NEO4J_URI": "bolt://neo4j:7687",
+                "RUNNING_IN_DOCKER": "true",
+            },
+            clear=True,
+        ):
+            self.assertEqual(get_neo4j_uri(), "bolt://neo4j:7687")
 
 
 class BioCParsingAndChunkingTests(unittest.TestCase):
