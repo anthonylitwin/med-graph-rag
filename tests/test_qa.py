@@ -11,7 +11,7 @@ from packages.llm.providers import NoopLanguageModel
 from packages.qa.answerers import GraphRAGAnswerer
 from packages.qa.datasets import collect_questions, read_training_dataset, to_openai_finetune_record
 from packages.qa.models import QAConfig, QuestionRecord, RetrievedEvidence
-from packages.qa.retrievers import NoopRetriever, evidence_from_record
+from packages.qa.retrievers import GraphRetriever, NoopRetriever, evidence_from_record
 from experiments.run_qa_eval import load_qa_eval_config
 from pipelines.qa.evaluation import QAEvaluationConfig, run_qa_evaluation
 from pipelines.qa.pipeline import process_questions
@@ -173,12 +173,63 @@ class QARetrieverTests(unittest.TestCase):
                 "documentTitle": "A paper",
                 "targetName": "LDL cholesterol",
                 "targetLabels": ["Biomarker"],
+                "pathId": "path:1",
+                "pathStep": 2,
+                "pathLength": 2,
+                "matchScore": 0.75,
+                "evidenceKind": "graph",
             }
         )
 
         self.assertEqual(evidence.id, "rel:1")
         self.assertEqual(evidence.confidence, 0.95)
         self.assertEqual(evidence.to_dict()["sourcePmcid"], "PMC1")
+        self.assertEqual(evidence.path_id, "path:1")
+        self.assertEqual(evidence.path_step, 2)
+        self.assertEqual(evidence.path_length, 2)
+        self.assertEqual(evidence.match_score, 0.75)
+
+    def test_graph_retriever_serializes_ordered_path_records(self) -> None:
+        retriever = GraphRetriever(include_definitions=False)
+        records = retriever._path_records(
+            "How are triglycerides connected to atherosclerosis?",
+            [
+                {
+                    "relationshipId": "rel:1",
+                    "sourceName": "Triglycerides",
+                    "sourceLabels": ["Biomarker"],
+                    "relationshipType": "ASSOCIATED_WITH",
+                    "targetName": "Atherogenic lipoproteins",
+                    "targetLabels": ["Biomarker"],
+                    "evidenceText": "High TG levels are markers for atherogenic lipoproteins.",
+                    "confidence": 0.9,
+                    "sourcePmcid": "PMC1",
+                    "chunkId": "PMC1-chunk-0001",
+                    "pathStep": 1,
+                    "pathLength": 2,
+                },
+                {
+                    "relationshipId": "rel:2",
+                    "sourceName": "Atherogenic lipoproteins",
+                    "sourceLabels": ["Biomarker"],
+                    "relationshipType": "ASSOCIATED_WITH",
+                    "targetName": "Atherosclerosis",
+                    "targetLabels": ["Condition"],
+                    "evidenceText": "Atherogenic lipoproteins contribute to atherosclerosis.",
+                    "confidence": 0.8,
+                    "sourcePmcid": "PMC1",
+                    "chunkId": "PMC1-chunk-0002",
+                    "pathStep": 2,
+                    "pathLength": 2,
+                },
+            ],
+            {"triglycerides", "atherosclerosis"},
+        )
+
+        self.assertEqual([item.path_step for item in records], [1, 2])
+        self.assertEqual({item.path_length for item in records}, {2})
+        self.assertEqual(len({item.path_id for item in records}), 1)
+        self.assertGreater(records[0].match_score, 0.0)
 
 
 class QAPipelineTests(unittest.TestCase):

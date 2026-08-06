@@ -148,6 +148,27 @@ def _is_unanswerable(question: QuestionRecord) -> bool:
     return _clean(value).casefold() in {"1", "true", "yes", "y"}
 
 
+def _expected_hop_count(question: QuestionRecord) -> int:
+    metadata = _question_metadata(question)
+    value = metadata.get("expected_hop_count") or metadata.get("hop_count")
+    if value is None:
+        if _is_unanswerable(question):
+            return 0
+        return 1 if question.expected_relationships else 0
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return 1
+
+
+def _requires_definition(question: QuestionRecord) -> bool:
+    metadata = _question_metadata(question)
+    value = metadata.get("requires_definition", metadata.get("requires_standard_definition", False))
+    if isinstance(value, bool):
+        return value
+    return _clean(value).casefold() in {"1", "true", "yes", "y"}
+
+
 def _read_csv_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
@@ -183,6 +204,42 @@ def _evidence_entity_values(evidence: dict[str, Any]) -> set[str]:
 
 def _evidence_relationship_values(evidence: dict[str, Any]) -> set[str]:
     return {_normalize(evidence.get("relationshipType"))} - {""}
+
+
+def _evidence_path_length(evidence: dict[str, Any]) -> int:
+    try:
+        return int(evidence.get("pathLength") or 1)
+    except (TypeError, ValueError):
+        return 1
+
+
+def _path_complete(evidence: list[dict[str, Any]], expected_hop_count: int) -> bool:
+    if expected_hop_count <= 0:
+        return not evidence
+    if expected_hop_count <= 1:
+        return bool(evidence)
+    steps_by_path: dict[str, set[int]] = {}
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        path_id = _clean(item.get("pathId")) or _clean(item.get("id"))
+        try:
+            step = int(item.get("pathStep") or 1)
+        except (TypeError, ValueError):
+            step = 1
+        steps_by_path.setdefault(path_id, set()).add(step)
+        if _evidence_path_length(item) >= expected_hop_count and len(steps_by_path[path_id]) >= expected_hop_count:
+            return True
+    return False
+
+
+def _definition_source_hit(evidence: list[dict[str, Any]]) -> bool:
+    return any(
+        isinstance(item, dict)
+        and _clean(item.get("evidenceKind")).casefold() == "definition"
+        and bool(_clean(item.get("evidenceText")))
+        for item in evidence
+    )
 
 
 def _contains_all(text: str, expected_items: list[str]) -> tuple[int, int, float]:
@@ -241,6 +298,10 @@ def _score_question(
             "answer_status": "missing",
             "retrieved_count": 0,
             "source_count": 0,
+            "hop_count": _expected_hop_count(question),
+            "max_retrieved_path_length": 0,
+            "path_complete": False,
+            "definition_source_hit": False,
             "expected_fact_hits": 0,
             "expected_fact_total": len(question.expected_facts),
             "fact_coverage": 0.0 if question.expected_facts else 1.0,
@@ -283,6 +344,10 @@ def _score_question(
             evidence_entities.update(_evidence_entity_values(item))
             evidence_relationships.update(_evidence_relationship_values(item))
 
+    expected_hops = _expected_hop_count(question)
+    max_path_length = max((_evidence_path_length(item) for item in evidence if isinstance(item, dict)), default=0)
+    path_complete = _path_complete(evidence, expected_hops)
+    definition_hit = _definition_source_hit(evidence)
     expected_fact_hits, expected_fact_total, fact_coverage = _contains_all(answer_text, question.expected_facts)
     entity_hits, entity_total, entity_coverage = _coverage(question.expected_entities, evidence_entities)
     relationship_hits, relationship_total, relationship_coverage = _coverage(question.expected_relationships, evidence_relationships)
@@ -295,6 +360,8 @@ def _score_question(
         and entity_coverage >= 1.0
         and relationship_coverage >= 1.0
         and evidence_hit
+        and path_complete
+        and (definition_hit if _requires_definition(question) else True)
     )
     citation_supported = bool(sources) if not unanswerable and not abstained else abstained
     unsupported_answer = bool(answer_text) and not abstained and not retrieval_success
@@ -313,6 +380,10 @@ def _score_question(
         "answer_status": manifest_row.get("answer_status", ""),
         "retrieved_count": int(manifest_row.get("retrieved_count") or 0),
         "source_count": int(manifest_row.get("source_count") or 0),
+        "hop_count": expected_hops,
+        "max_retrieved_path_length": max_path_length,
+        "path_complete": path_complete,
+        "definition_source_hit": definition_hit,
         "expected_fact_hits": expected_fact_hits,
         "expected_fact_total": expected_fact_total,
         "fact_coverage": round(fact_coverage, 6),
@@ -462,7 +533,13 @@ def _aggregate_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "mean_fact_coverage": round(sum(float(row["fact_coverage"]) for row in rows) / total, 6) if total else 0.0,
         "mean_entity_coverage": round(sum(float(row["entity_coverage"]) for row in rows) / total, 6) if total else 0.0,
         "mean_relationship_coverage": round(sum(float(row["relationship_coverage"]) for row in rows) / total, 6) if total else 0.0,
+        "path_complete_rate": _safe_ratio(sum(1 for row in rows if row["path_complete"]), total),
     }
+    multi_hop_rows = [row for row in rows if int(row.get("hop_count") or 0) > 1]
+    metrics["multi_hop_retrieval_recall"] = _safe_ratio(
+        sum(1 for row in multi_hop_rows if row["retrieval_success"]),
+        len(multi_hop_rows),
+    )
     judged_rows = [row for row in rows if row.get("llm_judge_status") == "ok"]
     if judged_rows:
         metrics["llm_judge_supported_rate"] = _safe_ratio(
@@ -510,6 +587,8 @@ def _write_summary(path: Path, result: dict[str, Any]) -> Path:
         f"| Citation support rate | {overall['citation_support_rate']} |",
         f"| Unsupported answer rate | {overall['unsupported_answer_rate']} |",
         f"| Abstention accuracy | {overall['abstention_accuracy']} |",
+        f"| Path complete rate | {overall['path_complete_rate']} |",
+        f"| Multi-hop retrieval recall | {overall['multi_hop_retrieval_recall']} |",
         "",
         "## Artifacts",
         "",
@@ -655,6 +734,8 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 "mean_fact_coverage",
                 "mean_entity_coverage",
                 "mean_relationship_coverage",
+                "path_complete_rate",
+                "multi_hop_retrieval_recall",
                 "llm_judge_supported_rate",
                 "mean_llm_judge_score",
             ],
@@ -671,6 +752,10 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 "answer_status",
                 "retrieved_count",
                 "source_count",
+                "hop_count",
+                "max_retrieved_path_length",
+                "path_complete",
+                "definition_source_hit",
                 "expected_fact_hits",
                 "expected_fact_total",
                 "fact_coverage",

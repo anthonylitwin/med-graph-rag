@@ -28,7 +28,7 @@
         Ingestion
       </RouterLink>
       <RouterLink to="/administration">
-        Admin
+        Administration
       </RouterLink>
     </nav>
   </header>

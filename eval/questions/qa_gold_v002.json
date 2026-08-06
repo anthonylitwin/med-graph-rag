@@ -1,0 +1,100 @@
+{
+  "schema_version": "qa_gold_v2",
+  "question_set_id": "qa_gold_v002",
+  "source_gold_set_id": "bootstrap_v001_full",
+  "review_status": "starter_multi_hop_set",
+  "notes": "Starter QA set for proving direct, multi-hop, definition-augmented, and unanswerable GraphRAG behavior. Expand and adjudicate before treating as a protected holdout.",
+  "questions": [
+    {
+      "id": "qa-gold-v002-q001",
+      "question": "What condition is hypertriglyceridemia associated with?",
+      "expected_facts": [
+        "Hypertriglyceridemia is associated with atherosclerosis."
+      ],
+      "expected_entities": [
+        "Hypertriglyceridemia",
+        "Atherosclerosis"
+      ],
+      "expected_relationships": [
+        "ASSOCIATED_WITH"
+      ],
+      "expected_chunk_ids": [
+        "PMC3234107-chunk-0001"
+      ],
+      "source_pmcids": [
+        "PMC3234107"
+      ],
+      "question_type": "direct_relationship",
+      "difficulty": "easy",
+      "expected_hop_count": 1,
+      "split": "dev",
+      "adjudication_status": "draft_from_v001"
+    },
+    {
+      "id": "qa-gold-v002-q002",
+      "question": "Using the graph path, what condition connects elevated triglycerides to atherosclerosis?",
+      "expected_facts": [
+        "Elevated triglycerides are associated with atherogenic lipoproteins, and atherogenic lipoproteins are associated with or contribute to atherosclerosis."
+      ],
+      "expected_entities": [
+        "Elevated triglycerides",
+        "Atherogenic lipoproteins",
+        "Atherosclerosis"
+      ],
+      "expected_relationships": [
+        "ASSOCIATED_WITH"
+      ],
+      "source_pmcids": [
+        "PMC3234107"
+      ],
+      "question_type": "multi_hop_path",
+      "difficulty": "medium",
+      "expected_hop_count": 2,
+      "split": "dev",
+      "adjudication_status": "draft_multi_hop"
+    },
+    {
+      "id": "qa-gold-v002-q003",
+      "question": "What is hypertriglyceridemia, and what condition is it associated with in the graph?",
+      "expected_facts": [
+        "Hypertriglyceridemia is elevated triglyceride levels in the blood.",
+        "Hypertriglyceridemia is associated with atherosclerosis."
+      ],
+      "expected_entities": [
+        "Hypertriglyceridemia",
+        "Atherosclerosis"
+      ],
+      "expected_relationships": [
+        "DEFINITION_OF",
+        "ASSOCIATED_WITH"
+      ],
+      "source_pmcids": [
+        "PMC3234107"
+      ],
+      "question_type": "definition_augmented",
+      "difficulty": "medium",
+      "expected_hop_count": 1,
+      "requires_definition": true,
+      "split": "dev",
+      "adjudication_status": "draft_definition_augmented"
+    },
+    {
+      "id": "qa-gold-v002-q004",
+      "question": "What treatment cures hypertriglyceridemia through atherosclerosis?",
+      "expected_facts": [],
+      "expected_entities": [
+        "Hypertriglyceridemia"
+      ],
+      "expected_relationships": [],
+      "source_pmcids": [
+        "PMC3234107"
+      ],
+      "question_type": "unanswerable",
+      "difficulty": "medium",
+      "expected_hop_count": 0,
+      "split": "dev",
+      "expected_abstention": true,
+      "adjudication_status": "draft_unanswerable_control"
+    }
+  ]
+}

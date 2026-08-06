@@ -6,6 +6,21 @@ const message = ref('')
 const response = ref<ChatResponse | null>(null)
 const isLoading = ref(false)
 
+function pathLabel(step: Record<string, unknown>): string {
+  const pathStep = Number(step.pathStep ?? 1)
+  const pathLength = Number(step.pathLength ?? 1)
+  return pathLength > 1 ? `Hop ${pathStep} of ${pathLength}` : 'Direct evidence'
+}
+
+function evidenceMeta(step: Record<string, unknown>): string {
+  const parts = [
+    step.evidenceId ? `Evidence ${String(step.evidenceId)}` : '',
+    step.sourcePmcid ? `PMCID ${String(step.sourcePmcid)}` : '',
+    step.chunkId ? `Chunk ${String(step.chunkId)}` : '',
+  ].filter(Boolean)
+  return parts.join(' | ')
+}
+
 async function handleSubmit() {
   if (!message.value.trim()) {
     return
@@ -107,9 +122,13 @@ async function handleSubmit() {
           v-for="(step, index) in response.reasoningPath"
           :key="index"
         >
+          <span class="hop-label">{{ pathLabel(step) }}</span>
+          <br>
           {{ String(step.source) }} --
           <strong>{{ String(step.relationship) }}</strong>
           --&gt; {{ String(step.target) }}
+          <br>
+          <small v-if="evidenceMeta(step)">{{ evidenceMeta(step) }}</small>
         </li>
       </ul>
     </section>
@@ -194,6 +213,11 @@ button {
 
 .response-section strong {
   color: var(--text-h);
+}
+
+.hop-label {
+  color: var(--text-h);
+  font-weight: 750;
 }
 
 @media (max-width: 620px) {

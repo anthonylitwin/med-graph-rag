@@ -29,6 +29,8 @@ def _relationship_to_sentence(evidence: RetrievedEvidence) -> str:
         return f"{source} treats {target}."
     if relationship == "PREVENTS":
         return f"{source} prevents {target}."
+    if relationship == "DEFINITION_OF":
+        return f"{source}: {target}"
     return f"{source} is connected to {target} by {relationship}."
 
 
@@ -41,6 +43,8 @@ def _sources_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str, 
             "confidence": item.confidence or 0.0,
             "sourcePmcid": item.source_pmcid,
             "chunkId": item.chunk_id,
+            "evidenceKind": item.evidence_kind,
+            "sourceUrl": item.source_url,
         }
         for item in evidence
     ]
@@ -52,8 +56,14 @@ def _reasoning_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str
             "source": item.source_name,
             "relationship": item.relationship_type,
             "target": item.target_name,
+            "evidenceId": item.id,
+            "sourcePmcid": item.source_pmcid,
+            "chunkId": item.chunk_id,
+            "pathId": item.path_id,
+            "pathStep": item.path_step,
+            "pathLength": item.path_length,
         }
-        for item in evidence
+        for item in sorted(evidence, key=lambda child: (child.path_id or child.id, child.path_step, child.id))
     ]
 
 
@@ -138,9 +148,11 @@ class GraphRAGAnswerer:
                 raw_response={"status": "model_error", "error": str(exc)},
             )
 
-        sources = raw.get("sources") if isinstance(raw.get("sources"), list) else _sources_from_evidence(evidence)
+        sources = raw.get("sources") if isinstance(raw.get("sources"), list) and raw.get("sources") else _sources_from_evidence(evidence)
         reasoning_path = (
-            raw.get("reasoningPath") if isinstance(raw.get("reasoningPath"), list) else _reasoning_from_evidence(evidence)
+            raw.get("reasoningPath")
+            if isinstance(raw.get("reasoningPath"), list) and raw.get("reasoningPath")
+            else _reasoning_from_evidence(evidence)
         )
         return AnswerRecord(
             id=question.id,

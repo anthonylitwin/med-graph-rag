@@ -43,6 +43,12 @@ class RetrievedEvidence:
     chunk_id: str = ""
     document_id: str = ""
     document_title: str = ""
+    path_id: str = ""
+    path_step: int = 1
+    path_length: int = 1
+    match_score: float = 0.0
+    evidence_kind: str = "graph"
+    source_url: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +65,12 @@ class RetrievedEvidence:
             "chunkId": self.chunk_id,
             "documentId": self.document_id,
             "title": self.document_title,
+            "pathId": self.path_id,
+            "pathStep": self.path_step,
+            "pathLength": self.path_length,
+            "matchScore": self.match_score,
+            "evidenceKind": self.evidence_kind,
+            "sourceUrl": self.source_url,
         }
 
 
