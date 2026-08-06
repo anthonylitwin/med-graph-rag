@@ -15,20 +15,49 @@ export type ChatResponse = {
 
 const API_BASE_URL = 
     import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const CHAT_TIMEOUT_MS = Number(import.meta.env.VITE_CHAT_TIMEOUT_MS ?? 40000);
+
+function errorDetail(payload: unknown): string {
+    if (typeof payload === "object" && payload !== null && "detail" in payload) {
+        const detail = (payload as { detail?: unknown }).detail;
+        if (typeof detail === "string") {
+            return detail;
+        }
+    }
+    return "";
+}
 
 export async function sendChatMessage(
     request: ChatRequest
 ): Promise<ChatResponse> {
-    const response = await fetch(`${API_BASE_URL}/chat`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-    });
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), CHAT_TIMEOUT_MS);
+    let response: Response;
+
+    try {
+        response = await fetch(`${API_BASE_URL}/chat`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(request),
+            signal: controller.signal,
+        });
+    } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+            throw new Error(`Chat request timed out after ${Math.round(CHAT_TIMEOUT_MS / 1000)} seconds`, {
+                cause: error,
+            });
+        }
+        throw new Error(`Unable to reach MedGraphRAG API at ${API_BASE_URL}`, { cause: error });
+    } finally {
+        window.clearTimeout(timeout);
+    }
 
     if (!response.ok){
-        throw new Error(`Chat request failed: ${response.status}`);
+        const payload = await response.json().catch(() => null);
+        const detail = errorDetail(payload);
+        throw new Error(`Chat request failed: ${response.status}${detail ? ` ${detail}` : ""}`);
     }
 
     return response.json();

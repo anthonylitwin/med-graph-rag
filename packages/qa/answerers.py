@@ -57,6 +57,14 @@ def _reasoning_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str
     ]
 
 
+def _fallback_answer_from_evidence(evidence: list[RetrievedEvidence], error: Exception) -> str:
+    evidence_answer = " ".join(_relationship_to_sentence(item) for item in evidence)
+    return (
+        "The graph returned supporting evidence, but the configured language model "
+        f"could not generate a narrative answer ({error}). Evidence summary: {evidence_answer}"
+    )
+
+
 class GraphRAGAnswerer:
     def __init__(
         self,
@@ -108,7 +116,28 @@ class GraphRAGAnswerer:
                 prompt_version=self.prompt_version,
             )
 
-        raw = self.model.generate_json(format_qa_prompt(question.question, evidence), qa_answer_json_schema())
+        try:
+            raw = self.model.generate_json(format_qa_prompt(question.question, evidence), qa_answer_json_schema())
+        except Exception as exc:  # noqa: BLE001 - QA should still return retrieved graph evidence.
+            sources = _sources_from_evidence(evidence)
+            reasoning_path = _reasoning_from_evidence(evidence)
+            confidence_values = [item.confidence for item in evidence if item.confidence is not None]
+            return AnswerRecord(
+                id=question.id,
+                question=question.question,
+                answer=_fallback_answer_from_evidence(evidence, exc),
+                sources=sources,
+                reasoning_path=reasoning_path,
+                model=self.model.model,
+                provider=self.model.provider,
+                retriever=self.retriever.name,
+                retrieved_evidence=evidence_payload,
+                confidence=min(confidence_values) if confidence_values else 0.0,
+                abstained=False,
+                prompt_version=self.prompt_version,
+                raw_response={"status": "model_error", "error": str(exc)},
+            )
+
         sources = raw.get("sources") if isinstance(raw.get("sources"), list) else _sources_from_evidence(evidence)
         reasoning_path = (
             raw.get("reasoningPath") if isinstance(raw.get("reasoningPath"), list) else _reasoning_from_evidence(evidence)

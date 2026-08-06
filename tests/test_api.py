@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import sqlite3
 import sys
+import time
 import unittest
 import tempfile
 from pathlib import Path
@@ -18,6 +19,7 @@ from app.services.qa_service import answer_question, get_active_model_runtime, g
 from app.services.ingestion_service import IngestionJobStore, IngestionQueueService, PROJECT_ROOT
 from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import admin as admin_routes
+from app.routes import chat as chat_routes
 from app.routes import graph as graph_routes
 from app.routes import ingestion as ingestion_routes
 
@@ -152,6 +154,38 @@ class ChatServiceTests(unittest.TestCase):
 
         self.assertIn("message: string;", chat_request_type)
         self.assertNotIn("modelProfile?:", chat_request_type)
+
+    def test_chat_route_maps_dependency_error_to_service_unavailable(self) -> None:
+        with mock.patch("app.routes.chat.answer_question", side_effect=RuntimeError("neo4j unavailable")):
+            with self.assertRaises(Exception) as context:
+                chat_routes.chat(chat_routes.ChatRequest(message="What is hypertriglyceridemia?"))
+
+        self.assertEqual(context.exception.status_code, 503)
+        self.assertIn("Chat service unavailable", context.exception.detail)
+
+    def test_chat_route_maps_timeout_to_gateway_timeout(self) -> None:
+        def slow_answer(question: str) -> dict:
+            _ = question
+            time.sleep(0.05)
+            return {}
+
+        with (
+            mock.patch.dict(os.environ, {"APP_CHAT_REQUEST_TIMEOUT_SECONDS": "0"}, clear=False),
+            mock.patch("app.routes.chat.answer_question", slow_answer),
+        ):
+            with self.assertRaises(Exception) as context:
+                chat_routes.chat(chat_routes.ChatRequest(message="What is hypertriglyceridemia?"))
+
+        self.assertEqual(context.exception.status_code, 504)
+        self.assertIn("timed out", context.exception.detail)
+
+    def test_chat_client_reports_timeout_and_backend_detail(self) -> None:
+        api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
+
+        self.assertIn("AbortController", api_client)
+        self.assertIn("VITE_CHAT_TIMEOUT_MS", api_client)
+        self.assertIn("payload = await response.json().catch(() => null)", api_client)
+        self.assertIn("detail ? ` ${detail}`", api_client)
 
 
 class IngestionQueueTests(unittest.TestCase):

@@ -214,9 +214,15 @@ class OpenAIResponsesModel:
 class LocalHTTPModel:
     provider = "local"
 
-    def __init__(self, model: str | None = None, endpoint: str | None = None) -> None:
+    def __init__(
+        self,
+        model: str | None = None,
+        endpoint: str | None = None,
+        timeout_seconds: int | None = None,
+    ) -> None:
         self.model = model or os.getenv("LOCAL_MODEL", "local-model")
         self.endpoint = endpoint or os.getenv("LOCAL_MODEL_URL", "http://localhost:8001/generate")
+        self.timeout_seconds = timeout_seconds or int(os.getenv("LOCAL_MODEL_TIMEOUT_SECONDS", "120"))
 
     def _post(self, payload: dict[str, Any]) -> dict[str, Any]:
         body = json.dumps(payload).encode("utf-8")
@@ -226,7 +232,7 @@ class LocalHTTPModel:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with request.urlopen(req, timeout=120) as response:  # noqa: S310 - local/dev endpoint by configuration.
+        with request.urlopen(req, timeout=self.timeout_seconds) as response:  # noqa: S310 - local/dev endpoint.
             return json.loads(response.read().decode("utf-8"))
 
     def generate_text(self, prompt: str) -> str:

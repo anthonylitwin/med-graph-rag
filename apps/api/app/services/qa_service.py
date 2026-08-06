@@ -17,7 +17,7 @@ def _ensure_repo_root_on_path() -> None:
 _ensure_repo_root_on_path()
 
 from packages.llm.profiles import ModelProfile, resolve_model_profile
-from packages.llm.providers import get_language_model
+from packages.llm.providers import LocalHTTPModel, OllamaChatModel, get_language_model
 from packages.qa.answerers import GraphRAGAnswerer
 from packages.qa.models import DEFAULT_MAX_EVIDENCE, QuestionRecord
 from packages.qa.retrievers import get_retriever
@@ -37,6 +37,7 @@ _LOCAL_EXTRACTOR_PROVIDERS = {
     "noop",
     "none",
 }
+APP_QA_MODEL_TIMEOUT_SECONDS = 25
 
 
 @lru_cache(maxsize=12)
@@ -46,10 +47,20 @@ def get_qa_answerer(
     model_name: str,
     retriever_name: str,
     max_evidence: int,
+    model_timeout_seconds: int,
 ) -> GraphRAGAnswerer:
-    model = get_language_model(provider, model_name)
+    model = get_app_language_model(provider, model_name, model_timeout_seconds)
     retriever = get_retriever(retriever_name)
     return GraphRAGAnswerer(model=model, retriever=retriever, max_evidence=max_evidence)
+
+
+def get_app_language_model(provider: str, model_name: str, timeout_seconds: int):
+    normalized = provider.lower().strip()
+    if normalized == "ollama":
+        return OllamaChatModel(model=model_name, timeout_seconds=timeout_seconds)
+    if normalized == "local":
+        return LocalHTTPModel(model=model_name, timeout_seconds=timeout_seconds)
+    return get_language_model(provider, model_name)
 
 
 def _local_env_model(provider: str) -> str | None:
@@ -91,12 +102,14 @@ def answer_question(question: str, model_profile: str | None = None) -> dict:
     _ = model_profile
     profile = get_app_model_profile()
     max_evidence = int(os.getenv("QA_MAX_EVIDENCE", str(DEFAULT_MAX_EVIDENCE)))
+    model_timeout_seconds = int(os.getenv("APP_QA_MODEL_TIMEOUT_SECONDS", str(APP_QA_MODEL_TIMEOUT_SECONDS)))
     answerer = get_qa_answerer(
         profile.name,
         profile.qa_provider,
         profile.qa_model,
         profile.qa_retriever,
         max_evidence,
+        model_timeout_seconds,
     )
     record = QuestionRecord(id="ui-question", question=question)
     answer = answerer.answer(record)
