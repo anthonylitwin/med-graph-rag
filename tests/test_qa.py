@@ -118,6 +118,43 @@ class QAAnswererTests(unittest.TestCase):
         self.assertIn("Retrieved graph evidence", model.prompt)
         self.assertEqual(model.json_schema["name"], "medgraphrag_qa_answer")
 
+    def test_model_failure_returns_retrieved_evidence_fallback(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Fish oil",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fish oil reduced triglycerides.",
+                        confidence=0.92,
+                    )
+                ]
+
+        class FailingModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                raise TimeoutError("model timed out")
+
+        answerer = GraphRAGAnswerer(model=FailingModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="What does fish oil reduce?"))
+
+        self.assertFalse(answer.abstained)
+        self.assertIn("configured language model could not generate", answer.answer)
+        self.assertIn("Fish oil may reduce Triglycerides.", answer.answer)
+        self.assertEqual(answer.sources[0]["evidenceText"], "Fish oil reduced triglycerides.")
+        self.assertEqual(answer.raw_response["status"], "model_error")
+
 
 class QARetrieverTests(unittest.TestCase):
     def test_evidence_from_record_maps_neo4j_fields(self) -> None:
