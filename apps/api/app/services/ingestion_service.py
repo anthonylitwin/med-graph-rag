@@ -9,7 +9,7 @@ import time
 import uuid
 from contextlib import contextmanager
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
@@ -57,6 +57,25 @@ def _repo_path_from_env(name: str, default: str) -> Path:
     path = Path(raw_value) if raw_value else Path(default)
     if not path.is_absolute():
         path = PROJECT_ROOT / path
+    return path
+
+
+def _path_for_storage(path: Path) -> str:
+    try:
+        return path.resolve().relative_to(PROJECT_ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def _repo_path_from_stored(value: str) -> Path:
+    normalized = value.replace("\\", "/")
+    if normalized == "/app" or normalized.startswith("/app/"):
+        relative_path = PurePosixPath(normalized).relative_to("/app")
+        return PROJECT_ROOT.joinpath(*relative_path.parts)
+
+    path = Path(value)
+    if not path.is_absolute():
+        return PROJECT_ROOT / path
     return path
 
 
@@ -171,7 +190,7 @@ class IngestionJobStore:
                     int(apply_schema),
                     int(skip_load),
                     int(fail_fast),
-                    output_root.as_posix(),
+                    _path_for_storage(output_root),
                     json.dumps(source_payload),
                     json.dumps(options),
                 ),
@@ -337,7 +356,7 @@ class IngestionJobStore:
             "applySchema": bool(row["apply_schema"]),
             "skipLoad": bool(row["skip_load"]),
             "failFast": bool(row["fail_fast"]),
-            "outputRoot": row["output_root"],
+            "outputRoot": _repo_path_from_stored(row["output_root"]).as_posix(),
             "error": row["error"],
             "options": _json_loads(row["options_json"], {}),
         }
