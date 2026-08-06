@@ -442,9 +442,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .ingestion-page {
   max-width: 1080px;
-  margin: 2rem auto;
-  padding: 0 1rem 3rem;
-  font-family: sans-serif;
+  margin: 0 auto;
+  padding: 34px 24px 56px;
   text-align: left;
 }
 
@@ -459,18 +458,21 @@ onBeforeUnmount(() => {
 .page-header p,
 .empty,
 dt {
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .submit-panel {
-  border-block: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   margin-top: 1.5rem;
-  padding: 1.25rem 0;
+  padding: 1.25rem;
 }
 
 .segmented-control {
   display: inline-flex;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 1rem;
@@ -484,7 +486,7 @@ dt {
 }
 
 .segmented-control .active {
-  background: #111827;
+  background: var(--text-h);
   color: #fff;
 }
 
@@ -496,12 +498,7 @@ dt {
 textarea,
 input[type='text'],
 select {
-  box-sizing: border-box;
   width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.75rem;
-  font: inherit;
 }
 
 .file-input {
@@ -515,13 +512,7 @@ select {
 
 .file-input span,
 button {
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background: #fff;
-  color: #111827;
-  padding: 0.55rem 0.8rem;
-  font: inherit;
-  cursor: pointer;
+  color: var(--text-h);
 }
 
 .options-grid {
@@ -538,7 +529,7 @@ button {
 }
 
 .model-runtime span {
-  color: #6b7280;
+  color: var(--muted);
 }
 
 .checkbox-label {
@@ -550,8 +541,8 @@ button {
 
 .primary-button {
   margin-top: 1rem;
-  background: #0f766e;
-  border-color: #0f766e;
+  border-color: var(--accent);
+  background: var(--accent);
   color: #fff;
 }
 
@@ -567,6 +558,15 @@ button:disabled {
   margin-top: 1.5rem;
 }
 
+.queue-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  overflow: auto;
+  padding: 1.25rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -575,13 +575,13 @@ table {
 
 th,
 td {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   padding: 0.65rem 0.5rem;
   vertical-align: top;
 }
 
 th {
-  color: #4b5563;
+  color: var(--muted);
   font-weight: 600;
 }
 
@@ -591,25 +591,28 @@ tbody tr {
 
 tbody tr.selected,
 tbody tr:hover {
-  background: #f9fafb;
+  background: var(--surface-muted);
 }
 
 .job-detail {
-  border-left: 1px solid #e5e7eb;
-  padding-left: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem;
 }
 
 .progress-track {
   height: 10px;
   border-radius: 999px;
-  background: #e5e7eb;
+  background: var(--code-bg);
   overflow: hidden;
   margin: 1rem 0;
 }
 
 .progress-fill {
   height: 100%;
-  background: #0f766e;
+  background: var(--accent);
   transition: width 160ms ease;
 }
 
@@ -638,7 +641,7 @@ h3 {
 
 .document-table span {
   display: block;
-  color: #b91c1c;
+  color: var(--danger);
   font-size: 0.84rem;
 }
 
@@ -646,8 +649,8 @@ h3 {
   display: inline-flex;
   border-radius: 999px;
   padding: 0.15rem 0.5rem;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--surface-muted);
+  color: var(--text);
   font-size: 0.82rem;
   line-height: 1.4;
 }
@@ -677,7 +680,7 @@ h3 {
 }
 
 .error {
-  color: #b91c1c;
+  color: var(--danger);
   margin-top: 1rem;
 }
 
@@ -690,7 +693,7 @@ h3 {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   padding: 0.45rem 0;
 }
 
@@ -707,10 +710,7 @@ h3 {
   }
 
   .job-detail {
-    border-left: 0;
-    border-top: 1px solid #e5e7eb;
-    padding-left: 0;
-    padding-top: 1rem;
+    padding: 1rem;
   }
 }
 </style>

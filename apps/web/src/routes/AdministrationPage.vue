@@ -122,7 +122,7 @@ onMounted(() => {
           :key="job.id"
         >
           <strong>{{ job.id }}</strong>
-          <span>{{ job.status }} · {{ job.sourceType }} · {{ formatDate(job.submittedAt) }}</span>
+          <span>{{ job.status }} / {{ job.sourceType }} / {{ formatDate(job.submittedAt) }}</span>
         </li>
       </ul>
 
@@ -160,7 +160,7 @@ onMounted(() => {
 .administration-page {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 32px 24px 48px;
+  padding: 34px 24px 56px;
   text-align: left;
 }
 
@@ -185,23 +185,16 @@ onMounted(() => {
 
 .eyebrow {
   margin-bottom: 6px;
-  color: #25636f;
+  color: var(--accent);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 button {
-  min-height: 40px;
-  border: 1px solid #25636f;
-  border-radius: 6px;
-  background: #25636f;
+  border: 1px solid var(--accent);
+  background: var(--accent);
   color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 8px 14px;
 }
 
 button:disabled {
@@ -218,7 +211,9 @@ button:disabled {
 
 .metric {
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   padding: 16px;
 }
 
@@ -237,8 +232,11 @@ button:disabled {
 }
 
 .danger-zone {
-  border-block: 1px solid var(--border);
-  padding: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
 }
 
 .danger-zone h2,
@@ -261,15 +259,8 @@ button:disabled {
 }
 
 input {
-  box-sizing: border-box;
   width: 100%;
   min-height: 40px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text-h);
-  font: inherit;
-  padding: 8px 10px;
 }
 
 .danger-button {
@@ -316,7 +307,8 @@ input {
   display: grid;
   gap: 4px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
+  background: var(--surface-muted);
   padding: 10px 12px;
 }
 

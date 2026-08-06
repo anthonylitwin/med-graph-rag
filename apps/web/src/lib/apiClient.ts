@@ -257,6 +257,8 @@ export type IngestionModelProfile = {
   entity_model: string;
 };
 
+export type ActiveModelRuntime = IngestionModelProfile;
+
 export type IngestionArtifacts = {
   jobId: string;
   outputRoot: string;
@@ -322,6 +324,17 @@ export async function getIngestionModelOptions(): Promise<IngestionModelProfile>
 
   if (!response.ok) {
     throw new Error(`Ingestion model options request failed: ${response.status}`);
+  }
+
+  const payload = await response.json();
+  return payload.activeProfile;
+}
+
+export async function getActiveModelRuntime(): Promise<ActiveModelRuntime> {
+  const response = await fetch(`${API_BASE_URL}/chat/model-options`);
+
+  if (!response.ok) {
+    throw new Error(`Model runtime request failed: ${response.status}`);
   }
 
   const payload = await response.json();
