@@ -35,17 +35,28 @@ async function handleSubmit() {
 
 <template>
   <main class="chat-page">
-    <h1>MedGraphRAG</h1>
-    <p>Ask a biomedical question against the configured graph evidence.</p>
+    <header class="page-header">
+      <p class="eyebrow">
+        Graph-Grounded QA
+      </p>
+      <h1>Chat</h1>
+      <p>Ask a biomedical question against the configured graph evidence.</p>
+    </header>
 
-    <form @submit.prevent="handleSubmit">
+    <form
+      class="question-panel"
+      @submit.prevent="handleSubmit"
+    >
+      <label for="chat-message">Question</label>
       <textarea
+        id="chat-message"
         v-model="message"
         rows="5"
-        placeholder="Ask a question..."
+        placeholder="How does aspirin affect bleeding risk?"
       />
 
       <button
+        class="primary-button"
         type="submit"
         :disabled="isLoading"
       >
@@ -107,23 +118,87 @@ async function handleSubmit() {
 
 <style scoped>
 .chat-page {
-  max-width: 900px;
-  margin: 2rem auto;
-  font-family: sans-serif;
+  display: grid;
+  gap: 22px;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 34px 24px 56px;
   text-align: left;
+}
+
+.page-header h1 {
+  margin: 0 0 10px;
+}
+
+.page-header p:last-child {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.question-panel,
+.response-section {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 22px;
+}
+
+.question-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.question-panel label {
+  color: var(--text-h);
+  font-size: 14px;
+  font-weight: 750;
 }
 
 textarea {
   width: 100%;
-  box-sizing: border-box;
-  padding: 1rem;
+  min-height: 150px;
+  resize: vertical;
 }
 
 button {
-  margin-top: 1rem;
+  width: fit-content;
 }
 
 .response-section {
-  margin-top: 2rem;
+  display: grid;
+  gap: 14px;
+}
+
+.response-section h2 {
+  margin: 0;
+}
+
+.response-section h3 {
+  margin: 10px 0 0;
+  color: var(--accent);
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.response-section ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.response-section li {
+  padding-left: 4px;
+}
+
+.response-section strong {
+  color: var(--text-h);
+}
+
+@media (max-width: 620px) {
+  .chat-page {
+    padding: 24px 16px 42px;
+  }
 }
 </style>

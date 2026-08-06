@@ -328,12 +328,13 @@ onBeforeUnmount(() => {
   min-height: 560px;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   background:
     linear-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(100, 116, 139, 0.08) 1px, transparent 1px),
-    #f8fafc;
+    var(--surface-muted);
   background-size: 24px 24px;
+  box-shadow: var(--shadow-sm);
 }
 
 .graph-toolbar {
@@ -342,10 +343,9 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   gap: 12px;
   min-height: 48px;
-  box-sizing: border-box;
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.9);
-  color: #334155;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  color: var(--text);
   font-size: 14px;
   padding: 8px 10px;
 }
@@ -358,21 +358,17 @@ onBeforeUnmount(() => {
 button {
   min-width: 36px;
   min-height: 32px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #1f2937;
-  cursor: pointer;
-  font: inherit;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-h);
   font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
   padding: 6px 10px;
 }
 
 button:hover {
-  border-color: #25636f;
-  color: #25636f;
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .graph-canvas {
@@ -385,12 +381,12 @@ button:hover {
     background:
       linear-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px),
       linear-gradient(90deg, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
-      #111827;
+      var(--surface-muted);
   }
 
   .graph-toolbar {
-    background: rgba(17, 24, 39, 0.92);
-    color: #d1d5db;
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    color: var(--text);
   }
 }
 

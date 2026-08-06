@@ -392,7 +392,7 @@ onMounted(() => {
 
 .eyebrow {
   margin-bottom: 6px;
-  color: #25636f;
+  color: var(--accent);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
@@ -423,8 +423,9 @@ onMounted(() => {
   align-items: end;
   padding: 16px;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--bg) 88%, #f1f5f9);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 label {
@@ -439,14 +440,7 @@ input,
 select {
   width: 100%;
   min-height: 40px;
-  box-sizing: border-box;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  color: var(--text-h);
-  font: inherit;
   font-size: 15px;
-  padding: 8px 10px;
 }
 
 .button-row {
@@ -457,21 +451,15 @@ select {
 }
 
 button {
-  min-height: 40px;
-  border: 1px solid #25636f;
-  border-radius: 6px;
-  background: #25636f;
+  border: 1px solid var(--accent);
+  background: var(--accent);
   color: #fff;
-  cursor: pointer;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  padding: 8px 14px;
 }
 
 button[type='button'] {
-  background: var(--bg);
-  color: #25636f;
+  border-color: var(--accent-border);
+  background: var(--surface);
+  color: var(--accent);
 }
 
 button:disabled {
@@ -522,8 +510,9 @@ button:disabled {
   box-sizing: border-box;
   overflow: auto;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   padding: 16px;
 }
 
@@ -579,7 +568,9 @@ dd {
   display: grid;
   gap: 5px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   padding: 12px;
 }
 
@@ -595,7 +586,7 @@ dd {
 }
 
 .relationship-list strong {
-  color: #25636f;
+  color: var(--accent);
   font-size: 13px;
 }
 
@@ -607,7 +598,7 @@ pre {
   max-height: 420px;
   overflow: auto;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: var(--code-bg);
   color: var(--text-h);
   padding: 16px;
