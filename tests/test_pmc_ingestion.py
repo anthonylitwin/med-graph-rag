@@ -14,6 +14,7 @@ from pipelines.ingestion.chunking import chunk_article
 from pipelines.ingestion.extractors import GLiNERExtractor, GLiNEROllamaExtractor, OpenAIResponsesExtractor, get_extractor
 from pipelines.ingestion.models import ChunkRecord, ExtractionContext, PipelineConfig
 from pipelines.ingestion.neo4j_loader import load_processed_record_with_session
+from scripts.load_processed_graph import load_processed_graph
 from pipelines.ingestion.pipeline import process_pmc_articles
 from pipelines.ingestion.pmc_bioc import BioCUnavailableError, fetch_pmc_bioc, parse_bioc_payload
 from pipelines.ingestion.pmc_inputs import collect_pmcids, normalize_pmcid, read_pmcid_file
@@ -698,7 +699,13 @@ class Neo4jLoaderTests(unittest.TestCase):
             ],
         }
 
-        counts = load_processed_record_with_session(session, record)
+        counts = load_processed_record_with_session(
+            session,
+            record,
+            graph_run_id="graph-run-v2",
+            graph_source="accepted extractor v2 artifacts",
+            loaded_at="2026-08-07T00:00:00+00:00",
+        )
 
         self.assertEqual(counts, {"entities": 2, "relationships": 1})
         combined_queries = "\n".join(query for query, _ in session.calls)
@@ -706,6 +713,55 @@ class Neo4jLoaderTests(unittest.TestCase):
         self.assertIn("MERGE (paper)-[mention:MENTIONS", combined_queries)
         self.assertIn("MERGE (source)-[relationship:REDUCES", combined_queries)
         self.assertNotIn("pmid", session.calls[0][1]["props"])
+        relationship_props = session.calls[-1][1]["props"]
+        self.assertEqual(relationship_props["graph_run_id"], "graph-run-v2")
+        self.assertEqual(relationship_props["graph_source"], "accepted extractor v2 artifacts")
+        self.assertEqual(relationship_props["graph_loaded_at"], "2026-08-07T00:00:00+00:00")
+        self.assertEqual(relationship_props["source_run_id"], "")
+
+    def test_load_processed_graph_reports_metadata_and_passes_provenance(self) -> None:
+        record = {
+            "run": {"id": "extractor-run-v2", "source": "annotation_gold_eval", "created_at": "created"},
+            "document": {"id": "paper:PMC3572442", "pmcid": "PMC3572442", "title": "Graph paper"},
+            "entities": [],
+            "relationships": [
+                {
+                    "id": "rel:abc",
+                    "type": "REDUCES",
+                    "source": {"id": "drug:fish_oil", "type": "Drug", "name": "Fish oil"},
+                    "target": {"id": "biomarker:triglycerides", "type": "Biomarker", "name": "Triglycerides"},
+                    "properties": {
+                        "confidence": 0.9,
+                        "evidence": "Fish oil reduced triglycerides",
+                        "source_pmcid": "PMC3572442",
+                        "chunk_id": "PMC3572442-chunk-0001",
+                        "extractor": "fixture",
+                        "model": "fixture-model",
+                    },
+                }
+            ],
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            processed_dir = Path(tmpdir) / "processed"
+            report_path = Path(tmpdir) / "report.json"
+            processed_dir.mkdir()
+            (processed_dir / "PMC3572442.json").write_text(json.dumps(record), encoding="utf-8")
+            with mock.patch("scripts.load_processed_graph.load_processed_records") as load_records:
+                load_records.return_value = {"files": 1, "entities": 0, "relationships": 1}
+
+                report = load_processed_graph(
+                    processed_dir=processed_dir,
+                    graph_run_id="graph-run-v2",
+                    graph_source="accepted extractor v2 artifacts",
+                    report_path=report_path,
+                )
+                self.assertTrue(report_path.exists())
+
+        self.assertEqual(report["source_run_ids"], ["extractor-run-v2"])
+        self.assertEqual(report["relationship_metadata"]["complete_relationship_metadata_count"], 1)
+        load_records.assert_called_once()
+        self.assertEqual(load_records.call_args.kwargs["graph_run_id"], "graph-run-v2")
+        self.assertEqual(load_records.call_args.kwargs["graph_source"], "accepted extractor v2 artifacts")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 from packages.llm.providers import NoopLanguageModel
 from packages.qa.answerers import GraphRAGAnswerer
@@ -229,6 +230,7 @@ class QARetrieverTests(unittest.TestCase):
                 "pathLength": 2,
                 "matchScore": 0.75,
                 "evidenceKind": "graph",
+                "graphRunId": "graph-run-v2",
             }
         )
 
@@ -239,6 +241,8 @@ class QARetrieverTests(unittest.TestCase):
         self.assertEqual(evidence.path_step, 2)
         self.assertEqual(evidence.path_length, 2)
         self.assertEqual(evidence.match_score, 0.75)
+        self.assertEqual(evidence.graph_run_id, "graph-run-v2")
+        self.assertEqual(evidence.to_dict()["graphRunId"], "graph-run-v2")
 
     def test_graph_retriever_serializes_ordered_path_records(self) -> None:
         retriever = GraphRetriever(include_definitions=False)
@@ -309,6 +313,26 @@ class QAPipelineTests(unittest.TestCase):
         self.assertEqual(rows[0]["retrieved_count"], "1")
         self.assertTrue(answer_exists)
         self.assertTrue(retrieved_exists)
+
+    def test_process_questions_passes_graph_run_id_to_retriever_factory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_root = Path(tmpdir) / "qa"
+            with mock.patch("pipelines.qa.pipeline.get_retriever") as get_retriever:
+                get_retriever.return_value = NoopRetriever()
+
+                process_questions(
+                    QAConfig(
+                        questions=[QuestionRecord(id="q1", question="What medication may aspirin interact with?")],
+                        output_root=output_root,
+                        answerer_provider="noop",
+                        model="noop-language-model-v0",
+                        retriever="graph",
+                        graph_run_id="graph-run-v2",
+                        skip_answer=True,
+                    )
+                )
+
+        get_retriever.assert_called_once_with("graph", graph_run_id="graph-run-v2")
 
 
 class QAEvaluationTests(unittest.TestCase):

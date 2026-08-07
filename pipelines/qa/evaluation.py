@@ -741,6 +741,7 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 answerer_provider=profile.qa_provider,
                 model=profile.qa_model,
                 retriever=profile.qa_retriever,
+                graph_run_id=config.graph_run_id,
                 max_evidence=config.max_evidence,
                 skip_answer=config.skip_answer,
                 fail_fast=config.fail_fast,

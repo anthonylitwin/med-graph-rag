@@ -11,6 +11,7 @@ from packages.qa.models import RetrievedEvidence
 from pipelines.ingestion.non_instruct import DEFAULT_TERMINOLOGY_PATH, normalize_term
 
 GRAPH_START_STOP_TERMS = {
+    "and",
     "associated",
     "condition",
     "connect",
@@ -27,6 +28,7 @@ GRAPH_START_STOP_TERMS = {
     "path",
     "relationship",
     "relationships",
+    "the",
     "through",
     "lipid",
     "treatment",
@@ -92,6 +94,7 @@ def evidence_from_record(record: Any) -> RetrievedEvidence:
         match_score=float(row.get("matchScore") or 0.0),
         evidence_kind=str(row.get("evidenceKind") or "graph"),
         source_url=str(row.get("sourceUrl") or ""),
+        graph_run_id=str(row.get("graphRunId") or ""),
     )
 
 
@@ -186,6 +189,17 @@ def _matched_entry_terms(question: str, entries: list[TerminologyEntry | Definit
     return terms
 
 
+def _matched_concept_groups(question: str) -> list[set[str]]:
+    normalized_question = normalize_term(question)
+    normalized_question_padded = f" {normalized_question} "
+    groups: list[set[str]] = []
+    for entry in [*_load_terminology(), *_load_definitions()]:
+        values = {normalize_term(value) for value in entry.search_texts() if normalize_term(value)}
+        if values and any(f" {value} " in normalized_question_padded for value in values):
+            groups.append(values)
+    return groups
+
+
 def _relationship_relevance(relationship_type: str, question: str) -> float:
     normalized = normalize_term(question)
     relationship = relationship_type.upper()
@@ -204,6 +218,11 @@ def _relationship_relevance(relationship_type: str, question: str) -> float:
         "DEFINITION_OF": ("what is", "define", "definition", "meaning"),
     }.get(relationship, ())
     return 1.0 if any(cue in normalized for cue in cues) else 0.0
+
+
+def _path_requested(question: str) -> bool:
+    normalized = normalize_term(question)
+    return any(cue in normalized for cue in ("connect", "path", "through", "multi hop", "multi-hop"))
 
 
 def _edge_term_overlap(row: dict[str, Any], terms: set[str]) -> float:
@@ -231,6 +250,45 @@ def _path_endpoint_overlap(path_rows: list[dict[str, Any]], terms: set[str]) -> 
         return 0.0
     hits = sum(1 for term in terms if len(term) >= 3 and term in text)
     return min(1.0, hits / max(1, min(len(terms), 6)))
+
+
+def _path_has_label(path_rows: list[dict[str, Any]], label: str) -> bool:
+    expected = label.casefold()
+    for row in path_rows:
+        labels = [*list(row.get("sourceLabels") or []), *list(row.get("targetLabels") or [])]
+        if any(str(item).casefold() == expected for item in labels):
+            return True
+    return False
+
+
+def _path_lipid_action_score(path_rows: list[dict[str, Any]], question: str) -> float:
+    normalized = normalize_term(question)
+    if not any(cue in normalized for cue in ("lipid", "biomarker", "cholesterol", "triglyceride", "drug")):
+        return 0.0
+    relationships = {str(row.get("relationshipType") or "").upper() for row in path_rows}
+    action_count = len(relationships & {"INCREASES", "REDUCES"})
+    if action_count:
+        return min(1.0, action_count / 2)
+    if relationships == {"ASSOCIATED_WITH"}:
+        return -0.5
+    return 0.0
+
+
+def _path_concept_group_coverage(path_rows: list[dict[str, Any]], question: str) -> float:
+    groups = _matched_concept_groups(question)
+    if not groups:
+        return 1.0
+    endpoint_text = normalize_term(
+        " ".join(
+            str(row.get(key) or "")
+            for row in path_rows
+            for key in ("sourceName", "targetName")
+        )
+    )
+    if not endpoint_text:
+        return 0.0
+    matched = sum(1 for group in groups if any(value and value in endpoint_text for value in group))
+    return matched / len(groups)
 
 
 def _path_id(rows: list[dict[str, Any]]) -> str:
@@ -320,6 +378,7 @@ class GraphRetriever:
     MATCH (candidate)
     WHERE NOT candidate:Paper
       AND candidate.name IS NOT NULL
+      AND ($graph_run_id = "" OR candidate.graph_run_id = $graph_run_id)
       AND any(term IN $terms WHERE
         toLower(candidate.name) = term
         OR toLower(candidate.name) CONTAINS term
@@ -337,6 +396,7 @@ class GraphRetriever:
     CALL (start) {
       MATCH (source)-[relationship]->(target)
       WHERE type(relationship) <> "MENTIONS"
+        AND ($graph_run_id = "" OR relationship.graph_run_id = $graph_run_id)
         AND (elementId(source) = elementId(start) OR elementId(target) = elementId(start))
       WITH source, relationship, target, properties(relationship) AS relationshipProps
       RETURN [
@@ -354,12 +414,14 @@ class GraphRetriever:
           targetLabels: labels(target),
           pathStep: 1,
           pathLength: 1
+          , graphRunId: coalesce(relationshipProps["graph_run_id"], "")
         }
       ] AS pathRows
       UNION
       MATCH path = (start)-[first]-(middle)-[second]-(finish)
       WHERE type(first) <> "MENTIONS"
         AND type(second) <> "MENTIONS"
+        AND ($graph_run_id = "" OR (first.graph_run_id = $graph_run_id AND second.graph_run_id = $graph_run_id))
         AND elementId(start) <> elementId(finish)
         AND NOT finish:Paper
         AND NOT middle:Paper
@@ -381,7 +443,8 @@ class GraphRetriever:
           targetName: coalesce(endNode(relationship).name, ""),
           targetLabels: labels(endNode(relationship)),
           pathStep: index + 1,
-          pathLength: 2
+          pathLength: 2,
+          graphRunId: coalesce(relationshipProps["graph_run_id"], "")
         }
       ) AS pathRows
       RETURN pathRows
@@ -390,13 +453,73 @@ class GraphRetriever:
     LIMIT $limit
     """
 
+    DRUG_CONNECTOR_QUERY = """
+    UNWIND range(0, size($groups) - 1) AS firstIndex
+    UNWIND range(0, size($groups) - 1) AS secondIndex
+    WITH firstIndex, secondIndex
+    WHERE firstIndex < secondIndex
+    MATCH (drug:Drug)-[first]-(firstTarget)
+    MATCH (drug)-[second]-(secondTarget)
+    WHERE first <> second
+      AND type(first) <> "MENTIONS"
+      AND type(second) <> "MENTIONS"
+      AND ($graph_run_id = "" OR (first.graph_run_id = $graph_run_id AND second.graph_run_id = $graph_run_id))
+      AND any(term IN $groups[firstIndex] WHERE
+        toLower(coalesce(firstTarget.name, "")) CONTAINS term
+        OR term CONTAINS toLower(coalesce(firstTarget.name, ""))
+      )
+      AND any(term IN $groups[secondIndex] WHERE
+        toLower(coalesce(secondTarget.name, "")) CONTAINS term
+        OR term CONTAINS toLower(coalesce(secondTarget.name, ""))
+      )
+    WITH first, firstTarget, second, secondTarget, properties(first) AS firstProps, properties(second) AS secondProps
+    RETURN [
+      {
+        relationshipId: coalesce(firstProps["id"], elementId(first)),
+        sourceName: coalesce(startNode(first).name, ""),
+        sourceLabels: labels(startNode(first)),
+        relationshipType: type(first),
+        evidenceText: coalesce(firstProps["evidence"], firstProps["evidence_text"], firstProps["evidenceText"], ""),
+        confidence: firstProps["confidence"],
+        sourcePmcid: coalesce(firstProps["source_pmcid"], ""),
+        sourcePmid: coalesce(firstProps["source_pmid"], ""),
+        chunkId: coalesce(firstProps["chunk_id"], ""),
+        targetName: coalesce(endNode(first).name, ""),
+        targetLabels: labels(endNode(first)),
+        pathStep: 1,
+        pathLength: 2,
+        graphRunId: coalesce(firstProps["graph_run_id"], "")
+      },
+      {
+        relationshipId: coalesce(secondProps["id"], elementId(second)),
+        sourceName: coalesce(startNode(second).name, ""),
+        sourceLabels: labels(startNode(second)),
+        relationshipType: type(second),
+        evidenceText: coalesce(secondProps["evidence"], secondProps["evidence_text"], secondProps["evidenceText"], ""),
+        confidence: secondProps["confidence"],
+        sourcePmcid: coalesce(secondProps["source_pmcid"], ""),
+        sourcePmid: coalesce(secondProps["source_pmid"], ""),
+        chunkId: coalesce(secondProps["chunk_id"], ""),
+        targetName: coalesce(endNode(second).name, ""),
+        targetLabels: labels(endNode(second)),
+        pathStep: 2,
+        pathLength: 2,
+        graphRunId: coalesce(secondProps["graph_run_id"], "")
+      }
+    ] AS pathRows
+    ORDER BY coalesce(firstProps["confidence"], 0.0) + coalesce(secondProps["confidence"], 0.0) DESC
+    LIMIT $limit
+    """
+
     def __init__(
         self,
         terminology_path: Path = DEFAULT_TERMINOLOGY_PATH,
         include_definitions: bool = True,
+        graph_run_id: str = "",
     ) -> None:
         self.terminology_path = terminology_path
         self.include_definitions = include_definitions
+        self.graph_run_id = graph_run_id.strip()
 
     def _terms(self, question: str) -> list[str]:
         entries = _load_terminology(self.terminology_path)
@@ -408,6 +531,14 @@ class GraphRetriever:
             if term.strip() and term.casefold() not in GRAPH_START_STOP_TERMS
         )
 
+    def _concept_groups(self, question: str) -> list[list[str]]:
+        groups = []
+        for group in _matched_concept_groups(question):
+            values = sorted(value.casefold() for value in group if value and value.casefold() not in GRAPH_START_STOP_TERMS)
+            if values and values not in groups:
+                groups.append(values)
+        return groups
+
     def _path_records(self, question: str, path_rows: list[dict[str, Any]], terms: set[str]) -> list[RetrievedEvidence]:
         path_identifier = _path_id(path_rows)
         confidence_values = [_as_float(row.get("confidence")) or 0.0 for row in path_rows]
@@ -417,12 +548,24 @@ class GraphRetriever:
             len(path_rows),
         )
         endpoint_overlap = _path_endpoint_overlap(path_rows, terms)
+        concept_coverage = _path_concept_group_coverage(path_rows, question)
+        path_bonus = 0.08 if _path_requested(question) and path_length > 1 else 0.03
+        if path_length > 1 and not _path_requested(question):
+            path_bonus = -0.05
+        if path_length > 1 and _path_requested(question) and concept_coverage < 1.0:
+            path_bonus -= 0.25
+        connector_bonus = 0.0
+        if path_length > 1 and "drug" in normalize_term(question):
+            connector_bonus = 0.25 if _path_has_label(path_rows, "Drug") else -0.10
         score = (
-            0.40 * endpoint_overlap
+            0.20 * endpoint_overlap
+            + 0.30 * concept_coverage
             + 0.25 * max((_edge_term_overlap(row, terms) for row in path_rows), default=0.0)
-            + 0.20 * max((_relationship_relevance(str(row.get("relationshipType") or ""), question) for row in path_rows), default=0.0)
+            + 0.15 * max((_relationship_relevance(str(row.get("relationshipType") or ""), question) for row in path_rows), default=0.0)
+            + 0.15 * _path_lipid_action_score(path_rows, question)
             + 0.10 * min_confidence
-            + 0.05 * (1.0 if path_length > 1 else 0.5)
+            + path_bonus
+            + connector_bonus
         )
         records: list[RetrievedEvidence] = []
         for index, row in enumerate(path_rows, start=1):
@@ -446,11 +589,38 @@ class GraphRetriever:
         try:
             with neo4j_driver() as driver:
                 with driver.session() as session:
-                    start_rows = list(session.run(self.START_QUERY, terms=terms, limit=25))
+                    start_rows = list(
+                        session.run(
+                            self.START_QUERY,
+                            terms=terms,
+                            graph_run_id=self.graph_run_id,
+                            limit=25,
+                        )
+                    )
                     start_ids = [str(dict(row).get("id")) for row in start_rows if dict(row).get("id")]
                     if not start_ids:
                         return definitions[:limit]
-                    path_rows = list(session.run(self.PATH_QUERY, start_ids=start_ids, limit=max(graph_limit * 12, 120)))
+                    connector_rows = []
+                    if "drug" in normalize_term(question) and _path_requested(question):
+                        groups = self._concept_groups(question)
+                        if len(groups) >= 2:
+                            connector_rows = list(
+                                session.run(
+                                    self.DRUG_CONNECTOR_QUERY,
+                                    groups=groups,
+                                    graph_run_id=self.graph_run_id,
+                                    limit=100,
+                                )
+                            )
+                    path_rows = list(
+                        session.run(
+                            self.PATH_QUERY,
+                            start_ids=start_ids,
+                            graph_run_id=self.graph_run_id,
+                            limit=max(graph_limit * 100, 1000),
+                        )
+                    )
+                    path_rows = [*connector_rows, *path_rows]
         except Exception:
             if definitions:
                 return definitions[:limit]
@@ -478,10 +648,15 @@ class GraphRetriever:
             )
         )
         graph_evidence: list[RetrievedEvidence] = []
+        seen_relationship_ids: set[str] = set()
         for path in paths:
+            relationship_ids = {item.id for item in path}
+            if relationship_ids & seen_relationship_ids:
+                continue
             if len(graph_evidence) + len(path) > graph_limit:
                 continue
             graph_evidence.extend(sorted(path, key=lambda item: item.path_step))
+            seen_relationship_ids.update(relationship_ids)
             if len(graph_evidence) >= graph_limit:
                 break
         return (graph_evidence + definitions)[:limit]
@@ -534,10 +709,10 @@ class NoopRetriever:
         return evidence[:limit]
 
 
-def get_retriever(name: str) -> EvidenceRetriever:
+def get_retriever(name: str, *, graph_run_id: str = "") -> EvidenceRetriever:
     normalized = name.lower().strip()
     if normalized == "graph":
-        return GraphRetriever()
+        return GraphRetriever(graph_run_id=graph_run_id)
     if normalized in {"graph_legacy", "graph-legacy", "legacy_graph", "legacy-graph"}:
         return LegacyGraphRetriever()
     if normalized in {"noop", "none"}:

@@ -49,6 +49,7 @@ class RetrievedEvidence:
     match_score: float = 0.0
     evidence_kind: str = "graph"
     source_url: str = ""
+    graph_run_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -71,6 +72,7 @@ class RetrievedEvidence:
             "matchScore": self.match_score,
             "evidenceKind": self.evidence_kind,
             "sourceUrl": self.source_url,
+            "graphRunId": self.graph_run_id,
         }
 
 
@@ -117,6 +119,7 @@ class QAConfig:
     answerer_provider: str = DEFAULT_QA_PROVIDER
     model: str = DEFAULT_FRONTIER_MODEL
     retriever: str = DEFAULT_QA_RETRIEVER
+    graph_run_id: str = ""
     max_evidence: int = DEFAULT_MAX_EVIDENCE
     skip_answer: bool = False
     fail_fast: bool = False
