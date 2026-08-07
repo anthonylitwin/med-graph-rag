@@ -13,7 +13,7 @@ from packages.llm.providers import NoopLanguageModel
 from packages.qa.answerers import GraphRAGAnswerer
 from packages.qa.datasets import collect_questions, read_training_dataset, to_openai_finetune_record
 from packages.qa.models import QAConfig, QuestionRecord, RetrievedEvidence
-from packages.qa.retrievers import GraphRetriever, NoopRetriever, evidence_from_record
+from packages.qa.retrievers import GraphRetriever, NoopRetriever, _relationship_type_filter, evidence_from_record
 from experiments.run_qa_eval import load_qa_eval_config
 from pipelines.qa.evaluation import QAEvaluationConfig, _coverage, _evidence_entity_values, run_qa_evaluation
 from pipelines.qa.pipeline import process_questions
@@ -174,7 +174,7 @@ class QAAnswererTests(unittest.TestCase):
             "Fibrates reduced triglycerides.",
         ])
 
-    def test_model_answer_completion_includes_definition_supplement(self) -> None:
+    def test_definition_question_uses_extractive_answer_without_model(self) -> None:
         class FakeRetriever:
             name = "fixture"
 
@@ -218,28 +218,23 @@ class QAAnswererTests(unittest.TestCase):
                     ),
                 ]
 
-        class PartialModel:
+        class FailingModel:
             provider = "fixture"
             model = "fixture-model"
 
             def generate_text(self, prompt: str) -> str:
-                return ""
+                raise AssertionError("model should not be called")
 
             def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
-                return {
-                    "answer": "Hypertriglyceridemia is associated with triglycerides.",
-                    "sources": [],
-                    "reasoningPath": [],
-                    "confidence": 0.8,
-                    "abstained": False,
-                }
+                raise AssertionError("model should not be called")
 
-        answerer = GraphRAGAnswerer(model=PartialModel(), retriever=FakeRetriever())
+        answerer = GraphRAGAnswerer(model=FailingModel(), retriever=FakeRetriever())
         answer = answerer.answer(QuestionRecord(id="q1", question="What is hypertriglyceridemia?"))
 
         self.assertIn("Hypertriglyceridemia: Hypertriglyceridemia is a condition", answer.answer)
+        self.assertIn("Graph evidence summary: Hypertriglyceridemia is associated with Triglycerides.", answer.answer)
         self.assertIn("definition", {source["evidenceKind"] for source in answer.sources})
-        self.assertTrue(answer.raw_response["completedWithEvidenceSummary"])
+        self.assertEqual(answer.raw_response["status"], "extractive_definition_answer")
 
     def test_model_failure_returns_retrieved_evidence_fallback(self) -> None:
         class FakeRetriever:
@@ -328,6 +323,66 @@ class QAAnswererTests(unittest.TestCase):
         self.assertIn("Niacin may increase HDL cholesterol.", answer.answer)
         self.assertIn("Niacin may reduce Triglycerides.", answer.answer)
         self.assertEqual([step["pathStep"] for step in answer.reasoning_path], [1, 2])
+
+    def test_retrieved_graph_question_uses_extractive_answer_without_model(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced triglycerides.",
+                        confidence=0.91,
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Duplicate fibrates evidence.",
+                        confidence=0.86,
+                    ),
+                    RetrievedEvidence(
+                        id="e3",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="HDL cholesterol",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced HDL cholesterol.",
+                        confidence=0.88,
+                    ),
+                ]
+
+        class FailingModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                raise AssertionError("model should not be called")
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                raise AssertionError("model should not be called")
+
+        answerer = GraphRAGAnswerer(model=FailingModel(), retriever=FakeRetriever())
+        answer = answerer.answer(
+            QuestionRecord(id="q1", question="What biomarker do Fibrates reduce in the retrieved graph?")
+        )
+
+        self.assertEqual(
+            answer.answer,
+            "In the retrieved graph, Fibrates may reduce Triglycerides and HDL cholesterol.",
+        )
+        self.assertEqual(answer.raw_response["status"], "extractive_graph_answer")
+        self.assertEqual(len(answer.sources), 2)
 
 
 class QARetrieverTests(unittest.TestCase):
@@ -421,6 +476,77 @@ class QARetrieverTests(unittest.TestCase):
 
         self.assertIn("hdl cholesterol", terms)
         self.assertIn("triglycerides", terms)
+
+    def test_graph_retriever_ignores_question_structure_words_as_start_terms(self) -> None:
+        terms = GraphRetriever(include_definitions=False)._terms(
+            "What biomarker do Fibrates reduce in the retrieved graph?"
+        )
+
+        self.assertIn("fibrates", terms)
+        self.assertNotIn("biomarker", terms)
+        self.assertNotIn("retrieved", terms)
+        self.assertNotIn("reduce", terms)
+
+    def test_graph_retriever_filters_risk_questions_to_risk_edges(self) -> None:
+        self.assertEqual(
+            _relationship_type_filter("What does hypertriglyceridemia increase the risk of?"),
+            ["INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"],
+        )
+
+    def test_graph_retriever_skips_two_hop_query_for_direct_question(self) -> None:
+        class FakeResult(list):
+            pass
+
+        class FakeSession:
+            def __init__(self) -> None:
+                self.calls: list[dict[str, Any]] = []
+                self.queries: list[str] = []
+
+            def __enter__(self) -> "FakeSession":
+                return self
+
+            def __exit__(self, *args: object) -> None:
+                return None
+
+            def run(self, query: str, **params: object) -> FakeResult:
+                query_text = getattr(query, "text", str(query))
+                self.queries.append(query_text)
+                self.calls.append(params)
+                if "RETURN elementId(candidate) AS id" in query_text:
+                    return FakeResult([{"id": "node:1"}])
+                return FakeResult([])
+
+        class FakeDriver:
+            def __init__(self, session: FakeSession) -> None:
+                self._session = session
+
+            def session(self) -> FakeSession:
+                return self._session
+
+            def close(self) -> None:
+                return None
+
+        class FakeContext:
+            def __init__(self, driver: FakeDriver) -> None:
+                self.driver = driver
+
+            def __enter__(self) -> FakeDriver:
+                return self.driver
+
+            def __exit__(self, *args: object) -> None:
+                return None
+
+        session = FakeSession()
+        with mock.patch("packages.qa.retrievers.neo4j_driver", return_value=FakeContext(FakeDriver(session))):
+            GraphRetriever(include_definitions=False).retrieve(
+                "What does hypertriglyceridemia increase the risk of?",
+                12,
+            )
+
+        path_params = session.calls[-1]
+        self.assertEqual(path_params["relationship_types"], ["INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"])
+        self.assertFalse(path_params["include_two_hop"])
+        self.assertNotIn("MATCH path", session.queries[-1])
 
 
 class QAPipelineTests(unittest.TestCase):

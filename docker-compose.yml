@@ -12,6 +12,7 @@ services:
       - RUNNING_IN_DOCKER=true
       - LOCAL_MODEL=${LOCAL_MODEL:-qwen2.5:7b-instruct}
       - OLLAMA_BASE_URL=${DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - APP_QA_MODEL_TIMEOUT_SECONDS=${APP_QA_MODEL_TIMEOUT_SECONDS:-90}
       - EXTRACTOR_ENTITY_MODEL=${EXTRACTOR_ENTITY_MODEL:-Ihor/gliner-biomed-small-v1.0}
     volumes:
       - ./apps/api/app:/app/app
@@ -32,7 +33,8 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_API_BASE_URL=http://127.0.0.1:8000
+      - VITE_CHAT_TIMEOUT_MS=${VITE_CHAT_TIMEOUT_MS:-120000}
     volumes:
       - ./apps/web:/app
       - /app/node_modules

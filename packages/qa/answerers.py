@@ -39,6 +39,14 @@ def _relationship_to_sentence(evidence: RetrievedEvidence) -> str:
     return f"{source} is connected to {target} by {relationship}."
 
 
+def _join_names(names: list[str]) -> str:
+    if len(names) <= 1:
+        return "".join(names)
+    if len(names) == 2:
+        return f"{names[0]} and {names[1]}"
+    return f"{', '.join(names[:-1])}, and {names[-1]}"
+
+
 def _relationship_cues(relationship: str) -> tuple[str, ...]:
     return {
         "REDUCES": ("reduce", "reduces", "lower", "lowers", "decrease", "decreases"),
@@ -51,6 +59,30 @@ def _relationship_cues(relationship: str) -> tuple[str, ...]:
     }.get(relationship.upper(), (normalize_term(relationship),))
 
 
+def _requested_relationships(question: str) -> set[str]:
+    normalized = normalize_term(question)
+    if "risk" in normalized:
+        return {"INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"}
+    if any(cue in normalized for cue in ("reduce", "reduces", "lower", "lowers", "decrease", "decreases")):
+        return {"REDUCES", "MAY_REDUCE"}
+    if any(cue in normalized for cue in ("increase", "increases", "raise", "raises", "elevate", "elevates")):
+        return {"INCREASES", "MAY_INCREASE", "INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"}
+    if any(cue in normalized for cue in ("interact", "interaction")):
+        return {"INTERACTS_WITH", "MAY_INTERACT_WITH"}
+    return set()
+
+
+def _requested_target_label(question: str) -> str:
+    normalized = normalize_term(question)
+    if "biomarker" in normalized:
+        return "biomarker"
+    if "drug" in normalized or "medication" in normalized:
+        return "drug"
+    if "condition" in normalized or "disease" in normalized or "risk" in normalized:
+        return "condition"
+    return ""
+
+
 def _answer_mentions_evidence(answer: str, evidence: RetrievedEvidence) -> bool:
     normalized_answer = normalize_term(answer)
     source = normalize_term(evidence.source_name)
@@ -60,6 +92,87 @@ def _answer_mentions_evidence(answer: str, evidence: RetrievedEvidence) -> bool:
     return source in normalized_answer and target in normalized_answer and any(
         normalize_term(cue) in normalized_answer for cue in _relationship_cues(evidence.relationship_type)
     )
+
+
+def _dedupe_evidence(evidence: list[RetrievedEvidence]) -> list[RetrievedEvidence]:
+    deduped: list[RetrievedEvidence] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    for item in evidence:
+        key = (
+            normalize_term(item.source_name),
+            item.relationship_type.upper(),
+            normalize_term(item.target_name),
+            item.evidence_kind.casefold(),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(item)
+    return deduped
+
+
+def _extractive_graph_answer(question: str, evidence: list[RetrievedEvidence]) -> str:
+    normalized_question = normalize_term(question)
+    if "graph" not in normalized_question:
+        return ""
+
+    relationships = _requested_relationships(question)
+    if not relationships:
+        return ""
+
+    target_label = _requested_target_label(question)
+    candidates: list[RetrievedEvidence] = []
+    for item in _dedupe_evidence(evidence):
+        if item.evidence_kind.casefold() != "graph":
+            continue
+        if item.relationship_type.upper() not in relationships:
+            continue
+        if target_label and not any(label.casefold() == target_label for label in item.target_labels):
+            continue
+        if normalize_term(item.source_name) and normalize_term(item.source_name) not in normalized_question:
+            continue
+        candidates.append(item)
+
+    if not candidates:
+        return ""
+
+    target_names = _join_names([item.target_name for item in candidates])
+    source_names = _join_names(sorted({item.source_name for item in candidates}))
+    relationship = candidates[0].relationship_type.upper()
+    if relationship in {"REDUCES", "MAY_REDUCE"}:
+        return f"In the retrieved graph, {source_names} may reduce {target_names}."
+    if relationship in {"INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"}:
+        return f"In the retrieved graph, {source_names} may increase the risk of {target_names}."
+    if relationship in {"INCREASES", "MAY_INCREASE"}:
+        return f"In the retrieved graph, {source_names} may increase {target_names}."
+    if relationship in {"INTERACTS_WITH", "MAY_INTERACT_WITH"}:
+        return f"In the retrieved graph, {source_names} may interact with {target_names}."
+    return ""
+
+
+def _definition_requested(question: str) -> bool:
+    normalized = normalize_term(question)
+    return any(cue in normalized for cue in ("what is", "define", "definition", "meaning"))
+
+
+def _extractive_definition_answer(question: str, evidence: list[RetrievedEvidence]) -> str:
+    if not _definition_requested(question):
+        return ""
+
+    definitions = [item for item in _dedupe_evidence(evidence) if item.evidence_kind.casefold() == "definition"]
+    if not definitions:
+        return ""
+
+    definition = definitions[0]
+    answer = _relationship_to_sentence(definition)
+    graph_evidence = [
+        item
+        for item in _dedupe_evidence(evidence)
+        if item.evidence_kind.casefold() == "graph" and item.id != definition.id
+    ]
+    if graph_evidence:
+        answer = f"{answer} Graph evidence summary: {_relationship_to_sentence(graph_evidence[0])}"
+    return answer
 
 
 def _completion_required_evidence(evidence: list[RetrievedEvidence]) -> list[RetrievedEvidence]:
@@ -127,7 +240,7 @@ def _reasoning_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str
 
 
 def _fallback_answer_from_evidence(evidence: list[RetrievedEvidence], error: Exception) -> str:
-    evidence_answer = " ".join(_relationship_to_sentence(item) for item in evidence)
+    evidence_answer = " ".join(_relationship_to_sentence(item) for item in _dedupe_evidence(evidence))
     return (
         "The graph returned supporting evidence, but the configured language model "
         f"could not generate a narrative answer ({error}). Evidence summary: {evidence_answer}"
@@ -148,7 +261,7 @@ class GraphRAGAnswerer:
         self.prompt_version = prompt_version
 
     def answer(self, question: QuestionRecord) -> AnswerRecord:
-        evidence = self.retriever.retrieve(question.question, self.max_evidence)
+        evidence = _dedupe_evidence(self.retriever.retrieve(question.question, self.max_evidence))
         evidence_payload = [item.to_dict() for item in evidence]
         if not evidence:
             return AnswerRecord(
@@ -183,6 +296,48 @@ class GraphRAGAnswerer:
                 confidence=min(confidence_values) if confidence_values else 0.0,
                 abstained=False,
                 prompt_version=self.prompt_version,
+            )
+
+        extractive_answer = _extractive_graph_answer(question.question, evidence)
+        if extractive_answer:
+            sources = _sources_from_evidence(evidence)
+            reasoning_path = _reasoning_from_evidence(evidence)
+            confidence_values = [item.confidence for item in evidence if item.confidence is not None]
+            return AnswerRecord(
+                id=question.id,
+                question=question.question,
+                answer=extractive_answer,
+                sources=sources,
+                reasoning_path=reasoning_path,
+                model=self.model.model,
+                provider=self.model.provider,
+                retriever=self.retriever.name,
+                retrieved_evidence=evidence_payload,
+                confidence=min(confidence_values) if confidence_values else 0.0,
+                abstained=False,
+                prompt_version=self.prompt_version,
+                raw_response={"status": "extractive_graph_answer"},
+            )
+
+        extractive_definition_answer = _extractive_definition_answer(question.question, evidence)
+        if extractive_definition_answer:
+            sources = _sources_from_evidence(evidence)
+            reasoning_path = _reasoning_from_evidence(evidence)
+            confidence_values = [item.confidence for item in evidence if item.confidence is not None]
+            return AnswerRecord(
+                id=question.id,
+                question=question.question,
+                answer=extractive_definition_answer,
+                sources=sources,
+                reasoning_path=reasoning_path,
+                model=self.model.model,
+                provider=self.model.provider,
+                retriever=self.retriever.name,
+                retrieved_evidence=evidence_payload,
+                confidence=min(confidence_values) if confidence_values else 0.0,
+                abstained=False,
+                prompt_version=self.prompt_version,
+                raw_response={"status": "extractive_definition_answer"},
             )
 
         try:
