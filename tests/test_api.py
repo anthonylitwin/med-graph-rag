@@ -173,12 +173,28 @@ qa_eval:
         self.assertNotIn("getChatModelOptions", chat_page)
         self.assertNotIn("v-model=\"modelProfile\"", chat_page)
 
+    def test_chat_page_renders_multi_hop_reasoning_path_metadata(self) -> None:
+        chat_page = (PROJECT_ROOT / "apps" / "web" / "src" / "routes" / "ChatPage.vue").read_text(encoding="utf-8")
+
+        self.assertIn("reasoningPathGroups", chat_page)
+        self.assertIn("path-group", chat_page)
+        self.assertIn("path-step", chat_page)
+        self.assertIn("sourcePmcid", chat_page)
+        self.assertIn("chunkId", chat_page)
+        self.assertIn("evidenceId", chat_page)
+
     def test_chat_request_payload_contains_only_message(self) -> None:
         api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
         chat_request_type = api_client.split("export type ChatResponse", maxsplit=1)[0]
 
         self.assertIn("message: string;", chat_request_type)
         self.assertNotIn("modelProfile?:", chat_request_type)
+
+    def test_chat_client_exposes_active_graph_run_id(self) -> None:
+        api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
+
+        self.assertIn("graphRunId: string;", api_client)
+        self.assertIn("return response.json();", api_client)
 
     def test_chat_route_maps_dependency_error_to_service_unavailable(self) -> None:
         with mock.patch("app.routes.chat.answer_question", side_effect=RuntimeError("neo4j unavailable")):
