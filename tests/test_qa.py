@@ -155,6 +155,57 @@ class QAAnswererTests(unittest.TestCase):
         self.assertEqual(answer.sources[0]["evidenceText"], "Fish oil reduced triglycerides.")
         self.assertEqual(answer.raw_response["status"], "model_error")
 
+    def test_model_failure_fallback_describes_increase_edges(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Niacin",
+                        source_labels=["Drug"],
+                        relationship_type="INCREASES",
+                        target_name="HDL cholesterol",
+                        target_labels=["Biomarker"],
+                        evidence_text="Niacin increases HDL-C.",
+                        confidence=0.8,
+                        path_id="path:1",
+                        path_step=1,
+                        path_length=2,
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Niacin",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Niacin reduces triglycerides.",
+                        confidence=0.8,
+                        path_id="path:1",
+                        path_step=2,
+                        path_length=2,
+                    ),
+                ]
+
+        class FailingModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                raise TimeoutError("model timed out")
+
+        answerer = GraphRAGAnswerer(model=FailingModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="Which drug connects HDL and triglycerides?"))
+
+        self.assertIn("Niacin may increase HDL cholesterol.", answer.answer)
+        self.assertIn("Niacin may reduce Triglycerides.", answer.answer)
+        self.assertEqual([step["pathStep"] for step in answer.reasoning_path], [1, 2])
+
 
 class QARetrieverTests(unittest.TestCase):
     def test_evidence_from_record_maps_neo4j_fields(self) -> None:

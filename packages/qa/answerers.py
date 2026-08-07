@@ -25,6 +25,8 @@ def _relationship_to_sentence(evidence: RetrievedEvidence) -> str:
         return f"{source} may increase the risk of {target}."
     if relationship in {"REDUCES", "MAY_REDUCE"}:
         return f"{source} may reduce {target}."
+    if relationship in {"INCREASES", "MAY_INCREASE"}:
+        return f"{source} may increase {target}."
     if relationship == "TREATS":
         return f"{source} treats {target}."
     if relationship == "PREVENTS":
