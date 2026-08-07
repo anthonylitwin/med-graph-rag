@@ -343,6 +343,79 @@ class IngestionQueueTests(unittest.TestCase):
         self.assertEqual(loaded["documents"][0]["status"], "completed")
         self.assertEqual(loaded["documents"][0]["entityCount"], 3)
 
+    def test_startup_recovers_running_jobs_left_by_restart(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "jobs.sqlite"
+            store = IngestionJobStore(db_path)
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
+                clear=False,
+            ):
+                service = IngestionQueueService(store=store, poll_interval_seconds=0.01)
+                job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442", "PMC3234107"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+                claimed = store.claim_next_job()
+                assert claimed is not None
+                store.mark_document_running(job["id"], "PMC3572442")
+
+                recovered = store.recover_interrupted_running_jobs()
+                loaded = service.get_job(job["id"])
+
+        self.assertEqual(recovered, 1)
+        self.assertIsNotNone(loaded)
+        assert loaded is not None
+        self.assertEqual(loaded["status"], "failed")
+        self.assertIsNotNone(loaded["finishedAt"])
+        self.assertIn("interrupted", loaded["error"])
+        self.assertEqual([document["status"] for document in loaded["documents"]], ["failed", "failed"])
+        self.assertTrue(all("interrupted" in document["error"] for document in loaded["documents"]))
+
+    def test_worker_start_recovers_interrupted_job_before_claiming_queue(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "jobs.sqlite"
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "APP_MODEL_PROFILE": "noop",
+                    "INGESTION_OUTPUT_ROOT": str(Path(tmpdir) / "outputs"),
+                },
+                clear=False,
+            ):
+                store = IngestionJobStore(db_path)
+                service = IngestionQueueService(store=store, poll_interval_seconds=60)
+                running_job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3572442"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+                store.claim_next_job()
+                queued_job = service.create_job(
+                    source_type="pmc",
+                    pmcids=["PMC3234107"],
+                    model_profile="noop",
+                    skip_load=True,
+                )
+
+                with mock.patch.object(service, "_worker_loop"):
+                    service.start()
+                service.stop()
+                loaded_running = service.get_job(running_job["id"])
+                loaded_queued = service.get_job(queued_job["id"])
+
+        assert loaded_running is not None
+        assert loaded_queued is not None
+        self.assertEqual(loaded_running["status"], "failed")
+        self.assertEqual(loaded_queued["status"], "queued")
+
     def test_ingestion_model_options_reports_only_active_runtime(self) -> None:
         with mock.patch.dict(os.environ, {"APP_MODEL_PROFILE": "noop"}, clear=True):
             runtime = ingestion_routes.ingestion_model_options()
