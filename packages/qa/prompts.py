@@ -17,8 +17,19 @@ def qa_answer_json_schema() -> dict:
             "confidence": {"type": "number"},
             "sourcePmcid": string,
             "chunkId": string,
+            "evidenceKind": string,
+            "sourceUrl": string,
         },
-        "required": ["documentId", "title", "evidenceText", "confidence", "sourcePmcid", "chunkId"],
+        "required": [
+            "documentId",
+            "title",
+            "evidenceText",
+            "confidence",
+            "sourcePmcid",
+            "chunkId",
+            "evidenceKind",
+            "sourceUrl",
+        ],
     }
     reasoning_step = {
         "type": "object",
@@ -27,8 +38,24 @@ def qa_answer_json_schema() -> dict:
             "source": string,
             "relationship": string,
             "target": string,
+            "evidenceId": string,
+            "sourcePmcid": string,
+            "chunkId": string,
+            "pathId": string,
+            "pathStep": {"type": "number"},
+            "pathLength": {"type": "number"},
         },
-        "required": ["source", "relationship", "target"],
+        "required": [
+            "source",
+            "relationship",
+            "target",
+            "evidenceId",
+            "sourcePmcid",
+            "chunkId",
+            "pathId",
+            "pathStep",
+            "pathLength",
+        ],
     }
     return {
         "type": "json_schema",
@@ -54,6 +81,9 @@ def format_qa_prompt(question: str, evidence: list[RetrievedEvidence]) -> str:
     return (
         "You are the question-answering component for MedGraphRAG.\n"
         "Answer biomedical questions using only the retrieved graph evidence below.\n"
+        "Evidence objects may be single edges, ordered multi-hop path steps, or curated definition supplements.\n"
+        "When evidence objects share a pathId, preserve pathStep order in reasoningPath so the user can inspect each hop.\n"
+        "Keep definition evidence separate from PMC-derived graph facts in sources.\n"
         "Do not use outside medical knowledge. If the evidence is insufficient, set abstained to true and say what is missing.\n"
         "Keep the answer concise, factual, and cite the returned evidence objects in sources.\n\n"
         f"Question:\n{question}\n\n"

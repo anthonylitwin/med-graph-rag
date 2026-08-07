@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Iterable
 
 from packages.graph.neo4j_client import neo4j_driver
 from pipelines.ingestion.validation import BIOMEDICAL_ENTITY_TYPES, mention_relationship_id
@@ -42,7 +43,45 @@ def _relationship_type(relationship_type: str) -> str:
     return normalized
 
 
-def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> dict[str, int]:
+def _clean(value: Any) -> str:
+    if value is None:
+        return ""
+    return str(value).strip()
+
+
+def _graph_provenance(
+    record: dict[str, Any],
+    *,
+    graph_run_id: str = "",
+    graph_source: str = "",
+    loaded_at: str = "",
+) -> dict[str, str]:
+    run = record.get("run") if isinstance(record.get("run"), dict) else {}
+    source_run_id = _clean(run.get("id"))
+    return {
+        "graph_run_id": _clean(graph_run_id) or source_run_id,
+        "graph_source": _clean(graph_source) or _clean(run.get("source")),
+        "graph_loaded_at": _clean(loaded_at) or datetime.now(UTC).isoformat(),
+        "source_run_id": source_run_id,
+        "source_run_source": _clean(run.get("source")),
+        "source_run_created_at": _clean(run.get("created_at")),
+    }
+
+
+def load_processed_record_with_session(
+    session: Any,
+    record: dict[str, Any],
+    *,
+    graph_run_id: str = "",
+    graph_source: str = "",
+    loaded_at: str = "",
+) -> dict[str, int]:
+    provenance = _graph_provenance(
+        record,
+        graph_run_id=graph_run_id,
+        graph_source=graph_source,
+        loaded_at=loaded_at,
+    )
     document = record["document"]
     paper_props = {
         "id": document["id"],
@@ -53,6 +92,7 @@ def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> 
         "source_url": document.get("source_url") or "",
         "text_length": document.get("text_length") or 0,
         "chunk_count": document.get("chunk_count") or len(record.get("chunks") or []),
+        **provenance,
     }
     for optional_key in ("pmid", "year", "journal", "doi"):
         optional_value = document.get(optional_key)
@@ -76,6 +116,7 @@ def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> 
             **(entity.get("properties") or {}),
             "id": entity["id"],
             "name": entity["name"],
+            **provenance,
         }
         session.run(
             f"""
@@ -105,6 +146,7 @@ def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> 
                 "extractor": (entity.get("properties") or {}).get("extractor", ""),
                 "model": (entity.get("properties") or {}).get("model", ""),
                 "created_at": (entity.get("properties") or {}).get("created_at", ""),
+                **provenance,
             },
         )
 
@@ -120,6 +162,7 @@ def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> 
         props = {
             **(relationship.get("properties") or {}),
             "id": relationship["id"],
+            **provenance,
         }
         session.run(
             f"""
@@ -138,7 +181,44 @@ def load_processed_record_with_session(session: Any, record: dict[str, Any]) -> 
     return {"entities": entities_loaded, "relationships": relationships_loaded}
 
 
-def load_processed_record(record: dict[str, Any]) -> dict[str, int]:
+def load_processed_record(
+    record: dict[str, Any],
+    *,
+    graph_run_id: str = "",
+    graph_source: str = "",
+    loaded_at: str = "",
+) -> dict[str, int]:
     with neo4j_driver() as driver:
         with driver.session() as session:
-            return load_processed_record_with_session(session, record)
+            return load_processed_record_with_session(
+                session,
+                record,
+                graph_run_id=graph_run_id,
+                graph_source=graph_source,
+                loaded_at=loaded_at,
+            )
+
+
+def load_processed_records(
+    records: Iterable[dict[str, Any]],
+    *,
+    graph_run_id: str = "",
+    graph_source: str = "",
+    loaded_at: str = "",
+) -> dict[str, int]:
+    counts = {"files": 0, "entities": 0, "relationships": 0}
+    stable_loaded_at = _clean(loaded_at) or datetime.now(UTC).isoformat()
+    with neo4j_driver() as driver:
+        with driver.session() as session:
+            for record in records:
+                record_counts = load_processed_record_with_session(
+                    session,
+                    record,
+                    graph_run_id=graph_run_id,
+                    graph_source=graph_source,
+                    loaded_at=stable_loaded_at,
+                )
+                counts["files"] += 1
+                counts["entities"] += record_counts["entities"]
+                counts["relationships"] += record_counts["relationships"]
+    return counts

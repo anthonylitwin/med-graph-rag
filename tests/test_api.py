@@ -15,7 +15,7 @@ API_ROOT = Path(__file__).resolve().parents[1] / "apps" / "api"
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
-from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
+from app.services.qa_service import answer_question, get_active_model_runtime, get_app_graph_run_id, get_app_model_profile
 from app.services.ingestion_service import IngestionJobStore, IngestionQueueService, PROJECT_ROOT
 from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import admin as admin_routes
@@ -125,6 +125,31 @@ class ChatServiceTests(unittest.TestCase):
         self.assertEqual(runtime["activeProfile"]["name"], "noop")
         self.assertNotIn("profiles", runtime)
 
+    def test_app_graph_run_id_defaults_to_promoted_qa_params(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            params_path = Path(tmpdir) / "params.yaml"
+            params_path.write_text(
+                """
+qa_eval:
+  graph_run_id: promoted-graph-run
+""".strip(),
+                encoding="utf-8",
+            )
+            with mock.patch.dict(os.environ, {"QA_PARAMS_PATH": str(params_path)}, clear=True):
+                graph_run_id = get_app_graph_run_id()
+
+        self.assertEqual(graph_run_id, "promoted-graph-run")
+
+    def test_app_graph_run_id_can_be_overridden_by_env(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {"QA_GRAPH_RUN_ID": "override-graph-run", "QA_PARAMS_PATH": "missing.yaml"},
+            clear=True,
+        ):
+            graph_run_id = get_app_graph_run_id()
+
+        self.assertEqual(graph_run_id, "override-graph-run")
+
     def test_answer_question_honors_noop_profile_metadata(self) -> None:
         with mock.patch.dict(os.environ, {"APP_MODEL_PROFILE": "noop"}, clear=True):
             result = answer_question("What risk may aspirin increase?", model_profile="frontier")
@@ -148,12 +173,31 @@ class ChatServiceTests(unittest.TestCase):
         self.assertNotIn("getChatModelOptions", chat_page)
         self.assertNotIn("v-model=\"modelProfile\"", chat_page)
 
+    def test_chat_page_renders_multi_hop_reasoning_path_metadata(self) -> None:
+        chat_page = (PROJECT_ROOT / "apps" / "web" / "src" / "routes" / "ChatPage.vue").read_text(encoding="utf-8")
+
+        self.assertIn("reasoningPathGroups", chat_page)
+        self.assertIn("path-group", chat_page)
+        self.assertIn("path-step", chat_page)
+        self.assertIn("sourceGroups", chat_page)
+        self.assertIn("PMC Graph Evidence", chat_page)
+        self.assertIn("Curated Definition Supplements", chat_page)
+        self.assertIn("sourcePmcid", chat_page)
+        self.assertIn("chunkId", chat_page)
+        self.assertIn("evidenceId", chat_page)
+
     def test_chat_request_payload_contains_only_message(self) -> None:
         api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
         chat_request_type = api_client.split("export type ChatResponse", maxsplit=1)[0]
 
         self.assertIn("message: string;", chat_request_type)
         self.assertNotIn("modelProfile?:", chat_request_type)
+
+    def test_chat_client_exposes_active_graph_run_id(self) -> None:
+        api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")
+
+        self.assertIn("graphRunId: string;", api_client)
+        self.assertIn("return response.json();", api_client)
 
     def test_chat_route_maps_dependency_error_to_service_unavailable(self) -> None:
         with mock.patch("app.routes.chat.answer_question", side_effect=RuntimeError("neo4j unavailable")):

@@ -1,6 +1,6 @@
 # Initial Annotation Evaluation Runbook
 
-This runbook starts from a clean local Neo4j, MLflow, and MinIO stack; runs the
+This runbook starts from a clean local Neo4j and MLflow stack; runs the
 configured extraction profiles against the gold annotation set; records every
 run in DVC and MLflow; and then moves the selected local non-instruct
 configuration into the Neo4j ingestion workflow.
@@ -34,8 +34,8 @@ current `limit` parameter is not a document split and must not be used as one.
 ## 1. Protect Existing Data
 
 The clean-slate procedure in the next section permanently deletes the local
-Neo4j graph, MLflow database, MLflow artifacts in MinIO, and all other Docker
-Compose volumes for this project.
+Neo4j graph, MLflow database, MLflow artifacts, and all other Docker Compose
+volumes for this project.
 
 Before using it, inspect the current state:
 
@@ -53,7 +53,7 @@ Use this destructive reset once, immediately before the initial formal runs:
 
 ```powershell
 docker compose down --volumes --remove-orphans
-docker compose up -d neo4j minio mlflow
+docker compose up -d neo4j mlflow
 docker compose ps
 ```
 
@@ -64,17 +64,6 @@ do {
   Start-Sleep -Seconds 2
   try { $mlflowReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5000/health).StatusCode -eq 200 } catch { $mlflowReady = $false }
 } until ($mlflowReady)
-
-do {
-  Start-Sleep -Seconds 2
-  try { $minioReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9000/minio/health/live).StatusCode -eq 200 } catch { $minioReady = $false }
-} until ($minioReady)
-```
-
-Create the MinIO bucket used by MLflow. This command is idempotent:
-
-```powershell
-.\.venv\Scripts\python.exe -c "import boto3; s3=boto3.client('s3', endpoint_url='http://127.0.0.1:9000', aws_access_key_id='medgraphrag', aws_secret_access_key='medgraphrag-password', region_name='us-east-1'); bucket='medgraphrag-artifacts'; names={item['Name'] for item in s3.list_buckets()['Buckets']}; s3.create_bucket(Bucket=bucket) if bucket not in names else None; print('ready:', bucket)"
 ```
 
 Confirm Neo4j is empty:
@@ -106,13 +95,13 @@ Expected result:
 
 ### Preserve-Volumes Alternative
 
-When the stack already contains valuable MLflow runs or MinIO artifacts, do not
+When the stack already contains valuable MLflow runs or artifacts, do not
 run `docker compose down --volumes`. Start the services normally, clear only
 the graph, and soft-delete active experiments whose names contain `test` or
 `smoke`:
 
 ```powershell
-docker compose up -d neo4j minio mlflow
+docker compose up -d neo4j mlflow
 
 docker compose exec -T neo4j cypher-shell `
   -u neo4j -p medgraphrag-password `
@@ -132,7 +121,6 @@ Open the service UIs when useful:
 | Service | URL |
 | --- | --- |
 | MLflow | http://localhost:5000 |
-| MinIO | http://localhost:9001 |
 | Neo4j Browser | http://localhost:7474 |
 
 ## 3. Prepare The Repository
@@ -179,15 +167,11 @@ Run the regression suite:
 
 ## 4. Configure The Host Session
 
-The evaluation runner executes on the host, not in Docker. Set the MinIO values
-so the MLflow client can upload artifacts through the host port:
+The evaluation runner executes on the host, not in Docker. Set the MLflow
+tracking URI so the client can upload artifacts through the local MLflow server:
 
 ```powershell
 $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
-$env:MLFLOW_S3_ENDPOINT_URL = "http://127.0.0.1:9000"
-$env:AWS_ACCESS_KEY_ID = "medgraphrag"
-$env:AWS_SECRET_ACCESS_KEY = "medgraphrag-password"
-$env:AWS_DEFAULT_REGION = "us-east-1"
 $env:OLLAMA_BASE_URL = "http://localhost:11434"
 $env:OLLAMA_TIMEOUT_SECONDS = "600"
 $env:GLINER_RELATION_ENTITY_LIMIT = "20"
@@ -303,7 +287,7 @@ function definition in memory, including any old hardcoded tracking URI.
 
 ## 6. Run The Plumbing Smoke Test
 
-The no-op run validates DVC, MLflow, MinIO, the evaluator, and artifact
+The no-op run validates DVC, MLflow, the evaluator, and artifact
 management without calling a model:
 
 ```powershell
@@ -433,8 +417,8 @@ push the cache:
 ```
 
 Do not run the placeholder `remote add` command until a real remote has been
-chosen. MLflow artifacts remain in the local MinIO volume unless MinIO itself
-is backed up or moved to durable object storage.
+chosen. MLflow artifacts remain in the local `mlflow_data` Docker volume unless
+that volume is backed up or moved to durable storage.
 
 ## 9. Iterate Only The Non-Instruct Pipeline
 
@@ -467,7 +451,7 @@ frozen.
 ## 10. Populate Neo4j With The Frozen Non-Instruct Pipeline
 
 This is a separate production-data action. Confirm the selected thresholds in
-DVC and MLflow first. Then clear Neo4j without deleting MLflow or MinIO:
+DVC and MLflow first. Then clear Neo4j without deleting MLflow:
 
 ```powershell
 docker compose exec -T neo4j cypher-shell `

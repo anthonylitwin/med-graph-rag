@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
 from typing import Any
+from unittest import mock
 
 from packages.llm.providers import NoopLanguageModel
 from packages.qa.answerers import GraphRAGAnswerer
 from packages.qa.datasets import collect_questions, read_training_dataset, to_openai_finetune_record
 from packages.qa.models import QAConfig, QuestionRecord, RetrievedEvidence
-from packages.qa.retrievers import NoopRetriever, evidence_from_record
+from packages.qa.retrievers import GraphRetriever, NoopRetriever, evidence_from_record
 from experiments.run_qa_eval import load_qa_eval_config
-from pipelines.qa.evaluation import QAEvaluationConfig, run_qa_evaluation
+from pipelines.qa.evaluation import QAEvaluationConfig, _coverage, _evidence_entity_values, run_qa_evaluation
 from pipelines.qa.pipeline import process_questions
 
 
@@ -118,6 +120,127 @@ class QAAnswererTests(unittest.TestCase):
         self.assertIn("Retrieved graph evidence", model.prompt)
         self.assertEqual(model.json_schema["name"], "medgraphrag_qa_answer")
 
+    def test_model_answer_is_completed_when_top_evidence_is_omitted(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="HDL cholesterol",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced HDL cholesterol.",
+                        confidence=0.92,
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced triglycerides.",
+                        confidence=0.91,
+                    ),
+                ]
+
+        class PartialModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                return {
+                    "answer": "Fibrates may reduce triglycerides.",
+                    "sources": [],
+                    "reasoningPath": [],
+                    "confidence": 0.8,
+                    "abstained": False,
+                }
+
+        answerer = GraphRAGAnswerer(model=PartialModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="What do fibrates reduce?"))
+
+        self.assertIn("Evidence summary: Fibrates may reduce HDL cholesterol.", answer.answer)
+        self.assertTrue(answer.raw_response["completedWithEvidenceSummary"])
+        self.assertEqual([source["evidenceText"] for source in answer.sources], [
+            "Fibrates reduced HDL cholesterol.",
+            "Fibrates reduced triglycerides.",
+        ])
+
+    def test_model_answer_completion_includes_definition_supplement(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Hypertriglyceridemia is associated with triglycerides.",
+                        confidence=0.82,
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Triglycerides",
+                        source_labels=["Biomarker"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Cardiovascular disease",
+                        target_labels=["Condition"],
+                        evidence_text="Triglycerides are associated with cardiovascular disease.",
+                        confidence=0.78,
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="definition:hypertriglyceridemia",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="DEFINITION_OF",
+                        target_name="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        target_labels=["Definition"],
+                        evidence_text="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        confidence=1.0,
+                        document_id="definition:hypertriglyceridemia",
+                        document_title="MedGraphRAG curated definition v001",
+                        evidence_kind="definition",
+                        source_url="local://medical_definitions_v001#hypertriglyceridemia",
+                    ),
+                ]
+
+        class PartialModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                return {
+                    "answer": "Hypertriglyceridemia is associated with triglycerides.",
+                    "sources": [],
+                    "reasoningPath": [],
+                    "confidence": 0.8,
+                    "abstained": False,
+                }
+
+        answerer = GraphRAGAnswerer(model=PartialModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="What is hypertriglyceridemia?"))
+
+        self.assertIn("Hypertriglyceridemia: Hypertriglyceridemia is a condition", answer.answer)
+        self.assertIn("definition", {source["evidenceKind"] for source in answer.sources})
+        self.assertTrue(answer.raw_response["completedWithEvidenceSummary"])
+
     def test_model_failure_returns_retrieved_evidence_fallback(self) -> None:
         class FakeRetriever:
             name = "fixture"
@@ -155,6 +278,57 @@ class QAAnswererTests(unittest.TestCase):
         self.assertEqual(answer.sources[0]["evidenceText"], "Fish oil reduced triglycerides.")
         self.assertEqual(answer.raw_response["status"], "model_error")
 
+    def test_model_failure_fallback_describes_increase_edges(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Niacin",
+                        source_labels=["Drug"],
+                        relationship_type="INCREASES",
+                        target_name="HDL cholesterol",
+                        target_labels=["Biomarker"],
+                        evidence_text="Niacin increases HDL-C.",
+                        confidence=0.8,
+                        path_id="path:1",
+                        path_step=1,
+                        path_length=2,
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Niacin",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Niacin reduces triglycerides.",
+                        confidence=0.8,
+                        path_id="path:1",
+                        path_step=2,
+                        path_length=2,
+                    ),
+                ]
+
+        class FailingModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                raise TimeoutError("model timed out")
+
+        answerer = GraphRAGAnswerer(model=FailingModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="Which drug connects HDL and triglycerides?"))
+
+        self.assertIn("Niacin may increase HDL cholesterol.", answer.answer)
+        self.assertIn("Niacin may reduce Triglycerides.", answer.answer)
+        self.assertEqual([step["pathStep"] for step in answer.reasoning_path], [1, 2])
+
 
 class QARetrieverTests(unittest.TestCase):
     def test_evidence_from_record_maps_neo4j_fields(self) -> None:
@@ -173,12 +347,80 @@ class QARetrieverTests(unittest.TestCase):
                 "documentTitle": "A paper",
                 "targetName": "LDL cholesterol",
                 "targetLabels": ["Biomarker"],
+                "pathId": "path:1",
+                "pathStep": 2,
+                "pathLength": 2,
+                "matchScore": 0.75,
+                "evidenceKind": "graph",
+                "graphRunId": "graph-run-v2",
             }
         )
 
         self.assertEqual(evidence.id, "rel:1")
         self.assertEqual(evidence.confidence, 0.95)
         self.assertEqual(evidence.to_dict()["sourcePmcid"], "PMC1")
+        self.assertEqual(evidence.path_id, "path:1")
+        self.assertEqual(evidence.path_step, 2)
+        self.assertEqual(evidence.path_length, 2)
+        self.assertEqual(evidence.match_score, 0.75)
+        self.assertEqual(evidence.graph_run_id, "graph-run-v2")
+        self.assertEqual(evidence.to_dict()["graphRunId"], "graph-run-v2")
+
+    def test_graph_retriever_serializes_ordered_path_records(self) -> None:
+        retriever = GraphRetriever(include_definitions=False)
+        records = retriever._path_records(
+            "How are triglycerides connected to atherosclerosis?",
+            [
+                {
+                    "relationshipId": "rel:1",
+                    "sourceName": "Triglycerides",
+                    "sourceLabels": ["Biomarker"],
+                    "relationshipType": "ASSOCIATED_WITH",
+                    "targetName": "Atherogenic lipoproteins",
+                    "targetLabels": ["Biomarker"],
+                    "evidenceText": "High TG levels are markers for atherogenic lipoproteins.",
+                    "confidence": 0.9,
+                    "sourcePmcid": "PMC1",
+                    "chunkId": "PMC1-chunk-0001",
+                    "pathStep": 1,
+                    "pathLength": 2,
+                },
+                {
+                    "relationshipId": "rel:2",
+                    "sourceName": "Atherogenic lipoproteins",
+                    "sourceLabels": ["Biomarker"],
+                    "relationshipType": "ASSOCIATED_WITH",
+                    "targetName": "Atherosclerosis",
+                    "targetLabels": ["Condition"],
+                    "evidenceText": "Atherogenic lipoproteins contribute to atherosclerosis.",
+                    "confidence": 0.8,
+                    "sourcePmcid": "PMC1",
+                    "chunkId": "PMC1-chunk-0002",
+                    "pathStep": 2,
+                    "pathLength": 2,
+                },
+            ],
+            {"triglycerides", "atherosclerosis"},
+        )
+
+        self.assertEqual([item.path_step for item in records], [1, 2])
+        self.assertEqual({item.path_length for item in records}, {2})
+        self.assertEqual(len({item.path_id for item in records}), 1)
+        self.assertGreater(records[0].match_score, 0.0)
+
+    def test_graph_retriever_loads_repo_terminology_from_api_working_directory(self) -> None:
+        cwd = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            try:
+                os.chdir(tmpdir)
+                terms = GraphRetriever(include_definitions=False)._terms(
+                    "Which drug connects HDL cholesterol and triglycerides?"
+                )
+            finally:
+                os.chdir(cwd)
+
+        self.assertIn("hdl cholesterol", terms)
+        self.assertIn("triglycerides", terms)
 
 
 class QAPipelineTests(unittest.TestCase):
@@ -208,8 +450,36 @@ class QAPipelineTests(unittest.TestCase):
         self.assertTrue(answer_exists)
         self.assertTrue(retrieved_exists)
 
+    def test_process_questions_passes_graph_run_id_to_retriever_factory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_root = Path(tmpdir) / "qa"
+            with mock.patch("pipelines.qa.pipeline.get_retriever") as get_retriever:
+                get_retriever.return_value = NoopRetriever()
+
+                process_questions(
+                    QAConfig(
+                        questions=[QuestionRecord(id="q1", question="What medication may aspirin interact with?")],
+                        output_root=output_root,
+                        answerer_provider="noop",
+                        model="noop-language-model-v0",
+                        retriever="graph",
+                        graph_run_id="graph-run-v2",
+                        skip_answer=True,
+                    )
+                )
+
+        get_retriever.assert_called_once_with("graph", graph_run_id="graph-run-v2")
+
 
 class QAEvaluationTests(unittest.TestCase):
+    def test_entity_coverage_uses_curated_aliases(self) -> None:
+        observed = _evidence_entity_values({"sourceName": "HDL", "targetName": "niacin"})
+
+        hits, total, coverage = _coverage(["HDL cholesterol", "niacin"], observed)
+
+        self.assertEqual((hits, total), (2, 2))
+        self.assertEqual(coverage, 1.0)
+
     def test_qa_eval_params_loader_maps_dvc_values(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             params_path = Path(tmpdir) / "params.yaml"
@@ -226,6 +496,7 @@ class QAEvaluationTests(unittest.TestCase):
                             "model": "model-x",
                             "retriever": "graph",
                             "max_evidence": 5,
+                            "model_timeout_seconds": 7,
                             "skip_answer": True,
                             "limit": 1,
                             "fail_fast": True,
@@ -251,6 +522,7 @@ class QAEvaluationTests(unittest.TestCase):
         self.assertEqual(config.model, "model-x")
         self.assertEqual(config.retriever, "graph")
         self.assertEqual(config.max_evidence, 5)
+        self.assertEqual(config.model_timeout_seconds, 7)
         self.assertTrue(config.skip_answer)
         self.assertEqual(config.limit, 1)
         self.assertTrue(config.llm_judge_enabled)
@@ -335,6 +607,121 @@ class QAEvaluationTests(unittest.TestCase):
 
         self.assertEqual(result["metrics"]["overall"]["abstention_accuracy"], 1.0)
         self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 1.0)
+
+    def test_run_qa_evaluation_scores_retrieval_only_abstention(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": "q1",
+                            "question": "What treatment cures the sample-only condition?",
+                            "expected_abstention": True,
+                            "question_type": "unanswerable",
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            result = run_qa_evaluation(
+                QAEvaluationConfig(
+                    question_file=question_file,
+                    output_root=tmp_path / "eval",
+                    eval_id="qa-unanswerable-retrieval-only",
+                    model_profile="noop",
+                    skip_answer=True,
+                    force=True,
+                )
+            )
+
+        self.assertEqual(result["metrics"]["overall"]["abstention_accuracy"], 1.0)
+        self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 0.0)
+
+    def test_run_qa_evaluation_requires_mixed_graph_and_definition_citations(self) -> None:
+        class MixedRetriever:
+            name = "graph"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="rel:hypertriglyceridemia-triglycerides",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Hypertriglyceridemia is associated with triglycerides.",
+                        confidence=0.82,
+                        source_pmcid="PMC1",
+                        chunk_id="PMC1-chunk-0001",
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="definition:hypertriglyceridemia",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="DEFINITION_OF",
+                        target_name="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        target_labels=["Definition"],
+                        evidence_text="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        confidence=1.0,
+                        document_id="definition:hypertriglyceridemia",
+                        document_title="MedGraphRAG curated definition v001",
+                        evidence_kind="definition",
+                        source_url="local://medical_definitions_v001#hypertriglyceridemia",
+                    ),
+                ][:limit]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    {
+                        "question_set_id": "mixed_definition_fixture",
+                        "questions": [
+                            {
+                                "id": "q1",
+                                "question": "What is hypertriglyceridemia, and what is it associated with?",
+                                "expected_facts": [
+                                    "Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                                    "Hypertriglyceridemia is associated with Triglycerides.",
+                                ],
+                                "expected_entities": ["Hypertriglyceridemia", "Triglycerides"],
+                                "expected_relationships": ["DEFINITION_OF", "ASSOCIATED_WITH"],
+                                "question_type": "definition_augmented",
+                                "requires_definition": True,
+                                "requires_graph_evidence": True,
+                                "required_evidence_kinds": ["graph", "definition"],
+                                "split": "dev",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch("pipelines.qa.pipeline.get_retriever", return_value=MixedRetriever()):
+                result = run_qa_evaluation(
+                    QAEvaluationConfig(
+                        question_file=question_file,
+                        output_root=tmp_path / "eval",
+                        eval_id="mixed-definition",
+                        model_profile="noop",
+                        retriever="graph",
+                        force=True,
+                    )
+                )
+
+        overall = result["metrics"]["overall"]
+        self.assertEqual(overall["retrieval_recall"], 1.0)
+        self.assertEqual(overall["answer_accuracy"], 1.0)
+        self.assertEqual(overall["required_evidence_kind_recall"], 1.0)
+        self.assertEqual(overall["required_evidence_kind_citation_rate"], 1.0)
+        self.assertEqual(overall["mixed_evidence_citation_rate"], 1.0)
 
 
 if __name__ == "__main__":

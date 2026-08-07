@@ -186,7 +186,6 @@ Web UI: http://localhost:5173
 API:    http://localhost:8000
 Neo4j:  http://localhost:7474
 MLflow: http://localhost:5000
-MinIO:  http://localhost:9001
 ```
 
 ### Host-run API and web path

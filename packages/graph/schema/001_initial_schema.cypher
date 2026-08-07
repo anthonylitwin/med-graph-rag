@@ -127,3 +127,7 @@ ON (n.doi);
 CREATE INDEX paper_journal_idx IF NOT EXISTS
 FOR (n:Paper)
 ON (n.journal);
+
+CREATE FULLTEXT INDEX biomedical_name_alias_fulltext_idx IF NOT EXISTS
+FOR (n:Drug|Condition|Symptom|RiskFactor|Biomarker)
+ON EACH [n.name, n.aliases, n.normalized_name];

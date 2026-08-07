@@ -43,6 +43,13 @@ class RetrievedEvidence:
     chunk_id: str = ""
     document_id: str = ""
     document_title: str = ""
+    path_id: str = ""
+    path_step: int = 1
+    path_length: int = 1
+    match_score: float = 0.0
+    evidence_kind: str = "graph"
+    source_url: str = ""
+    graph_run_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -59,6 +66,13 @@ class RetrievedEvidence:
             "chunkId": self.chunk_id,
             "documentId": self.document_id,
             "title": self.document_title,
+            "pathId": self.path_id,
+            "pathStep": self.path_step,
+            "pathLength": self.path_length,
+            "matchScore": self.match_score,
+            "evidenceKind": self.evidence_kind,
+            "sourceUrl": self.source_url,
+            "graphRunId": self.graph_run_id,
         }
 
 
@@ -105,7 +119,9 @@ class QAConfig:
     answerer_provider: str = DEFAULT_QA_PROVIDER
     model: str = DEFAULT_FRONTIER_MODEL
     retriever: str = DEFAULT_QA_RETRIEVER
+    graph_run_id: str = ""
     max_evidence: int = DEFAULT_MAX_EVIDENCE
+    model_timeout_seconds: int | None = None
     skip_answer: bool = False
     fail_fast: bool = False
     limit: int | None = None

@@ -24,6 +24,8 @@ from packages.qa.retrievers import get_retriever
 
 
 APP_DEFAULT_MODEL_PROFILE = "local-non-instruct"
+APP_QA_GRAPH_RUN_ID_ENV = "QA_GRAPH_RUN_ID"
+APP_QA_PARAMS_PATH_ENV = "QA_PARAMS_PATH"
 _EXPERIMENT_ONLY_APP_PROFILES = {"frontier", "local-qwen25", "local-qwen3"}
 _LOCAL_QA_PROVIDERS = {"ollama", "local", "noop", "none"}
 _LOCAL_EXTRACTOR_PROVIDERS = {
@@ -46,11 +48,12 @@ def get_qa_answerer(
     provider: str,
     model_name: str,
     retriever_name: str,
+    graph_run_id: str,
     max_evidence: int,
     model_timeout_seconds: int,
 ) -> GraphRAGAnswerer:
     model = get_app_language_model(provider, model_name, model_timeout_seconds)
-    retriever = get_retriever(retriever_name)
+    retriever = get_retriever(retriever_name, graph_run_id=graph_run_id)
     return GraphRAGAnswerer(model=model, retriever=retriever, max_evidence=max_evidence)
 
 
@@ -94,13 +97,46 @@ def get_app_model_profile() -> ModelProfile:
     return profile
 
 
+def _repo_root() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "experiments" / "params.yaml").exists():
+            return parent
+    return Path.cwd()
+
+
+def _read_promoted_graph_run_id() -> str:
+    params_path = Path(os.getenv(APP_QA_PARAMS_PATH_ENV) or (_repo_root() / "experiments" / "params.yaml"))
+    if not params_path.exists():
+        return ""
+    try:
+        import yaml
+
+        payload = yaml.safe_load(params_path.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return ""
+    qa_eval = payload.get("qa_eval", {}) if isinstance(payload, dict) else {}
+    if not isinstance(qa_eval, dict):
+        return ""
+    return str(qa_eval.get("graph_run_id") or "").strip()
+
+
+def get_app_graph_run_id() -> str:
+    if APP_QA_GRAPH_RUN_ID_ENV in os.environ:
+        return str(os.getenv(APP_QA_GRAPH_RUN_ID_ENV) or "").strip()
+    return _read_promoted_graph_run_id()
+
+
 def get_active_model_runtime() -> dict:
-    return {"activeProfile": get_app_model_profile().to_dict()}
+    return {
+        "activeProfile": get_app_model_profile().to_dict(),
+        "graphRunId": get_app_graph_run_id(),
+    }
 
 
 def answer_question(question: str, model_profile: str | None = None) -> dict:
     _ = model_profile
     profile = get_app_model_profile()
+    graph_run_id = get_app_graph_run_id()
     max_evidence = int(os.getenv("QA_MAX_EVIDENCE", str(DEFAULT_MAX_EVIDENCE)))
     model_timeout_seconds = int(os.getenv("APP_QA_MODEL_TIMEOUT_SECONDS", str(APP_QA_MODEL_TIMEOUT_SECONDS)))
     answerer = get_qa_answerer(
@@ -108,6 +144,7 @@ def answer_question(question: str, model_profile: str | None = None) -> dict:
         profile.qa_provider,
         profile.qa_model,
         profile.qa_retriever,
+        graph_run_id,
         max_evidence,
         model_timeout_seconds,
     )

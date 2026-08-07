@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import heroImage from '../assets/hero.png'
 import { getActiveModelRuntime, type ActiveModelRuntime } from '../lib/apiClient'
 
 const runtime = ref<ActiveModelRuntime | null>(null)
 const runtimeError = ref<string | null>(null)
 const isLoadingRuntime = ref(true)
+const activeProfile = computed(() => runtime.value?.activeProfile ?? null)
 
 const workflowSteps = [
   {
@@ -150,7 +151,7 @@ onMounted(async () => {
             <p class="eyebrow">
               Current Runtime
             </p>
-            <h2>{{ runtime?.label ?? (isLoadingRuntime ? 'Loading runtime' : 'Server unavailable') }}</h2>
+            <h2>{{ activeProfile?.label ?? (isLoadingRuntime ? 'Loading runtime' : 'Server unavailable') }}</h2>
           </div>
           <span
             class="status-pill"
@@ -170,23 +171,27 @@ onMounted(async () => {
         <dl class="runtime-list">
           <div>
             <dt>Profile</dt>
-            <dd>{{ displayValue(runtime?.name) }}</dd>
+            <dd>{{ displayValue(activeProfile?.name) }}</dd>
           </div>
           <div>
             <dt>QA</dt>
-            <dd>{{ displayValue(runtime?.qa_provider) }} / {{ displayValue(runtime?.qa_model) }}</dd>
+            <dd>{{ displayValue(activeProfile?.qa_provider) }} / {{ displayValue(activeProfile?.qa_model) }}</dd>
           </div>
           <div>
             <dt>Retriever</dt>
-            <dd>{{ displayValue(runtime?.qa_retriever) }}</dd>
+            <dd>{{ displayValue(activeProfile?.qa_retriever) }}</dd>
+          </div>
+          <div>
+            <dt>Graph Run</dt>
+            <dd>{{ displayValue(runtime?.graphRunId) }}</dd>
           </div>
           <div>
             <dt>Extractor</dt>
-            <dd>{{ displayValue(runtime?.extractor_provider) }} / {{ displayValue(runtime?.extractor_model) }}</dd>
+            <dd>{{ displayValue(activeProfile?.extractor_provider) }} / {{ displayValue(activeProfile?.extractor_model) }}</dd>
           </div>
           <div>
             <dt>Entities</dt>
-            <dd>{{ displayValue(runtime?.entity_model) }}</dd>
+            <dd>{{ displayValue(activeProfile?.entity_model) }}</dd>
           </div>
         </dl>
       </aside>

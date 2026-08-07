@@ -22,7 +22,6 @@ services:
     depends_on:
       - neo4j
       - mlflow
-      - minio
 
   web:
     build:
@@ -59,31 +58,13 @@ services:
       mlflow server
       --host 0.0.0.0
       --port 5000
-      --backend-store-uri sqlite:///mlflow.db
-      --default-artifact-root s3://medgraphrag-artifacts
-    environment:
-      - AWS_ACCESS_KEY_ID=medgraphrag
-      - AWS_SECRET_ACCESS_KEY=medgraphrag-password
-      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
-    depends_on:
-      - minio
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --serve-artifacts
+      --artifacts-destination file:///mlflow/artifacts
     volumes:
       - mlflow_data:/mlflow
-
-  minio:
-    image: minio/minio:latest
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    environment:
-      - MINIO_ROOT_USER=medgraphrag
-      - MINIO_ROOT_PASSWORD=medgraphrag-password
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio_data:/data
 
 volumes:
   neo4j_data:
   neo4j_logs:
   mlflow_data:
-  minio_data:

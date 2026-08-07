@@ -1,0 +1,148 @@
+{
+  "schema_version": "qa_gold_v2",
+  "question_set_id": "qa_gold_v002",
+  "source_gold_set_id": "bootstrap_v001_full",
+  "review_status": "starter_multi_hop_set",
+  "notes": "Starter QA set for proving direct, multi-hop, definition-augmented, and unanswerable GraphRAG behavior. Expand and adjudicate before treating as a protected holdout.",
+  "questions": [
+    {
+      "id": "qa-gold-v002-q001",
+      "question": "What biomarker do Fibrates reduce in the retrieved graph?",
+      "expected_facts": [
+        "Fibrates reduce HDL cholesterol."
+      ],
+      "expected_entities": [
+        "Fibrates",
+        "HDL cholesterol"
+      ],
+      "expected_relationships": [
+        "REDUCES"
+      ],
+      "source_pmcids": [
+        "PMC4866746"
+      ],
+      "question_type": "direct_relationship",
+      "difficulty": "easy",
+      "expected_hop_count": 1,
+      "split": "dev",
+      "adjudication_status": "draft_from_loaded_graph"
+    },
+    {
+      "id": "qa-gold-v002-q002",
+      "question": "Using the graph path, which drug connects HDL cholesterol and triglycerides through lipid relationships?",
+      "expected_facts": [
+        "Niacin may increase HDL cholesterol.",
+        "Niacin may reduce Triglycerides."
+      ],
+      "expected_entities": [
+        "niacin",
+        "HDL cholesterol",
+        "Triglycerides"
+      ],
+      "expected_relationships": [
+        "INCREASES",
+        "REDUCES"
+      ],
+      "source_pmcids": [
+        "PMC4866746"
+      ],
+      "question_type": "multi_hop_path",
+      "difficulty": "medium",
+      "expected_hop_count": 2,
+      "split": "dev",
+      "adjudication_status": "draft_multi_hop"
+    },
+    {
+      "id": "qa-gold-v002-q003",
+      "question": "What is hypertriglyceridemia?",
+      "expected_facts": [
+        "Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated."
+      ],
+      "expected_entities": [
+        "Hypertriglyceridemia"
+      ],
+      "expected_relationships": [
+        "DEFINITION_OF"
+      ],
+      "question_type": "definition_augmented",
+      "difficulty": "medium",
+      "expected_hop_count": 1,
+      "requires_definition": true,
+      "split": "dev",
+      "adjudication_status": "draft_definition_augmented"
+    },
+    {
+      "id": "qa-gold-v002-q005",
+      "question": "What is hypertriglyceridemia, and what lipid abnormality is it associated with in PMC evidence?",
+      "expected_facts": [
+        "Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+        "hypertriglyceridemia is associated with Triglycerides."
+      ],
+      "expected_entities": [
+        "Hypertriglyceridemia",
+        "Triglycerides"
+      ],
+      "expected_relationships": [
+        "DEFINITION_OF",
+        "ASSOCIATED_WITH"
+      ],
+      "source_pmcids": [
+        "PMC3234107"
+      ],
+      "question_type": "definition_augmented",
+      "difficulty": "medium",
+      "expected_hop_count": 1,
+      "requires_definition": true,
+      "requires_graph_evidence": true,
+      "required_evidence_kinds": [
+        "definition",
+        "graph"
+      ],
+      "split": "dev",
+      "adjudication_status": "draft_mixed_definition_graph"
+    },
+    {
+      "id": "qa-gold-v002-q006",
+      "question": "What is type 2 diabetes mellitus, and what condition is it associated with in PMC evidence?",
+      "expected_facts": [
+        "Type 2 diabetes mellitus is a chronic metabolic condition characterized by insulin resistance and elevated blood glucose.",
+        "Type 2 diabetes mellitus is associated with chronic kidney disease."
+      ],
+      "expected_entities": [
+        "Type 2 diabetes mellitus",
+        "chronic kidney disease"
+      ],
+      "expected_relationships": [
+        "DEFINITION_OF",
+        "ASSOCIATED_WITH"
+      ],
+      "source_pmcids": [
+        "PMC4866746"
+      ],
+      "question_type": "definition_augmented",
+      "difficulty": "medium",
+      "expected_hop_count": 1,
+      "requires_definition": true,
+      "requires_graph_evidence": true,
+      "required_evidence_kinds": [
+        "definition",
+        "graph"
+      ],
+      "split": "dev",
+      "adjudication_status": "draft_mixed_definition_graph"
+    },
+    {
+      "id": "qa-gold-v002-q004",
+      "question": "What treatment cures nevermentioneditis?",
+      "expected_facts": [],
+      "expected_entities": [],
+      "expected_relationships": [],
+      "question_type": "unanswerable",
+      "difficulty": "medium",
+      "expected_hop_count": 0,
+      "split": "dev",
+      "expected_abstention": true,
+      "adjudication_status": "draft_unanswerable_control"
+    }
+  ]
+}

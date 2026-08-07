@@ -6,6 +6,7 @@ import json
 import shutil
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +19,8 @@ from pipelines.qa.pipeline import process_questions
 
 DEFAULT_QA_EVAL_OUTPUT_ROOT = Path("data/qa/eval_v001")
 DEFAULT_QA_QUESTION_FILE = Path("eval/questions/qa_gold_v001.json")
+DEFAULT_TERMINOLOGY_FILE = Path("data/terminology/biomedical_aliases_v001.json")
+DEFAULT_DEFINITIONS_FILE = Path("data/terminology/medical_definitions_v001.json")
 
 
 @dataclass(frozen=True)
@@ -32,6 +35,7 @@ class QAEvaluationConfig:
     model: str | None = None
     retriever: str | None = None
     max_evidence: int = 12
+    model_timeout_seconds: int | None = None
     skip_answer: bool = False
     limit: int | None = None
     force: bool = False
@@ -62,6 +66,37 @@ def _clean(value: Any) -> str:
 
 def _normalize(value: Any) -> str:
     return " ".join(_clean(value).casefold().replace("_", " ").split())
+
+
+@lru_cache(maxsize=1)
+def _entity_alias_groups() -> tuple[frozenset[str], ...]:
+    groups: list[frozenset[str]] = []
+    for path, key in ((DEFAULT_TERMINOLOGY_FILE, "concepts"), (DEFAULT_DEFINITIONS_FILE, "definitions")):
+        payload = _read_json(path)
+        records = payload.get(key) if isinstance(payload, dict) else []
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            names = [_normalize(record.get("canonical_name"))]
+            aliases = record.get("aliases") if isinstance(record.get("aliases"), list) else []
+            names.extend(_normalize(alias) for alias in aliases)
+            group = frozenset(name for name in names if name)
+            if group:
+                groups.append(group)
+    return tuple(groups)
+
+
+def _entity_alias_values(value: str) -> set[str]:
+    normalized = _normalize(value)
+    if not normalized:
+        return set()
+    values = {normalized}
+    for group in _entity_alias_groups():
+        if normalized in group:
+            values.update(group)
+    return values
 
 
 def _as_list(value: Any) -> list[str]:
@@ -148,6 +183,46 @@ def _is_unanswerable(question: QuestionRecord) -> bool:
     return _clean(value).casefold() in {"1", "true", "yes", "y"}
 
 
+def _expected_hop_count(question: QuestionRecord) -> int:
+    metadata = _question_metadata(question)
+    value = metadata.get("expected_hop_count") or metadata.get("hop_count")
+    if value is None:
+        if _is_unanswerable(question):
+            return 0
+        return 1 if question.expected_relationships else 0
+    try:
+        return max(0, int(value))
+    except (TypeError, ValueError):
+        return 1
+
+
+def _requires_definition(question: QuestionRecord) -> bool:
+    metadata = _question_metadata(question)
+    value = metadata.get("requires_definition", metadata.get("requires_standard_definition", False))
+    if isinstance(value, bool):
+        return value
+    return _clean(value).casefold() in {"1", "true", "yes", "y"}
+
+
+def _requires_graph_evidence(question: QuestionRecord) -> bool:
+    metadata = _question_metadata(question)
+    value = metadata.get("requires_graph_evidence", metadata.get("requires_pmc_evidence", False))
+    if isinstance(value, bool):
+        return value
+    return _clean(value).casefold() in {"1", "true", "yes", "y"}
+
+
+def _required_evidence_kinds(question: QuestionRecord) -> set[str]:
+    metadata = _question_metadata(question)
+    required = {_clean(item).casefold() for item in _as_list(metadata.get("required_evidence_kinds"))}
+    required.update(_clean(item).casefold() for item in _as_list(metadata.get("expected_evidence_kinds")))
+    if _requires_definition(question):
+        required.add("definition")
+    if _requires_graph_evidence(question):
+        required.add("graph")
+    return {item for item in required if item}
+
+
 def _read_csv_rows(path: Path) -> list[dict[str, str]]:
     if not path.exists():
         return []
@@ -175,14 +250,61 @@ def _evidence_identity_values(evidence: dict[str, Any]) -> set[str]:
 
 
 def _evidence_entity_values(evidence: dict[str, Any]) -> set[str]:
-    return {
-        _normalize(evidence.get("sourceName")),
-        _normalize(evidence.get("targetName")),
-    } - {""}
+    values: set[str] = set()
+    for field in ("sourceName", "targetName"):
+        values.update(_entity_alias_values(_clean(evidence.get(field))))
+    return values
 
 
 def _evidence_relationship_values(evidence: dict[str, Any]) -> set[str]:
     return {_normalize(evidence.get("relationshipType"))} - {""}
+
+
+def _evidence_path_length(evidence: dict[str, Any]) -> int:
+    try:
+        return int(evidence.get("pathLength") or 1)
+    except (TypeError, ValueError):
+        return 1
+
+
+def _path_complete(evidence: list[dict[str, Any]], expected_hop_count: int) -> bool:
+    if expected_hop_count <= 0:
+        return not evidence
+    if expected_hop_count <= 1:
+        return bool(evidence)
+    steps_by_path: dict[str, set[int]] = {}
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        path_id = _clean(item.get("pathId")) or _clean(item.get("id"))
+        try:
+            step = int(item.get("pathStep") or 1)
+        except (TypeError, ValueError):
+            step = 1
+        steps_by_path.setdefault(path_id, set()).add(step)
+        if _evidence_path_length(item) >= expected_hop_count and len(steps_by_path[path_id]) >= expected_hop_count:
+            return True
+    return False
+
+
+def _definition_source_hit(evidence: list[dict[str, Any]]) -> bool:
+    return any(
+        isinstance(item, dict)
+        and _clean(item.get("evidenceKind")).casefold() == "definition"
+        and bool(_clean(item.get("evidenceText")))
+        for item in evidence
+    )
+
+
+def _evidence_kind_hit(required_kinds: set[str], records: list[dict[str, Any]]) -> bool:
+    if not required_kinds:
+        return True
+    observed = {
+        _clean(item.get("evidenceKind")).casefold()
+        for item in records
+        if isinstance(item, dict) and _clean(item.get("evidenceKind"))
+    }
+    return required_kinds <= observed
 
 
 def _contains_all(text: str, expected_items: list[str]) -> tuple[int, int, float]:
@@ -207,7 +329,7 @@ def _coverage(expected_items: list[str], observed_items: set[str]) -> tuple[int,
     expected = [_normalize(item) for item in expected_items if _normalize(item)]
     if not expected:
         return 0, 0, 1.0
-    matched = sum(1 for item in expected if item in observed_items)
+    matched = sum(1 for item in expected if _entity_alias_values(item) & observed_items)
     return matched, len(expected), matched / len(expected)
 
 
@@ -241,6 +363,13 @@ def _score_question(
             "answer_status": "missing",
             "retrieved_count": 0,
             "source_count": 0,
+            "hop_count": _expected_hop_count(question),
+            "max_retrieved_path_length": 0,
+            "path_complete": False,
+            "definition_source_hit": False,
+            "required_evidence_kinds": ";".join(sorted(_required_evidence_kinds(question))),
+            "retrieved_required_evidence_kinds": False,
+            "source_required_evidence_kinds": False,
             "expected_fact_hits": 0,
             "expected_fact_total": len(question.expected_facts),
             "fact_coverage": 0.0 if question.expected_facts else 1.0,
@@ -268,9 +397,13 @@ def _score_question(
     answer_path = Path(manifest_row.get("answer_path") or "")
 
     evidence = _read_retrieved(retrieved_path)
+    answer_status = manifest_row.get("answer_status", "")
     answer_payload = _read_answer(answer_path) if answer_path.exists() else {}
     answer_text = _clean(answer_payload.get("answer"))
-    abstained = bool(answer_payload.get("abstained")) if answer_payload else _clean(manifest_row.get("abstained")).casefold() == "true"
+    if answer_status == "skipped":
+        abstained = not evidence
+    else:
+        abstained = bool(answer_payload.get("abstained")) if answer_payload else _clean(manifest_row.get("abstained")).casefold() == "true"
     sources = answer_payload.get("sources") if isinstance(answer_payload.get("sources"), list) else []
 
     expected_evidence_ids = _expected_evidence_ids(question)
@@ -283,6 +416,13 @@ def _score_question(
             evidence_entities.update(_evidence_entity_values(item))
             evidence_relationships.update(_evidence_relationship_values(item))
 
+    expected_hops = _expected_hop_count(question)
+    required_evidence_kinds = _required_evidence_kinds(question)
+    max_path_length = max((_evidence_path_length(item) for item in evidence if isinstance(item, dict)), default=0)
+    path_complete = _path_complete(evidence, expected_hops)
+    definition_hit = _definition_source_hit(evidence)
+    retrieved_required_kinds = _evidence_kind_hit(required_evidence_kinds, evidence)
+    source_required_kinds = _evidence_kind_hit(required_evidence_kinds, sources)
     expected_fact_hits, expected_fact_total, fact_coverage = _contains_all(answer_text, question.expected_facts)
     entity_hits, entity_total, entity_coverage = _coverage(question.expected_entities, evidence_entities)
     relationship_hits, relationship_total, relationship_coverage = _coverage(question.expected_relationships, evidence_relationships)
@@ -295,10 +435,16 @@ def _score_question(
         and entity_coverage >= 1.0
         and relationship_coverage >= 1.0
         and evidence_hit
+        and path_complete
+        and retrieved_required_kinds
     )
-    citation_supported = bool(sources) if not unanswerable and not abstained else abstained
+    citation_supported = (
+        bool(sources) and source_required_kinds
+        if not unanswerable and not abstained
+        else abstained
+    )
     unsupported_answer = bool(answer_text) and not abstained and not retrieval_success
-    answer_success = (
+    answer_success = False if answer_status == "skipped" else (
         abstained
         if unanswerable
         else not abstained and fact_coverage >= 1.0 and citation_supported and not unsupported_answer
@@ -310,9 +456,16 @@ def _score_question(
         "question_type": _clean(_question_metadata(question).get("question_type") or _question_metadata(question).get("category")),
         "split": _clean(_question_metadata(question).get("split")),
         "status": manifest_row.get("status", ""),
-        "answer_status": manifest_row.get("answer_status", ""),
+        "answer_status": answer_status,
         "retrieved_count": int(manifest_row.get("retrieved_count") or 0),
         "source_count": int(manifest_row.get("source_count") or 0),
+        "hop_count": expected_hops,
+        "max_retrieved_path_length": max_path_length,
+        "path_complete": path_complete,
+        "definition_source_hit": definition_hit,
+        "required_evidence_kinds": ";".join(sorted(required_evidence_kinds)),
+        "retrieved_required_evidence_kinds": retrieved_required_kinds,
+        "source_required_evidence_kinds": source_required_kinds,
         "expected_fact_hits": expected_fact_hits,
         "expected_fact_total": expected_fact_total,
         "fact_coverage": round(fact_coverage, 6),
@@ -462,7 +615,35 @@ def _aggregate_metrics(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "mean_fact_coverage": round(sum(float(row["fact_coverage"]) for row in rows) / total, 6) if total else 0.0,
         "mean_entity_coverage": round(sum(float(row["entity_coverage"]) for row in rows) / total, 6) if total else 0.0,
         "mean_relationship_coverage": round(sum(float(row["relationship_coverage"]) for row in rows) / total, 6) if total else 0.0,
+        "path_complete_rate": _safe_ratio(sum(1 for row in rows if row["path_complete"]), total),
+        "required_evidence_kind_recall": _safe_ratio(
+            sum(1 for row in rows if row["retrieved_required_evidence_kinds"]),
+            total,
+        ),
+        "required_evidence_kind_citation_rate": _safe_ratio(
+            sum(1 for row in rows if row["source_required_evidence_kinds"]),
+            total,
+        ),
     }
+    multi_hop_rows = [row for row in rows if int(row.get("hop_count") or 0) > 1]
+    metrics["multi_hop_retrieval_recall"] = _safe_ratio(
+        sum(1 for row in multi_hop_rows if row["retrieval_success"]),
+        len(multi_hop_rows),
+    )
+    definition_rows = [row for row in rows if "definition" in _clean(row.get("required_evidence_kinds")).casefold().split(";")]
+    metrics["definition_required_retrieval_recall"] = _safe_ratio(
+        sum(1 for row in definition_rows if row["retrieval_success"]),
+        len(definition_rows),
+    )
+    mixed_rows = [
+        row
+        for row in rows
+        if {"definition", "graph"} <= set(_clean(row.get("required_evidence_kinds")).casefold().split(";"))
+    ]
+    metrics["mixed_evidence_citation_rate"] = _safe_ratio(
+        sum(1 for row in mixed_rows if row["citation_supported"]),
+        len(mixed_rows),
+    )
     judged_rows = [row for row in rows if row.get("llm_judge_status") == "ok"]
     if judged_rows:
         metrics["llm_judge_supported_rate"] = _safe_ratio(
@@ -510,6 +691,12 @@ def _write_summary(path: Path, result: dict[str, Any]) -> Path:
         f"| Citation support rate | {overall['citation_support_rate']} |",
         f"| Unsupported answer rate | {overall['unsupported_answer_rate']} |",
         f"| Abstention accuracy | {overall['abstention_accuracy']} |",
+        f"| Path complete rate | {overall['path_complete_rate']} |",
+        f"| Multi-hop retrieval recall | {overall['multi_hop_retrieval_recall']} |",
+        f"| Required evidence-kind recall | {overall['required_evidence_kind_recall']} |",
+        f"| Required evidence-kind citation rate | {overall['required_evidence_kind_citation_rate']} |",
+        f"| Definition-required retrieval recall | {overall['definition_required_retrieval_recall']} |",
+        f"| Mixed-evidence citation rate | {overall['mixed_evidence_citation_rate']} |",
         "",
         "## Artifacts",
         "",
@@ -575,6 +762,7 @@ def _log_mlflow_result(mlflow: Any, config: QAEvaluationConfig, result: dict[str
         "qa_model": result["model_profile"]["qa_model"],
         "qa_retriever": result["model_profile"]["qa_retriever"],
         "max_evidence": config.max_evidence,
+        "model_timeout_seconds": config.model_timeout_seconds or "",
         "skip_answer": config.skip_answer,
         "llm_judge_enabled": config.llm_judge_enabled,
     }
@@ -583,9 +771,21 @@ def _log_mlflow_result(mlflow: Any, config: QAEvaluationConfig, result: dict[str
     for metric_name, value in result["metrics"]["overall"].items():
         if isinstance(value, int | float):
             mlflow.log_metric(metric_name, value)
+    artifact_status = "skipped"
+    artifact_error = ""
     if config.mlflow_log_artifacts:
-        mlflow.log_artifacts(eval_root.as_posix())
-    return {"status": "logged", "logged_artifacts": bool(config.mlflow_log_artifacts)}
+        try:
+            mlflow.log_artifacts(eval_root.as_posix())
+            artifact_status = "logged"
+        except Exception as exc:  # noqa: BLE001 - Metrics should remain valid if artifact storage is unavailable.
+            artifact_status = "error"
+            artifact_error = str(exc)
+    return {
+        "status": "logged",
+        "logged_artifacts": artifact_status == "logged",
+        "artifact_status": artifact_status,
+        "artifact_error": artifact_error,
+    }
 
 
 def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
@@ -624,7 +824,9 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 answerer_provider=profile.qa_provider,
                 model=profile.qa_model,
                 retriever=profile.qa_retriever,
+                graph_run_id=config.graph_run_id,
                 max_evidence=config.max_evidence,
+                model_timeout_seconds=config.model_timeout_seconds,
                 skip_answer=config.skip_answer,
                 fail_fast=config.fail_fast,
                 limit=None,
@@ -655,6 +857,12 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 "mean_fact_coverage",
                 "mean_entity_coverage",
                 "mean_relationship_coverage",
+                "path_complete_rate",
+                "multi_hop_retrieval_recall",
+                "required_evidence_kind_recall",
+                "required_evidence_kind_citation_rate",
+                "definition_required_retrieval_recall",
+                "mixed_evidence_citation_rate",
                 "llm_judge_supported_rate",
                 "mean_llm_judge_score",
             ],
@@ -671,6 +879,13 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
                 "answer_status",
                 "retrieved_count",
                 "source_count",
+                "hop_count",
+                "max_retrieved_path_length",
+                "path_complete",
+                "definition_source_hit",
+                "required_evidence_kinds",
+                "retrieved_required_evidence_kinds",
+                "source_required_evidence_kinds",
                 "expected_fact_hits",
                 "expected_fact_total",
                 "fact_coverage",
@@ -772,7 +987,10 @@ def run_qa_evaluation(config: QAEvaluationConfig) -> dict[str, Any]:
         return result
     finally:
         if mlflow_client is not None:
-            mlflow_client.end_run()
+            try:
+                mlflow_client.end_run()
+            except UnicodeEncodeError:
+                pass
 
 
 __all__ = [

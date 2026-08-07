@@ -40,6 +40,7 @@ class ModelOption(BaseModel):
 
 class ActiveModelRuntimeResponse(BaseModel):
     activeProfile: ModelOption
+    graphRunId: str = ""
 
 
 def _chat_request_timeout_seconds() -> int:

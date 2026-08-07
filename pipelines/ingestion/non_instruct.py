@@ -4,7 +4,7 @@ import json
 import math
 import re
 import unicodedata
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Protocol, Sequence
 
@@ -237,17 +237,17 @@ class RelationshipSpec:
 
 
 RELATIONSHIP_SPECS = (
-    RelationshipSpec("TREATS", ("Drug",), ("Condition",), ("treat", "therapy", "improved"), ("A drug treats a medical condition.",)),
-    RelationshipSpec("PREVENTS", ("Drug",), ("Condition",), ("prevent", "prophylaxis", "reduced incidence"), ("A drug prevents a disease or clinical event.",)),
-    RelationshipSpec("REDUCES", ("Drug",), ("Biomarker",), ("reduce", "lower", "decrease", "decline"), ("A drug lowers a biomarker level.",)),
-    RelationshipSpec("INCREASES", ("Drug",), ("Biomarker",), ("increase", "raise", "elevate"), ("A drug raises a biomarker level.",)),
-    RelationshipSpec("HAS_ADVERSE_EFFECT", ("Drug",), ("Condition",), ("adverse", "side effect", "toxicity", "induced"), ("A drug causes an adverse clinical effect.",)),
-    RelationshipSpec("CAUSES", ("Condition",), ("Condition",), ("cause", "leads to", "results in", "pathogenesis"), ("One medical condition causes another condition.",)),
-    RelationshipSpec("HAS_SYMPTOM", ("Condition",), ("Symptom",), ("symptom", "presented with", "characterized by"), ("A medical condition has a symptom.",)),
-    RelationshipSpec("INCREASES_RISK_OF", ("RiskFactor",), ("Condition",), ("risk", "increased likelihood", "predispose"), ("A risk factor increases the risk of a medical condition.",)),
-    RelationshipSpec("INTERACTS_WITH", ("Drug",), ("Drug",), ("interact", "coadministration", "combination"), ("Two drugs interact clinically.",)),
-    RelationshipSpec("CONTRAINDICATED_FOR", ("Drug",), ("Condition",), ("contraindicat", "should not be used", "avoid"), ("A drug is contraindicated for a condition.",)),
-    RelationshipSpec("ASSOCIATED_WITH", ("Drug", "Condition", "Symptom", "RiskFactor", "Biomarker"), ("Drug", "Condition", "Symptom", "RiskFactor", "Biomarker"), ("associated", "correlated", "linked", "marker", "prevalence"), ("Two biomedical entities are clinically or statistically associated.",)),
+    RelationshipSpec("TREATS", ("Drug",), ("Condition",), ("treat", "therapy", "indicated", "recommended", "management", "intervention"), ("A drug treats a medical condition.",)),
+    RelationshipSpec("PREVENTS", ("Drug",), ("Condition",), ("prevent", "prophylaxis", "reduced incidence", "reduced risk", "protect"), ("A drug prevents a disease or clinical event.",)),
+    RelationshipSpec("REDUCES", ("Drug",), ("Biomarker",), ("reduce", "lower", "decrease", "decline", "lowering", "reduction", "decreased"), ("A drug lowers a biomarker level.",)),
+    RelationshipSpec("INCREASES", ("Drug",), ("Biomarker",), ("increase", "raise", "elevate", "elevation", "higher", "increased"), ("A drug raises a biomarker level.",)),
+    RelationshipSpec("HAS_ADVERSE_EFFECT", ("Drug",), ("Condition",), ("adverse", "side effect", "toxicity", "induced", "associated with", "rare cases"), ("A drug causes an adverse clinical effect.",)),
+    RelationshipSpec("CAUSES", ("Condition",), ("Condition",), ("cause", "leads to", "results in", "pathogenesis", "promote", "contribute"), ("One medical condition causes another condition.",)),
+    RelationshipSpec("HAS_SYMPTOM", ("Condition",), ("Symptom",), ("symptom", "presented with", "characterized by", "manifest", "complain"), ("A medical condition has a symptom.",)),
+    RelationshipSpec("INCREASES_RISK_OF", ("RiskFactor",), ("Condition",), ("risk", "increased likelihood", "predispose", "associated with increased", "predictor"), ("A risk factor increases the risk of a medical condition.",)),
+    RelationshipSpec("INTERACTS_WITH", ("Drug",), ("Drug",), ("interact", "coadministration", "combination", "exposure to", "clearance of"), ("Two drugs interact clinically.",)),
+    RelationshipSpec("CONTRAINDICATED_FOR", ("Drug",), ("Condition",), ("contraindicat", "should not be used", "avoid", "not recommended"), ("A drug is contraindicated for a condition.",)),
+    RelationshipSpec("ASSOCIATED_WITH", ("Drug", "Condition", "Symptom", "RiskFactor", "Biomarker"), ("Drug", "Condition", "Symptom", "RiskFactor", "Biomarker"), ("associated", "correlated", "linked", "marker", "prevalence", "present with", "characterized by", "predictor"), ("Two biomedical entities are clinically or statistically associated.",)),
 )
 
 
@@ -260,6 +260,16 @@ class RelationScoringConfig:
     proximity_weight: float = 0.10
     entity_confidence_weight: float = 0.15
     max_pair_distance: int = 300
+    relation_thresholds: dict[str, float] = field(
+        default_factory=lambda: {
+            "ASSOCIATED_WITH": 0.58,
+            "REDUCES": 0.60,
+            "INCREASES": 0.60,
+            "HAS_ADVERSE_EFFECT": 0.58,
+            "INCREASES_RISK_OF": 0.58,
+            "INTERACTS_WITH": 0.58,
+        }
+    )
 
     def __post_init__(self) -> None:
         for name in ("relation_threshold", "semantic_floor"):
@@ -276,6 +286,12 @@ class RelationScoringConfig:
             raise ValueError("Relation score weights must be non-negative and sum to more than zero")
         if self.max_pair_distance <= 0:
             raise ValueError("max_pair_distance must be positive")
+        for relationship_type, threshold in self.relation_thresholds.items():
+            if not 0 <= threshold <= 1:
+                raise ValueError(f"relation threshold override for {relationship_type} must be between 0 and 1")
+
+    def threshold_for(self, relationship_type: str) -> float:
+        return self.relation_thresholds.get(relationship_type, self.relation_threshold)
 
 
 @dataclass(frozen=True, slots=True)
@@ -342,6 +358,18 @@ def _sentence_spans(text: str) -> list[tuple[int, int, str]]:
     return spans
 
 
+def _evidence_windows(text: str) -> list[tuple[int, int, str]]:
+    sentences = _sentence_spans(text)
+    windows = list(sentences)
+    for left, right in zip(sentences, sentences[1:]):
+        start = left[0]
+        end = right[1]
+        window = text[start:end].strip()
+        if window:
+            windows.append((start, end, window))
+    return windows
+
+
 class RelationCandidateScorer:
     NEGATION_PATTERN = re.compile(r"\b(no|not|without|neither|failed to|did not|wasn't|were not)\b", re.IGNORECASE)
 
@@ -370,7 +398,7 @@ class RelationCandidateScorer:
             return []
         prototypes = self._load_prototypes()
         candidates: list[RelationCandidate] = []
-        for sentence_start, sentence_end, sentence in _sentence_spans(text):
+        for sentence_start, sentence_end, sentence in _evidence_windows(text):
             sentence_mentions = [
                 mention
                 for mention in mentions
@@ -417,13 +445,16 @@ class RelationCandidateScorer:
                             + entity_confidence * self.config.entity_confidence_weight
                         ) / total_weight
                         reason = ""
-                        accepted = score >= self.config.relation_threshold
+                        accepted = score >= self.config.threshold_for(spec.type)
                         if cue == 0 and semantic < self.config.semantic_floor:
                             accepted = False
                             reason = "semantic score below floor and no lexical cue matched"
                         if negated:
                             accepted = False
                             reason = "sentence contains a negation cue"
+                        if source.end <= sentence_start or target.start >= sentence_end:
+                            accepted = False
+                            reason = "candidate endpoints are outside the evidence window"
                         candidates.append(
                             RelationCandidate(
                                 spec.type,

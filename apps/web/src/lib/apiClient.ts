@@ -257,7 +257,10 @@ export type IngestionModelProfile = {
   entity_model: string;
 };
 
-export type ActiveModelRuntime = IngestionModelProfile;
+export type ActiveModelRuntime = {
+  activeProfile: IngestionModelProfile;
+  graphRunId: string;
+};
 
 export type IngestionArtifacts = {
   jobId: string;
@@ -337,6 +340,5 @@ export async function getActiveModelRuntime(): Promise<ActiveModelRuntime> {
     throw new Error(`Model runtime request failed: ${response.status}`);
   }
 
-  const payload = await response.json();
-  return payload.activeProfile;
+  return response.json();
 }
