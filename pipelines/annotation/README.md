@@ -246,7 +246,7 @@ MLflow logging is optional and disabled by default. Start the local MLflow stack
 with Docker Compose, then pass `--mlflow`:
 
 ```powershell
-docker compose up mlflow minio
+docker compose up mlflow
 
 .\.venv\Scripts\python.exe pipelines/annotation/evaluate_annotations.py `
   --gold-manifest data/annotations/gold_v001/bootstrap_v001_full/gold_manifest.json `
@@ -271,8 +271,10 @@ Use custom tracking metadata when needed:
 
 The MLflow run logs gold/model parameters, overall/entity/relationship metrics,
 per-entity-type and per-relationship-type metrics, and the full durable eval
-artifact folder unless `--no-mlflow-artifacts` is passed. The local
-`eval_manifest.json` records the MLflow run ID and logging status.
+artifact folder unless `--no-mlflow-artifacts` is passed. The local Compose
+service stores MLflow metadata and proxied artifacts in the `mlflow_data` Docker
+volume. The local `eval_manifest.json` records the MLflow run ID and logging
+status.
 
 ### DVC Experiments
 

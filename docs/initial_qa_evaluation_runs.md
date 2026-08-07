@@ -40,22 +40,17 @@ questions.
 Start the local services:
 
 ```powershell
-docker compose up -d neo4j minio mlflow
+docker compose up -d neo4j mlflow
 docker compose ps
 ```
 
-Wait for MLflow and MinIO:
+Wait for MLflow:
 
 ```powershell
 do {
   Start-Sleep -Seconds 2
   try { $mlflowReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:5000/health).StatusCode -eq 200 } catch { $mlflowReady = $false }
 } until ($mlflowReady)
-
-do {
-  Start-Sleep -Seconds 2
-  try { $minioReady = (Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9000/minio/health/live).StatusCode -eq 200 } catch { $minioReady = $false }
-} until ($minioReady)
 ```
 
 Confirm Neo4j contains graph data:
@@ -75,14 +70,10 @@ as `GraphRunId` in QA experiments.
 
 ## 2. Prepare The Host Session
 
-Set MLflow and artifact storage values for the host process:
+Set MLflow and local model values for the host process:
 
 ```powershell
 $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
-$env:MLFLOW_S3_ENDPOINT_URL = "http://127.0.0.1:9000"
-$env:AWS_ACCESS_KEY_ID = "medgraphrag"
-$env:AWS_SECRET_ACCESS_KEY = "medgraphrag-password"
-$env:AWS_DEFAULT_REGION = "us-east-1"
 $env:OLLAMA_BASE_URL = "http://localhost:11434"
 $env:OLLAMA_TIMEOUT_SECONDS = "600"
 ```
