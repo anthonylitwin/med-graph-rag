@@ -174,6 +174,73 @@ class QAAnswererTests(unittest.TestCase):
             "Fibrates reduced triglycerides.",
         ])
 
+    def test_model_answer_completion_includes_definition_supplement(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Hypertriglyceridemia is associated with triglycerides.",
+                        confidence=0.82,
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Triglycerides",
+                        source_labels=["Biomarker"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Cardiovascular disease",
+                        target_labels=["Condition"],
+                        evidence_text="Triglycerides are associated with cardiovascular disease.",
+                        confidence=0.78,
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="definition:hypertriglyceridemia",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="DEFINITION_OF",
+                        target_name="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        target_labels=["Definition"],
+                        evidence_text="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        confidence=1.0,
+                        document_id="definition:hypertriglyceridemia",
+                        document_title="MedGraphRAG curated definition v001",
+                        evidence_kind="definition",
+                        source_url="local://medical_definitions_v001#hypertriglyceridemia",
+                    ),
+                ]
+
+        class PartialModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                return {
+                    "answer": "Hypertriglyceridemia is associated with triglycerides.",
+                    "sources": [],
+                    "reasoningPath": [],
+                    "confidence": 0.8,
+                    "abstained": False,
+                }
+
+        answerer = GraphRAGAnswerer(model=PartialModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="What is hypertriglyceridemia?"))
+
+        self.assertIn("Hypertriglyceridemia: Hypertriglyceridemia is a condition", answer.answer)
+        self.assertIn("definition", {source["evidenceKind"] for source in answer.sources})
+        self.assertTrue(answer.raw_response["completedWithEvidenceSummary"])
+
     def test_model_failure_returns_retrieved_evidence_fallback(self) -> None:
         class FakeRetriever:
             name = "fixture"
@@ -429,6 +496,7 @@ class QAEvaluationTests(unittest.TestCase):
                             "model": "model-x",
                             "retriever": "graph",
                             "max_evidence": 5,
+                            "model_timeout_seconds": 7,
                             "skip_answer": True,
                             "limit": 1,
                             "fail_fast": True,
@@ -454,6 +522,7 @@ class QAEvaluationTests(unittest.TestCase):
         self.assertEqual(config.model, "model-x")
         self.assertEqual(config.retriever, "graph")
         self.assertEqual(config.max_evidence, 5)
+        self.assertEqual(config.model_timeout_seconds, 7)
         self.assertTrue(config.skip_answer)
         self.assertEqual(config.limit, 1)
         self.assertTrue(config.llm_judge_enabled)
@@ -570,6 +639,89 @@ class QAEvaluationTests(unittest.TestCase):
 
         self.assertEqual(result["metrics"]["overall"]["abstention_accuracy"], 1.0)
         self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 0.0)
+
+    def test_run_qa_evaluation_requires_mixed_graph_and_definition_citations(self) -> None:
+        class MixedRetriever:
+            name = "graph"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="rel:hypertriglyceridemia-triglycerides",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="ASSOCIATED_WITH",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Hypertriglyceridemia is associated with triglycerides.",
+                        confidence=0.82,
+                        source_pmcid="PMC1",
+                        chunk_id="PMC1-chunk-0001",
+                        evidence_kind="graph",
+                    ),
+                    RetrievedEvidence(
+                        id="definition:hypertriglyceridemia",
+                        source_name="Hypertriglyceridemia",
+                        source_labels=["Condition"],
+                        relationship_type="DEFINITION_OF",
+                        target_name="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        target_labels=["Definition"],
+                        evidence_text="Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                        confidence=1.0,
+                        document_id="definition:hypertriglyceridemia",
+                        document_title="MedGraphRAG curated definition v001",
+                        evidence_kind="definition",
+                        source_url="local://medical_definitions_v001#hypertriglyceridemia",
+                    ),
+                ][:limit]
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    {
+                        "question_set_id": "mixed_definition_fixture",
+                        "questions": [
+                            {
+                                "id": "q1",
+                                "question": "What is hypertriglyceridemia, and what is it associated with?",
+                                "expected_facts": [
+                                    "Hypertriglyceridemia is a condition in which triglyceride levels in the blood are elevated.",
+                                    "Hypertriglyceridemia is associated with Triglycerides.",
+                                ],
+                                "expected_entities": ["Hypertriglyceridemia", "Triglycerides"],
+                                "expected_relationships": ["DEFINITION_OF", "ASSOCIATED_WITH"],
+                                "question_type": "definition_augmented",
+                                "requires_definition": True,
+                                "requires_graph_evidence": True,
+                                "required_evidence_kinds": ["graph", "definition"],
+                                "split": "dev",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch("pipelines.qa.pipeline.get_retriever", return_value=MixedRetriever()):
+                result = run_qa_evaluation(
+                    QAEvaluationConfig(
+                        question_file=question_file,
+                        output_root=tmp_path / "eval",
+                        eval_id="mixed-definition",
+                        model_profile="noop",
+                        retriever="graph",
+                        force=True,
+                    )
+                )
+
+        overall = result["metrics"]["overall"]
+        self.assertEqual(overall["retrieval_recall"], 1.0)
+        self.assertEqual(overall["answer_accuracy"], 1.0)
+        self.assertEqual(overall["required_evidence_kind_recall"], 1.0)
+        self.assertEqual(overall["required_evidence_kind_citation_rate"], 1.0)
+        self.assertEqual(overall["mixed_evidence_citation_rate"], 1.0)
 
 
 if __name__ == "__main__":

@@ -57,7 +57,7 @@ def process_questions(config: QAConfig) -> list[QAPipelineResult]:
     questions = config.questions[: config.limit] if config.limit is not None else config.questions
     retrieved_dir, answers_dir = ensure_output_directories(config.output_root, config.clean_output)
     retriever = get_retriever(config.retriever, graph_run_id=config.graph_run_id)
-    model = get_language_model(config.answerer_provider, config.model)
+    model = get_language_model(config.answerer_provider, config.model, timeout_seconds=config.model_timeout_seconds)
     answerer = GraphRAGAnswerer(model=model, retriever=retriever, max_evidence=config.max_evidence)
     results: list[QAPipelineResult] = []
 

@@ -121,6 +121,7 @@ class QAConfig:
     retriever: str = DEFAULT_QA_RETRIEVER
     graph_run_id: str = ""
     max_evidence: int = DEFAULT_MAX_EVIDENCE
+    model_timeout_seconds: int | None = None
     skip_answer: bool = False
     fail_fast: bool = False
     limit: int | None = None

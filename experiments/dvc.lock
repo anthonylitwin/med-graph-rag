@@ -165,46 +165,47 @@ stages:
     deps:
     - path: ../eval/questions/qa_gold_v002.json
       hash: md5
-      md5: 8bc6d0bf01a5b0a05357dafacfd6c9cc
-      size: 2675
+      md5: 8cddab38545e9a05c1882f84f05a48aa
+      size: 4637
     - path: ../packages/llm
       hash: md5
-      md5: 902960d281c4ba03ab7255ffe2981d9b.dir
-      size: 134988
+      md5: 17b8837fbacc283244e9fee89b42ac36.dir
+      size: 135133
       nfiles: 16
     - path: ../packages/qa
       hash: md5
-      md5: c69a64f19d6582533d95bb726c46ae41.dir
-      size: 208504
+      md5: b61147fff8233dcab7f2f32531be07f0.dir
+      size: 213596
       nfiles: 17
     - path: ../pipelines/qa/evaluation.py
       hash: md5
-      md5: c69c545d2e214e5e6d5b0df6d2e03fdc
-      size: 37574
+      md5: 1c54ff2067e1bcd27ff3fe891f7869c0
+      size: 41792
     - path: ../pipelines/qa/pipeline.py
       hash: md5
-      md5: 0a523b0f8bd0e689f2d0b0268ffa34b5
-      size: 4260
+      md5: 3916342b751ccf7c656e04a48f4355d4
+      size: 4306
     - path: run_qa_eval.py
       hash: md5
-      md5: 93cf73bcc50492b156d6e7c216a62885
-      size: 4249
+      md5: 2057176afac17a66b3e4a0b423c14c11
+      size: 4394
     params:
       params.yaml:
         qa_eval:
-          eval_id: qa-answer-extractor-v2-graph-v001
+          eval_id: qa-definitions-stretch-answer-v001
           python: ..\.venv\Scripts\python.exe
           question_file: eval/questions/qa_gold_v002.json
           question_root: eval/questions
           output_root: data/qa/eval_v001
           graph_run_id: fullgold-noninst-extractor-v2-graph-v001
-          graph_source: accepted Extractor V2 predictions from 
-            fullgold-noninst-extractor-v2-acceptance-v001
+          graph_source: accepted Extractor V2 graph plus curated medical 
+            definitions v001
           model_profile: local-non-instruct
           answerer_provider: ollama
           model: qwen2.5:7b-instruct
           retriever: graph
           max_evidence: 12
+          model_timeout_seconds: 8
           skip_answer: false
           limit:
           fail_fast: true
@@ -216,66 +217,67 @@ stages:
             enabled: true
             tracking_uri: http://127.0.0.1:5000
             experiment: medgraphrag-qa-eval-v001
-            run_name: qa-answer-extractor-v2-graph-v001
+            run_name: qa-definitions-stretch-answer-v001
             log_artifacts: true
     outs:
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/answers
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/answers
       hash: md5
-      md5: 4e0a53a770d75bbc60eb3808cbe7a7fc.dir
-      size: 80794
-      nfiles: 4
+      md5: 327598ed6bcd2fd567d586d0d640cf51.dir
+      size: 130773
+      nfiles: 6
     - path: 
-        ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/artifact_manifest.json
+        ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/artifact_manifest.json
       hash: md5
-      md5: 18e1ccb11744a425dd7843f745e74957
-      size: 3948
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/errors.csv
+      md5: a3d15b6eb7f033a83758a53d04985262
+      size: 4905
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/errors.csv
       hash: md5
       md5: 8adaa2cbaf6e13609a9e455ec00ab80f
       size: 34
     - path: 
-        ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/eval_manifest.json
+        ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/eval_manifest.json
       hash: md5
-      md5: cafe2c999dc7d8890ab2ccf068b90329
-      size: 6887
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/gold_snapshot
+      md5: 8f40935c933b42a4ee438681d8093a65
+      size: 8527
+    - path: 
+        ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/gold_snapshot
       hash: md5
-      md5: 708fdf1e7947c0dd46ce0c80a0a9aa19.dir
-      size: 2675
+      md5: a3bd5c86b2370fd1336df244f4727584.dir
+      size: 4637
       nfiles: 1
     - path: 
-        ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/llm_judge_report.json
+        ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/llm_judge_report.json
       hash: md5
-      md5: 3a6f681ddc589528bdfaf2aa280388f6
+      md5: 46c7943f8860b4799319cc6e80c388ca
       size: 190
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/manifest.csv
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/manifest.csv
       hash: md5
-      md5: ee80e26a670f90603bc8b449253c368b
-      size: 1725
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/metrics.csv
+      md5: fd515a385ac8f93dc43531bcfa9c8a00
+      size: 2594
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/metrics.csv
       hash: md5
-      md5: 66518946696776b11c7debe59fbc94fa
-      size: 750
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/metrics.json
+      md5: f6f237840c70ec9fd880023e442cc501
+      size: 979
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/metrics.json
       hash: md5
-      md5: a22e3481b28025b07aa0dfec80c1d4f3
-      size: 2856
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/model_calls
+      md5: 50af859d45a1991c7ea2156cfcdf7ca9
+      size: 4006
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/model_calls
       hash: md5
       md5: d751713988987e9331980363e24189ce.dir
       size: 0
       nfiles: 0
     - path: 
-        ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/question_results.csv
+        ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/question_results.csv
       hash: md5
-      md5: 45d176b28b4e290f0191c5a5c403948a
-      size: 1353
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/retrieved
+      md5: 2c842b1252cb3013208d256f5883fa99
+      size: 2042
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/retrieved
       hash: md5
-      md5: d74c576ff5b70e2675dbdb746aa0f604.dir
-      size: 42933
-      nfiles: 4
-    - path: ../data/qa/eval_v001/qa-answer-extractor-v2-graph-v001/summary.md
+      md5: 3773272ee40212ea7eb782b19ed2438d.dir
+      size: 70581
+      nfiles: 6
+    - path: ../data/qa/eval_v001/qa-definitions-stretch-answer-v001/summary.md
       hash: md5
-      md5: 4b6f8bfec30ea65f52ea9095f32e2397
-      size: 1593
+      md5: 1c7f2d1ce9f5b4a26d9d9d2ab87961ad
+      size: 1778

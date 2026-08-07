@@ -15,6 +15,12 @@ type ReasoningPathGroup = {
   steps: ReasoningStep[]
 }
 
+type SourceGroup = {
+  id: string
+  label: string
+  sources: Array<Record<string, unknown>>
+}
+
 function textValue(value: unknown, fallback = ''): string {
   const text = String(value ?? '').trim()
   return text || fallback
@@ -72,6 +78,26 @@ const reasoningPathGroups = computed<ReasoningPathGroup[]>(() => {
     ...group,
     steps: [...group.steps].sort((first, second) => numberValue(first.pathStep) - numberValue(second.pathStep)),
   }))
+})
+
+const sourceGroups = computed<SourceGroup[]>(() => {
+  const groups = new Map<string, SourceGroup>()
+
+  for (const source of response.value?.sources ?? []) {
+    const kind = textValue(source.evidenceKind, 'graph').toLowerCase()
+    const id = kind === 'definition' ? 'definition' : kind === 'graph' ? 'graph' : 'other'
+    const label = id === 'definition'
+      ? 'Curated Definition Supplements'
+      : id === 'graph'
+        ? 'PMC Graph Evidence'
+        : 'Other Evidence'
+    const group = groups.get(id) ?? { id, label, sources: [] }
+    group.sources.push(source)
+    groups.set(id, group)
+  }
+
+  const order = ['graph', 'definition', 'other']
+  return Array.from(groups.values()).sort((first, second) => order.indexOf(first.id) - order.indexOf(second.id))
 })
 
 async function handleSubmit() {
@@ -155,22 +181,34 @@ async function handleSubmit() {
       <p v-if="response.sources.length === 0">
         No sources returned.
       </p>
-      <ol
+      <div
         v-else
-        class="source-list"
+        class="source-groups"
       >
-        <li
-          v-for="(source, index) in response.sources"
-          :key="index"
-          class="source-item"
+        <section
+          v-for="group in sourceGroups"
+          :key="group.id"
+          class="source-group"
         >
-          <div class="source-heading">
-            <strong>{{ textValue(source.title, textValue(source.documentId, 'Untitled source')) }}</strong>
-            <small v-if="sourceMeta(source)">{{ sourceMeta(source) }}</small>
-          </div>
-          <p>{{ textValue(source.evidenceText, 'No evidence text') }}</p>
-        </li>
-      </ol>
+          <header class="source-group-header">
+            <strong>{{ group.label }}</strong>
+            <span>{{ group.sources.length }}</span>
+          </header>
+          <ol class="source-list">
+            <li
+              v-for="(source, index) in group.sources"
+              :key="`${group.id}-${index}`"
+              class="source-item"
+            >
+              <div class="source-heading">
+                <strong>{{ textValue(source.title, textValue(source.documentId, 'Untitled source')) }}</strong>
+                <small v-if="sourceMeta(source)">{{ sourceMeta(source) }}</small>
+              </div>
+              <p>{{ textValue(source.evidenceText, 'No evidence text') }}</p>
+            </li>
+          </ol>
+        </section>
+      </div>
 
       <h3>Reasoning Path</h3>
       <p v-if="response.reasoningPath.length === 0">
@@ -276,6 +314,7 @@ button {
   text-transform: uppercase;
 }
 
+.source-groups,
 .source-list,
 .path-step-list {
   display: grid;
@@ -285,17 +324,45 @@ button {
   list-style: none;
 }
 
-.source-item,
+.source-group,
 .path-group {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
 
+.source-group {
+  overflow: hidden;
+}
+
+.source-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  padding: 11px 12px;
+}
+
+.source-group-header span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.source-list {
+  gap: 0;
+}
+
 .source-item {
   display: grid;
   gap: 8px;
   padding: 12px;
+}
+
+.source-item + .source-item {
+  border-top: 1px solid var(--border);
 }
 
 .source-heading {
@@ -408,6 +475,7 @@ button {
   }
 
   .source-heading,
+  .source-group-header,
   .path-group-header,
   .relationship-line {
     align-items: stretch;
@@ -415,6 +483,7 @@ button {
   }
 
   .source-heading,
+  .source-group-header,
   .path-group-header {
     flex-direction: column;
   }

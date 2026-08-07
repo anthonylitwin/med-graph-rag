@@ -56,6 +56,9 @@ def load_qa_eval_config(params_path: Path) -> QAEvaluationConfig:
         model=_optional_text(settings.get("model")),
         retriever=_optional_text(settings.get("retriever")),
         max_evidence=int(settings.get("max_evidence", 12)),
+        model_timeout_seconds=None
+        if settings.get("model_timeout_seconds") is None
+        else int(settings.get("model_timeout_seconds")),
         skip_answer=bool(settings.get("skip_answer", False)),
         limit=None if limit is None else int(limit),
         force=True,

@@ -41,7 +41,7 @@ annotation_eval:
 
 qa_eval:
   # Keep this stable for a parameter set so DVC can identify the stage output.
-  eval_id: qa-answer-extractor-v2-graph-v001
+  eval_id: qa-definitions-stretch-answer-v001
   python: ..\.venv\Scripts\python.exe
   question_file: eval/questions/qa_gold_v002.json
   question_root: eval/questions
@@ -49,7 +49,7 @@ qa_eval:
 
   # Record the graph/input provenance for graph-backed QA runs.
   graph_run_id: fullgold-noninst-extractor-v2-graph-v001
-  graph_source: accepted Extractor V2 predictions from fullgold-noninst-extractor-v2-acceptance-v001
+  graph_source: accepted Extractor V2 graph plus curated medical definitions v001
 
   # Stable local-first runtime with answer generation enabled.
   model_profile: local-non-instruct
@@ -57,6 +57,7 @@ qa_eval:
   model: qwen2.5:7b-instruct
   retriever: graph
   max_evidence: 12
+  model_timeout_seconds: 8
   skip_answer: false
   limit:
   fail_fast: true
@@ -70,5 +71,5 @@ qa_eval:
     enabled: true
     tracking_uri: http://127.0.0.1:5000
     experiment: medgraphrag-qa-eval-v001
-    run_name: qa-answer-extractor-v2-graph-v001
+    run_name: qa-definitions-stretch-answer-v001
     log_artifacts: true

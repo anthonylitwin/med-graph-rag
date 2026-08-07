@@ -32,6 +32,8 @@ def _relationship_to_sentence(evidence: RetrievedEvidence) -> str:
         return f"{source} treats {target}."
     if relationship == "PREVENTS":
         return f"{source} prevents {target}."
+    if relationship == "ASSOCIATED_WITH":
+        return f"{source} is associated with {target}."
     if relationship == "DEFINITION_OF":
         return f"{source}: {target}"
     return f"{source} is connected to {target} by {relationship}."
@@ -60,8 +62,23 @@ def _answer_mentions_evidence(answer: str, evidence: RetrievedEvidence) -> bool:
     )
 
 
+def _completion_required_evidence(evidence: list[RetrievedEvidence]) -> list[RetrievedEvidence]:
+    required: list[RetrievedEvidence] = []
+    seen: set[str] = set()
+    for item in evidence[:2]:
+        required.append(item)
+        seen.add(item.id)
+    for kind in ("definition",):
+        for item in evidence:
+            if item.evidence_kind.casefold() == kind and item.id not in seen:
+                required.append(item)
+                seen.add(item.id)
+                break
+    return required
+
+
 def _complete_answer_with_top_evidence(answer: str, evidence: list[RetrievedEvidence]) -> tuple[str, bool]:
-    missing = [item for item in evidence[:2] if not _answer_mentions_evidence(answer, item)]
+    missing = [item for item in _completion_required_evidence(evidence) if not _answer_mentions_evidence(answer, item)]
     if not missing:
         return answer, False
     summary = " ".join(_relationship_to_sentence(item) for item in missing)

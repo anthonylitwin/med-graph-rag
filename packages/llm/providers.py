@@ -445,16 +445,16 @@ class NoopLanguageModel:
         )
 
 
-def get_language_model(provider: str, model: str | None = None) -> LanguageModel:
+def get_language_model(provider: str, model: str | None = None, timeout_seconds: int | None = None) -> LanguageModel:
     normalized = provider.lower().strip()
     if normalized == "openai":
         return OpenAIResponsesModel(model=model)
     if normalized in {"fine_tuned", "fine-tuned", "finetuned"}:
         return OpenAIResponsesModel(model=model, provider="fine_tuned")
     if normalized == "local":
-        return LocalHTTPModel(model=model)
+        return LocalHTTPModel(model=model, timeout_seconds=timeout_seconds)
     if normalized == "ollama":
-        return OllamaChatModel(model=model)
+        return OllamaChatModel(model=model, timeout_seconds=timeout_seconds)
     if normalized in {"noop", "none"}:
         return NoopLanguageModel(model=model or "noop-language-model-v0")
     raise ValueError(f"Unsupported language model provider: {provider}")
