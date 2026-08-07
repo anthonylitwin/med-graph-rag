@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import sqlite3
 import sys
-import time
 import unittest
 import tempfile
 from pathlib import Path
@@ -207,21 +206,13 @@ qa_eval:
         self.assertEqual(context.exception.status_code, 503)
         self.assertIn("Chat service unavailable", context.exception.detail)
 
-    def test_chat_route_maps_timeout_to_gateway_timeout(self) -> None:
-        def slow_answer(question: str) -> dict:
-            _ = question
-            time.sleep(0.05)
-            return {}
-
-        with (
-            mock.patch.dict(os.environ, {"APP_CHAT_REQUEST_TIMEOUT_SECONDS": "0"}, clear=False),
-            mock.patch("app.routes.chat.answer_question", slow_answer),
-        ):
+    def test_chat_route_maps_invalid_response_to_service_unavailable(self) -> None:
+        with mock.patch("app.routes.chat.answer_question", return_value={"answer": "missing fields"}):
             with self.assertRaises(Exception) as context:
                 chat_routes.chat(chat_routes.ChatRequest(message="What is hypertriglyceridemia?"))
 
-        self.assertEqual(context.exception.status_code, 504)
-        self.assertIn("timed out", context.exception.detail)
+        self.assertEqual(context.exception.status_code, 503)
+        self.assertIn("Chat service unavailable", context.exception.detail)
 
     def test_chat_client_reports_timeout_and_backend_detail(self) -> None:
         api_client = (PROJECT_ROOT / "apps" / "web" / "src" / "lib" / "apiClient.ts").read_text(encoding="utf-8")

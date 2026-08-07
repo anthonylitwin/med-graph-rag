@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
+
+from neo4j import Query
 
 from packages.graph.neo4j_client import neo4j_driver
 from packages.qa.models import RetrievedEvidence
@@ -13,6 +16,8 @@ from pipelines.ingestion.non_instruct import DEFAULT_TERMINOLOGY_PATH, normalize
 GRAPH_START_STOP_TERMS = {
     "and",
     "associated",
+    "biomarker",
+    "biomarkers",
     "condition",
     "connect",
     "connected",
@@ -28,6 +33,10 @@ GRAPH_START_STOP_TERMS = {
     "path",
     "relationship",
     "relationships",
+    "reduce",
+    "reduces",
+    "retrieved",
+    "risk",
     "the",
     "through",
     "lipid",
@@ -49,6 +58,14 @@ class EvidenceRetriever(Protocol):
 
 def _stable_id(*parts: str) -> str:
     return "evidence:" + hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()
+
+
+def _neo4j_query_timeout_seconds() -> float:
+    return float(os.getenv("QA_NEO4J_QUERY_TIMEOUT_SECONDS", "8"))
+
+
+def _timed_query(query: str) -> Query:
+    return Query(query, timeout=_neo4j_query_timeout_seconds())
 
 
 def _as_float(value: Any) -> float | None:
@@ -233,6 +250,21 @@ def _relationship_relevance(relationship_type: str, question: str) -> float:
     return 1.0 if any(cue in normalized for cue in cues) else 0.0
 
 
+def _relationship_type_filter(question: str) -> list[str]:
+    normalized = normalize_term(question)
+    if "risk" in normalized or "predispose" in normalized:
+        return ["INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"]
+    if any(cue in normalized for cue in ("reduce", "reduces", "lower", "lowers", "decrease", "decreases")):
+        return ["REDUCES", "MAY_REDUCE"]
+    if any(cue in normalized for cue in ("increase", "increases", "raise", "raises", "elevate", "elevates")):
+        return ["INCREASES", "MAY_INCREASE", "INCREASES_RISK_OF", "MAY_INCREASE_RISK_OF"]
+    if any(cue in normalized for cue in ("treat", "treats", "therapy")):
+        return ["TREATS"]
+    if any(cue in normalized for cue in ("interact", "interaction", "combination")):
+        return ["INTERACTS_WITH", "MAY_INTERACT_WITH"]
+    return []
+
+
 def _path_requested(question: str) -> bool:
     normalized = normalize_term(question)
     return any(cue in normalized for cue in ("connect", "path", "through", "multi hop", "multi-hop"))
@@ -387,6 +419,18 @@ class LegacyGraphRetriever:
 class GraphRetriever:
     name = "graph"
 
+    FULLTEXT_START_QUERY = """
+    CALL db.index.fulltext.queryNodes("biomedical_name_alias_fulltext_idx", $query)
+    YIELD node AS candidate, score
+    WHERE NOT candidate:Paper
+      AND candidate.name IS NOT NULL
+      AND ($graph_run_id = "" OR candidate.graph_run_id = $graph_run_id)
+    WITH candidate, score
+    ORDER BY score DESC, candidate.name
+    RETURN elementId(candidate) AS id
+    LIMIT $limit
+    """
+
     START_QUERY = """
     MATCH (candidate)
     WHERE NOT candidate:Paper
@@ -409,6 +453,7 @@ class GraphRetriever:
     CALL (start) {
       MATCH (source)-[relationship]->(target)
       WHERE type(relationship) <> "MENTIONS"
+        AND (size($relationship_types) = 0 OR type(relationship) IN $relationship_types)
         AND ($graph_run_id = "" OR relationship.graph_run_id = $graph_run_id)
         AND (elementId(source) = elementId(start) OR elementId(target) = elementId(start))
       WITH source, relationship, target, properties(relationship) AS relationshipProps
@@ -432,8 +477,14 @@ class GraphRetriever:
       ] AS pathRows
       UNION
       MATCH path = (start)-[first]-(middle)-[second]-(finish)
-      WHERE type(first) <> "MENTIONS"
+      WHERE $include_two_hop
+        AND type(first) <> "MENTIONS"
         AND type(second) <> "MENTIONS"
+        AND (
+          size($relationship_types) = 0
+          OR type(first) IN $relationship_types
+          OR type(second) IN $relationship_types
+        )
         AND ($graph_run_id = "" OR (first.graph_run_id = $graph_run_id AND second.graph_run_id = $graph_run_id))
         AND elementId(start) <> elementId(finish)
         AND NOT finish:Paper
@@ -461,6 +512,39 @@ class GraphRetriever:
         }
       ) AS pathRows
       RETURN pathRows
+    }
+    RETURN pathRows
+    LIMIT $limit
+    """
+
+    DIRECT_PATH_QUERY = """
+    MATCH (start)
+    WHERE elementId(start) IN $start_ids
+    CALL (start) {
+      MATCH (source)-[relationship]->(target)
+      WHERE type(relationship) <> "MENTIONS"
+        AND (size($relationship_types) = 0 OR type(relationship) IN $relationship_types)
+        AND ($graph_run_id = "" OR relationship.graph_run_id = $graph_run_id)
+        AND (elementId(source) = elementId(start) OR elementId(target) = elementId(start))
+      WITH source, relationship, target, properties(relationship) AS relationshipProps
+      RETURN [
+        {
+          relationshipId: coalesce(relationshipProps["id"], elementId(relationship)),
+          sourceName: coalesce(source.name, ""),
+          sourceLabels: labels(source),
+          relationshipType: type(relationship),
+          evidenceText: coalesce(relationshipProps["evidence"], relationshipProps["evidence_text"], relationshipProps["evidenceText"], ""),
+          confidence: relationshipProps["confidence"],
+          sourcePmcid: coalesce(relationshipProps["source_pmcid"], ""),
+          sourcePmid: coalesce(relationshipProps["source_pmid"], ""),
+          chunkId: coalesce(relationshipProps["chunk_id"], ""),
+          targetName: coalesce(target.name, ""),
+          targetLabels: labels(target),
+          pathStep: 1,
+          pathLength: 1,
+          graphRunId: coalesce(relationshipProps["graph_run_id"], "")
+        }
+      ] AS pathRows
     }
     RETURN pathRows
     LIMIT $limit
@@ -602,14 +686,27 @@ class GraphRetriever:
         try:
             with neo4j_driver() as driver:
                 with driver.session() as session:
-                    start_rows = list(
-                        session.run(
-                            self.START_QUERY,
-                            terms=terms,
-                            graph_run_id=self.graph_run_id,
-                            limit=25,
+                    fulltext_query = " OR ".join(f'"{term}"' for term in terms[:6])
+                    try:
+                        start_rows = list(
+                            session.run(
+                                _timed_query(self.FULLTEXT_START_QUERY),
+                                query=fulltext_query,
+                                graph_run_id=self.graph_run_id,
+                                limit=25,
+                            )
                         )
-                    )
+                    except Exception:
+                        start_rows = []
+                    if not start_rows:
+                        start_rows = list(
+                            session.run(
+                                _timed_query(self.START_QUERY),
+                                terms=terms,
+                                graph_run_id=self.graph_run_id,
+                                limit=25,
+                            )
+                        )
                     start_ids = [str(dict(row).get("id")) for row in start_rows if dict(row).get("id")]
                     if not start_ids:
                         return definitions[:limit]
@@ -619,18 +716,22 @@ class GraphRetriever:
                         if len(groups) >= 2:
                             connector_rows = list(
                                 session.run(
-                                    self.DRUG_CONNECTOR_QUERY,
+                                    _timed_query(self.DRUG_CONNECTOR_QUERY),
                                     groups=groups,
                                     graph_run_id=self.graph_run_id,
                                     limit=100,
                                 )
                             )
+                    include_two_hop = _path_requested(question)
+                    path_query = self.PATH_QUERY if include_two_hop else self.DIRECT_PATH_QUERY
                     path_rows = list(
                         session.run(
-                            self.PATH_QUERY,
+                            _timed_query(path_query),
                             start_ids=start_ids,
                             graph_run_id=self.graph_run_id,
-                            limit=max(graph_limit * 100, 1000),
+                            relationship_types=_relationship_type_filter(question),
+                            include_two_hop=include_two_hop,
+                            limit=max(graph_limit * 20, 100) if include_two_hop else max(graph_limit * 4, 25),
                         )
                     )
                     path_rows = [*connector_rows, *path_rows]

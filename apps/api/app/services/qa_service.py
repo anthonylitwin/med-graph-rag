@@ -39,7 +39,7 @@ _LOCAL_EXTRACTOR_PROVIDERS = {
     "noop",
     "none",
 }
-APP_QA_MODEL_TIMEOUT_SECONDS = 25
+APP_QA_MODEL_TIMEOUT_SECONDS = 90
 
 
 @lru_cache(maxsize=12)

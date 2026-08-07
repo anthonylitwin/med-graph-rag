@@ -14,8 +14,8 @@ export type ChatResponse = {
 };
 
 const API_BASE_URL = 
-    import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
-const CHAT_TIMEOUT_MS = Number(import.meta.env.VITE_CHAT_TIMEOUT_MS ?? 40000);
+    import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
+const CHAT_TIMEOUT_MS = Number(import.meta.env.VITE_CHAT_TIMEOUT_MS ?? 120000);
 
 function errorDetail(payload: unknown): string {
     if (typeof payload === "object" && payload !== null && "detail" in payload) {
