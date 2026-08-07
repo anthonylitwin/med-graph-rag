@@ -1,0 +1,3406 @@
+{
+  "run": {
+    "id": "pmc-20260807165152",
+    "created_at": "2026-08-07T17:00:04.501665+00:00",
+    "source": "pmc_bioc",
+    "model_profile": "local-non-instruct",
+    "extractor_provider": "non_instruct",
+    "extractor_model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+    "entity_model": "Ihor/gliner-biomed-small-v1.0",
+    "prompt_version": "001_initial_prompt",
+    "min_confidence": 0.5,
+    "non_instruct_config": {
+      "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+      "terminology_path": "data/terminology/biomedical_aliases_v001.json",
+      "entity_threshold": 0.5,
+      "concept_threshold": 0.84,
+      "relation_threshold": 0.66,
+      "semantic_floor": 0.52,
+      "semantic_weight": 0.5,
+      "cue_weight": 0.25,
+      "proximity_weight": 0.1,
+      "entity_confidence_weight": 0.15,
+      "max_pair_distance": 300
+    }
+  },
+  "document": {
+    "id": "paper:PMC10557817",
+    "pmcid": "PMC10557817",
+    "pmid": "",
+    "title": "Fish oil supplementation modifies the genetic potential for blood lipids",
+    "year": "",
+    "journal": "",
+    "doi": "",
+    "authors": [],
+    "source": "pmc",
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10557817/",
+    "text_length": 31728,
+    "chunk_count": 6,
+    "ingested_at": "2026-08-07T16:59:51.532661+00:00"
+  },
+  "chunks": [
+    {
+      "id": "PMC10557817-chunk-0001",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 1,
+      "char_start": 0,
+      "char_end": 5999,
+      "section": "TITLE",
+      "type": "front",
+      "source_sections": [
+        "TITLE",
+        "ABSTRACT",
+        "INTRO",
+        "METHODS"
+      ],
+      "text": "Fish oil supplementation modifies the genetic potential for blood lipids\n\nBackground\n\nDyslipidemia is a well-known risk factor for cardiovascular disease, which has been the leading cause of mortality worldwide. Although habitual intake of fish oil has been implicated in offering cardioprotective effects through triglyceride reduction, the interactions of fish oil with the genetic predisposition to dysregulated lipids remain elusive.\n\nObjectives\n\nWe examined whether fish oil supplementation can modify the genetic potential for the circulating levels of four lipids, including total cholesterol, low-density lipoprotein cholesterol (LDL-C), high-density lipoprotein cholesterol (HDL-C), and triglycerides.\n\nMethods\n\nA total of 441,985 participants with complete genetic and phenotypic data from the UK Biobank were included in our study. Polygenic scores (PGS) were calculated in participants of diverse ancestries. Multivariable linear regression models were used to assess associations with adjustment for relevant risk factors.\n\nResults\n\nFish oil supplementation mitigated genetic susceptibility to elevated levels of total cholesterol, LDL-C, and triglycerides, while amplifying genetic potential for increased HDL-C among 424,090 participants of European ancestry . Consistent significant findings were obtained using PGS calculated based on multiple genome-wide association studies or alternative PGS methods. We also showed that fish oil significantly attenuated genetic predisposition to high triglycerides in African-ancestry participants.\n\nConclusions\n\nFish oil supplementation attenuated the genetic susceptibility to elevated blood levels of total cholesterol, LDL-C, and triglycerides, while accentuating genetic potential for higher HDL-C. These results suggest that fish oil may have a beneficial impact on modifying genome-wide genetic effects on elevated lipid levels in the general population.\n\nIntroduction\n\nDyslipidemia is well-known to be a major risk factor for cardiovascular disease (CVD), the leading cause of death globally. Elevated levels of total cholesterol, low-density lipoprotein cholesterol (LDL-C), and triglyceride serve as major risk factors for increased risks of ischemic events, as shown in epidemiologic and Mendelian randomization studies. Conversely, a raised level of high-density lipoprotein cholesterol (HDL-C) may have protective roles against CVD, autoimmune disease, and cancers. Numerous studies have found that fish oil supplementation, predominantly eicosapentaenoic acid (EPA) and docosahexaenoic acid (DHA), exerts cardioprotective effects through the reduction of triglyceride level. However, the roles of fish oil supplementation in modulating genetic susceptibility to elevated lipid levels remains insufficiently investigated.\n\nIn addition to environmental factors, studies have highlighted the essential role of genetic factors in dyslipidemia. Genetic effects have been estimated to explain more than 50% of the phenotypic variance in blood lipid levels. The differential effect of a genotype in individuals with different environmental exposures, known as gene-environment interaction, also plays a crucial role in determining outcomes. A prior genome-wide interaction study identified four novel loci, whose associations with blood lipids were modified by fish oil supplementation. Expanding the previous single-variant analysis to a genome-scale, we hypothesized that the genome-wide genetic effects on blood lipid levels, captured by polygenic scores (PGS), could be modified by habitual fish oil supplementation.\n\nIn the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels. Leveraging this information and employing novel PGS approaches, we aggregated individual lipid-associated SNPs into genome-scale PGS for estimating the genetic predispositions to high lipids among participants in UK Biobank (UKB). Then, we examined the interaction effects between fish oil supplementation and these PGS on the observed levels of blood lipids. While our primary analysis focused on participants of European (EUR) ancestry, we also investigated the interactions in African (AFR), Central/South Asian (CSA), and East Asian (EAS) populations.\n\nMethods\n\nStudy population\n\nThis study was conducted using data from UKB (application number 48818), which is a prospective population-based study of over 0.5 million participants aged 37\u201373 years at recruitment from 2006 to 2010 across the United Kingdom. The UKB study received ethical approval from the National Health Service North West Centre for Research Ethics Committee, and all participants provided electronically signed consent before joining the study. Participants provided information on sociodemographic, lifestyle, and medical records via questionnaires at baseline. Blood samples for genotyping and biomarker measurements were also collected at recruitment. Of 502,369 individuals who attended baseline assessment, we excluded 6,705 individuals from the analysis due to missing fish oil supplementation data, mismatched information between phenotypic and genetic sex, sex chromosome aneuploidy, outliers for heterogeneity and missing genotype rate, and having a high degree of genetic kinship (ten or more third-degree relatives identified). Our analysis primarily focused on EUR ancestry participants, as they comprised the largest ancestral group in this resource. We also conducted analyses with participants of AFR, CSA, and EAS ancestries. Figure 1 presents a flowchart outlining the inclusion and exclusion of participants throughout our study.\n\nAssessment of fish oil supplementation status\n\nThe fish oil supplementation status of study participants was determined during"
+    },
+    {
+      "id": "PMC10557817-chunk-0002",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 2,
+      "char_start": 5499,
+      "char_end": 11495,
+      "section": "METHODS",
+      "type": "paragraph",
+      "source_sections": [
+        "METHODS",
+        "RESULTS"
+      ],
+      "text": "enetic kinship (ten or more third-degree relatives identified). Our analysis primarily focused on EUR ancestry participants, as they comprised the largest ancestral group in this resource. We also conducted analyses with participants of AFR, CSA, and EAS ancestries. Figure 1 presents a flowchart outlining the inclusion and exclusion of participants throughout our study.\n\nAssessment of fish oil supplementation status\n\nThe fish oil supplementation status of study participants was determined during their initial assessment center visit using a touchscreen questionnaire. Specifically, participants were asked about their regular consumption of certain supplements, with those reporting fish oil intake (including cod liver oil) classified as supplementing with fish oil.\n\nAssessment of blood lipids\n\nFour baseline serum lipid parameters, including total cholesterol, LDL-C, HDL-C, and triglycerides, were ascertained using standard hematological methodologies. These lipids were directly quantified via a robust analytical platform, the Beckman Coulter AU5800 chemistry analyzer, to ensure precision and reproducibility.\n\nPolygenic score calculation\n\nWe computed PGS for participants of EUR, AFR, CSA, and EAS ancestries in the UKB, which measures the aggregated effects of genetic variants on total cholesterol, LDL-C, HDL-C, and triglycerides. In our primary discovery analysis, we used summary statistics from the largest and most recent GWAS to date, called the Graham SE et al. no UKB study, which excluded UKB and included up to 930,672 EUR, 92,555 AFR, and 34,135 CSA ancestry participants. In the replication analysis, we employed two additional GWAS summary statistics to calculate PGS. The first is the GWAS meta-analysis using UKB and other cohorts, which was released by Graham SE et al., containing up to 1,320,016 EUR, 99,432 AFR, 40,963 CSA, and 146,492 EAS ancestry participants. The second is a GWAS that included up to 187,365 EUR individuals, as previously reported by Willer CJ et al..\n\nThe PGS of UKB participants was calculated with the weighted method: , where is the number of effect alleles of the nth SNP, and the -coefficient is the effect size of the corresponding allele, which was extracted from GWAS summary statistics. Quality control for genotypic data was based on the following criteria: (1) imputation quality score > 0.3, (2) minor allele frequency > 0.1%, (3) genotype missingness per individual < 5%, 4) genotype call rate < 5%, and (5) Hardy-Weinberg test P-value > 1 \u00d7 10\u22128. Independent significant SNPs were identified at a GWAS threshold of P-value < 5 \u00d7 10\u22128 with linkage disequilibrium (LD) clumping . We also utilized the PGS -coefficient previously generated by Weissbrod O et al. employing the methods of PolyPred, PolyPred+, and LD-pruning + P-value thresholding () (). To facilitate the comparison of effects across four blood lipids, PGS was standardized to a mean of 0 and a standard deviation (SD) of 1, enabling interpretation per one SD change.\n\nCovariates\n\nA series of sociodemographic, behavioral, and genetic covariates were included in our study. Age, sex, and body mass index (BMI) were obtained from baseline assessments at recruitment. The 22 baseline assessment center locations were situated throughout England, Scotland, and Wales. Socioeconomic status, as calculated by the Townsend deprivation index, was assigned to each participant corresponding to their home postcode at recruitment. Smoking and alcohol drinking status were defined as never, former, and current. Physical activity levels were categorized as low, moderate, and high following the International Physical Activity Questionnaire protocol. Statin use was ascertained through self-report during verbal interviews. Genetic data were generated through genotyping by either the UK Biobank Axiom Array or the UK BiLEVE Array. Participants were divided into ancestry groups based on the multi-ancestry analysis from the Pan-ancestry genetic analysis of the UK Biobank (Pan-UKBB). The top 20 ancestry principal components derived from the Pan-UKBB were employed as covariates.\n\nStatistical analysis\n\nMultivariable linear regression models were conducted to assess the modifying impacts of fish oil supplementation on the genetic potential for blood lipids. Two groups of covariates were used to apply these models. In the first model, we adjusted for sex, age, age2, assessment centers, genotyping array, and the top 20 genetic principal components. The second model added additional covariates, including BMI, Townsend deprivation index, smoking status, alcohol status, physical activity, and statin use. We investigated the association between lipid PGS and lipid levels, stratifying by fish oil intake status among 424,090 participants of EUR ancestry to scrutinize the influence of fish oil supplementation on genetic predisposition for lipid levels. We further examined interactions between fish oil supplementation and PGS for four lipids on lipid levels by adding an interaction term between fish oil intake and lipid PGS and by incorporating both fish oil supplementation status and PGS as covariates in both models. Moreover, we conducted these interaction analyses using 6,577 AFR, 8,648 CSA, and 2,670 EAS ancestry participants. Serum levels of total cholesterol, LDL-C, HDL-C, and triglycerides were standardized, and their comparable effect sizes were expressed per one SD increase in the corresponding blood lipid. All analyses were conducted using R (version 4.2.1).\n\nResults\n\nStudy cohorts\n\nA total of 441,985 participants from the UKB with complete genetic and phenotypic data were included in this study, consisting mostly of individuals of EUR ancestry and a small proportion of other ancestries. We present the baseline characteristics of participants of EUR ancestry according to their fish oil intake status at baseline in Table 1. After quality control, 134,720 (31.8%) of study participants reported habitual use of fish oil supplements, while"
+    },
+    {
+      "id": "PMC10557817-chunk-0003",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 3,
+      "char_start": 10995,
+      "char_end": 16994,
+      "section": "METHODS",
+      "type": "paragraph",
+      "source_sections": [
+        "METHODS",
+        "RESULTS",
+        "DISCUSS"
+      ],
+      "text": "ersion 4.2.1).\n\nResults\n\nStudy cohorts\n\nA total of 441,985 participants from the UKB with complete genetic and phenotypic data were included in this study, consisting mostly of individuals of EUR ancestry and a small proportion of other ancestries. We present the baseline characteristics of participants of EUR ancestry according to their fish oil intake status at baseline in Table 1. After quality control, 134,720 (31.8%) of study participants reported habitual use of fish oil supplements, while the remaining 289,370 participants were grouped as non-consumers of fish oil. The majority of fish oil users were women (56%), with a mean age of 59 years. Those in the fish oil intake group were more likely to be older, female, current alcohol drinkers, statin users, engaging in high physical activity, and having higher levels of total cholesterol, LDL-C, and HDL-C, but less likely to be current smokers or have an elevated BMI or triglyceride level. Among other ancestry groups, 2,289 (34.8%) AFR, 1,942 (22.5%) CSA, and 845 (31.6%) EAS participants took fish oil supplementation and displayed similar characteristics to the EUR participants (Supplementary Table 1).\n\nEffect modification by fish oil supplementation on genetic predisposition to elevated lipids\n\nIn general, fish oil supplementation provided protection against genetic susceptibility to elevated levels of total cholesterol, LDL-C, and triglycerides, while it amplified genetic potential for higher HDL-C level. For the primary analysis using PGS (excluded UKB, Graham SE et al.), there was strong evidence that fish oil supplementation modified the effect of the genetic potential for four lipids in either the partially or fully adjusted model (Figure 2 and Table 2). When we generated PGS using two other GWAS summary statistics of Graham SE et al. (included UKB) and Willer CJ et al., consistently significant results were observed for the four lipids (Supplementary Figure 1 and Supplementary Table 2). We also calculated PGS based on the -coefficient previously generated by Weissbrod O et al. employing PolyPred, which is another PGS method employing functionally informed fine-mapping methods to obtain the posterior association coefficients. Utilizing PGS calculated via the PolyPred and methods, we also discovered that fish oil supplementation significantly modified the genetic potential for elevated blood lipids (Supplementary Figure 2 and Supplementary Table 2).\n\nIn the stratified analysis, fish oil supplementation significantly attenuated the genetic association with total cholesterol: each 1 SD increase in PGS was associated with a 0.304 SD increase (95% CI = 0.299 \u2013 0.309) in total cholesterol among fish oil supplement users, compared to a 0.313 SD increase (95% CI = 0.310 \u2013 0.317) among non-users (Figure 2 and Table 2). Similarly, for LDL-C, a 1 SD increment in PGS resulted in an increase of 0.323 SD (95% CI = 0.318 \u2013 0.328) in LDL-C level among fish oil users, in comparison to 0.332 SD increase (95% CI = 0.328 \u2013 0.335) for people without fish oil intake. Genetic susceptibility to high triglycerides was 0.254 (95% CI = 0.248 \u2013 0.259) in the fish oil group and 0.267 (95% CI = 0.263 \u2013 0.270) in the group not taking fish oil. Lastly, the impact of PGS was more pronounced in the fish oil group (0.234, 95% CI = 0.229 \u2013 0.240) for HDL-C compared to participants without fish oil intake (0.227, 95% CI = 0.224 \u2013 0.231). In summary, fish oil supplementation attenuates the genetic potential for elevated levels of total cholesterol, LDL-C, and triglycerides, while amplifying the genetic predisposition to a high level of HDL-C.\n\nInteraction effects in other ancestry groups\n\nIn participants of AFR ancestry from UKB, we found that fish oil supplementation was consistently associated with a diminished risk of genetic susceptibility to high triglycerides (Supplementary Table 3). When stratified by fish oil supplementation status, each SD increase in PGS correlated to a 0.099 SD (95% CI = 0.070 \u2013 0.128) rise in triglyceride level among fish oil users, compared to a 0.150 SD (95% CI = 0.125 \u2013 0.174) increase among those not taking fish oil. However, this modification effect of fish oil supplementation was not observed in participants of CSA and EAS ancestries (Supplementary Tables 4 and 5). Moreover, analyses involving participants from other ancestry groups did not indicate significant interaction effects on total cholesterol, LDL-C, and HDL-C. In these diverse populations, the influence of PGS on lipid levels remained statistically significant even after adjusting for fish oil supplementation and multiple covariates (Supplementary Table 6).\n\nDiscussion\n\nIn this extensive prospective study involving 424,090 participants of EUR ancestry, our results indicated that fish oil supplementation could modify the genetic susceptibility to elevated levels of four lipids. Our findings suggested that fish oil supplementation attenuated genetic predispositions to high levels of total cholesterol, LDL-C, and triglycerides, while accentuating the genetic potential for increased HDL-C level. Analyzing 6,577 AFR, 8,648 CSA, and 2,670 EAS ancestry participants, no consistent significant interactions were found. However, for participants of AFR ancestry, our results indicated that fish oil supplementation mitigates the genetic risk on increased triglycerides. Collectively, our findings supported the hypothesis that genome-wide genetic effects on blood lipid levels, captured by PGS, could be modified by habitual fish oil supplementation.\n\nAlthough substantial studies have highlighted the effects of fish oil supplements in improving the lipid profile in hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia remains unclear. A recent dose-response meta analysis of 90 randomized controlled trials with 72,598 participants demonstrated that DHA + EPA supplementation (>2 g/d) reduced triglyceride level. Skulas-Ray AC et al. concluded that pharmacological"
+    },
+    {
+      "id": "PMC10557817-chunk-0004",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 4,
+      "char_start": 16494,
+      "char_end": 22478,
+      "section": "DISCUSS",
+      "type": "paragraph",
+      "source_sections": [
+        "DISCUSS",
+        "SUPPL"
+      ],
+      "text": "uld be modified by habitual fish oil supplementation.\n\nAlthough substantial studies have highlighted the effects of fish oil supplements in improving the lipid profile in hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia remains unclear. A recent dose-response meta analysis of 90 randomized controlled trials with 72,598 participants demonstrated that DHA + EPA supplementation (>2 g/d) reduced triglyceride level. Skulas-Ray AC et al. concluded that pharmacological doses of omega-3 fatty acids (>3 g/d total EPA+DHA) effectively decrease triglycerides and can be safely combined with other lipid-lowering agents, particularly statins. The Japan EPA Lipid Intervention Study, involving 14,981 hypercholesterolemia Japanese patients, found that 1.8 g/d EPA in combination with a statin led to lower triglycerides compared with statin therapy alone. In the current study of non-EUR ancestry groups, we also observed fish oil attenuates genetic susceptibility to elevated triglycerides among participants of AFR ancestry, but no significant interaction was detected among participants of CSA and EAS ancestries, which may be due to insufficient sample sizes. Large-scale studies covering more representative samples from diverse ancestries are needed to further validate our findings. Regarding genetic factors, some studies have investigated the interactions between fish oil and lipid-related genetic variants. Our findings, leveraging cumulative effects of many genetic variants across the genome to assess individual genetic predisposition to dyslipidemia, affirmed the protective role of fish oil against genetic susceptibility to dyslipidemia.\n\nThe precise mechanisms underlying the observed interactions between fish oil supplementation and genetic predisposition to elevated lipid levels are not yet fully elucidated. These modifying effects could potentially be attributed to the multifaceted benefits derived from fish oil supplements. The putative mechanisms through which fish oil supplementation influences human lipoprotein metabolism include inhibition of very low-density lipoprotein (VLDL) triglyceride synthesis, decreased apoprotein B synthesis, enhancement of VLDL turnover via an increased fractional catabolic rate of VLDL, depression of LDL synthesis, and reduction of postprandial lipemia. Additionally, fish oil intake has been found to exert beneficial effects on several factors implicated in cardiovascular health, including inflammatory, oxidative, thrombotic, vascular, and arrhythmogenic parameters. However, it is plausible that other mechanisms may also be involved in this modifying effect. Future functional studies are warranted to discern the underlying biological mechanisms.\n\nTo the best of our knowledge, this is the first study to evaluate the modifying effects of fish oil supplementation on genetic susceptibility to elevated lipid levels. The major strength of our study lies in the large number of participants of EUR ancestry, providing sufficient statistical power to detect significant interactions. Another strength of our study is the inclusion of other ancestry groups, where we confirmed that fish oil attenuated genetic susceptibility to high triglycerides in the AFR population. We used various GWAS summary statistics and PGS methodologies to calculate PGS and applied a fully adjusted model with a wealth of data on covariates, including socioeconomic characteristics, lifestyle factors, and statin use. Notably, the PGS for the primary analysis incorporated multiple SNPs from the largest and most recent GWAS across different cohorts, excluding any sample overlap with the UKB, thereby circumventing the potential issue of spurious candidate gene interactions. Population structure can lead to inflated estimates of PGS prediction. To address this, we adjusted all models for the top 20 genetic principal components to minimize potential bias. This comprehensive study design ensured the robustness and consistency of our findings.\n\nSeveral potential limitations should also be considered. First, the self-reported fish oil intake is vulnerable to both measurement error and recall bias. Second, since fish oil supplementation status was assessed only at baseline, we were unable to evaluate the effects of longitudinal changes or extended duration of use. Third, our data lacked details on specific doses of fish oil supplementation, and future research is needed to discern the independent roles of DHA and EPA at specific doses. Fourth, UKB recruited people aged between 37 and 73 years at baseline, and our findings may not be generalizable to other age groups, such as children and adolescents. Fifth, though our study included multiple ancestries, caution is advised when extrapolating our findings to non-EUR populations, and future investigations with larger sample sizes are necessary. Lastly, given the observational design of our study, we cannot completely rule out reverse causation or residual confounding.\n\nIn conclusion, our findings reveal that fish oil supplementation attenuates genetic susceptibility to elevated blood levels of total cholesterol, LDL-C, and triglycerides, while accentuating genetic potential for higher HDL-C. Moreover, we detected fish oil modulates genetic predisposition to high triglycerides among participants of AFR ancestry. These findings suggest that fish oil could serve a beneficial role in modulating genetic susceptibility to elevated lipid levels in the general population. Further studies with larger sample sizes from diverse ancestry and accurate dose information of fish oil supplements are warranted to corroborate and expand our findings.\n\nSupplementary Material\n\nDisclosure\n\nThe authors declare that there is no conflict of interest.\n\nData availability\n\nAccess to the UK Biobank resource is available via the application (http://www.ukbiobank.ac.uk). PGS coefficients generated by Graham SE et al. are available for public download at"
+    },
+    {
+      "id": "PMC10557817-chunk-0005",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 5,
+      "char_start": 21978,
+      "char_end": 27972,
+      "section": "DISCUSS",
+      "type": "paragraph",
+      "source_sections": [
+        "DISCUSS",
+        "SUPPL",
+        "REF",
+        "FIG"
+      ],
+      "text": "evels in the general population. Further studies with larger sample sizes from diverse ancestry and accurate dose information of fish oil supplements are warranted to corroborate and expand our findings.\n\nSupplementary Material\n\nDisclosure\n\nThe authors declare that there is no conflict of interest.\n\nData availability\n\nAccess to the UK Biobank resource is available via the application (http://www.ukbiobank.ac.uk). PGS coefficients generated by Graham SE et al. are available for public download at http://csg.sph.umich.edu/willer/public/glgc-lipids2021/results/ancestry_specific/. PGS coefficients generated by Willer CJ et al. are available for public download at http://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST002001-GCST003000/GCST002221/harmonised/. PGS coefficients generated by Weissbrod O et al. are available for public download at https://alkesgroup.broadinstitute.org/polypred_results.\n\nReferences\n\nGlobal Burden of Cardiovascular Diseases and Risk Factors, 1990\u20132019: Update From the GBD 2019 Study\n\nCardiovascular Risk Reduction with Icosapent Ethyl for Hypertriglyceridemia\n\nTriglycerides on the rise: should we swap seats on the seesaw?\n\nElevated Triglyceride Level Is Independently Associated With Increased All-Cause Mortality in Patients With Established Coronary Heart Disease: Twenty-Two-Year Follow-Up of the Bezafibrate Infarction Prevention Study and Registry\n\nLow-density lipoproteins cause atherosclerotic cardiovascular disease. 1. Evidence from genetic, epidemiologic, and clinical studies. A consensus statement from the European Atherosclerosis Society Consensus Panel\n\nHigh Triglycerides Are Associated With Increased Cardiovascular Events, Medical Costs, and Resource Use: A Real-World Administrative Claims Analysis of Statin-Treated Patients With High Residual Cardiovascular Risk\n\nSafety and efficacy of Omacor in severe hypertriglyceridemia\n\nHigh-density lipoprotein revisited: biological functions and clinical relevance\n\nVitamin D, Marine n-3 Fatty Acids, and Primary Prevention of Cardiovascular Disease Current Evidence\n\nHigher ratio of plasma omega-6/omega-3 fatty acids is associated with greater risk of all-cause, cancer, and cardiovascular mortality: a population-based cohort study in UK Biobank\n\nEffect of High-Dose Omega-3 Fatty Acids vs Corn Oil on Major Adverse Cardiovascular Events in Patients at High Cardiovascular Risk: The STRENGTH Randomized Clinical Trial\n\nAn abundant biliary metabolite derived from dietary omega-3 polyunsaturated fatty acids regulates triglycerides\n\nBiological, clinical and population relevance of 95 loci for blood lipids\n\nHeritability and Genome-Wide Association Study of Plasma Cholesterol in Chinese Adult Twins\n\nEffect modification, interaction and mediation: an overview of theoretical insights for clinical investigators\n\nGene-environment interaction: definitions and study designs\n\nGenome-wide association study of fish oil supplementation on lipid traits in 81,246 individuals reveals new gene-diet interaction loci\n\nUK biobank: an open access resource for identifying the causes of a wide range of complex diseases of middle and old age\n\nThe power of genetic diversity in genome-wide association studies of lipids\n\nDiscovery and refinement of loci associated with lipid levels\n\nLeveraging fine-mapping and multipopulation training data to improve cross-population polygenic risk scores\n\nn-3 fatty acids and cardiovascular outcomes in patients with dysglycemia\n\nUnmet Need for Adjunctive Dyslipidemia Therapy in Hypertriglyceridemia Management\n\nPolyunsaturated fatty acids for the primary and secondary prevention of cardiovascular disease\n\nAssociation Between Triglyceride Lowering and Reduction of Cardiovascular Risk Across Multiple Lipid-Lowering Therapeutic Classes: A Systematic Review and Meta-Regression Analysis of Randomized Controlled Trials\n\nAssociation Between Omega-3 Fatty Acid Intake and Dyslipidemia: A Continuous Dose-Response Meta-Analysis of Randomized Controlled Trials\n\nOmega-3 Fatty Acids for the Management of Hypertriglyceridemia: A Science Advisory From the American Heart Association\n\nEffects of EPA on coronary artery disease in hypercholesterolemic patients with multiple risk factors: sub-analysis of primary prevention cases from the Japan EPA Lipid Intervention Study (JELIS)\n\nThe impact of common gene variants on the response of biomarkers of cardiovascular disease (CVD) risk to increased fish oil fatty acids intakes\n\nNOS3 gene polymorphisms are associated with risk markers of cardiovascular disease, and interact with omega-3 polyunsaturated fatty acids\n\nImpact of the Pro12Ala polymorphism of the PPAR-gamma2 gene on serum triacylglycerol response to n-3 fatty acid supplementation\n\nPolymorphisms in the CD36 gene modulate the ability of fish oil supplements to lower fasting plasma triacyl glycerol and raise HDL cholesterol concentrations in healthy middle-aged men\n\nFish consumption, fish oil, lipids, and coronary heart disease\n\nDietary supplementation with omega-3 PUFA increases adiponectin and attenuates ventricular remodeling and dysfunction with pressure overload\n\nOmega-3 polyunsaturated fatty acids and cardiovascular diseases\n\nOmega-3 fatty acids and cardiovascular disease: effects on risk factors, molecular pathways, and clinical events\n\nOmega-3 Index and Anti-Arrhythmic Potential of Omega-3 PUFAs\n\nEffects of n-3 fatty acids on macro- and microvascular function in subjects with type 2 diabetes mellitus\n\nOmega-3 fatty acids: cardiovascular benefits, sources and sustainability\n\nTutorial: a guide to performing polygenic risk score analyses\n\nInfluences of micronutrient and omega-3 fatty acid supplementation on cognition, learning, and behavior: methodological considerations and implications for children and adolescents in developed societies\n\nFlowchart of the study population selection. UKB, UK Biobank; Pan-UKBB, Pan-ancestry genetic analysis of the UK Biobank; EUR, European; AFR, African; CSA, Central/South Asian; EAS, East"
+    },
+    {
+      "id": "PMC10557817-chunk-0006",
+      "document_id": "paper:PMC10557817",
+      "pmcid": "PMC10557817",
+      "order": 6,
+      "char_start": 27472,
+      "char_end": 31728,
+      "section": "REF",
+      "type": "ref",
+      "source_sections": [
+        "REF",
+        "FIG",
+        "TABLE"
+      ],
+      "text": "vascular benefits, sources and sustainability\n\nTutorial: a guide to performing polygenic risk score analyses\n\nInfluences of micronutrient and omega-3 fatty acid supplementation on cognition, learning, and behavior: methodological considerations and implications for children and adolescents in developed societies\n\nFlowchart of the study population selection. UKB, UK Biobank; Pan-UKBB, Pan-ancestry genetic analysis of the UK Biobank; EUR, European; AFR, African; CSA, Central/South Asian; EAS, East Asian; GWAS, genome-wide association study; PGS, polygenic scores.\n\nInteraction between fish oil and genetic predisposition to elevated blood lipids using GWAS summary statistics from Graham SE et al. (excluded UKB). Effect estimates and 95% confidence intervals are scaled to per 1 SD increase in PGS measured in SD units. UKB, UK Biobank; GWAS, genome-wide association study; PGS, polygenic scores; Pint, P-value for interaction.\n\nBaseline characteristics of participants of European ancestry in the UK Biobanka\n\nFish oil intake (n=134720) No fish oil intake (n=289370) P-value Age, years (SD) 59 (7.3) 56 (8.1) <0.001 Sex, female (%) 75726 (56) 153758 (53) <0.001 Body mass index, kg/m2 (SD) 27 (4.5) 28 (4.9) <0.001 Total cholesterol, mmol/L (SD) 5.78 (1.16) 5.68 (1.14) <0.001 LDL cholesterol, mmol/L (SD) 3.61 (0.88) 3.55 (0.87) <0.001 HDL cholesterol, mmol/L (SD) 1.48 (0.39) 1.44 (0.38) <0.001 Triglycerides, mmol/L (SD) 1.75 (1.00) 1.76 (1.04) 0.036 Smoking status (%) <0.001 Never 71756 (53) 157498 (54) Previous 51940 (39) 97930 (34) Current 10527 (8) 32968 (11) Alcohol status (%) <0.001 Never 4075 (3) 9220 (3) Previous 4302 (3) 10411 (4) Current 126232 (94) 269500 (93) Physical activity (%) <0.001 Low 16930 (13) 47061 (16) Moderate 43674 (32) 96758 (33) High 48761 (36) 90921 (31) Statin use, yes (%) 24121 (18) 45463 (16) <0.001\n\nValues are numbers (%) for categorical variables, and mean (SD) for continuous variables. P-values were obtained from the Chi-squared test (categorical variables) or the 2-sample t-test (continuous variables). LDL, low-density lipoprotein; HDL, high-density lipoprotein.\n\nAssociation of lipid polygenic scores with observed lipid levels stratified by the fish oil intake status in UKB participants of European ancestry using GWAS summary statistics from Graham SE et al. (excluded UKB)a\n\nLipids Fish oil intake No fish oil intake b n (95% CI) P-value n (95% CI) P-value Total cholesterol, SD Partially adjusted associationc 128634 0.244 (0.239, 0.249) <2.0\u00d710\u221216 276134 0.265 (0.261, 0.268) <2.0\u00d710\u221216 9.98\u00d710\u221212 Fully adjusted associationd 103738 0.304 (0.299, 0.309) <2.0\u00d710\u221216 222391 0.313 (0.310, 0.317) <2.0\u00d710\u221216 3.53\u00d710\u22124 LDL cholesterol, SD Partially adjusted associationc 128393 0.262 (0.257, 0.267) <2.0\u00d710\u221216 275625 0.280 (0.277, 0.284) <2.0\u00d710\u221216 6.27\u00d710\u22129 Fully adjusted associationd 103538 0.323 (0.318, 0.328) <2.0\u00d710\u221216 221994 0.332 (0.328, 0.335) <2.0\u00d710\u221216 0.001 HDL cholesterol, SD Partially adjusted associationc 117709 0.235 (0.230, 0.240) <2.0\u00d710\u221216 252786 0.230 (0.227, 0.234) <2.0\u00d710\u221216 0.139 Fully adjusted associationd 94880 0.234 (0.229, 0.240) <2.0\u00d710\u221216 203514 0.227 (0.224, 0.231) <2.0\u00d710\u221216 0.025 Triglycerides, SD Partially adjusted associationc 128544 0.252 (0.247, 0.257) <2.0\u00d710\u221216 275897 0.265 (0.262, 0.269) <2.0\u00d710\u221216 2.45\u00d710\u22125 Fully adjusted associationd 103674 0.254 (0.248, 0.259) <2.0\u00d710\u221216 222215 0.267 (0.263, 0.270) <2.0\u00d710\u221216 5.42\u00d710\u22125\n\nUKB, UK Biobank; SD, standard deviation; LDL, low-density lipoprotein; HDL, high-density lipoprotein.\n\nP-value was obtained from the interaction term between lipid PGS and fish oil supplementation. Models were adjusted for lipids PGS, fish oil supplementation, sex, age, age2, assessment centers, genotyping array, the top 20 genetic principal components, body mass index, Townsend deprivation index, smoking status, alcohol status, physical activity, and statin use.\n\nModels were adjusted for sex, age, age2, assessment centers, genotyping array, and the top 20 genetic principal components.\n\nModels were adjusted for sex, age, age2, assessment centers, genotyping array, the top 20 genetic principal components, body mass index, Townsend deprivation index, smoking status, alcohol status, physical activity, and statin use."
+    }
+  ],
+  "extractions": [
+    {
+      "chunk_id": "PMC10557817-chunk-0001",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids",
+          "properties": {
+            "mention_text": "fish oil",
+            "normalized_name": "Omega-3 fatty acids",
+            "ner_confidence": 0.5489085912704468,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "condition:dyslipidemia",
+          "type": "Condition",
+          "name": "dyslipidemia",
+          "properties": {
+            "mention_text": "dyslipidemia",
+            "normalized_name": "dyslipidemia",
+            "ner_confidence": 0.6073155403137207,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease",
+          "properties": {
+            "mention_text": "CVD",
+            "normalized_name": "Cardiovascular disease",
+            "ner_confidence": 0.9321831464767456,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "triglyceride",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.6619897484779358,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_predisposition",
+          "type": "RiskFactor",
+          "name": "genetic predisposition",
+          "properties": {
+            "mention_text": "genetic predisposition",
+            "normalized_name": "genetic predisposition",
+            "ner_confidence": 0.7663551568984985,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "total cholesterol",
+          "properties": {
+            "mention_text": "total cholesterol",
+            "normalized_name": "total cholesterol",
+            "ner_confidence": 0.9908093214035034,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "LDL-C",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.9661436676979065,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "HDL-C",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.9544209241867065,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:risk_factors",
+          "type": "RiskFactor",
+          "name": "risk factors",
+          "properties": {
+            "mention_text": "risk factors",
+            "normalized_name": "risk factors",
+            "ner_confidence": 0.6695429086685181,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_susceptibility",
+          "type": "RiskFactor",
+          "name": "genetic susceptibility",
+          "properties": {
+            "mention_text": "genetic susceptibility",
+            "normalized_name": "genetic susceptibility",
+            "ner_confidence": 0.5615102648735046,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "condition:ischemic_events",
+          "type": "Condition",
+          "name": "ischemic events",
+          "properties": {
+            "mention_text": "ischemic events",
+            "normalized_name": "ischemic events",
+            "ner_confidence": 0.5699901580810547,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "condition:autoimmune_disease",
+          "type": "Condition",
+          "name": "autoimmune disease",
+          "properties": {
+            "mention_text": "autoimmune disease",
+            "normalized_name": "autoimmune disease",
+            "ner_confidence": 0.7116691470146179,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "condition:cancers",
+          "type": "Condition",
+          "name": "cancers",
+          "properties": {
+            "mention_text": "cancers",
+            "normalized_name": "cancers",
+            "ner_confidence": 0.5368614196777344,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "drug:eicosapentaenoic_acid",
+          "type": "Drug",
+          "name": "eicosapentaenoic acid",
+          "properties": {
+            "mention_text": "eicosapentaenoic acid",
+            "normalized_name": "eicosapentaenoic acid",
+            "ner_confidence": 0.6500738859176636,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "drug:docosahexaenoic_acid",
+          "type": "Drug",
+          "name": "docosahexaenoic acid",
+          "properties": {
+            "mention_text": "docosahexaenoic acid",
+            "normalized_name": "docosahexaenoic acid",
+            "ner_confidence": 0.5890489816665649,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "drug:dha",
+          "type": "Drug",
+          "name": "DHA",
+          "properties": {
+            "mention_text": "DHA",
+            "normalized_name": "DHA",
+            "ner_confidence": 0.5532547831535339,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:environmental_factors",
+          "type": "RiskFactor",
+          "name": "environmental factors",
+          "properties": {
+            "mention_text": "environmental factors",
+            "normalized_name": "environmental factors",
+            "ner_confidence": 0.5420615077018738,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_factors",
+          "type": "RiskFactor",
+          "name": "genetic factors",
+          "properties": {
+            "mention_text": "genetic factors",
+            "normalized_name": "genetic factors",
+            "ner_confidence": 0.5294603109359741,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:blood_lipids",
+          "type": "Biomarker",
+          "name": "blood lipids",
+          "properties": {
+            "mention_text": "blood lipids",
+            "normalized_name": "blood lipids",
+            "ner_confidence": 0.6312142014503479,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "biomarker:snps",
+          "type": "Biomarker",
+          "name": "SNPs",
+          "properties": {
+            "mention_text": "SNPs",
+            "normalized_name": "SNPs",
+            "ner_confidence": 0.6633394360542297,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "rel:f25527dfef9d30072beae16739cb896618ec4244",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:total_cholesterol",
+            "type": "Biomarker",
+            "name": "total cholesterol"
+          },
+          "target": {
+            "id": "biomarker:ldl_cholesterol",
+            "type": "Biomarker",
+            "name": "LDL cholesterol"
+          },
+          "properties": {
+            "confidence": 0.612545,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.993333,
+            "entity_confidence_score": 0.978476,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "rel:b18699454da7dba297d9da61b2de5f1daacd1cb9",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:total_cholesterol",
+            "type": "Biomarker",
+            "name": "total cholesterol"
+          },
+          "target": {
+            "id": "biomarker:hdl_cholesterol",
+            "type": "Biomarker",
+            "name": "HDL cholesterol"
+          },
+          "properties": {
+            "confidence": 0.609333,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.97,
+            "entity_confidence_score": 0.972615,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "rel:f4a4b81b9fca8bca5f4f49165690cb376e124bde",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:total_cholesterol",
+            "type": "Biomarker",
+            "name": "total cholesterol"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.583733,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.933333,
+            "entity_confidence_score": 0.8264,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "rel:4e68f12b29866ba64486673f1e57ee15cf9cad94",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:ldl_cholesterol",
+            "type": "Biomarker",
+            "name": "LDL cholesterol"
+          },
+          "target": {
+            "id": "biomarker:hdl_cholesterol",
+            "type": "Biomarker",
+            "name": "HDL cholesterol"
+          },
+          "properties": {
+            "confidence": 0.609816,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.993333,
+            "entity_confidence_score": 0.960282,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "rel:1d2180c2bbea2ae2f479f59f360bcecb2164f0aa",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:ldl_cholesterol",
+            "type": "Biomarker",
+            "name": "LDL cholesterol"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.584217,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.956667,
+            "entity_confidence_score": 0.814067,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        },
+        {
+          "id": "rel:d0cd9867e94a78ddd0f957fbc4d864df8eb3f8fc",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "biomarker:hdl_cholesterol",
+            "type": "Biomarker",
+            "name": "HDL cholesterol"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.585671,
+            "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+            "semantic_score": 0.23288,
+            "cue_score": 1.0,
+            "proximity_score": 0.98,
+            "entity_confidence_score": 0.808205,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0001",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:51.539332+00:00"
+          }
+        }
+      ],
+      "rejected_candidates": []
+    },
+    {
+      "chunk_id": "PMC10557817-chunk-0002",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "biomarker:blood_lipids",
+          "type": "Biomarker",
+          "name": "blood lipids",
+          "properties": {
+            "mention_text": "blood lipids",
+            "normalized_name": "blood lipids",
+            "ner_confidence": 0.7260448932647705,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "total cholesterol",
+          "properties": {
+            "mention_text": "total cholesterol",
+            "normalized_name": "total cholesterol",
+            "ner_confidence": 0.9968041181564331,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "LDL-C",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.9938355088233948,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "HDL-C",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.9897353649139404,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "triglycerides",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.9827667474746704,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:afr",
+          "type": "Biomarker",
+          "name": "AFR",
+          "properties": {
+            "mention_text": "AFR",
+            "normalized_name": "AFR",
+            "ner_confidence": 0.6926705837249756,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "biomarker:bmi",
+          "type": "Biomarker",
+          "name": "BMI",
+          "properties": {
+            "mention_text": "BMI",
+            "normalized_name": "BMI",
+            "ner_confidence": 0.877136766910553,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:smoking",
+          "type": "RiskFactor",
+          "name": "Smoking",
+          "properties": {
+            "mention_text": "Smoking",
+            "normalized_name": "Smoking",
+            "ner_confidence": 0.5977646708488464,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:physical_activity",
+          "type": "RiskFactor",
+          "name": "Physical activity",
+          "properties": {
+            "mention_text": "Physical activity",
+            "normalized_name": "Physical activity",
+            "ner_confidence": 0.7768507599830627,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:smoking_status",
+          "type": "RiskFactor",
+          "name": "smoking status",
+          "properties": {
+            "mention_text": "smoking status",
+            "normalized_name": "smoking status",
+            "ner_confidence": 0.502343475818634,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "drug:statin",
+          "type": "Drug",
+          "name": "statin",
+          "properties": {
+            "mention_text": "statin",
+            "normalized_name": "statin",
+            "ner_confidence": 0.9558146595954895,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_predisposition",
+          "type": "RiskFactor",
+          "name": "genetic predisposition",
+          "properties": {
+            "mention_text": "genetic predisposition",
+            "normalized_name": "genetic predisposition",
+            "ner_confidence": 0.8097419738769531,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:53.971432+00:00"
+          }
+        }
+      ],
+      "relationships": [],
+      "rejected_candidates": []
+    },
+    {
+      "chunk_id": "PMC10557817-chunk-0003",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "riskfactor:current_alcohol_drinkers",
+          "type": "RiskFactor",
+          "name": "current alcohol drinkers",
+          "properties": {
+            "mention_text": "current alcohol drinkers",
+            "normalized_name": "current alcohol drinkers",
+            "ner_confidence": 0.6202505230903625,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "drug:statin",
+          "type": "Drug",
+          "name": "statin",
+          "properties": {
+            "mention_text": "statin",
+            "normalized_name": "statin",
+            "ner_confidence": 0.9023570418357849,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:engaging_in_high_physical_activity",
+          "type": "RiskFactor",
+          "name": "engaging in high physical activity",
+          "properties": {
+            "mention_text": "engaging in high physical activity",
+            "normalized_name": "engaging in high physical activity",
+            "ner_confidence": 0.7943516373634338,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "total cholesterol",
+          "properties": {
+            "mention_text": "total cholesterol",
+            "normalized_name": "total cholesterol",
+            "ner_confidence": 0.9893819093704224,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "LDL-C",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.9715766310691833,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "HDL-C",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.9560374617576599,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:current_smokers",
+          "type": "RiskFactor",
+          "name": "current smokers",
+          "properties": {
+            "mention_text": "current smokers",
+            "normalized_name": "current smokers",
+            "ner_confidence": 0.5026162266731262,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglyceride_level",
+          "type": "Biomarker",
+          "name": "triglyceride level",
+          "properties": {
+            "mention_text": "triglyceride level",
+            "normalized_name": "triglyceride level",
+            "ner_confidence": 0.6077079772949219,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:afr",
+          "type": "Biomarker",
+          "name": "AFR",
+          "properties": {
+            "mention_text": "AFR",
+            "normalized_name": "AFR",
+            "ner_confidence": 0.8582896590232849,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:csa",
+          "type": "Biomarker",
+          "name": "CSA",
+          "properties": {
+            "mention_text": "CSA",
+            "normalized_name": "CSA",
+            "ner_confidence": 0.8105685710906982,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_predisposition",
+          "type": "RiskFactor",
+          "name": "genetic predisposition",
+          "properties": {
+            "mention_text": "genetic predisposition",
+            "normalized_name": "genetic predisposition",
+            "ner_confidence": 0.8153183460235596,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_susceptibility",
+          "type": "RiskFactor",
+          "name": "genetic susceptibility",
+          "properties": {
+            "mention_text": "genetic susceptibility",
+            "normalized_name": "genetic susceptibility",
+            "ner_confidence": 0.6311445832252502,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "triglycerides",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.9094081521034241,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_risk",
+          "type": "RiskFactor",
+          "name": "genetic risk",
+          "properties": {
+            "mention_text": "genetic risk",
+            "normalized_name": "genetic risk",
+            "ner_confidence": 0.5940122008323669,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "condition:dyslipidemia",
+          "type": "Condition",
+          "name": "dyslipidemia",
+          "properties": {
+            "mention_text": "dyslipidemia",
+            "normalized_name": "dyslipidemia",
+            "ner_confidence": 0.6036591529846191,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "rel:dd5ed597bf160df6d7b7af80402bf6dfb147cdb3",
+          "type": "INCREASES",
+          "source": {
+            "id": "drug:statin",
+            "type": "Drug",
+            "name": "statin"
+          },
+          "target": {
+            "id": "biomarker:total_cholesterol",
+            "type": "Biomarker",
+            "name": "total cholesterol"
+          },
+          "properties": {
+            "confidence": 0.605694,
+            "evidence": "Those in the fish oil intake group were more likely to be older, female, current alcohol drinkers, statin users, engaging in high physical activity, and having higher levels of total cholesterol, LDL-C, and HDL-C, but less likely to be current smokers or have an elevated BMI or triglyceride level. Among other ancestry groups, 2,289 (34.8%) AFR, 1,942 (22.5%) CSA, and 845 (31.6%) EAS participants took fish oil supplementation and displayed similar characteristics to the EUR participants (Supplementary Table 1).",
+            "semantic_score": 0.275922,
+            "cue_score": 1.0,
+            "proximity_score": 0.76,
+            "entity_confidence_score": 0.944888,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0003",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        },
+        {
+          "id": "rel:5cc19b00372d913d2d9f7a1e496150b58a869966",
+          "type": "ASSOCIATED_WITH",
+          "source": {
+            "id": "riskfactor:genetic_susceptibility",
+            "type": "RiskFactor",
+            "name": "genetic susceptibility"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.596155,
+            "evidence": "Interaction effects in other ancestry groups\n\nIn participants of AFR ancestry from UKB, we found that fish oil supplementation was consistently associated with a diminished risk of genetic susceptibility to high triglycerides (Supplementary Table 3).",
+            "semantic_score": 0.256612,
+            "cue_score": 1.0,
+            "proximity_score": 0.97,
+            "entity_confidence_score": 0.805657,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0003",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:56.383348+00:00"
+          }
+        }
+      ],
+      "rejected_candidates": []
+    },
+    {
+      "chunk_id": "PMC10557817-chunk-0004",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "biomarker:lipid_profile",
+          "type": "Biomarker",
+          "name": "lipid profile",
+          "properties": {
+            "mention_text": "lipid profile",
+            "normalized_name": "lipid profile",
+            "ner_confidence": 0.6506106853485107,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "condition:hyperlipidemic_patients_their_influence_on_genetic_susceptibility_to_dyslipidemia",
+          "type": "Condition",
+          "name": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+          "properties": {
+            "mention_text": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+            "normalized_name": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+            "ner_confidence": 0.922424852848053,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglyceride_level",
+          "type": "Biomarker",
+          "name": "triglyceride level",
+          "properties": {
+            "mention_text": "triglyceride level",
+            "normalized_name": "triglyceride level",
+            "ner_confidence": 0.5849884748458862,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "triglycerides",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.9024790525436401,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "drug:statins",
+          "type": "Drug",
+          "name": "statins",
+          "properties": {
+            "mention_text": "statins",
+            "normalized_name": "statins",
+            "ner_confidence": 0.7553990483283997,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "condition:hypercholesterolemia",
+          "type": "Condition",
+          "name": "hypercholesterolemia",
+          "properties": {
+            "mention_text": "hypercholesterolemia",
+            "normalized_name": "hypercholesterolemia",
+            "ner_confidence": 0.8378445506095886,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "drug:statin",
+          "type": "Drug",
+          "name": "statin",
+          "properties": {
+            "mention_text": "statin",
+            "normalized_name": "statin",
+            "ner_confidence": 0.9044040441513062,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_susceptibility",
+          "type": "RiskFactor",
+          "name": "genetic susceptibility",
+          "properties": {
+            "mention_text": "genetic susceptibility",
+            "normalized_name": "genetic susceptibility",
+            "ner_confidence": 0.5679441690444946,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_factors",
+          "type": "RiskFactor",
+          "name": "genetic factors",
+          "properties": {
+            "mention_text": "genetic factors",
+            "normalized_name": "genetic factors",
+            "ner_confidence": 0.6665790677070618,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:genetic_predisposition",
+          "type": "RiskFactor",
+          "name": "genetic predisposition",
+          "properties": {
+            "mention_text": "genetic predisposition",
+            "normalized_name": "genetic predisposition",
+            "ner_confidence": 0.7340710163116455,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "condition:dyslipidemia",
+          "type": "Condition",
+          "name": "dyslipidemia",
+          "properties": {
+            "mention_text": "dyslipidemia",
+            "normalized_name": "dyslipidemia",
+            "ner_confidence": 0.9436140656471252,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:vldl",
+          "type": "Biomarker",
+          "name": "VLDL",
+          "properties": {
+            "mention_text": "VLDL",
+            "normalized_name": "VLDL",
+            "ner_confidence": 0.7838624119758606,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:apolipoprotein_b",
+          "type": "Biomarker",
+          "name": "Apolipoprotein B",
+          "properties": {
+            "mention_text": "apoprotein B",
+            "normalized_name": "Apolipoprotein B",
+            "ner_confidence": 0.5854743123054504,
+            "normalization_method": "semantic",
+            "normalization_score": 0.87759,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "symptom:postprandial_lipemia",
+          "type": "Symptom",
+          "name": "postprandial lipemia",
+          "properties": {
+            "mention_text": "postprandial lipemia",
+            "normalized_name": "postprandial lipemia",
+            "ner_confidence": 0.8311891555786133,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids",
+          "properties": {
+            "mention_text": "fish oil",
+            "normalized_name": "Omega-3 fatty acids",
+            "ner_confidence": 0.5117605328559875,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:socioeconomic_characteristics",
+          "type": "RiskFactor",
+          "name": "socioeconomic characteristics",
+          "properties": {
+            "mention_text": "socioeconomic characteristics",
+            "normalized_name": "socioeconomic characteristics",
+            "ner_confidence": 0.5511823892593384,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:lifestyle_factors",
+          "type": "RiskFactor",
+          "name": "lifestyle factors",
+          "properties": {
+            "mention_text": "lifestyle factors",
+            "normalized_name": "lifestyle factors",
+            "ner_confidence": 0.7383671402931213,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "total cholesterol",
+          "properties": {
+            "mention_text": "total cholesterol",
+            "normalized_name": "total cholesterol",
+            "ner_confidence": 0.8689476847648621,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "LDL-C",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.9369575381278992,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "HDL-C",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.892536997795105,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "rel:635ce396361d6100c65d59d193c9245b5736622e",
+          "type": "REDUCES",
+          "source": {
+            "id": "drug:statins",
+            "type": "Drug",
+            "name": "statins"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.642159,
+            "evidence": "Skulas-Ray AC et al. concluded that pharmacological doses of omega-3 fatty acids (>3 g/d total EPA+DHA) effectively decrease triglycerides and can be safely combined with other lipid-lowering agents, particularly statins.",
+            "semantic_score": 0.389145,
+            "cue_score": 1.0,
+            "proximity_score": 0.75,
+            "entity_confidence_score": 0.817246,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0004",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        },
+        {
+          "id": "rel:c937c11243764b6f49aa4e340e616987a16b8105",
+          "type": "REDUCES",
+          "source": {
+            "id": "drug:statin",
+            "type": "Drug",
+            "name": "statin"
+          },
+          "target": {
+            "id": "biomarker:triglycerides",
+            "type": "Biomarker",
+            "name": "Triglycerides"
+          },
+          "properties": {
+            "confidence": 0.650838,
+            "evidence": "concluded that pharmacological doses of omega-3 fatty acids (>3 g/d total EPA+DHA) effectively decrease triglycerides and can be safely combined with other lipid-lowering agents, particularly statins. The Japan EPA Lipid Intervention Study, involving 14,981 hypercholesterolemia Japanese patients, found that 1.8 g/d EPA in combination with a statin led to lower triglycerides compared with statin therapy alone.",
+            "semantic_score": 0.333719,
+            "cue_score": 1.0,
+            "proximity_score": 0.95,
+            "entity_confidence_score": 0.926525,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0004",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T16:59:59.051846+00:00"
+          }
+        }
+      ],
+      "rejected_candidates": []
+    },
+    {
+      "chunk_id": "PMC10557817-chunk-0005",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "drug:icosapent_ethyl",
+          "type": "Drug",
+          "name": "Icosapent Ethyl",
+          "properties": {
+            "mention_text": "Icosapent Ethyl",
+            "normalized_name": "Icosapent Ethyl",
+            "ner_confidence": 0.6657957434654236,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:hypertriglyceridemia",
+          "type": "Condition",
+          "name": "Hypertriglyceridemia",
+          "properties": {
+            "mention_text": "Hypertriglyceridemia",
+            "normalized_name": "Hypertriglyceridemia",
+            "ner_confidence": 0.6418858170509338,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "triglycerides",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.595129132270813,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:coronary_heart_disease",
+          "type": "Condition",
+          "name": "coronary heart disease",
+          "properties": {
+            "mention_text": "coronary heart disease",
+            "normalized_name": "coronary heart disease",
+            "ner_confidence": 0.7978686094284058,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "Low-density lipoproteins",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.6389958262443542,
+            "normalization_method": "semantic",
+            "normalization_score": 0.917051,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:atherosclerotic_cardiovascular_disease",
+          "type": "Condition",
+          "name": "atherosclerotic cardiovascular disease",
+          "properties": {
+            "mention_text": "atherosclerotic cardiovascular disease",
+            "normalized_name": "atherosclerotic cardiovascular disease",
+            "ner_confidence": 0.7356618046760559,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "drug:omacor",
+          "type": "Drug",
+          "name": "Omacor",
+          "properties": {
+            "mention_text": "Omacor",
+            "normalized_name": "Omacor",
+            "ner_confidence": 0.8225323557853699,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:n_3_fatty_acids",
+          "type": "Biomarker",
+          "name": "n-3 fatty acids",
+          "properties": {
+            "mention_text": "n-3 fatty acids",
+            "normalized_name": "n-3 fatty acids",
+            "ner_confidence": 0.5450180768966675,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:cardiovascular_disease",
+          "type": "Condition",
+          "name": "Cardiovascular disease",
+          "properties": {
+            "mention_text": "cardiovascular disease",
+            "normalized_name": "Cardiovascular disease",
+            "ner_confidence": 0.7193283438682556,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:omega_3_fatty_acids",
+          "type": "Biomarker",
+          "name": "Omega-3 fatty acids",
+          "properties": {
+            "mention_text": "Omega-3 fatty acids",
+            "normalized_name": "Omega-3 fatty acids",
+            "ner_confidence": 0.6478753685951233,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:dysglycemia",
+          "type": "Condition",
+          "name": "dysglycemia",
+          "properties": {
+            "mention_text": "dysglycemia",
+            "normalized_name": "dysglycemia",
+            "ner_confidence": 0.5507627129554749,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:dyslipidemia",
+          "type": "Condition",
+          "name": "Dyslipidemia",
+          "properties": {
+            "mention_text": "Dyslipidemia",
+            "normalized_name": "Dyslipidemia",
+            "ner_confidence": 0.5125776529312134,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:coronary_artery_disease",
+          "type": "Condition",
+          "name": "coronary artery disease",
+          "properties": {
+            "mention_text": "coronary artery disease",
+            "normalized_name": "coronary artery disease",
+            "ner_confidence": 0.5840762853622437,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:risk_factors",
+          "type": "RiskFactor",
+          "name": "risk factors",
+          "properties": {
+            "mention_text": "risk factors",
+            "normalized_name": "risk factors",
+            "ner_confidence": 0.5559538006782532,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:fasting_plasma_triacyl_glycerol",
+          "type": "Biomarker",
+          "name": "fasting plasma triacyl glycerol",
+          "properties": {
+            "mention_text": "fasting plasma triacyl glycerol",
+            "normalized_name": "fasting plasma triacyl glycerol",
+            "ner_confidence": 0.5482639074325562,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "HDL cholesterol",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.5889259576797485,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "biomarker:adiponectin",
+          "type": "Biomarker",
+          "name": "adiponectin",
+          "properties": {
+            "mention_text": "adiponectin",
+            "normalized_name": "adiponectin",
+            "ner_confidence": 0.8870986700057983,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "condition:type_2_diabetes_mellitus",
+          "type": "Condition",
+          "name": "Type 2 diabetes mellitus",
+          "properties": {
+            "mention_text": "type 2 diabetes mellitus",
+            "normalized_name": "Type 2 diabetes mellitus",
+            "ner_confidence": 0.7073432207107544,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        }
+      ],
+      "relationships": [
+        {
+          "id": "rel:c3c00f23684575d3448c20f26f6c9a1fefc1090e",
+          "type": "INCREASES_RISK_OF",
+          "source": {
+            "id": "riskfactor:risk_factors",
+            "type": "RiskFactor",
+            "name": "risk factors"
+          },
+          "target": {
+            "id": "condition:coronary_artery_disease",
+            "type": "Condition",
+            "name": "coronary artery disease"
+          },
+          "properties": {
+            "confidence": 0.587711,
+            "evidence": "Effects of EPA on coronary artery disease in hypercholesterolemic patients with multiple risk factors: sub-analysis of primary prevention cases from the Japan EPA Lipid Intervention Study (JELIS)",
+            "semantic_score": 0.336418,
+            "cue_score": 1.0,
+            "proximity_score": 0.84,
+            "entity_confidence_score": 0.570015,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0005",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        },
+        {
+          "id": "rel:400d9898a6c0b55516f5a5c4c896d50f7d6e79b2",
+          "type": "HAS_ADVERSE_EFFECT",
+          "source": {
+            "id": "drug:omacor",
+            "type": "Drug",
+            "name": "Omacor"
+          },
+          "target": {
+            "id": "condition:hypertriglyceridemia",
+            "type": "Condition",
+            "name": "hypertriglyceridemia"
+          },
+          "properties": {
+            "confidence": 0.633024,
+            "evidence": "High Triglycerides Are Associated With Increased Cardiovascular Events, Medical Costs, and Resource Use: A Real-World Administrative Claims Analysis of Statin-Treated Patients With High Residual Cardiovascular Risk\n\nSafety and efficacy of Omacor in severe hypertriglyceridemia",
+            "semantic_score": 0.352853,
+            "cue_score": 1.0,
+            "proximity_score": 0.963333,
+            "entity_confidence_score": 0.735092,
+            "source_pmid": "",
+            "source_pmcid": "PMC10557817",
+            "chunk_id": "PMC10557817-chunk-0005",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "prompt_version": "001_initial_prompt",
+            "created_at": "2026-08-07T17:00:01.526836+00:00"
+          }
+        }
+      ],
+      "rejected_candidates": []
+    },
+    {
+      "chunk_id": "PMC10557817-chunk-0006",
+      "status": "ok",
+      "entities": [
+        {
+          "id": "riskfactor:genetic_predisposition",
+          "type": "RiskFactor",
+          "name": "genetic predisposition",
+          "properties": {
+            "mention_text": "genetic predisposition",
+            "normalized_name": "genetic predisposition",
+            "ner_confidence": 0.9216501712799072,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "condition:elevated_blood_lipids",
+          "type": "Condition",
+          "name": "elevated blood lipids",
+          "properties": {
+            "mention_text": "elevated blood lipids",
+            "normalized_name": "elevated blood lipids",
+            "ner_confidence": 0.6693780422210693,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:pgs",
+          "type": "Biomarker",
+          "name": "PGS",
+          "properties": {
+            "mention_text": "PGS",
+            "normalized_name": "PGS",
+            "ner_confidence": 0.6849871873855591,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:body_mass_index",
+          "type": "Biomarker",
+          "name": "body mass index",
+          "properties": {
+            "mention_text": "body mass index",
+            "normalized_name": "body mass index",
+            "ner_confidence": 0.8969990015029907,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:total_cholesterol",
+          "type": "Biomarker",
+          "name": "Total cholesterol",
+          "properties": {
+            "mention_text": "Total cholesterol",
+            "normalized_name": "Total cholesterol",
+            "ner_confidence": 0.9373697638511658,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:ldl_cholesterol",
+          "type": "Biomarker",
+          "name": "LDL cholesterol",
+          "properties": {
+            "mention_text": "low-density lipoprotein",
+            "normalized_name": "LDL cholesterol",
+            "ner_confidence": 0.9349181056022644,
+            "normalization_method": "semantic",
+            "normalization_score": 0.926244,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:hdl_cholesterol",
+          "type": "Biomarker",
+          "name": "HDL cholesterol",
+          "properties": {
+            "mention_text": "high-density lipoprotein",
+            "normalized_name": "HDL cholesterol",
+            "ner_confidence": 0.8923476934432983,
+            "normalization_method": "semantic",
+            "normalization_score": 0.929073,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:triglycerides",
+          "type": "Biomarker",
+          "name": "Triglycerides",
+          "properties": {
+            "mention_text": "Triglycerides",
+            "normalized_name": "Triglycerides",
+            "ner_confidence": 0.9277026057243347,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:smoking_status",
+          "type": "RiskFactor",
+          "name": "smoking status",
+          "properties": {
+            "mention_text": "smoking status",
+            "normalized_name": "smoking status",
+            "ner_confidence": 0.7768071293830872,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "drug:statin",
+          "type": "Drug",
+          "name": "statin",
+          "properties": {
+            "mention_text": "statin",
+            "normalized_name": "statin",
+            "ner_confidence": 0.9640894532203674,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "drug:omega_3_fatty_acids",
+          "type": "Drug",
+          "name": "Omega-3 fatty acids",
+          "properties": {
+            "mention_text": "fish oil",
+            "normalized_name": "Omega-3 fatty acids",
+            "ner_confidence": 0.5193093419075012,
+            "normalization_method": "alias",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:alcohol_status",
+          "type": "RiskFactor",
+          "name": "alcohol status",
+          "properties": {
+            "mention_text": "alcohol status",
+            "normalized_name": "alcohol status",
+            "ner_confidence": 0.7043984532356262,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "riskfactor:physical_activity",
+          "type": "RiskFactor",
+          "name": "physical activity",
+          "properties": {
+            "mention_text": "physical activity",
+            "normalized_name": "physical activity",
+            "ner_confidence": 0.567264974117279,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        },
+        {
+          "id": "biomarker:townsend_deprivation_index",
+          "type": "Biomarker",
+          "name": "Townsend deprivation index",
+          "properties": {
+            "mention_text": "Townsend deprivation index",
+            "normalized_name": "Townsend deprivation index",
+            "ner_confidence": 0.643887996673584,
+            "normalization_method": "surface",
+            "normalization_score": 1.0,
+            "source": "pmc",
+            "extractor": "non_instruct",
+            "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+            "created_at": "2026-08-07T17:00:03.994182+00:00"
+          }
+        }
+      ],
+      "relationships": [],
+      "rejected_candidates": []
+    }
+  ],
+  "entities": [
+    {
+      "id": "drug:omega_3_fatty_acids",
+      "type": "Drug",
+      "name": "Omega-3 fatty acids",
+      "properties": {
+        "mention_text": "fish oil",
+        "normalized_name": "Omega-3 fatty acids",
+        "ner_confidence": 0.5193093419075012,
+        "normalization_method": "alias",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "condition:dyslipidemia",
+      "type": "Condition",
+      "name": "Dyslipidemia",
+      "properties": {
+        "mention_text": "Dyslipidemia",
+        "normalized_name": "Dyslipidemia",
+        "ner_confidence": 0.5125776529312134,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:cardiovascular_disease",
+      "type": "Condition",
+      "name": "Cardiovascular disease",
+      "properties": {
+        "mention_text": "cardiovascular disease",
+        "normalized_name": "Cardiovascular disease",
+        "ner_confidence": 0.7193283438682556,
+        "normalization_method": "alias",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "biomarker:triglycerides",
+      "type": "Biomarker",
+      "name": "Triglycerides",
+      "properties": {
+        "mention_text": "Triglycerides",
+        "normalized_name": "Triglycerides",
+        "ner_confidence": 0.9277026057243347,
+        "normalization_method": "alias",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:genetic_predisposition",
+      "type": "RiskFactor",
+      "name": "genetic predisposition",
+      "properties": {
+        "mention_text": "genetic predisposition",
+        "normalized_name": "genetic predisposition",
+        "ner_confidence": 0.9216501712799072,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:total_cholesterol",
+      "type": "Biomarker",
+      "name": "Total cholesterol",
+      "properties": {
+        "mention_text": "Total cholesterol",
+        "normalized_name": "Total cholesterol",
+        "ner_confidence": 0.9373697638511658,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:ldl_cholesterol",
+      "type": "Biomarker",
+      "name": "LDL cholesterol",
+      "properties": {
+        "mention_text": "low-density lipoprotein",
+        "normalized_name": "LDL cholesterol",
+        "ner_confidence": 0.9349181056022644,
+        "normalization_method": "semantic",
+        "normalization_score": 0.926244,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:hdl_cholesterol",
+      "type": "Biomarker",
+      "name": "HDL cholesterol",
+      "properties": {
+        "mention_text": "high-density lipoprotein",
+        "normalized_name": "HDL cholesterol",
+        "ner_confidence": 0.8923476934432983,
+        "normalization_method": "semantic",
+        "normalization_score": 0.929073,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:risk_factors",
+      "type": "RiskFactor",
+      "name": "risk factors",
+      "properties": {
+        "mention_text": "risk factors",
+        "normalized_name": "risk factors",
+        "ner_confidence": 0.5559538006782532,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:genetic_susceptibility",
+      "type": "RiskFactor",
+      "name": "genetic susceptibility",
+      "properties": {
+        "mention_text": "genetic susceptibility",
+        "normalized_name": "genetic susceptibility",
+        "ner_confidence": 0.5679441690444946,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "condition:ischemic_events",
+      "type": "Condition",
+      "name": "ischemic events",
+      "properties": {
+        "mention_text": "ischemic events",
+        "normalized_name": "ischemic events",
+        "ner_confidence": 0.5699901580810547,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "condition:autoimmune_disease",
+      "type": "Condition",
+      "name": "autoimmune disease",
+      "properties": {
+        "mention_text": "autoimmune disease",
+        "normalized_name": "autoimmune disease",
+        "ner_confidence": 0.7116691470146179,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "condition:cancers",
+      "type": "Condition",
+      "name": "cancers",
+      "properties": {
+        "mention_text": "cancers",
+        "normalized_name": "cancers",
+        "ner_confidence": 0.5368614196777344,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "drug:eicosapentaenoic_acid",
+      "type": "Drug",
+      "name": "eicosapentaenoic acid",
+      "properties": {
+        "mention_text": "eicosapentaenoic acid",
+        "normalized_name": "eicosapentaenoic acid",
+        "ner_confidence": 0.6500738859176636,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "drug:docosahexaenoic_acid",
+      "type": "Drug",
+      "name": "docosahexaenoic acid",
+      "properties": {
+        "mention_text": "docosahexaenoic acid",
+        "normalized_name": "docosahexaenoic acid",
+        "ner_confidence": 0.5890489816665649,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "drug:dha",
+      "type": "Drug",
+      "name": "DHA",
+      "properties": {
+        "mention_text": "DHA",
+        "normalized_name": "DHA",
+        "ner_confidence": 0.5532547831535339,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:environmental_factors",
+      "type": "RiskFactor",
+      "name": "environmental factors",
+      "properties": {
+        "mention_text": "environmental factors",
+        "normalized_name": "environmental factors",
+        "ner_confidence": 0.5420615077018738,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:genetic_factors",
+      "type": "RiskFactor",
+      "name": "genetic factors",
+      "properties": {
+        "mention_text": "genetic factors",
+        "normalized_name": "genetic factors",
+        "ner_confidence": 0.6665790677070618,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "biomarker:blood_lipids",
+      "type": "Biomarker",
+      "name": "blood lipids",
+      "properties": {
+        "mention_text": "blood lipids",
+        "normalized_name": "blood lipids",
+        "ner_confidence": 0.7260448932647705,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:53.971432+00:00"
+      }
+    },
+    {
+      "id": "biomarker:snps",
+      "type": "Biomarker",
+      "name": "SNPs",
+      "properties": {
+        "mention_text": "SNPs",
+        "normalized_name": "SNPs",
+        "ner_confidence": 0.6633394360542297,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "biomarker:afr",
+      "type": "Biomarker",
+      "name": "AFR",
+      "properties": {
+        "mention_text": "AFR",
+        "normalized_name": "AFR",
+        "ner_confidence": 0.8582896590232849,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "biomarker:bmi",
+      "type": "Biomarker",
+      "name": "BMI",
+      "properties": {
+        "mention_text": "BMI",
+        "normalized_name": "BMI",
+        "ner_confidence": 0.877136766910553,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:53.971432+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:smoking",
+      "type": "RiskFactor",
+      "name": "Smoking",
+      "properties": {
+        "mention_text": "Smoking",
+        "normalized_name": "Smoking",
+        "ner_confidence": 0.5977646708488464,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:53.971432+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:physical_activity",
+      "type": "RiskFactor",
+      "name": "physical activity",
+      "properties": {
+        "mention_text": "physical activity",
+        "normalized_name": "physical activity",
+        "ner_confidence": 0.567264974117279,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:smoking_status",
+      "type": "RiskFactor",
+      "name": "smoking status",
+      "properties": {
+        "mention_text": "smoking status",
+        "normalized_name": "smoking status",
+        "ner_confidence": 0.7768071293830872,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "drug:statin",
+      "type": "Drug",
+      "name": "statin",
+      "properties": {
+        "mention_text": "statin",
+        "normalized_name": "statin",
+        "ner_confidence": 0.9640894532203674,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:current_alcohol_drinkers",
+      "type": "RiskFactor",
+      "name": "current alcohol drinkers",
+      "properties": {
+        "mention_text": "current alcohol drinkers",
+        "normalized_name": "current alcohol drinkers",
+        "ner_confidence": 0.6202505230903625,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:engaging_in_high_physical_activity",
+      "type": "RiskFactor",
+      "name": "engaging in high physical activity",
+      "properties": {
+        "mention_text": "engaging in high physical activity",
+        "normalized_name": "engaging in high physical activity",
+        "ner_confidence": 0.7943516373634338,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:current_smokers",
+      "type": "RiskFactor",
+      "name": "current smokers",
+      "properties": {
+        "mention_text": "current smokers",
+        "normalized_name": "current smokers",
+        "ner_confidence": 0.5026162266731262,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "biomarker:triglyceride_level",
+      "type": "Biomarker",
+      "name": "triglyceride level",
+      "properties": {
+        "mention_text": "triglyceride level",
+        "normalized_name": "triglyceride level",
+        "ner_confidence": 0.5849884748458862,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "biomarker:csa",
+      "type": "Biomarker",
+      "name": "CSA",
+      "properties": {
+        "mention_text": "CSA",
+        "normalized_name": "CSA",
+        "ner_confidence": 0.8105685710906982,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:genetic_risk",
+      "type": "RiskFactor",
+      "name": "genetic risk",
+      "properties": {
+        "mention_text": "genetic risk",
+        "normalized_name": "genetic risk",
+        "ner_confidence": 0.5940122008323669,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "biomarker:lipid_profile",
+      "type": "Biomarker",
+      "name": "lipid profile",
+      "properties": {
+        "mention_text": "lipid profile",
+        "normalized_name": "lipid profile",
+        "ner_confidence": 0.6506106853485107,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "condition:hyperlipidemic_patients_their_influence_on_genetic_susceptibility_to_dyslipidemia",
+      "type": "Condition",
+      "name": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+      "properties": {
+        "mention_text": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+        "normalized_name": "hyperlipidemic patients, their influence on genetic susceptibility to dyslipidemia",
+        "ner_confidence": 0.922424852848053,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "drug:statins",
+      "type": "Drug",
+      "name": "statins",
+      "properties": {
+        "mention_text": "statins",
+        "normalized_name": "statins",
+        "ner_confidence": 0.7553990483283997,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "condition:hypercholesterolemia",
+      "type": "Condition",
+      "name": "hypercholesterolemia",
+      "properties": {
+        "mention_text": "hypercholesterolemia",
+        "normalized_name": "hypercholesterolemia",
+        "ner_confidence": 0.8378445506095886,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "biomarker:vldl",
+      "type": "Biomarker",
+      "name": "VLDL",
+      "properties": {
+        "mention_text": "VLDL",
+        "normalized_name": "VLDL",
+        "ner_confidence": 0.7838624119758606,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "biomarker:apolipoprotein_b",
+      "type": "Biomarker",
+      "name": "Apolipoprotein B",
+      "properties": {
+        "mention_text": "apoprotein B",
+        "normalized_name": "Apolipoprotein B",
+        "ner_confidence": 0.5854743123054504,
+        "normalization_method": "semantic",
+        "normalization_score": 0.87759,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "symptom:postprandial_lipemia",
+      "type": "Symptom",
+      "name": "postprandial lipemia",
+      "properties": {
+        "mention_text": "postprandial lipemia",
+        "normalized_name": "postprandial lipemia",
+        "ner_confidence": 0.8311891555786133,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:socioeconomic_characteristics",
+      "type": "RiskFactor",
+      "name": "socioeconomic characteristics",
+      "properties": {
+        "mention_text": "socioeconomic characteristics",
+        "normalized_name": "socioeconomic characteristics",
+        "ner_confidence": 0.5511823892593384,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:lifestyle_factors",
+      "type": "RiskFactor",
+      "name": "lifestyle factors",
+      "properties": {
+        "mention_text": "lifestyle factors",
+        "normalized_name": "lifestyle factors",
+        "ner_confidence": 0.7383671402931213,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "drug:icosapent_ethyl",
+      "type": "Drug",
+      "name": "Icosapent Ethyl",
+      "properties": {
+        "mention_text": "Icosapent Ethyl",
+        "normalized_name": "Icosapent Ethyl",
+        "ner_confidence": 0.6657957434654236,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:hypertriglyceridemia",
+      "type": "Condition",
+      "name": "Hypertriglyceridemia",
+      "properties": {
+        "mention_text": "Hypertriglyceridemia",
+        "normalized_name": "Hypertriglyceridemia",
+        "ner_confidence": 0.6418858170509338,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:coronary_heart_disease",
+      "type": "Condition",
+      "name": "coronary heart disease",
+      "properties": {
+        "mention_text": "coronary heart disease",
+        "normalized_name": "coronary heart disease",
+        "ner_confidence": 0.7978686094284058,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:atherosclerotic_cardiovascular_disease",
+      "type": "Condition",
+      "name": "atherosclerotic cardiovascular disease",
+      "properties": {
+        "mention_text": "atherosclerotic cardiovascular disease",
+        "normalized_name": "atherosclerotic cardiovascular disease",
+        "ner_confidence": 0.7356618046760559,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "drug:omacor",
+      "type": "Drug",
+      "name": "Omacor",
+      "properties": {
+        "mention_text": "Omacor",
+        "normalized_name": "Omacor",
+        "ner_confidence": 0.8225323557853699,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "biomarker:n_3_fatty_acids",
+      "type": "Biomarker",
+      "name": "n-3 fatty acids",
+      "properties": {
+        "mention_text": "n-3 fatty acids",
+        "normalized_name": "n-3 fatty acids",
+        "ner_confidence": 0.5450180768966675,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "biomarker:omega_3_fatty_acids",
+      "type": "Biomarker",
+      "name": "Omega-3 fatty acids",
+      "properties": {
+        "mention_text": "Omega-3 fatty acids",
+        "normalized_name": "Omega-3 fatty acids",
+        "ner_confidence": 0.6478753685951233,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:dysglycemia",
+      "type": "Condition",
+      "name": "dysglycemia",
+      "properties": {
+        "mention_text": "dysglycemia",
+        "normalized_name": "dysglycemia",
+        "ner_confidence": 0.5507627129554749,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:coronary_artery_disease",
+      "type": "Condition",
+      "name": "coronary artery disease",
+      "properties": {
+        "mention_text": "coronary artery disease",
+        "normalized_name": "coronary artery disease",
+        "ner_confidence": 0.5840762853622437,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "biomarker:fasting_plasma_triacyl_glycerol",
+      "type": "Biomarker",
+      "name": "fasting plasma triacyl glycerol",
+      "properties": {
+        "mention_text": "fasting plasma triacyl glycerol",
+        "normalized_name": "fasting plasma triacyl glycerol",
+        "ner_confidence": 0.5482639074325562,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "biomarker:adiponectin",
+      "type": "Biomarker",
+      "name": "adiponectin",
+      "properties": {
+        "mention_text": "adiponectin",
+        "normalized_name": "adiponectin",
+        "ner_confidence": 0.8870986700057983,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:type_2_diabetes_mellitus",
+      "type": "Condition",
+      "name": "Type 2 diabetes mellitus",
+      "properties": {
+        "mention_text": "type 2 diabetes mellitus",
+        "normalized_name": "Type 2 diabetes mellitus",
+        "ner_confidence": 0.7073432207107544,
+        "normalization_method": "alias",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "condition:elevated_blood_lipids",
+      "type": "Condition",
+      "name": "elevated blood lipids",
+      "properties": {
+        "mention_text": "elevated blood lipids",
+        "normalized_name": "elevated blood lipids",
+        "ner_confidence": 0.6693780422210693,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:pgs",
+      "type": "Biomarker",
+      "name": "PGS",
+      "properties": {
+        "mention_text": "PGS",
+        "normalized_name": "PGS",
+        "ner_confidence": 0.6849871873855591,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:body_mass_index",
+      "type": "Biomarker",
+      "name": "body mass index",
+      "properties": {
+        "mention_text": "body mass index",
+        "normalized_name": "body mass index",
+        "ner_confidence": 0.8969990015029907,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "riskfactor:alcohol_status",
+      "type": "RiskFactor",
+      "name": "alcohol status",
+      "properties": {
+        "mention_text": "alcohol status",
+        "normalized_name": "alcohol status",
+        "ner_confidence": 0.7043984532356262,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    },
+    {
+      "id": "biomarker:townsend_deprivation_index",
+      "type": "Biomarker",
+      "name": "Townsend deprivation index",
+      "properties": {
+        "mention_text": "Townsend deprivation index",
+        "normalized_name": "Townsend deprivation index",
+        "ner_confidence": 0.643887996673584,
+        "normalization_method": "surface",
+        "normalization_score": 1.0,
+        "source": "pmc",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "created_at": "2026-08-07T17:00:03.994182+00:00"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel:f25527dfef9d30072beae16739cb896618ec4244",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "total cholesterol"
+      },
+      "target": {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol"
+      },
+      "properties": {
+        "confidence": 0.612545,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.993333,
+        "entity_confidence_score": 0.978476,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:b18699454da7dba297d9da61b2de5f1daacd1cb9",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "total cholesterol"
+      },
+      "target": {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol"
+      },
+      "properties": {
+        "confidence": 0.609333,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.97,
+        "entity_confidence_score": 0.972615,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:f4a4b81b9fca8bca5f4f49165690cb376e124bde",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "total cholesterol"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.583733,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.933333,
+        "entity_confidence_score": 0.8264,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:4e68f12b29866ba64486673f1e57ee15cf9cad94",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol"
+      },
+      "target": {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol"
+      },
+      "properties": {
+        "confidence": 0.609816,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.993333,
+        "entity_confidence_score": 0.960282,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:1d2180c2bbea2ae2f479f59f360bcecb2164f0aa",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:ldl_cholesterol",
+        "type": "Biomarker",
+        "name": "LDL cholesterol"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.584217,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.956667,
+        "entity_confidence_score": 0.814067,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:d0cd9867e94a78ddd0f957fbc4d864df8eb3f8fc",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "biomarker:hdl_cholesterol",
+        "type": "Biomarker",
+        "name": "HDL cholesterol"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.585671,
+        "evidence": "In the current study, we aimed to explore the associations between fish oil supplementation status and genetic predispositions to high levels of total cholesterol, LDL-C, HDL-C, and triglyceride. Large-scale genome-wide association studies (GWAS) have identified numerous single nucleotide polymorphisms (SNPs) significantly associated with elevated lipid levels.",
+        "semantic_score": 0.23288,
+        "cue_score": 1.0,
+        "proximity_score": 0.98,
+        "entity_confidence_score": 0.808205,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0001",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:51.539332+00:00"
+      }
+    },
+    {
+      "id": "rel:dd5ed597bf160df6d7b7af80402bf6dfb147cdb3",
+      "type": "INCREASES",
+      "source": {
+        "id": "drug:statin",
+        "type": "Drug",
+        "name": "statin"
+      },
+      "target": {
+        "id": "biomarker:total_cholesterol",
+        "type": "Biomarker",
+        "name": "total cholesterol"
+      },
+      "properties": {
+        "confidence": 0.605694,
+        "evidence": "Those in the fish oil intake group were more likely to be older, female, current alcohol drinkers, statin users, engaging in high physical activity, and having higher levels of total cholesterol, LDL-C, and HDL-C, but less likely to be current smokers or have an elevated BMI or triglyceride level. Among other ancestry groups, 2,289 (34.8%) AFR, 1,942 (22.5%) CSA, and 845 (31.6%) EAS participants took fish oil supplementation and displayed similar characteristics to the EUR participants (Supplementary Table 1).",
+        "semantic_score": 0.275922,
+        "cue_score": 1.0,
+        "proximity_score": 0.76,
+        "entity_confidence_score": 0.944888,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0003",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "rel:5cc19b00372d913d2d9f7a1e496150b58a869966",
+      "type": "ASSOCIATED_WITH",
+      "source": {
+        "id": "riskfactor:genetic_susceptibility",
+        "type": "RiskFactor",
+        "name": "genetic susceptibility"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.596155,
+        "evidence": "Interaction effects in other ancestry groups\n\nIn participants of AFR ancestry from UKB, we found that fish oil supplementation was consistently associated with a diminished risk of genetic susceptibility to high triglycerides (Supplementary Table 3).",
+        "semantic_score": 0.256612,
+        "cue_score": 1.0,
+        "proximity_score": 0.97,
+        "entity_confidence_score": 0.805657,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0003",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:56.383348+00:00"
+      }
+    },
+    {
+      "id": "rel:635ce396361d6100c65d59d193c9245b5736622e",
+      "type": "REDUCES",
+      "source": {
+        "id": "drug:statins",
+        "type": "Drug",
+        "name": "statins"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.642159,
+        "evidence": "Skulas-Ray AC et al. concluded that pharmacological doses of omega-3 fatty acids (>3 g/d total EPA+DHA) effectively decrease triglycerides and can be safely combined with other lipid-lowering agents, particularly statins.",
+        "semantic_score": 0.389145,
+        "cue_score": 1.0,
+        "proximity_score": 0.75,
+        "entity_confidence_score": 0.817246,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0004",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "rel:c937c11243764b6f49aa4e340e616987a16b8105",
+      "type": "REDUCES",
+      "source": {
+        "id": "drug:statin",
+        "type": "Drug",
+        "name": "statin"
+      },
+      "target": {
+        "id": "biomarker:triglycerides",
+        "type": "Biomarker",
+        "name": "Triglycerides"
+      },
+      "properties": {
+        "confidence": 0.650838,
+        "evidence": "concluded that pharmacological doses of omega-3 fatty acids (>3 g/d total EPA+DHA) effectively decrease triglycerides and can be safely combined with other lipid-lowering agents, particularly statins. The Japan EPA Lipid Intervention Study, involving 14,981 hypercholesterolemia Japanese patients, found that 1.8 g/d EPA in combination with a statin led to lower triglycerides compared with statin therapy alone.",
+        "semantic_score": 0.333719,
+        "cue_score": 1.0,
+        "proximity_score": 0.95,
+        "entity_confidence_score": 0.926525,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0004",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T16:59:59.051846+00:00"
+      }
+    },
+    {
+      "id": "rel:c3c00f23684575d3448c20f26f6c9a1fefc1090e",
+      "type": "INCREASES_RISK_OF",
+      "source": {
+        "id": "riskfactor:risk_factors",
+        "type": "RiskFactor",
+        "name": "risk factors"
+      },
+      "target": {
+        "id": "condition:coronary_artery_disease",
+        "type": "Condition",
+        "name": "coronary artery disease"
+      },
+      "properties": {
+        "confidence": 0.587711,
+        "evidence": "Effects of EPA on coronary artery disease in hypercholesterolemic patients with multiple risk factors: sub-analysis of primary prevention cases from the Japan EPA Lipid Intervention Study (JELIS)",
+        "semantic_score": 0.336418,
+        "cue_score": 1.0,
+        "proximity_score": 0.84,
+        "entity_confidence_score": 0.570015,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0005",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    },
+    {
+      "id": "rel:400d9898a6c0b55516f5a5c4c896d50f7d6e79b2",
+      "type": "HAS_ADVERSE_EFFECT",
+      "source": {
+        "id": "drug:omacor",
+        "type": "Drug",
+        "name": "Omacor"
+      },
+      "target": {
+        "id": "condition:hypertriglyceridemia",
+        "type": "Condition",
+        "name": "hypertriglyceridemia"
+      },
+      "properties": {
+        "confidence": 0.633024,
+        "evidence": "High Triglycerides Are Associated With Increased Cardiovascular Events, Medical Costs, and Resource Use: A Real-World Administrative Claims Analysis of Statin-Treated Patients With High Residual Cardiovascular Risk\n\nSafety and efficacy of Omacor in severe hypertriglyceridemia",
+        "semantic_score": 0.352853,
+        "cue_score": 1.0,
+        "proximity_score": 0.963333,
+        "entity_confidence_score": 0.735092,
+        "source_pmid": "",
+        "source_pmcid": "PMC10557817",
+        "chunk_id": "PMC10557817-chunk-0005",
+        "extractor": "non_instruct",
+        "model": "Ihor/gliner-biomed-small-v1.0 + sentence-transformers/all-MiniLM-L6-v2",
+        "prompt_version": "001_initial_prompt",
+        "created_at": "2026-08-07T17:00:01.526836+00:00"
+      }
+    }
+  ],
+  "rejected_candidates": []
+}

@@ -324,6 +324,39 @@ class IngestionJobStore:
                 (status, _now(), error, job_id),
             )
 
+    def recover_interrupted_running_jobs(
+        self,
+        error: str = "Ingestion job was interrupted before completion, likely because the API restarted.",
+    ) -> int:
+        finished_at = _now()
+        with self._lock, self._connection() as connection:
+            rows = connection.execute(
+                """
+                SELECT id FROM ingestion_jobs
+                WHERE status = 'running'
+                """
+            ).fetchall()
+            job_ids = [str(row["id"]) for row in rows]
+            for job_id in job_ids:
+                connection.execute(
+                    """
+                    UPDATE ingestion_jobs
+                    SET status = 'failed', finished_at = ?, error = ?
+                    WHERE id = ? AND status = 'running'
+                    """,
+                    (finished_at, error, job_id),
+                )
+                connection.execute(
+                    """
+                    UPDATE ingestion_job_documents
+                    SET status = 'failed',
+                        error = CASE WHEN error = '' THEN ? ELSE error END
+                    WHERE job_id = ? AND status IN ('queued', 'running')
+                    """,
+                    (error, job_id),
+                )
+        return len(job_ids)
+
     def cancel_job(self, job_id: str) -> bool:
         with self._lock, self._connection() as connection:
             cursor = connection.execute(
@@ -389,6 +422,7 @@ class IngestionQueueService:
     def start(self) -> None:
         if self._thread is not None and self._thread.is_alive():
             return
+        self.store.recover_interrupted_running_jobs()
         self._stop_event.clear()
         self._thread = threading.Thread(target=self._worker_loop, name="ingestion-worker", daemon=True)
         self._thread.start()

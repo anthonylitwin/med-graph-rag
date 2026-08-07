@@ -387,6 +387,66 @@ class AnnotationEvaluationTests(unittest.TestCase):
             self.assertEqual(manifest["mlflow"]["run_id"], "run-fixture")
             self.assertEqual(manifest["mlflow"]["status"], "logged")
 
+    def test_run_annotation_evaluation_ignores_mlflow_end_run_unicode_errors(self) -> None:
+        raw_prediction = {
+            "entities": [
+                {"type": "Drug", "name": "Fish oil", "properties": {}},
+                {"type": "Biomarker", "name": "Triglycerides", "properties": {}},
+            ],
+            "relationships": [
+                {
+                    "type": "REDUCES",
+                    "source": {"type": "Drug", "name": "Fish oil"},
+                    "target": {"type": "Biomarker", "name": "Triglycerides"},
+                    "properties": {"confidence": 0.91, "evidence": "Fish oil reduced triglycerides"},
+                }
+            ],
+            "rejected_candidates": [],
+        }
+
+        class FakeInfo:
+            run_id = "annotation-unicode-end-run"
+            artifact_uri = "mlflow-artifacts:/annotation-unicode-end-run"
+
+        class FakeRun:
+            info = FakeInfo()
+
+        fake_mlflow = types.ModuleType("mlflow")
+        fake_mlflow.set_tracking_uri = lambda value: None
+        fake_mlflow.set_experiment = lambda value: None
+        fake_mlflow.start_run = lambda run_name=None: FakeRun()
+        fake_mlflow.log_param = lambda key, value: None
+        fake_mlflow.log_metric = lambda key, value: None
+        fake_mlflow.log_artifacts = lambda path: None
+
+        def raise_unicode_error() -> None:
+            raise UnicodeEncodeError("cp1252", "\U0001f3c3", 0, 1, "character maps to <undefined>")
+
+        fake_mlflow.end_run = raise_unicode_error
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            gold_manifest = _write_gold_manifest(root / "gold")
+            output_root = root / "eval"
+            extractor = StaticFixtureExtractor({"PMC123-chunk-0001": raw_prediction}, model="fixture-model")
+
+            with (
+                mock.patch.dict(sys.modules, {"mlflow": fake_mlflow}),
+                mock.patch("pipelines.annotation.evaluation.get_extractor", return_value=extractor),
+            ):
+                result = run_annotation_evaluation(
+                    AnnotationEvaluationConfig(
+                        gold_manifest_path=gold_manifest,
+                        output_root=output_root,
+                        eval_id="annotation-unicode-end-run",
+                        model_profile="noop",
+                        mlflow=True,
+                    )
+                )
+
+        self.assertEqual(result["mlflow"]["run_id"], "annotation-unicode-end-run")
+        self.assertEqual(result["mlflow"]["status"], "logged")
+
     def test_run_annotation_evaluation_counts_partial_tp_fp_fn_with_canonical_names(self) -> None:
         raw_prediction = {
             "entities": [

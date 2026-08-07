@@ -3,7 +3,9 @@ from __future__ import annotations
 import csv
 import json
 import os
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from typing import Any
@@ -702,6 +704,191 @@ class QAEvaluationTests(unittest.TestCase):
         self.assertEqual(result["graph_provenance"]["graph_run_id"], "fixture-graph")
         self.assertTrue(question_results_exists)
         self.assertTrue(artifact_manifest_exists)
+
+    def test_run_qa_evaluation_logs_params_metrics_and_artifacts_to_mlflow(self) -> None:
+        calls: dict[str, list] = {
+            "tracking_uri": [],
+            "experiment": [],
+            "start_run": [],
+            "params": [],
+            "metrics": [],
+            "artifacts": [],
+            "end_run": [],
+        }
+
+        class FakeInfo:
+            run_id = "qa-run-fixture"
+            artifact_uri = "mlflow-artifacts:/qa-run-fixture"
+
+        class FakeRun:
+            info = FakeInfo()
+
+        fake_mlflow = types.ModuleType("mlflow")
+        fake_mlflow.set_tracking_uri = lambda value: calls["tracking_uri"].append(value)
+        fake_mlflow.set_experiment = lambda value: calls["experiment"].append(value)
+        fake_mlflow.start_run = lambda run_name=None: calls["start_run"].append(run_name) or FakeRun()
+        fake_mlflow.log_param = lambda key, value: calls["params"].append((key, value))
+        fake_mlflow.log_metric = lambda key, value: calls["metrics"].append((key, value))
+        fake_mlflow.log_artifacts = lambda path: calls["artifacts"].append(path)
+        fake_mlflow.end_run = lambda: calls["end_run"].append(True)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    {
+                        "question_set_id": "fixture_qa_gold",
+                        "questions": [
+                            {
+                                "id": "q1",
+                                "question": "What medication may aspirin interact with?",
+                                "expected_facts": ["Aspirin may interact with anticoagulant medication."],
+                                "expected_entities": ["Aspirin", "Anticoagulant medication"],
+                                "expected_relationships": ["MAY_INTERACT_WITH"],
+                                "expected_evidence_ids": ["noop:aspirin-interaction"],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            output_root = tmp_path / "eval"
+
+            with mock.patch.dict(sys.modules, {"mlflow": fake_mlflow}):
+                result = run_qa_evaluation(
+                    QAEvaluationConfig(
+                        question_file=question_file,
+                        output_root=output_root,
+                        eval_id="qa-mlflow",
+                        graph_run_id="fixture-graph",
+                        graph_source="fixture graph",
+                        model_profile="noop",
+                        mlflow=True,
+                        mlflow_tracking_uri="http://mlflow.test",
+                        mlflow_experiment="qa-tests",
+                        mlflow_run_name="fixture-run",
+                    )
+                )
+
+            manifest = json.loads((output_root / "qa-mlflow" / "eval_manifest.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(calls["tracking_uri"], ["http://mlflow.test"])
+        self.assertEqual(calls["experiment"], ["qa-tests"])
+        self.assertEqual(calls["start_run"], ["fixture-run"])
+        self.assertEqual(calls["artifacts"], [(output_root / "qa-mlflow").as_posix()])
+        self.assertEqual(calls["end_run"], [True])
+        self.assertIn(("question_set_id", "fixture_qa_gold"), calls["params"])
+        self.assertIn(("graph_run_id", "fixture-graph"), calls["params"])
+        self.assertIn(("skip_answer", False), calls["params"])
+        metric_names = {name for name, _ in calls["metrics"]}
+        self.assertIn("retrieval_recall", metric_names)
+        self.assertIn("answer_accuracy", metric_names)
+        self.assertIn("citation_support_rate", metric_names)
+        self.assertEqual(result["mlflow"]["run_id"], "qa-run-fixture")
+        self.assertEqual(result["mlflow"]["status"], "logged")
+        self.assertTrue(result["mlflow"]["logged_artifacts"])
+        self.assertEqual(result["mlflow"]["artifact_status"], "logged")
+        self.assertEqual(manifest["mlflow"]["run_id"], "qa-run-fixture")
+        self.assertEqual(manifest["mlflow"]["status"], "logged")
+
+    def test_run_qa_evaluation_keeps_metrics_when_mlflow_artifact_upload_fails(self) -> None:
+        calls: dict[str, list] = {"end_run": []}
+
+        class FakeInfo:
+            run_id = "qa-artifact-error"
+            artifact_uri = "mlflow-artifacts:/qa-artifact-error"
+
+        class FakeRun:
+            info = FakeInfo()
+
+        fake_mlflow = types.ModuleType("mlflow")
+        fake_mlflow.set_tracking_uri = lambda value: None
+        fake_mlflow.set_experiment = lambda value: None
+        fake_mlflow.start_run = lambda run_name=None: FakeRun()
+        fake_mlflow.log_param = lambda key, value: None
+        fake_mlflow.log_metric = lambda key, value: None
+        fake_mlflow.log_artifacts = mock.Mock(side_effect=RuntimeError("artifact store offline"))
+        fake_mlflow.end_run = lambda: calls["end_run"].append(True)
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps(
+                    [
+                        {
+                            "id": "q1",
+                            "question": "What risk may aspirin increase?",
+                            "expected_facts": ["Aspirin may increase bleeding risk."],
+                            "expected_entities": ["Aspirin", "Bleeding risk"],
+                            "expected_relationships": ["MAY_INCREASE_RISK_OF"],
+                        }
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(sys.modules, {"mlflow": fake_mlflow}):
+                result = run_qa_evaluation(
+                    QAEvaluationConfig(
+                        question_file=question_file,
+                        output_root=tmp_path / "eval",
+                        eval_id="qa-artifact-error",
+                        model_profile="noop",
+                        mlflow=True,
+                    )
+                )
+
+        self.assertEqual(result["metrics"]["overall"]["answer_accuracy"], 1.0)
+        self.assertEqual(result["mlflow"]["status"], "logged")
+        self.assertFalse(result["mlflow"]["logged_artifacts"])
+        self.assertEqual(result["mlflow"]["artifact_status"], "error")
+        self.assertIn("artifact store offline", result["mlflow"]["artifact_error"])
+        self.assertEqual(calls["end_run"], [True])
+
+    def test_run_qa_evaluation_ignores_mlflow_end_run_unicode_errors(self) -> None:
+        class FakeInfo:
+            run_id = "qa-unicode-end-run"
+            artifact_uri = "mlflow-artifacts:/qa-unicode-end-run"
+
+        class FakeRun:
+            info = FakeInfo()
+
+        fake_mlflow = types.ModuleType("mlflow")
+        fake_mlflow.set_tracking_uri = lambda value: None
+        fake_mlflow.set_experiment = lambda value: None
+        fake_mlflow.start_run = lambda run_name=None: FakeRun()
+        fake_mlflow.log_param = lambda key, value: None
+        fake_mlflow.log_metric = lambda key, value: None
+        fake_mlflow.log_artifacts = lambda path: None
+
+        def raise_unicode_error() -> None:
+            raise UnicodeEncodeError("cp1252", "\U0001f3c3", 0, 1, "character maps to <undefined>")
+
+        fake_mlflow.end_run = raise_unicode_error
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            question_file = tmp_path / "questions.json"
+            question_file.write_text(
+                json.dumps([{"id": "q1", "question": "What medication may aspirin interact with?"}]),
+                encoding="utf-8",
+            )
+
+            with mock.patch.dict(sys.modules, {"mlflow": fake_mlflow}):
+                result = run_qa_evaluation(
+                    QAEvaluationConfig(
+                        question_file=question_file,
+                        output_root=tmp_path / "eval",
+                        eval_id="qa-unicode-end-run",
+                        model_profile="noop",
+                        mlflow=True,
+                    )
+                )
+
+        self.assertEqual(result["mlflow"]["run_id"], "qa-unicode-end-run")
+        self.assertEqual(result["mlflow"]["status"], "logged")
 
     def test_run_qa_evaluation_scores_unanswerable_abstention(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

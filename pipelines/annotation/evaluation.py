@@ -967,7 +967,10 @@ def run_annotation_evaluation(config: AnnotationEvaluationConfig) -> dict[str, A
         return result
     finally:
         if mlflow_client is not None:
-            mlflow_client.end_run()
+            try:
+                mlflow_client.end_run()
+            except UnicodeEncodeError:
+                pass
 
 
 __all__ = [
