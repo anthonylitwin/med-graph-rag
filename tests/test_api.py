@@ -15,7 +15,7 @@ API_ROOT = Path(__file__).resolve().parents[1] / "apps" / "api"
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
-from app.services.qa_service import answer_question, get_active_model_runtime, get_app_model_profile
+from app.services.qa_service import answer_question, get_active_model_runtime, get_app_graph_run_id, get_app_model_profile
 from app.services.ingestion_service import IngestionJobStore, IngestionQueueService, PROJECT_ROOT
 from pipelines.ingestion.models import ArticlePipelineResult
 from app.routes import admin as admin_routes
@@ -124,6 +124,31 @@ class ChatServiceTests(unittest.TestCase):
 
         self.assertEqual(runtime["activeProfile"]["name"], "noop")
         self.assertNotIn("profiles", runtime)
+
+    def test_app_graph_run_id_defaults_to_promoted_qa_params(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            params_path = Path(tmpdir) / "params.yaml"
+            params_path.write_text(
+                """
+qa_eval:
+  graph_run_id: promoted-graph-run
+""".strip(),
+                encoding="utf-8",
+            )
+            with mock.patch.dict(os.environ, {"QA_PARAMS_PATH": str(params_path)}, clear=True):
+                graph_run_id = get_app_graph_run_id()
+
+        self.assertEqual(graph_run_id, "promoted-graph-run")
+
+    def test_app_graph_run_id_can_be_overridden_by_env(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {"QA_GRAPH_RUN_ID": "override-graph-run", "QA_PARAMS_PATH": "missing.yaml"},
+            clear=True,
+        ):
+            graph_run_id = get_app_graph_run_id()
+
+        self.assertEqual(graph_run_id, "override-graph-run")
 
     def test_answer_question_honors_noop_profile_metadata(self) -> None:
         with mock.patch.dict(os.environ, {"APP_MODEL_PROFILE": "noop"}, clear=True):

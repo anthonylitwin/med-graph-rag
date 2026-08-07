@@ -6,6 +6,7 @@ from packages.llm.providers import LanguageModel
 from packages.qa.models import AnswerRecord, DEFAULT_QA_PROMPT_VERSION, QuestionRecord, RetrievedEvidence
 from packages.qa.prompts import format_qa_prompt, qa_answer_json_schema
 from packages.qa.retrievers import EvidenceRetriever
+from pipelines.ingestion.non_instruct import normalize_term
 
 
 def _confidence(value: Any) -> float:
@@ -34,6 +35,37 @@ def _relationship_to_sentence(evidence: RetrievedEvidence) -> str:
     if relationship == "DEFINITION_OF":
         return f"{source}: {target}"
     return f"{source} is connected to {target} by {relationship}."
+
+
+def _relationship_cues(relationship: str) -> tuple[str, ...]:
+    return {
+        "REDUCES": ("reduce", "reduces", "lower", "lowers", "decrease", "decreases"),
+        "MAY_REDUCE": ("reduce", "reduces", "lower", "lowers", "decrease", "decreases"),
+        "INCREASES": ("increase", "increases", "raise", "raises", "elevate", "elevates"),
+        "MAY_INCREASE": ("increase", "increases", "raise", "raises", "elevate", "elevates"),
+        "TREATS": ("treat", "treats"),
+        "PREVENTS": ("prevent", "prevents"),
+        "DEFINITION_OF": ("definition", "is"),
+    }.get(relationship.upper(), (normalize_term(relationship),))
+
+
+def _answer_mentions_evidence(answer: str, evidence: RetrievedEvidence) -> bool:
+    normalized_answer = normalize_term(answer)
+    source = normalize_term(evidence.source_name)
+    target = normalize_term(evidence.target_name)
+    if not source or not target:
+        return False
+    return source in normalized_answer and target in normalized_answer and any(
+        normalize_term(cue) in normalized_answer for cue in _relationship_cues(evidence.relationship_type)
+    )
+
+
+def _complete_answer_with_top_evidence(answer: str, evidence: list[RetrievedEvidence]) -> tuple[str, bool]:
+    missing = [item for item in evidence[:2] if not _answer_mentions_evidence(answer, item)]
+    if not missing:
+        return answer, False
+    summary = " ".join(_relationship_to_sentence(item) for item in missing)
+    return f"{answer} Evidence summary: {summary}", True
 
 
 def _sources_from_evidence(evidence: list[RetrievedEvidence]) -> list[dict[str, Any]]:
@@ -158,16 +190,25 @@ class GraphRAGAnswerer:
                 raw_response={"status": "model_error", "error": str(exc)},
             )
 
-        sources = raw.get("sources") if isinstance(raw.get("sources"), list) and raw.get("sources") else _sources_from_evidence(evidence)
+        answer_text, completed_with_evidence = _complete_answer_with_top_evidence(str(raw.get("answer") or ""), evidence)
+        sources = (
+            _sources_from_evidence(evidence)
+            if completed_with_evidence
+            else raw.get("sources")
+            if isinstance(raw.get("sources"), list) and raw.get("sources")
+            else _sources_from_evidence(evidence)
+        )
         reasoning_path = (
-            raw.get("reasoningPath")
+            _reasoning_from_evidence(evidence)
+            if completed_with_evidence
+            else raw.get("reasoningPath")
             if isinstance(raw.get("reasoningPath"), list) and raw.get("reasoningPath")
             else _reasoning_from_evidence(evidence)
         )
         return AnswerRecord(
             id=question.id,
             question=question.question,
-            answer=str(raw.get("answer") or ""),
+            answer=answer_text,
             sources=sources,
             reasoning_path=reasoning_path,
             model=self.model.model,
@@ -177,7 +218,7 @@ class GraphRAGAnswerer:
             confidence=_confidence(raw.get("confidence")),
             abstained=bool(raw.get("abstained")),
             prompt_version=self.prompt_version,
-            raw_response=raw,
+            raw_response=raw | {"completedWithEvidenceSummary": completed_with_evidence},
         )
 
 

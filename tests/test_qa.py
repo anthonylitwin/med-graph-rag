@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -118,6 +119,60 @@ class QAAnswererTests(unittest.TestCase):
         self.assertEqual(answer.confidence, 0.8)
         self.assertIn("Retrieved graph evidence", model.prompt)
         self.assertEqual(model.json_schema["name"], "medgraphrag_qa_answer")
+
+    def test_model_answer_is_completed_when_top_evidence_is_omitted(self) -> None:
+        class FakeRetriever:
+            name = "fixture"
+
+            def retrieve(self, question: str, limit: int) -> list[RetrievedEvidence]:
+                return [
+                    RetrievedEvidence(
+                        id="e1",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="HDL cholesterol",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced HDL cholesterol.",
+                        confidence=0.92,
+                    ),
+                    RetrievedEvidence(
+                        id="e2",
+                        source_name="Fibrates",
+                        source_labels=["Drug"],
+                        relationship_type="REDUCES",
+                        target_name="Triglycerides",
+                        target_labels=["Biomarker"],
+                        evidence_text="Fibrates reduced triglycerides.",
+                        confidence=0.91,
+                    ),
+                ]
+
+        class PartialModel:
+            provider = "fixture"
+            model = "fixture-model"
+
+            def generate_text(self, prompt: str) -> str:
+                return ""
+
+            def generate_json(self, prompt: str, json_schema: dict[str, Any] | None = None) -> dict[str, Any]:
+                return {
+                    "answer": "Fibrates may reduce triglycerides.",
+                    "sources": [],
+                    "reasoningPath": [],
+                    "confidence": 0.8,
+                    "abstained": False,
+                }
+
+        answerer = GraphRAGAnswerer(model=PartialModel(), retriever=FakeRetriever())
+        answer = answerer.answer(QuestionRecord(id="q1", question="What do fibrates reduce?"))
+
+        self.assertIn("Evidence summary: Fibrates may reduce HDL cholesterol.", answer.answer)
+        self.assertTrue(answer.raw_response["completedWithEvidenceSummary"])
+        self.assertEqual([source["evidenceText"] for source in answer.sources], [
+            "Fibrates reduced HDL cholesterol.",
+            "Fibrates reduced triglycerides.",
+        ])
 
     def test_model_failure_returns_retrieved_evidence_fallback(self) -> None:
         class FakeRetriever:
@@ -285,6 +340,20 @@ class QARetrieverTests(unittest.TestCase):
         self.assertEqual({item.path_length for item in records}, {2})
         self.assertEqual(len({item.path_id for item in records}), 1)
         self.assertGreater(records[0].match_score, 0.0)
+
+    def test_graph_retriever_loads_repo_terminology_from_api_working_directory(self) -> None:
+        cwd = Path.cwd()
+        with tempfile.TemporaryDirectory() as tmpdir:
+            try:
+                os.chdir(tmpdir)
+                terms = GraphRetriever(include_definitions=False)._terms(
+                    "Which drug connects HDL cholesterol and triglycerides?"
+                )
+            finally:
+                os.chdir(cwd)
+
+        self.assertIn("hdl cholesterol", terms)
+        self.assertIn("triglycerides", terms)
 
 
 class QAPipelineTests(unittest.TestCase):

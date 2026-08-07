@@ -67,6 +67,17 @@ def _as_int(value: Any, default: int) -> int:
         return default
 
 
+def _project_root() -> Path:
+    for parent in Path(__file__).resolve().parents:
+        if (parent / "data").exists() and (parent / "experiments").exists():
+            return parent
+    return Path.cwd()
+
+
+def _repo_path(path: Path) -> Path:
+    return path if path.is_absolute() else _project_root() / path
+
+
 def evidence_from_record(record: Any) -> RetrievedEvidence:
     row = dict(record)
     relationship_id = str(row.get("relationshipId") or "")
@@ -122,6 +133,7 @@ class DefinitionEntry:
 
 
 def _load_terminology(path: Path = DEFAULT_TERMINOLOGY_PATH) -> list[TerminologyEntry]:
+    path = _repo_path(path)
     if not path.exists():
         return []
     payload = json.loads(path.read_text(encoding="utf-8"))
@@ -144,6 +156,7 @@ def _load_terminology(path: Path = DEFAULT_TERMINOLOGY_PATH) -> list[Terminology
 
 
 def _load_definitions(path: Path = Path("data/terminology/medical_definitions_v001.json")) -> list[DefinitionEntry]:
+    path = _repo_path(path)
     if not path.exists():
         return []
     payload = json.loads(path.read_text(encoding="utf-8"))
