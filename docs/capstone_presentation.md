@@ -12,13 +12,33 @@ Write the slides in Simplified Technical English.
 - Mark future work as future work.
 - Do not claim clinical use.
 
+## Main Story
+
+Focus the talk on data transformation.
+
+The key question is not only whether the app works.
+
+The key question is how the data changes.
+
+Show each representation:
+
+1. PMC ID list.
+2. BioC JSON.
+3. Clean article text.
+4. Overlapping chunks.
+5. Entity records.
+6. Relationship records.
+7. Neo4j graph.
+8. Retrieved evidence objects.
+9. Answer with sources.
+
 ## Demo Plan
 
 Use a short live demo.
 
 - Keep the demo to 3-5 minutes.
-- Show the app as proof of the system.
-- Keep the main story on data flow and evaluation.
+- Use the demo to show transformed data.
+- Do not use the demo as the main proof.
 
 Demo only these parts:
 
@@ -26,7 +46,7 @@ Demo only these parts:
 2. Show the active model profile.
 3. Open the Graph page.
 4. Search `statins`, `LDL`, or `triglycerides`.
-5. Select one edge.
+5. Select one relationship.
 6. Show evidence, PMCID, and chunk ID.
 7. Open the Chat page.
 8. Ask one prepared question.
@@ -50,23 +70,25 @@ Do not demo these parts unless asked:
 
 **MedGraphRAG**
 
-**Building a Biomedical Knowledge Graph for Explainable Question Answering**
+**Transforming Biomedical Literature Into Traceable Graph Evidence**
 
 Anthony Litwin  
 ODU Data Science Capstone  
 Summer 2026
 
-**Question:** Can graph evidence make biomedical question answering more traceable?
+**Focus:** Data transformation from article text to supported answer.
 
 ### Slide Visual
 
-Use this Mermaid diagram on the title slide.
+Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["Biomedical Article"] --> B["Graph Facts"]
-    B --> C["Evidence"]
-    C --> D["Answer or Abstain"]
+    A["Article"] --> B["Chunks"]
+    B --> C["Records"]
+    C --> D["Graph"]
+    D --> E["Evidence"]
+    E --> F["Answer"]
 ```
 
 ### Delivery
@@ -75,23 +97,31 @@ flowchart LR
 
 **Demo:** Show the Home page for 20-30 seconds.
 
-**Say:** This project studies a data transformation. It turns biomedical text into graph evidence. The app shows the full system.
+**Say:** This project is a data transformation pipeline. The app shows the pipeline running end to end.
 
 ---
 
-## Slide 2 - Problem
+## Slide 2 - Transformation Goal
 
 ### Slide Content
 
-**Biomedical text is hard to query.**
+**Goal**
 
-- Articles are long.
-- Terms vary across papers.
-- Relationships are in prose.
-- Direction is often implicit.
-- Source evidence is hard to inspect.
+Convert biomedical prose into structured evidence.
 
-**Goal:** Convert text into typed facts with source evidence.
+**Input**
+
+- Long PMC articles.
+- Variable biomedical terms.
+- Relationships written in prose.
+
+**Output**
+
+- Typed entities.
+- Typed relationships.
+- Source evidence.
+- Graph paths.
+- Cited answers.
 
 ### Slide Visual
 
@@ -99,9 +129,10 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    T["Text<br/>LDL-C and low-density lipoprotein cholesterol"] --> N["Normalized Entity<br/>LDL cholesterol"]
-    T --> R["Typed Relationship<br/>Statins REDUCE LDL cholesterol"]
-    R --> E["Evidence<br/>PMCID + chunk + quote"]
+    A["Prose<br/>LDL-C reduction on statin therapy"] --> B["Entity<br/>Statins: Drug"]
+    A --> C["Entity<br/>LDL cholesterol: Biomarker"]
+    B -->|REDUCES| C
+    C --> D["Evidence<br/>quote + PMCID + chunk"]
 ```
 
 ### Delivery
@@ -110,25 +141,26 @@ flowchart LR
 
 **Demo:** Do not demo this slide.
 
-**Say:** Raw text has useful facts. The system must make those facts explicit.
+**Say:** This is the only problem setup slide. The rest of the talk follows the data.
 
 ---
 
-## Slide 3 - Data Source
+## Slide 3 - Input Representation
 
 ### Slide Content
 
-**Source data**
+**Input data**
 
-- The corpus has 30 PMC article IDs.
+- The seed list has 30 PMC IDs.
 - The topic is lipids and cardiovascular disease.
 - The current run has 28 BioC successes.
 - Two articles had no BioC result.
-- The processed corpus has 231 chunks.
-- It has 3,046 entity records.
-- It has 207 relationship records.
 
-**Input format:** NCBI PMC Open Access BioC JSON.
+**First representation**
+
+- NCBI PMC Open Access BioC JSON.
+- Raw JSON is preserved.
+- The parser uses the first BioC document.
 
 ### Slide Visual
 
@@ -136,39 +168,46 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["30 PMC IDs"] --> B["NCBI BioC JSON"]
-    B --> C["28 successful articles"]
-    C --> D["231 chunks"]
-    D --> E["3,046 entity records"]
-    D --> F["207 relationship records"]
+    A["PMC ID list<br/>30 IDs"] --> B["NCBI BioC request"]
+    B --> C["Raw BioC JSON"]
+    C --> D["28 successful articles"]
+    C --> E["2 unavailable articles"]
 ```
 
 ### Delivery
 
 **Mode:** Diagram + verbal.
 
-**Demo:** You can point to the Home page workflow if it helps.
+**Demo:** You can point to the Home page workflow.
 
-**Say:** This is a focused seed corpus. It is not a full biomedical benchmark.
+**Say:** The project starts with a focused source list. It does not start with web search.
 
 ---
 
-## Slide 4 - Full Pipeline
+## Slide 4 - BioC JSON to Clean Text
 
 ### Slide Content
 
-**Pipeline**
+**Transformation 1**
 
-1. Get BioC JSON.
-2. Parse article text.
-3. Split text into chunks.
-4. Detect entities.
-5. Normalize names.
-6. Score relationships.
-7. Validate records.
-8. Load Neo4j.
-9. Retrieve graph evidence.
-10. Generate an answer or abstain.
+BioC JSON becomes a clean article record.
+
+**Kept fields**
+
+- PMCID.
+- Title.
+- Year.
+- Journal.
+- DOI.
+- Authors.
+- Passage text.
+- Passage section.
+
+**Lost or simplified fields**
+
+- BioC annotations are not used.
+- BioC relationships are not used.
+- Layout details are simplified.
 
 ### Slide Visual
 
@@ -176,45 +215,45 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["PMC BioC JSON"] -->|parse| B["Clean Article Text"]
-    B -->|split| C["Overlapping Chunks"]
-    C -->|detect| D["Typed Mentions"]
-    D -->|normalize| E["Entity Records"]
-    E -->|score pairs| F["Relationship Records"]
-    F -->|validate| G["Graph Records"]
-    G -->|load| H["Neo4j Graph"]
-    H -->|retrieve| I["Evidence Objects"]
-    I -->|answer| J["Answer or Abstain"]
+    A["BioC JSON<br/>metadata + passages"] --> B["Parser"]
+    B --> C["Article Metadata<br/>PMCID + title + journal"]
+    B --> D["Clean Text<br/>passages joined"]
+    B --> E["Passage Provenance<br/>section + offset"]
+    A -. "not used" .-> F["BioC annotations<br/>BioC relationships"]
 ```
 
 ### Delivery
 
-**Mode:** Diagram + optional demo.
+**Mode:** Diagram + verbal.
 
-**Demo:** Briefly show the Home page workflow cards.
+**Demo:** Do not demo this slide.
 
-**Say:** Each step changes the data. Each step can add value. Each step can also add error.
+**Say:** This step changes nested BioC data into the simpler text form used by extraction.
 
 ---
 
-## Slide 5 - Chunking
+## Slide 5 - Clean Text to Chunks
 
 ### Slide Content
 
-**Text chunking**
+**Transformation 2**
 
-- Each chunk has up to 6,000 characters.
-- Each chunk overlaps by 500 characters.
-- The splitter prefers a word boundary.
-- Each chunk keeps source metadata.
-- Each chunk keeps character offsets.
+Clean article text becomes overlapping chunks.
 
-**Trade-off**
+**Chunk fields**
 
-- Larger chunks keep more context.
-- Larger chunks add more ambiguous pairs.
-- Smaller chunks reduce pair ambiguity.
-- Smaller chunks can miss cross-chunk facts.
+- Chunk ID.
+- Chunk order.
+- Start offset.
+- End offset.
+- Section.
+- Text.
+
+**Current settings**
+
+- Maximum size: 6,000 characters.
+- Overlap: 500 characters.
+- Boundary: word boundary when possible.
 
 ### Slide Visual
 
@@ -222,11 +261,12 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["Article Text"] --> B["Chunk 1<br/>0-6000"]
+    A["Clean Article Text"] --> B["Chunk 1<br/>0-6000"]
     A --> C["Chunk 2<br/>5500-11500"]
     A --> D["Chunk 3<br/>11000-17000"]
     B -. "500 char overlap" .-> C
     C -. "500 char overlap" .-> D
+    B --> E["Chunk Metadata<br/>ID + offsets + section"]
 ```
 
 ### Delivery
@@ -235,24 +275,30 @@ flowchart LR
 
 **Demo:** Do not demo chunking live.
 
-**Say:** Chunking is a modeling choice. The current values are implemented defaults.
+**Say:** Chunking controls what evidence the extractor can see at one time.
 
 ---
 
-## Slide 6 - Extraction
+## Slide 6 - Chunks to Entity Records
 
 ### Slide Content
 
-**Default graph extraction**
+**Transformation 3**
 
-- GLiNER-BioMed detects entities.
-- The entity threshold is 0.50.
-- The entity types are Drug, Condition, Symptom, RiskFactor, and Biomarker.
-- A small terminology file normalizes known names.
-- MiniLM helps match similar names.
-- The relationship scorer checks nearby entity pairs.
-- The scorer uses meaning, word cues, distance, and entity confidence.
-- The validator rejects invalid records.
+Each chunk becomes entity records.
+
+**Entity detection**
+
+- GLiNER-BioMed detects mentions.
+- The threshold is 0.50.
+- The labels are Drug, Condition, Symptom, RiskFactor, and Biomarker.
+
+**Entity normalization**
+
+- Exact aliases are checked first.
+- MiniLM similarity is checked next.
+- Unknown names keep a cleaned surface form.
+- Original mention text is kept.
 
 ### Slide Visual
 
@@ -260,11 +306,11 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["Text Chunk"] --> B["Entity Detection<br/>GLiNER-BioMed"]
-    B --> C["Name Normalization<br/>aliases + MiniLM"]
-    C --> D["Pair Scoring<br/>meaning + cues + distance"]
-    D --> E["Validation<br/>type + direction + evidence"]
-    E --> F["Accepted Graph Records"]
+    A["Chunk Text"] --> B["Mention Detection<br/>GLiNER-BioMed"]
+    B --> C["Mention<br/>LDL-C"]
+    C --> D["Normalization<br/>alias or MiniLM"]
+    D --> E["Entity Record<br/>Biomarker: LDL cholesterol"]
+    E --> F["Properties<br/>mention + method + score + chunk"]
 ```
 
 ### Delivery
@@ -273,33 +319,37 @@ flowchart LR
 
 **Demo:** Do not run extraction live.
 
-**Say:** The default graph extraction path is non-generative. Qwen is used later for answers.
+**Say:** This step changes text spans into typed, named records.
 
 ---
 
-## Slide 7 - Example Fact
+## Slide 7 - Entity Records to Relationship Records
 
 ### Slide Content
 
-**Example transformation**
+**Transformation 4**
 
-Source text:
+Entity pairs become relationship records.
 
-`...optimal LDL-C reduction on statin monotherapy...`
+**Candidate rules**
 
-Detected entities:
+- Pairs must be nearby.
+- Pairs must be in one sentence or adjacent sentences.
+- Pairs must be within 300 characters.
 
-- `Statins` is a Drug.
-- `LDL-C` is a Biomarker.
+**Scoring inputs**
 
-Normalized entity:
+- Semantic similarity.
+- Word cues.
+- Distance.
+- Entity confidence.
 
-- `LDL-C` becomes `LDL cholesterol`.
+**Validation checks**
 
-Graph fact:
-
-- `(Statins)-[:REDUCES]->(LDL cholesterol)`
-- The edge keeps evidence and chunk ID.
+- Type.
+- Direction.
+- Evidence.
+- Confidence.
 
 ### Slide Visual
 
@@ -307,41 +357,46 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    A["Sentence<br/>optimal LDL-C reduction<br/>on statin monotherapy"] --> B["Mentions<br/>Statins: Drug<br/>LDL-C: Biomarker"]
-    B --> C["Normalized Names<br/>Statins<br/>LDL cholesterol"]
-    C --> D["Relationship<br/>Statins REDUCES LDL cholesterol"]
-    D --> E["Evidence Edge<br/>quote + PMCID + chunk + confidence"]
+    A["Entity Records"] --> B["Nearby Pair<br/>Statins + LDL cholesterol"]
+    B --> C["Score Candidate<br/>meaning + cues + distance"]
+    C --> D["Validate<br/>type + direction + evidence"]
+    D --> E["Relationship Record<br/>Statins REDUCES LDL cholesterol"]
+    E --> F["Evidence<br/>quote + PMCID + chunk + confidence"]
 ```
 
 ### Delivery
 
 **Mode:** Diagram + verbal.
 
-**Demo:** You can show a matching edge on the Graph page.
+**Demo:** Do not demo scoring live.
 
-**Say:** This is a human-reviewed gold example. It shows the target structure.
+**Say:** This is the main weak step. Correct entities do not guarantee correct relationships.
 
 ---
 
-## Slide 8 - Knowledge Graph
+## Slide 8 - Records to Knowledge Graph
 
 ### Slide Content
 
-**Graph model**
+**Transformation 5**
 
-- Papers become Paper nodes.
-- Biomedical concepts become entity nodes.
-- `MENTIONS` edges link papers to entities.
-- Biomedical relationships become typed edges.
-- Entity IDs use type and normalized name.
-- Edge IDs include endpoints, type, PMCID, chunk, and evidence.
-- Neo4j loads records with `MERGE`.
+Validated records become a Neo4j graph.
 
-**Why this helps**
+**Graph nodes**
 
-- The graph supports direct relationship queries.
-- Each edge keeps evidence.
-- Each answer can show its source path.
+- Paper nodes.
+- Drug nodes.
+- Condition nodes.
+- Symptom nodes.
+- RiskFactor nodes.
+- Biomarker nodes.
+
+**Graph edges**
+
+- `MENTIONS` links papers to entities.
+- Biomedical relationships link entities.
+- Each relationship keeps evidence.
+- Each relationship keeps PMCID and chunk ID.
 
 ### Slide Visual
 
@@ -360,29 +415,38 @@ flowchart LR
 
 **Demo:** Open Graph. Search `statins`. Select one relationship. Show the evidence fields.
 
-**Say:** Neo4j stores the graph. The important object is the evidence-bearing relationship.
+**Say:** The graph is not only storage. It is a new representation of evidence.
 
 ---
 
-## Slide 9 - Graph Question Answering
+## Slide 9 - Graph to Evidence Objects
 
 ### Slide Content
 
-**Question answering**
+**Transformation 6**
 
-- The retriever expands question terms.
-- Neo4j finds matching graph nodes.
-- Cypher retrieves direct edges.
-- Cypher can retrieve two-hop paths.
-- The retriever ranks evidence records.
-- The answerer uses up to 12 evidence objects.
-- Qwen 2.5 writes a JSON answer.
-- The answerer abstains when evidence is not enough.
+The graph becomes a ranked evidence context.
 
-**Important limit**
+**Retrieval steps**
 
-- This is not vector chunk RAG.
-- It retrieves graph paths and definitions.
+- Expand question terms.
+- Match graph nodes.
+- Retrieve direct edges.
+- Retrieve two-hop paths when requested.
+- Add up to three definitions.
+- Rank the evidence.
+- Return up to 12 evidence objects.
+
+**Evidence object fields**
+
+- Source entity.
+- Relationship.
+- Target entity.
+- Evidence text.
+- Confidence.
+- PMCID.
+- Chunk ID.
+- Path order.
 
 ### Slide Visual
 
@@ -392,11 +456,58 @@ Use this Mermaid diagram.
 flowchart LR
     Q["Question"] --> T["Terms + aliases"]
     T --> A["Graph anchors"]
-    A --> E["Direct edges<br/>or two-hop paths"]
-    D["Curated definitions"] -.-> E
-    E --> C["Ranked evidence<br/>up to 12 records"]
-    C --> L["Qwen 2.5<br/>evidence-only answer"]
-    L --> O["Answer + sources<br/>or abstention"]
+    A --> E["Candidate edges<br/>direct or two-hop"]
+    D["Definitions"] -.-> E
+    E --> R["Ranked Evidence Objects"]
+    R --> C["Context<br/>up to 12 records"]
+```
+
+### Delivery
+
+**Mode:** Demo + diagram.
+
+**Demo:** Use Graph first. Then use Chat to show returned sources.
+
+**Say:** This step converts a graph query result into the small context used for answering.
+
+---
+
+## Slide 10 - Evidence Objects to Answer
+
+### Slide Content
+
+**Transformation 7**
+
+Evidence objects become an answer object.
+
+**Answer object fields**
+
+- Answer text.
+- Sources.
+- Reasoning path.
+- Confidence.
+- Abstention flag.
+- Model profile.
+
+**Answer controls**
+
+- The prompt allows only retrieved evidence.
+- The answer must use a JSON shape.
+- The answerer can abstain.
+
+### Slide Visual
+
+Use this Mermaid diagram.
+
+```mermaid
+flowchart LR
+    A["Evidence Objects"] --> B["Evidence-only Prompt"]
+    B --> C["Qwen 2.5"]
+    C --> D["Answer JSON"]
+    D --> E["Answer Text"]
+    D --> F["Sources"]
+    D --> G["Reasoning Path"]
+    D --> H["Abstention"]
 ```
 
 ### Delivery
@@ -411,11 +522,11 @@ Use one of these questions:
 - `How are triglycerides associated with cardiovascular risk?`
 - `What evidence links LDL cholesterol and cardiovascular disease?`
 
-**Say:** The model receives graph evidence. It does not receive full articles.
+**Say:** The final answer is also a data record. It contains sources and a path.
 
 ---
 
-## Slide 10 - Evaluation
+## Slide 11 - Evaluate Each Transformation
 
 ### Slide Content
 
@@ -441,14 +552,16 @@ Use this Mermaid diagram.
 
 ```mermaid
 flowchart LR
-    G["Reviewed Gold<br/>5 papers<br/>43 chunks"] --> M["Exact Match"]
-    P["Predictions"] --> M
-    M --> S["Precision<br/>Recall<br/>F1"]
-    S --> R["Finding<br/>relationships are weak"]
+    A["Chunks"] --> B["Entity Records"]
+    B --> C["Relationship Records"]
+    C --> D["Graph"]
+    D --> E["Evidence Objects"]
+    E --> F["Answer"]
 
-    Q["6 Questions"] --> GR["Graph Retrieval"]
-    GR --> AS["Answer Scoring"]
-    AS --> QF["Finding<br/>question answering is diagnostic"]
+    B --> G["Entity F1<br/>0.528"]
+    C --> H["Relationship F1<br/>0.086"]
+    E --> I["Retrieval Recall<br/>0.333"]
+    F --> J["Answer Accuracy<br/>0.333"]
 ```
 
 ### Delivery
@@ -457,51 +570,7 @@ flowchart LR
 
 **Demo:** Do not run evaluation live.
 
-**Say:** These results are development results. They do not prove general performance.
-
----
-
-## Slide 11 - Trade-Offs
-
-### Slide Content
-
-**Design choices and costs**
-
-- Chunk size controls context and ambiguity.
-- A strict ontology supports validation.
-- A strict ontology can omit useful facts.
-- Local extraction improves control.
-- Local extraction currently misses many relationships.
-- Name normalization reduces duplicates.
-- Small terminology can miss synonyms.
-- Graph paths improve traceability.
-- Missing graph facts still cause answer errors.
-
-### Slide Visual
-
-Use this Mermaid diagram.
-
-```mermaid
-flowchart TB
-    A["Design Choice"] --> B["Gain"]
-    A --> C["Cost"]
-
-    B --> D["Traceable evidence"]
-    B --> E["Typed queries"]
-    B --> F["Local control"]
-
-    C --> G["Missed context"]
-    C --> H["Relationship errors"]
-    C --> I["Incomplete graph"]
-```
-
-### Delivery
-
-**Mode:** Diagram + verbal.
-
-**Demo:** Do not demo this slide.
-
-**Say:** The graph does not make all answers correct. It makes the evidence easier to inspect.
+**Say:** The evaluation locates the weak transformation. Relationship construction is the main bottleneck.
 
 ---
 
@@ -509,18 +578,21 @@ flowchart TB
 
 ### Slide Content
 
-**What the project achieved**
+**What the transformation adds**
 
-- It built an end-to-end graph retrieval and answer system.
-- It converts PMC text into graph evidence.
-- It answers questions with sources.
-- It can abstain when evidence is weak.
-- It tracks experiments with DVC and MLflow.
+- It adds typed entities.
+- It adds typed relationships.
+- It adds graph paths.
+- It adds source evidence.
+- It adds answer sources.
 
-**Main result**
+**What the transformation can lose**
 
-- Entity extraction performs better than relationship extraction.
-- Relationship extraction limits the current system.
+- Layout.
+- Some BioC structure.
+- Cross-chunk relationships.
+- Out-of-schema concepts.
+- Some uncertainty and context.
 
 **Next work**
 
@@ -536,12 +608,14 @@ flowchart TB
 Use this Mermaid diagram.
 
 ```mermaid
-flowchart LR
-    A["Done<br/>PMC to graph to answer"] --> B["Current Limit<br/>relationship extraction"]
-    B --> C["Next<br/>schema audit"]
-    C --> D["Next<br/>larger holdout"]
-    D --> E["Next<br/>better relationships"]
-    E --> F["Next<br/>graph + vector comparison"]
+flowchart TB
+    A["Transformation Pipeline"] --> B["Adds"]
+    A --> C["Can Lose"]
+    A --> D["Next Work"]
+
+    B --> E["Structure<br/>identity<br/>traceability"]
+    C --> F["layout<br/>cross-chunk facts<br/>nuance"]
+    D --> G["better relationships<br/>larger holdout<br/>baselines"]
 ```
 
 ### Delivery
@@ -550,4 +624,4 @@ flowchart LR
 
 **Demo:** End on the slide. Do not switch back to the app unless asked.
 
-**Say:** The strongest claim is about traceability. The project shows where the pipeline works and where it fails.
+**Say:** The strongest claim is about traceable data transformation. The project shows where information is gained and lost.
