@@ -21,6 +21,8 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 ## Slide 1 - MedGraphRAG
 
+**Working title:** Building a Biomedical Knowledge Graph for Explainable Question Answering
+
 - Research question: can structured graph evidence improve traceable biomedical QA?
 - Domain: PMC literature on lipids and cardiovascular disease
 - Output: cited answer, or abstention when evidence is insufficient
@@ -32,7 +34,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** One horizontal transformation: `Article -> Graph Facts -> Evidence -> Answer`.
 
-**Should verbally explain:** The app exists to demonstrate the data-science pipeline end to end; the capstone claim is about representation, grounding, and measured failure modes.
+**Should verbally explain:** The app exists to demonstrate the data-science pipeline end to end; the capstone claim is about representation, grounding, and measured failure modes. It also reflects a practical goal from the final paper: learning RAG from both the data-science and engineering sides.
 
 **Speaker objective:** Frame the project as a data-representation experiment implemented as an end-to-end application, not primarily as a software architecture project.
 
@@ -55,6 +57,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 ## Slide 3 - End-to-End Data Transformation
 
+- Curated seed corpus: 30 PMC IDs; current non-instruction run has 28 BioC successes
 - BioC JSON -> cleaned article text -> overlapping chunks
 - Chunks -> typed mentions -> normalized entities
 - Entity pairs -> scored relations -> validated graph records
@@ -66,7 +69,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** Use Diagram A below, with the data form in large text and the operation in a small arrow label.
 
-**Should verbally explain:** Each stage changes the data representation and creates both useful structure and a possible error boundary.
+**Should verbally explain:** Each stage changes the data representation and creates both useful structure and a possible error boundary. The current processed corpus contains 231 chunks, 3,046 per-article deduplicated entity records, and 207 relationship records, so the demo is backed by saved artifacts rather than only toy data.
 
 **Speaker objective:** Give the audience the complete map once. Emphasize that each stage changes the representation and introduces both value and possible loss.
 
@@ -92,6 +95,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 - Text: `...optimal LDL-C reduction on statin monotherapy...`
 - Entities: `Statins: Drug`; `LDL-C: Biomarker`
 - Normalize: `LDL-C -> LDL cholesterol`
+- Default extraction: GLiNER-BioMed entities + MiniLM/cue/proximity relation scoring
 - Fact: `(Statins)-[:REDUCES]->(LDL cholesterol)` + evidence + chunk
 
 **Delivery mode:** **Diagram + Verbal.**
@@ -100,7 +104,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** Use Diagram B below. Mark the example as "human-reviewed gold example."
 
-**Should verbally explain:** This is the key representational move: prose becomes schema-constrained, queryable data while the evidence excerpt remains attached.
+**Should verbally explain:** This is the key representational move: prose becomes schema-constrained, queryable data while the evidence excerpt remains attached. The default path is non-generative for graph construction; Qwen is used later for supported answer generation.
 
 **Speaker objective:** Walk slowly through the most important transformation: prose becomes schema-constrained, queryable data while the evidence excerpt remains attached.
 
@@ -137,7 +141,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** Use Diagram D below and display one evidence object with endpoints, evidence excerpt, and chunk ID.
 
-**Should verbally explain:** The answer model receives graph evidence objects and optional definitions, not semantically retrieved text chunks. The UI should be used to show grounding: answer, source snippets, confidence/abstention, and reasoning path.
+**Should verbally explain:** The answer model receives graph evidence objects and optional definitions, not semantically retrieved text chunks. The UI should be used to show grounding: answer, source snippets, confidence/abstention, and reasoning path. Phrase this as explainable or traceable QA, not as proof of medical correctness.
 
 **Speaker objective:** Show exactly what the answer model receives. State clearly that the current implementation is graph retrieval plus optional definitions, not vector chunk retrieval.
 
@@ -145,8 +149,9 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 - **Graph construction:** entity and relation precision / recall / F1
 - Latest full current run: entity F1 **0.528**; relation F1 **0.086**
+- Earlier frontier reference: entity F1 **0.655**; relation F1 **0.484**
 - **QA:** retrieval, fact coverage, citations, paths, abstention
-- Latest six-question dev run: retrieval **0.333**; answer accuracy **0.333**
+- Latest six-question dev run: retrieval **0.333**; answer accuracy **0.333**; citation support **0.667**
 - DVC reproduces state; MLflow compares parameters, metrics, artifacts
 
 **Delivery mode:** **Diagram + Verbal; optional Demo.**
@@ -155,7 +160,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** Two parallel scorecards separated by a vertical line; use Diagram C for the graph-construction side.
 
-**Should verbally explain:** Evaluation is the sober part of the talk. The relation F1 is the main bottleneck, and the QA set is diagnostic rather than a superiority claim.
+**Should verbally explain:** Evaluation is the sober part of the talk. The relation F1 is the main bottleneck, the frontier reference is useful context but not a protected benchmark, and the QA set is diagnostic rather than a superiority claim.
 
 **Speaker objective:** Make relationship extraction the identified bottleneck and avoid overstating small development-set results. Explain why graph accuracy and QA accuracy must be diagnosed separately.
 
@@ -180,6 +185,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 ## Slide 10 - Conclusion and Next Experiment
 
 - Achieved: raw PMC prose -> traceable graph evidence -> cited QA
+- Benefit: structure, direct relationships, and provenance become inspectable
 - Main bottleneck: relation semantics, direction, and coverage
 - Next: schema-gold audit, larger PMCID holdout, relation calibration
 - Then: hybrid graph + vector baseline, cross-chunk links, cost/latency metrics
@@ -190,7 +196,7 @@ What not to live-demo unless specifically asked: full PMC ingestion, model downl
 
 **Should diagram:** Repeat the Slide 3 pipeline; highlight relation extraction in amber and future evaluation additions in blue.
 
-**Should verbally explain:** Completed functionality is end-to-end and inspectable; the next experiment is about making the comparison and relation extraction more defensible.
+**Should verbally explain:** Completed functionality is end-to-end and inspectable; the next experiment is about making the comparison and relation extraction more defensible. The strongest conclusion is not "graph RAG wins," but "the graph makes evidence traceable and exposes relation extraction as the limiting step."
 
 **Speaker objective:** End with the data-transformation contribution and a disciplined next-step sequence. Separate completed functionality from proposed improvements.
 
